@@ -2,20 +2,35 @@ import { createClient } from '@/lib/supabase/server'
 import { BookOpen, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import type { Book } from '@/lib/supabase/database.types'
+
+type BookListItem = {
+  id: string
+  title: string
+  publication_year: string | null
+  created_at: string
+}
 
 export default async function BooksPage() {
   const supabase = await createClient()
   
   // Fetch books for the logged in user
-  const { data: books } = await supabase
+  const { data: books, error } = await supabase
     .from('books')
-    .select('id, title, year_published, created_at')
+    .select('id, title, publication_year, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const bookList = (books ?? []) as Pick<Book, 'id' | 'title' | 'year_published' | 'created_at'>[]
+  if (error) {
+    console.error('Error fetching books:', error)
+  }
+
+  const bookList = (books ?? []) as BookListItem[]
   const bookCount = bookList.length
+
+  // Get total count
+  const { count: totalCount } = await supabase
+    .from('books')
+    .select('*', { count: 'exact', head: true })
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -24,9 +39,9 @@ export default async function BooksPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">My Collection</h1>
           <p className="text-muted-foreground">
-            {bookCount === 0 
+            {totalCount === 0 
               ? "You haven't added any books yet"
-              : `${bookCount} ${bookCount === 1 ? 'book' : 'books'} in your collection`
+              : `${totalCount?.toLocaleString()} ${totalCount === 1 ? 'book' : 'books'} in your collection`
             }
           </p>
         </div>
@@ -76,8 +91,8 @@ export default async function BooksPage() {
                 <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors line-clamp-2">
                   {book.title}
                 </h3>
-                {book.year_published && (
-                  <p className="text-xs text-muted-foreground">{book.year_published}</p>
+                {book.publication_year && (
+                  <p className="text-xs text-muted-foreground">{book.publication_year}</p>
                 )}
               </div>
             </Link>
