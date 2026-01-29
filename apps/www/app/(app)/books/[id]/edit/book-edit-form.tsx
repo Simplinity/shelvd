@@ -127,7 +127,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
         value={(formData[field] as string) || ''}
         onChange={e => handleChange(field, e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+        className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
       />
     </div>
   )
@@ -141,7 +141,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
         value={(formData[field] as number) ?? ''}
         onChange={e => handleChange(field, e.target.value ? parseFloat(e.target.value) : null)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+        className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
       />
     </div>
   )
@@ -171,7 +171,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
       <select
         value={(formData[field] as string) || ''}
         onChange={e => handleChange(field, e.target.value || null)}
-        className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+        className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
       >
         {allowEmpty && <option value="">—</option>}
         {options.map(opt => (
