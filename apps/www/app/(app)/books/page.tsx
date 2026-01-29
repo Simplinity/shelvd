@@ -55,9 +55,17 @@ export default function BooksPage() {
 
     if (error) {
       console.error('Error fetching books:', error)
-    } else {
-      const formattedBooks = (data || []).map(book => ({
-        ...book,
+    } else if (data) {
+      const formattedBooks: BookListItem[] = data.map((book: any) => ({
+        id: book.id,
+        title: book.title,
+        subtitle: book.subtitle,
+        publication_year: book.publication_year,
+        publication_place: book.publication_place,
+        status: book.status,
+        cover_type: book.cover_type,
+        condition_id: book.condition_id,
+        user_catalog_id: book.user_catalog_id,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
