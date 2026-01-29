@@ -1,18 +1,20 @@
 import { createClient } from '@/lib/supabase/server'
 import { BookOpen, Plus } from 'lucide-react'
 import Link from 'next/link'
+import type { Book } from '@/lib/supabase/database.types'
 
 export default async function BooksPage() {
   const supabase = await createClient()
   
   // Haal boeken op voor de ingelogde user
-  const { data: books, error } = await supabase
+  const { data: books } = await supabase
     .from('books')
-    .select('*')
+    .select('id, title, year_published, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const bookCount = books?.length ?? 0
+  const bookList = (books ?? []) as Pick<Book, 'id' | 'title' | 'year_published' | 'created_at'>[]
+  const bookCount = bookList.length
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -59,7 +61,7 @@ export default async function BooksPage() {
       {/* Books grid */}
       {bookCount > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {books?.map((book) => (
+          {bookList.map((book) => (
             <Link
               key={book.id}
               href={`/books/${book.id}`}
