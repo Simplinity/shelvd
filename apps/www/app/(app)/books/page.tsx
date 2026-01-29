@@ -203,8 +203,8 @@ export default function BooksPage() {
               href={`/books/${book.id}`}
               className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm"
             >
-              <div className="col-span-4">
-                <span className="font-medium line-clamp-2">{book.title}</span>
+              <div className="col-span-4 text-muted-foreground line-clamp-2">
+                {book.title}
               </div>
               <div className="col-span-2 text-muted-foreground truncate">
                 {getAuthors(book.contributors) || '—'}
