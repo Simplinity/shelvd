@@ -17,6 +17,7 @@ type ReferenceData = {
   languages: Language[]
   conditions: Condition[]
   bindings: Binding[]
+  seriesList: string[]
 }
 
 type Props = {
@@ -129,6 +130,26 @@ export default function BookEditForm({ book, referenceData }: Props) {
         placeholder={placeholder}
         className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
       />
+    </div>
+  )
+
+  // Combobox input (dropdown + free text)
+  const ComboInput = ({ label, field, options, placeholder = '' }: { label: string; field: keyof Book; options: string[]; placeholder?: string }) => (
+    <div>
+      <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</label>
+      <input
+        type="text"
+        list={`${field}-list`}
+        value={(formData[field] as string) || ''}
+        onChange={e => handleChange(field, e.target.value)}
+        placeholder={placeholder}
+        className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+      />
+      <datalist id={`${field}-list`}>
+        {options.map(opt => (
+          <option key={opt} value={opt} />
+        ))}
+      </datalist>
     </div>
   )
 
@@ -278,7 +299,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <div className="md:col-span-2">
               <TextInput label="Original Title" field="original_title" />
             </div>
-            <TextInput label="Series" field="series" />
+            <ComboInput label="Series" field="series" options={referenceData.seriesList} />
             <TextInput label="Series Number" field="series_number" />
           </div>
         </section>
