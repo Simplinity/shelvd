@@ -24,6 +24,9 @@ export default async function BookDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  // Cast to any to avoid TypeScript issues with dynamic data
+  const bookRecord = book as any
+
   // Fetch contributors separately
   const { data: bookContributors } = await supabase
     .from('book_contributors')
@@ -34,31 +37,31 @@ export default async function BookDetailPage({ params }: PageProps) {
     .eq('book_id', id)
 
   // Fetch related data
-  const { data: language } = book.language_id 
-    ? await supabase.from('languages').select('name').eq('id', book.language_id).single()
+  const { data: language } = bookRecord.language_id 
+    ? await supabase.from('languages').select('name').eq('id', bookRecord.language_id).single()
     : { data: null }
   
-  const { data: originalLanguage } = book.original_language_id
-    ? await supabase.from('languages').select('name').eq('id', book.original_language_id).single()
+  const { data: originalLanguage } = bookRecord.original_language_id
+    ? await supabase.from('languages').select('name').eq('id', bookRecord.original_language_id).single()
     : { data: null }
 
-  const { data: condition } = book.condition_id
-    ? await supabase.from('conditions').select('name').eq('id', book.condition_id).single()
+  const { data: condition } = bookRecord.condition_id
+    ? await supabase.from('conditions').select('name').eq('id', bookRecord.condition_id).single()
     : { data: null }
 
-  const { data: binding } = book.binding_id
-    ? await supabase.from('bindings').select('name').eq('id', book.binding_id).single()
+  const { data: binding } = bookRecord.binding_id
+    ? await supabase.from('bindings').select('name').eq('id', bookRecord.binding_id).single()
     : { data: null }
 
-  // Cast book to any to avoid TypeScript issues
+  // Combine all data
   const bookData = {
-    ...book,
+    ...bookRecord,
     language,
     original_language: originalLanguage,
     condition,
     binding,
     book_contributors: bookContributors || []
-  } as any
+  }
 
   // Group contributors by role
   const contributorsByRole: Record<string, string[]> = {}
