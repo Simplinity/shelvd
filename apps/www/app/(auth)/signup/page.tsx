@@ -4,14 +4,25 @@ import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { signup } from '@/lib/actions/auth'
-import { Button, Input, Alert } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
   
   return (
-    <Button type="submit" fullWidth loading={pending}>
-      Account aanmaken
+    <Button type="submit" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled={pending}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Laden...
+        </>
+      ) : (
+        'Account aanmaken'
+      )}
     </Button>
   )
 }
@@ -32,30 +43,20 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div>
-        <div className="w-16 h-16 bg-green-100 flex items-center justify-center mb-6">
-          <svg
-            className="w-8 h-8 text-green-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+      <div className="space-y-6">
+        <div className="w-14 h-14 bg-green-100 flex items-center justify-center">
+          <CheckCircle2 className="w-7 h-7 text-green-600" />
         </div>
-        <h2 className="text-h2 font-bold mb-2">Check je inbox</h2>
-        <p className="text-gray-600 mb-8">
-          We hebben een bevestigingslink gestuurd naar je emailadres. 
-          Klik op de link om je account te activeren.
-        </p>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold tracking-tight">Check je inbox</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            We hebben een bevestigingslink gestuurd naar je emailadres. 
+            Klik op de link om je account te activeren.
+          </p>
+        </div>
         <Link
           href="/login"
-          className="text-black font-semibold hover:text-swiss-red transition-colors"
+          className="inline-block text-sm font-semibold text-foreground hover:text-primary transition-colors"
         >
           ← Terug naar inloggen
         </Link>
@@ -64,55 +65,76 @@ export default function SignupPage() {
   }
 
   return (
-    <div>
-      <h2 className="text-h2 font-bold mb-2">Account aanmaken</h2>
-      <p className="text-gray-600 mb-8">
-        Start met het beheren van je collectie
-      </p>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">Account aanmaken</h2>
+        <p className="text-muted-foreground text-sm">
+          Start met het beheren van je collectie
+        </p>
+      </div>
 
       {error && (
-        <Alert variant="error" className="mb-6">
-          {error}
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <form action={handleSubmit} className="space-y-6">
-        <Input
-          name="fullName"
-          type="text"
-          label="Naam"
-          placeholder="Je volledige naam"
-          autoComplete="name"
-        />
+      <form action={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="fullName" className="text-xs font-semibold uppercase tracking-wide">
+            Naam
+          </Label>
+          <Input
+            id="fullName"
+            name="fullName"
+            type="text"
+            placeholder="Je volledige naam"
+            autoComplete="name"
+            className="h-11"
+          />
+        </div>
         
-        <Input
-          name="email"
-          type="email"
-          label="Email"
-          placeholder="je@email.com"
-          autoComplete="email"
-          required
-        />
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide">
+            Email
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="je@email.com"
+            autoComplete="email"
+            required
+            className="h-11"
+          />
+        </div>
         
-        <Input
-          name="password"
-          type="password"
-          label="Wachtwoord"
-          placeholder="Minimaal 8 tekens"
-          autoComplete="new-password"
-          helperText="Minimaal 8 tekens"
-          required
-        />
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide">
+            Wachtwoord
+          </Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Minimaal 8 tekens"
+            autoComplete="new-password"
+            required
+            className="h-11"
+          />
+          <p className="text-xs text-muted-foreground">Minimaal 8 tekens</p>
+        </div>
 
         <SubmitButton />
       </form>
 
-      <div className="mt-8 pt-8 border-t border-gray-200">
-        <p className="text-center text-gray-600">
+      <div className="pt-6 border-t">
+        <p className="text-center text-sm text-muted-foreground">
           Al een account?{' '}
           <Link
             href="/login"
-            className="text-black font-semibold hover:text-swiss-red transition-colors"
+            className="font-semibold text-foreground hover:text-primary transition-colors"
           >
             Log hier in
           </Link>

@@ -3,14 +3,25 @@
 import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { resetPassword } from '@/lib/actions/auth'
-import { Button, Input, Alert } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle, Loader2 } from 'lucide-react'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
   
   return (
-    <Button type="submit" fullWidth loading={pending}>
-      Wachtwoord opslaan
+    <Button type="submit" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled={pending}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Laden...
+        </>
+      ) : (
+        'Wachtwoord opslaan'
+      )}
     </Button>
   )
 }
@@ -24,32 +35,40 @@ export default function ResetPasswordPage() {
     if (result?.error) {
       setError(result.error)
     }
-    // On success, the server action redirects to /books
   }
 
   return (
-    <div>
-      <h2 className="text-h2 font-bold mb-2">Nieuw wachtwoord</h2>
-      <p className="text-gray-600 mb-8">
-        Kies een nieuw wachtwoord voor je account
-      </p>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">Nieuw wachtwoord</h2>
+        <p className="text-muted-foreground text-sm">
+          Kies een nieuw wachtwoord voor je account
+        </p>
+      </div>
 
       {error && (
-        <Alert variant="error" className="mb-6">
-          {error}
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <form action={handleSubmit} className="space-y-6">
-        <Input
-          name="password"
-          type="password"
-          label="Nieuw wachtwoord"
-          placeholder="Minimaal 8 tekens"
-          autoComplete="new-password"
-          helperText="Minimaal 8 tekens"
-          required
-        />
+      <form action={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide">
+            Nieuw wachtwoord
+          </Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Minimaal 8 tekens"
+            autoComplete="new-password"
+            required
+            className="h-11"
+          />
+          <p className="text-xs text-muted-foreground">Minimaal 8 tekens</p>
+        </div>
 
         <SubmitButton />
       </form>
