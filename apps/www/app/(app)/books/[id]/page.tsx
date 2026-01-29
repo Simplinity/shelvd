@@ -12,29 +12,53 @@ export default async function BookDetailPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
 
-  // Fetch book with all related data
+  // Fetch book data
   const { data: book, error } = await supabase
     .from('books')
-    .select(`
-      *,
-      language:languages!books_language_id_fkey ( name ),
-      original_language:languages!books_original_language_id_fkey ( name ),
-      condition:conditions ( name ),
-      binding:bindings ( name ),
-      book_contributors (
-        contributor:contributors ( canonical_name ),
-        role:contributor_roles ( name )
-      )
-    `)
+    .select('*')
     .eq('id', id)
     .single()
 
   if (error || !book) {
+    console.error('Book fetch error:', error)
     notFound()
   }
 
-  // Cast book to any to avoid TypeScript issues with dynamic Supabase queries
-  const bookData = book as any
+  // Fetch contributors separately
+  const { data: bookContributors } = await supabase
+    .from('book_contributors')
+    .select(`
+      contributor:contributors ( canonical_name ),
+      role:contributor_roles ( name )
+    `)
+    .eq('book_id', id)
+
+  // Fetch related data
+  const { data: language } = book.language_id 
+    ? await supabase.from('languages').select('name').eq('id', book.language_id).single()
+    : { data: null }
+  
+  const { data: originalLanguage } = book.original_language_id
+    ? await supabase.from('languages').select('name').eq('id', book.original_language_id).single()
+    : { data: null }
+
+  const { data: condition } = book.condition_id
+    ? await supabase.from('conditions').select('name').eq('id', book.condition_id).single()
+    : { data: null }
+
+  const { data: binding } = book.binding_id
+    ? await supabase.from('bindings').select('name').eq('id', book.binding_id).single()
+    : { data: null }
+
+  // Cast book to any to avoid TypeScript issues
+  const bookData = {
+    ...book,
+    language,
+    original_language: originalLanguage,
+    condition,
+    binding,
+    book_contributors: bookContributors || []
+  } as any
 
   // Group contributors by role
   const contributorsByRole: Record<string, string[]> = {}
@@ -146,9 +170,9 @@ export default async function BookDetailPage({ params }: PageProps) {
             <Field label="Publisher" value={bookData.publisher_name} />
             <Field label="Place" value={bookData.publication_place} />
             <Field label="Year" value={bookData.publication_year} />
-            <Field label="Language" value={(bookData.language as any)?.name} />
+            <Field label="Language" value={bookData.language?.name} />
             <Field label="Original Title" value={bookData.original_title} />
-            <Field label="Original Language" value={(bookData.original_language as any)?.name} />
+            <Field label="Original Language" value={bookData.original_language?.name} />
             <Field label="Series" value={bookData.series} />
             <Field label="Series Number" value={bookData.series_number} />
           </dl>
@@ -176,7 +200,7 @@ export default async function BookDetailPage({ params }: PageProps) {
             <Field label="Dimensions" value={formatDimensions()} />
             <Field label="Weight" value={formatWeight()} />
             <Field label="Cover Type" value={bookData.cover_type} />
-            <Field label="Binding" value={(bookData.binding as any)?.name} />
+            <Field label="Binding" value={bookData.binding?.name} />
             <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
             <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />
             <Field label="Pagination" value={bookData.pagination_description || bookData.pagination} />
@@ -184,11 +208,11 @@ export default async function BookDetailPage({ params }: PageProps) {
         </section>
 
         {/* Condition */}
-        {((bookData.condition as any)?.name || bookData.condition_notes) && (
+        {(bookData.condition?.name || bookData.condition_notes) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Condition" value={(bookData.condition as any)?.name} />
+              <Field label="Condition" value={bookData.condition?.name} />
               <Field label="Condition Notes" value={bookData.condition_notes} className="col-span-2 md:col-span-3" />
             </dl>
           </section>
