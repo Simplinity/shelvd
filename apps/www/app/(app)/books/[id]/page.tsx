@@ -38,11 +38,11 @@ export default async function BookDetailPage({ params }: PageProps) {
 
   // Fetch related data
   const { data: language } = bookRecord.language_id 
-    ? await supabase.from('languages').select('name').eq('id', bookRecord.language_id).single()
+    ? await supabase.from('languages').select('name_en').eq('id', bookRecord.language_id).single()
     : { data: null }
   
   const { data: originalLanguage } = bookRecord.original_language_id
-    ? await supabase.from('languages').select('name').eq('id', bookRecord.original_language_id).single()
+    ? await supabase.from('languages').select('name_en').eq('id', bookRecord.original_language_id).single()
     : { data: null }
 
   const { data: condition } = bookRecord.condition_id
@@ -173,9 +173,9 @@ export default async function BookDetailPage({ params }: PageProps) {
             <Field label="Publisher" value={bookData.publisher_name} />
             <Field label="Place" value={bookData.publication_place} />
             <Field label="Year" value={bookData.publication_year} />
-            <Field label="Language" value={bookData.language?.name} />
+            <Field label="Language" value={bookData.language?.name_en} />
             <Field label="Original Title" value={bookData.original_title} />
-            <Field label="Original Language" value={bookData.original_language?.name} />
+            <Field label="Original Language" value={bookData.original_language?.name_en} />
             <Field label="Series" value={bookData.series} />
             <Field label="Series Number" value={bookData.series_number} />
           </dl>
