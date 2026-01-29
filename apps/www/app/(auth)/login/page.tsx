@@ -18,10 +18,10 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Laden...
+          Loading...
         </>
       ) : (
-        'Inloggen'
+        'Sign In'
       )}
     </Button>
   )
@@ -41,9 +41,9 @@ export default function LoginPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Welkom terug</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
         <p className="text-muted-foreground text-sm">
-          Log in om je collectie te beheren
+          Sign in to manage your collection
         </p>
       </div>
 
@@ -63,7 +63,7 @@ export default function LoginPage() {
             id="email"
             name="email"
             type="email"
-            placeholder="je@email.com"
+            placeholder="you@example.com"
             autoComplete="email"
             required
             className="h-11"
@@ -72,7 +72,7 @@ export default function LoginPage() {
         
         <div className="space-y-2">
           <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide">
-            Wachtwoord
+            Password
           </Label>
           <Input
             id="password"
@@ -90,7 +90,7 @@ export default function LoginPage() {
             href="/forgot-password"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Wachtwoord vergeten?
+            Forgot password?
           </Link>
         </div>
 
@@ -99,12 +99,12 @@ export default function LoginPage() {
 
       <div className="pt-6 border-t">
         <p className="text-center text-sm text-muted-foreground">
-          Nog geen account?{' '}
+          Don't have an account?{' '}
           <Link
             href="/signup"
             className="font-semibold text-foreground hover:text-primary transition-colors"
           >
-            Registreer hier
+            Sign up here
           </Link>
         </p>
       </div>

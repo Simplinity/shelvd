@@ -18,10 +18,10 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Laden...
+          Loading...
         </>
       ) : (
-        'Account aanmaken'
+        'Create Account'
       )}
     </Button>
   )
@@ -48,17 +48,17 @@ export default function SignupPage() {
           <CheckCircle2 className="w-7 h-7 text-green-600" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Check je inbox</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Check your inbox</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            We hebben een bevestigingslink gestuurd naar je emailadres. 
-            Klik op de link om je account te activeren.
+            We've sent a confirmation link to your email address. 
+            Click the link to activate your account.
           </p>
         </div>
         <Link
           href="/login"
           className="inline-block text-sm font-semibold text-foreground hover:text-primary transition-colors"
         >
-          ← Terug naar inloggen
+          ← Back to sign in
         </Link>
       </div>
     )
@@ -67,9 +67,9 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Account aanmaken</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Create account</h2>
         <p className="text-muted-foreground text-sm">
-          Start met het beheren van je collectie
+          Start managing your collection today
         </p>
       </div>
 
@@ -83,13 +83,13 @@ export default function SignupPage() {
       <form action={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="fullName" className="text-xs font-semibold uppercase tracking-wide">
-            Naam
+            Name
           </Label>
           <Input
             id="fullName"
             name="fullName"
             type="text"
-            placeholder="Je volledige naam"
+            placeholder="Your full name"
             autoComplete="name"
             className="h-11"
           />
@@ -103,7 +103,7 @@ export default function SignupPage() {
             id="email"
             name="email"
             type="email"
-            placeholder="je@email.com"
+            placeholder="you@example.com"
             autoComplete="email"
             required
             className="h-11"
@@ -112,18 +112,18 @@ export default function SignupPage() {
         
         <div className="space-y-2">
           <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide">
-            Wachtwoord
+            Password
           </Label>
           <Input
             id="password"
             name="password"
             type="password"
-            placeholder="Minimaal 8 tekens"
+            placeholder="Minimum 8 characters"
             autoComplete="new-password"
             required
             className="h-11"
           />
-          <p className="text-xs text-muted-foreground">Minimaal 8 tekens</p>
+          <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
         </div>
 
         <SubmitButton />
@@ -131,12 +131,12 @@ export default function SignupPage() {
 
       <div className="pt-6 border-t">
         <p className="text-center text-sm text-muted-foreground">
-          Al een account?{' '}
+          Already have an account?{' '}
           <Link
             href="/login"
             className="font-semibold text-foreground hover:text-primary transition-colors"
           >
-            Log hier in
+            Sign in here
           </Link>
         </p>
       </div>

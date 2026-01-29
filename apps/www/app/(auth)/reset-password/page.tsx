@@ -17,10 +17,10 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Laden...
+          Loading...
         </>
       ) : (
-        'Wachtwoord opslaan'
+        'Save Password'
       )}
     </Button>
   )
@@ -40,9 +40,9 @@ export default function ResetPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Nieuw wachtwoord</h2>
+        <h2 className="text-2xl font-bold tracking-tight">New password</h2>
         <p className="text-muted-foreground text-sm">
-          Kies een nieuw wachtwoord voor je account
+          Choose a new password for your account
         </p>
       </div>
 
@@ -56,18 +56,18 @@ export default function ResetPasswordPage() {
       <form action={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide">
-            Nieuw wachtwoord
+            New Password
           </Label>
           <Input
             id="password"
             name="password"
             type="password"
-            placeholder="Minimaal 8 tekens"
+            placeholder="Minimum 8 characters"
             autoComplete="new-password"
             required
             className="h-11"
           />
-          <p className="text-xs text-muted-foreground">Minimaal 8 tekens</p>
+          <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
         </div>
 
         <SubmitButton />

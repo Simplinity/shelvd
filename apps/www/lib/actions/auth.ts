@@ -16,7 +16,7 @@ export async function login(formData: FormData): Promise<AuthResult> {
   const password = formData.get('password') as string
 
   if (!email || !password) {
-    return { error: 'Email en wachtwoord zijn verplicht' }
+    return { error: 'Email and password are required' }
   }
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -25,8 +25,8 @@ export async function login(formData: FormData): Promise<AuthResult> {
   })
 
   if (error) {
-    // Generieke foutmelding voor security (geen hint of email bestaat)
-    return { error: 'Ongeldige inloggegevens' }
+    // Generic error message for security (no hint if email exists)
+    return { error: 'Invalid credentials' }
   }
 
   revalidatePath('/', 'layout')
@@ -41,11 +41,11 @@ export async function signup(formData: FormData): Promise<AuthResult> {
   const fullName = formData.get('fullName') as string
 
   if (!email || !password) {
-    return { error: 'Email en wachtwoord zijn verplicht' }
+    return { error: 'Email and password are required' }
   }
 
   if (password.length < 8) {
-    return { error: 'Wachtwoord moet minimaal 8 tekens zijn' }
+    return { error: 'Password must be at least 8 characters' }
   }
 
   const { error } = await supabase.auth.signUp({
@@ -61,9 +61,9 @@ export async function signup(formData: FormData): Promise<AuthResult> {
 
   if (error) {
     if (error.message.includes('already registered')) {
-      return { error: 'Dit emailadres is al geregistreerd' }
+      return { error: 'This email is already registered' }
     }
-    return { error: 'Er ging iets mis. Probeer het opnieuw.' }
+    return { error: 'Something went wrong. Please try again.' }
   }
 
   return { success: true }
@@ -75,7 +75,7 @@ export async function forgotPassword(formData: FormData): Promise<AuthResult> {
   const email = formData.get('email') as string
 
   if (!email) {
-    return { error: 'Email is verplicht' }
+    return { error: 'Email is required' }
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -83,10 +83,10 @@ export async function forgotPassword(formData: FormData): Promise<AuthResult> {
   })
 
   if (error) {
-    return { error: 'Er ging iets mis. Probeer het opnieuw.' }
+    return { error: 'Something went wrong. Please try again.' }
   }
 
-  // Altijd success tonen (security: geen hint of email bestaat)
+  // Always show success (security: no hint if email exists)
   return { success: true }
 }
 
@@ -96,11 +96,11 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
   const password = formData.get('password') as string
 
   if (!password) {
-    return { error: 'Wachtwoord is verplicht' }
+    return { error: 'Password is required' }
   }
 
   if (password.length < 8) {
-    return { error: 'Wachtwoord moet minimaal 8 tekens zijn' }
+    return { error: 'Password must be at least 8 characters' }
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -108,7 +108,7 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
   })
 
   if (error) {
-    return { error: 'Er ging iets mis. Probeer het opnieuw.' }
+    return { error: 'Something went wrong. Please try again.' }
   }
 
   revalidatePath('/', 'layout')

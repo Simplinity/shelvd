@@ -19,32 +19,32 @@ export default function AuthLayout({
         
         <div className="space-y-8">
           <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-bold leading-[1.1] tracking-tight">
-            Beheer je
+            Manage
             <br />
-            boeken
+            your book
             <br />
-            collectie.
+            collection.
           </h1>
           <p className="text-muted-foreground text-lg max-w-md leading-relaxed">
-            Professioneel collectiebeheer voor serieuze verzamelaars. 
-            Catalogiseer, organiseer en waardeer je boeken.
+            Professional collection management for serious collectors. 
+            Catalog, organize, and value your books.
           </p>
         </div>
         
         <div className="flex items-center gap-12">
           <div>
-            <p className="text-3xl font-bold tabular-nums">5.054</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Boeken</p>
+            <p className="text-3xl font-bold tabular-nums">5,054</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Books</p>
           </div>
           <div className="w-px h-12 bg-muted-foreground/20" />
           <div>
-            <p className="text-3xl font-bold tabular-nums">4.097</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Auteurs</p>
+            <p className="text-3xl font-bold tabular-nums">4,097</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Authors</p>
           </div>
           <div className="w-px h-12 bg-muted-foreground/20" />
           <div>
-            <p className="text-3xl font-bold tabular-nums">27.048</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Afbeeldingen</p>
+            <p className="text-3xl font-bold tabular-nums">27,048</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Images</p>
           </div>
         </div>
       </div>

@@ -18,10 +18,10 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Laden...
+          Loading...
         </>
       ) : (
-        'Verstuur reset link'
+        'Send Reset Link'
       )}
     </Button>
   )
@@ -48,17 +48,17 @@ export default function ForgotPasswordPage() {
           <Mail className="w-7 h-7 text-green-600" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Check je inbox</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Check your inbox</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Als er een account bestaat met dit emailadres, ontvang je een link 
-            om je wachtwoord te resetten.
+            If an account exists with this email address, you will receive a link 
+            to reset your password.
           </p>
         </div>
         <Link
           href="/login"
           className="inline-block text-sm font-semibold text-foreground hover:text-primary transition-colors"
         >
-          ← Terug naar inloggen
+          ← Back to sign in
         </Link>
       </div>
     )
@@ -67,9 +67,9 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Wachtwoord vergeten?</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Forgot password?</h2>
         <p className="text-muted-foreground text-sm">
-          Geen probleem. Vul je email in en we sturen je een reset link.
+          No problem. Enter your email and we'll send you a reset link.
         </p>
       </div>
 
@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
             id="email"
             name="email"
             type="email"
-            placeholder="je@email.com"
+            placeholder="you@example.com"
             autoComplete="email"
             required
             className="h-11"
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
           href="/login"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← Terug naar inloggen
+          ← Back to sign in
         </Link>
       </div>
     </div>
