@@ -33,16 +33,16 @@ export default async function BookEditPage({ params }: PageProps) {
   ])
 
   // Get unique bindings (there are duplicates in the table)
-  const uniqueBindings = bindings?.reduce((acc: any[], binding) => {
+  const uniqueBindings = (bindings as any[] || []).reduce((acc: any[], binding: any) => {
     if (!acc.find(b => b.name === binding.name)) {
       acc.push(binding)
     }
     return acc
-  }, []) || []
+  }, [])
 
   const referenceData = {
-    languages: languages || [],
-    conditions: conditions || [],
+    languages: (languages || []) as any[],
+    conditions: (conditions || []) as any[],
     bindings: uniqueBindings
   }
 

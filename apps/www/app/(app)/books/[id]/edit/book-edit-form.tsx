@@ -71,9 +71,9 @@ type BookData = {
 }
 
 type ReferenceData = {
-  languages: { id: string; name_en: string }[]
-  conditions: { id: number; name: string }[]
-  bindings: { id: string; name: string }[]
+  languages: any[]
+  conditions: any[]
+  bindings: any[]
 }
 
 type Props = {
