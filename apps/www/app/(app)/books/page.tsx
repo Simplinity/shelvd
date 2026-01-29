@@ -21,7 +21,7 @@ type BookListItem = {
   contributors: { name: string; role: string }[]
 }
 
-const ITEMS_PER_PAGE = 50
+const ITEMS_PER_PAGE = 250
 
 export default function BooksPage() {
   const [books, setBooks] = useState<BookListItem[]>([])
