@@ -12,6 +12,7 @@ type BookListItem = {
   subtitle: string | null
   publication_year: string | null
   publication_place: string | null
+  publisher: string | null
   status: string
   cover_type: string | null
   condition_id: number | null
@@ -43,7 +44,7 @@ export default function BooksPage() {
     const { data, error } = await supabase
       .from('books')
       .select(`
-        id, title, subtitle, publication_year, publication_place, 
+        id, title, subtitle, publication_year, publication_place, publisher_name,
         status, cover_type, condition_id, user_catalog_id,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -62,6 +63,7 @@ export default function BooksPage() {
         subtitle: book.subtitle,
         publication_year: book.publication_year,
         publication_place: book.publication_place,
+        publisher: book.publisher_name,
         status: book.status,
         cover_type: book.cover_type,
         condition_id: book.condition_id,
@@ -187,10 +189,11 @@ export default function BooksPage() {
         <div className="border border-border">
           {/* Header */}
           <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
-            <div className="col-span-5">Title</div>
-            <div className="col-span-3">Author</div>
-            <div className="col-span-1">Year</div>
+            <div className="col-span-4">Title</div>
+            <div className="col-span-2">Author</div>
+            <div className="col-span-2">Publisher</div>
             <div className="col-span-2">Place</div>
+            <div className="col-span-1">Year</div>
             <div className="col-span-1">Status</div>
           </div>
           {/* Rows */}
@@ -200,20 +203,20 @@ export default function BooksPage() {
               href={`/books/${book.id}`}
               className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm"
             >
-              <div className="col-span-5">
-                <span className="font-medium">{book.title}</span>
-                {book.subtitle && (
-                  <span className="text-muted-foreground ml-1">— {book.subtitle}</span>
-                )}
+              <div className="col-span-4">
+                <span className="font-medium line-clamp-2">{book.title}</span>
               </div>
-              <div className="col-span-3 text-muted-foreground truncate">
+              <div className="col-span-2 text-muted-foreground truncate">
                 {getAuthors(book.contributors) || '—'}
               </div>
-              <div className="col-span-1 text-muted-foreground">
-                {book.publication_year || '—'}
+              <div className="col-span-2 text-muted-foreground truncate">
+                {book.publisher || '—'}
               </div>
               <div className="col-span-2 text-muted-foreground truncate">
                 {book.publication_place || '—'}
+              </div>
+              <div className="col-span-1 text-muted-foreground">
+                {book.publication_year || '—'}
               </div>
               <div className="col-span-1">
                 <span className={`text-xs px-2 py-0.5 ${
