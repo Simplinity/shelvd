@@ -1,0 +1,23 @@
+-- Bindings seed data
+INSERT INTO bindings (name, alias, group_name, description) VALUES
+('Pamphlet stitch bound', NULL, 'Non-adhesive binding', 'The pamphlet stitch can be used to bind single signatures into pamphlet.'),
+('Stab-binding', 'Japanese binding', 'Non-adhesive binding', 'Stab bindings can be used to bind single sheets into a book. Used for centuries in Japan.'),
+('Long stitch bound', 'Medieval limp binding', 'Non-adhesive binding', 'Quick sewing method that binds signatures and cover together with single thread.'),
+('Coptic binding', NULL, 'Non-adhesive binding', 'Exposed spine sewing method with thread looping around previous signature.'),
+('Piano hinge binding', 'Skewer binding', 'Non-adhesive binding', 'Sculptural method using pins in alternating slots. Creates dovetail hinge.'),
+('Compound binding', NULL, 'Non-adhesive binding', 'Two or more binding types combined. Includes dos-a-dos and concertina.'),
+('Secret Belgian binding', NULL, 'Non-adhesive binding', 'Creates hardcover illusion with separate front, back, and spine boards.'),
+('Spiral binding', 'Wire binding', 'Non-adhesive binding', 'Holes punched near edge, held by wire or plastic coils.'),
+('Screw-post binding', NULL, 'Non-adhesive binding', 'Pages held between boards using screws.'),
+('Perfect binding', 'Paperback binding', 'Adhesive binding', 'Pages hot-glued at spine, cover folded around. Standard for paperbacks.'),
+('Bound on boards', NULL, 'Adhesive binding', 'Cardboard covers without cardboard spine. Needs endpapers.'),
+('Case binding', 'Case wrapped book', 'Adhesive binding', 'Book block and cover made separately then combined. Most common hardcover.'),
+('German binding', 'Bradel binding', 'Adhesive binding', 'Deep grooves at hinges. Sewn on cords with rounded spine.'),
+('French binding', NULL, 'Adhesive binding', 'Hinge visible on outside. Bound on ropes, leather or parchment cover.'),
+('English binding', 'Classic binding', 'Adhesive binding', 'Real ribs from thick sewing ropes visible on spine. Very sturdy.'),
+('Springback binding', 'Ledger binding', 'Adhesive binding', 'Spine springs up when opened. Lays perfectly flat.'),
+('Overcast block sewed', 'Whip stitch', 'Adhesive binding', 'Glued spine with drilled holes then whip-stitched.'),
+('Sewn binding', NULL, 'Adhesive binding', 'Signatures sewn through fold, glued at spine. Most durable method.'),
+('Saddle stitching', NULL, 'Mechanical binding', 'Folded pages stapled through spine fold. For booklets and magazines.'),
+('Staple bound', NULL, 'Mechanical binding', 'Stacked sheets stapled through edge. Quick but less durable.'),
+('Loose leaves', NULL, 'Unbound', 'Unbound sheets in portfolio, box, or folder.');
