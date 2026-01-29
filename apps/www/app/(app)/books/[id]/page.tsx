@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, BookOpen } from 'lucide-react'
+import { ArrowLeft, Edit, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type PageProps = {
@@ -26,6 +26,24 @@ export default async function BookDetailPage({ params }: PageProps) {
 
   // Cast to any to avoid TypeScript issues with dynamic data
   const bookRecord = book as any
+
+  // Fetch previous and next books (alphabetically by title)
+  const [{ data: prevBook }, { data: nextBook }] = await Promise.all([
+    supabase
+      .from('books')
+      .select('id, title')
+      .lt('title', bookRecord.title)
+      .order('title', { ascending: false })
+      .limit(1)
+      .single(),
+    supabase
+      .from('books')
+      .select('id, title')
+      .gt('title', bookRecord.title)
+      .order('title', { ascending: true })
+      .limit(1)
+      .single()
+  ])
 
   // Fetch contributors separately
   const { data: bookContributors } = await supabase
@@ -110,14 +128,51 @@ export default async function BookDetailPage({ params }: PageProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Back link */}
-      <Link 
-        href="/books" 
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to collection
-      </Link>
+      {/* Navigation bar */}
+      <div className="flex justify-between items-center mb-8">
+        <Link 
+          href="/books" 
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to collection
+        </Link>
+
+        {/* Prev/Next navigation */}
+        <div className="flex items-center gap-2">
+          {prevBook ? (
+            <Link 
+              href={`/books/${prevBook.id}`}
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border hover:bg-muted transition-colors"
+              title={prevBook.title}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Previous</span>
+            </Link>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border text-muted-foreground/50 cursor-not-allowed">
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Previous</span>
+            </span>
+          )}
+          
+          {nextBook ? (
+            <Link 
+              href={`/books/${nextBook.id}`}
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border hover:bg-muted transition-colors"
+              title={nextBook.title}
+            >
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border text-muted-foreground/50 cursor-not-allowed">
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="w-4 h-4" />
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
