@@ -220,15 +220,38 @@ export default function BooksPage() {
               </div>
               <div className="col-span-1">
                 <span className={`text-xs px-2 py-0.5 ${
-                  book.status === 'for_sale' ? 'bg-green-100 text-green-700' :
+                  // Sales flow
+                  book.status === 'on_sale' ? 'bg-green-100 text-green-700' :
+                  book.status === 'to_sell' ? 'bg-green-50 text-green-600' :
+                  book.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
                   book.status === 'sold' ? 'bg-gray-100 text-gray-500' :
+                  // Special possession
+                  book.status === 'lent' ? 'bg-blue-100 text-blue-700' :
+                  book.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
+                  book.status === 'double' ? 'bg-orange-100 text-orange-700' :
+                  // Acquisition
+                  book.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
+                  // No longer in possession
                   book.status === 'lost' ? 'bg-red-100 text-red-700' :
+                  book.status === 'donated' ? 'bg-pink-100 text-pink-700' :
+                  book.status === 'destroyed' ? 'bg-red-200 text-red-800' :
+                  book.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
                   'bg-muted text-muted-foreground'
                 }`}>
                   {book.status === 'in_collection' ? 'In Col.' : 
-                   book.status === 'for_sale' ? 'For Sale' :
+                   book.status === 'on_sale' ? 'On Sale' :
+                   book.status === 'to_sell' ? 'To Sell' :
+                   book.status === 'reserved' ? 'Reserved' :
                    book.status === 'sold' ? 'Sold' :
-                   book.status === 'lost' ? 'Lost' : book.status}
+                   book.status === 'lent' ? 'Lent' :
+                   book.status === 'borrowed' ? 'Borrowed' :
+                   book.status === 'double' ? 'Double' :
+                   book.status === 'ordered' ? 'Ordered' :
+                   book.status === 'lost' ? 'Lost' :
+                   book.status === 'donated' ? 'Donated' :
+                   book.status === 'destroyed' ? 'Destroyed' :
+                   book.status === 'unknown' ? 'Unknown' :
+                   book.status}
                 </span>
               </div>
             </Link>

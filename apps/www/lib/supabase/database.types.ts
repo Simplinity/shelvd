@@ -259,6 +259,7 @@ export type Database = {
           acquired_from: string | null
           acquired_notes: string | null
           acquired_price: number | null
+          action_needed: string | null
           bibliography: string | null
           binding_id: string | null
           bisac_code: string | null
@@ -349,6 +350,7 @@ export type Database = {
           acquired_from?: string | null
           acquired_notes?: string | null
           acquired_price?: number | null
+          action_needed?: string | null
           bibliography?: string | null
           binding_id?: string | null
           bisac_code?: string | null
@@ -439,6 +441,7 @@ export type Database = {
           acquired_from?: string | null
           acquired_notes?: string | null
           acquired_price?: number | null
+          action_needed?: string | null
           bibliography?: string | null
           binding_id?: string | null
           bisac_code?: string | null

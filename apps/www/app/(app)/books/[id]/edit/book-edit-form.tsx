@@ -52,6 +52,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           series: formData.series || null,
           series_number: formData.series_number || null,
           status: formData.status,
+          action_needed: (formData as any).action_needed || 'none',
           publisher_name: formData.publisher_name || null,
           publication_place: formData.publication_place || null,
           publication_year: formData.publication_year || null,
@@ -195,10 +196,33 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
   // Status options
   const statusOptions = [
+    // In possession - normal
     { value: 'in_collection', label: 'In Collection' },
-    { value: 'for_sale', label: 'For Sale' },
+    // In possession - special
+    { value: 'lent', label: 'Lent' },
+    { value: 'borrowed', label: 'Borrowed' },
+    { value: 'double', label: 'Double' },
+    // Sales flow
+    { value: 'to_sell', label: 'To Sell' },
+    { value: 'on_sale', label: 'On Sale' },
+    { value: 'reserved', label: 'Reserved' },
     { value: 'sold', label: 'Sold' },
+    // Acquisition
+    { value: 'ordered', label: 'Ordered' },
+    // No longer in possession
     { value: 'lost', label: 'Lost' },
+    { value: 'donated', label: 'Donated' },
+    { value: 'destroyed', label: 'Destroyed' },
+    // Other
+    { value: 'unknown', label: 'Unknown' },
+  ]
+
+  // Action needed options
+  const actionNeededOptions = [
+    { value: 'none', label: 'None' },
+    { value: 'repair', label: 'Repair' },
+    { value: 'bind', label: 'Bind' },
+    { value: 'replace', label: 'Replace' },
   ]
 
   return (
@@ -267,6 +291,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <TextInput label="Series" field="series" />
             <TextInput label="Series Number" field="series_number" />
             <Select label="Status" field="status" options={statusOptions} allowEmpty={false} />
+            <Select label="Action Needed" field="action_needed" options={actionNeededOptions} allowEmpty={false} />
           </div>
         </section>
 

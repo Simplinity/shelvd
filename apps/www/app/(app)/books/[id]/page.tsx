@@ -204,18 +204,49 @@ export default async function BookDetailPage({ params }: PageProps) {
       </div>
 
       {/* Status badge */}
-      <div className="mb-8">
+      <div className="mb-8 flex gap-2 flex-wrap">
         <span className={`inline-block text-sm px-3 py-1 ${
-          bookData.status === 'for_sale' ? 'bg-green-100 text-green-700' :
+          // Sales flow - green tones
+          bookData.status === 'on_sale' ? 'bg-green-100 text-green-700' :
+          bookData.status === 'to_sell' ? 'bg-green-50 text-green-600' :
+          bookData.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
           bookData.status === 'sold' ? 'bg-gray-100 text-gray-500' :
+          // Special possession
+          bookData.status === 'lent' ? 'bg-blue-100 text-blue-700' :
+          bookData.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
+          bookData.status === 'double' ? 'bg-orange-100 text-orange-700' :
+          // Acquisition
+          bookData.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
+          // No longer in possession
           bookData.status === 'lost' ? 'bg-red-100 text-red-700' :
+          bookData.status === 'donated' ? 'bg-pink-100 text-pink-700' :
+          bookData.status === 'destroyed' ? 'bg-red-200 text-red-800' :
+          bookData.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
+          // Default (in_collection)
           'bg-muted text-muted-foreground'
         }`}>
           {bookData.status === 'in_collection' ? 'In Collection' : 
-           bookData.status === 'for_sale' ? 'For Sale' :
+           bookData.status === 'on_sale' ? 'On Sale' :
+           bookData.status === 'to_sell' ? 'To Sell' :
+           bookData.status === 'reserved' ? 'Reserved' :
            bookData.status === 'sold' ? 'Sold' :
-           bookData.status === 'lost' ? 'Lost' : bookData.status}
+           bookData.status === 'lent' ? 'Lent' :
+           bookData.status === 'borrowed' ? 'Borrowed' :
+           bookData.status === 'double' ? 'Double' :
+           bookData.status === 'ordered' ? 'Ordered' :
+           bookData.status === 'lost' ? 'Lost' :
+           bookData.status === 'donated' ? 'Donated' :
+           bookData.status === 'destroyed' ? 'Destroyed' :
+           bookData.status === 'unknown' ? 'Unknown' :
+           bookData.status}
         </span>
+        
+        {/* Action needed badge */}
+        {bookData.action_needed && bookData.action_needed !== 'none' && (
+          <span className="inline-block text-sm px-3 py-1 bg-amber-100 text-amber-700">
+            Action: {bookData.action_needed.charAt(0).toUpperCase() + bookData.action_needed.slice(1)}
+          </span>
+        )}
       </div>
 
       {/* Main content grid */}
