@@ -187,8 +187,7 @@ export default function BooksPage() {
         <div className="border border-border">
           {/* Header */}
           <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
-            <div className="col-span-1">ID</div>
-            <div className="col-span-4">Title</div>
+            <div className="col-span-5">Title</div>
             <div className="col-span-3">Author</div>
             <div className="col-span-1">Year</div>
             <div className="col-span-2">Place</div>
@@ -201,10 +200,7 @@ export default function BooksPage() {
               href={`/books/${book.id}`}
               className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm"
             >
-              <div className="col-span-1 text-muted-foreground font-mono text-xs">
-                {book.user_catalog_id || '—'}
-              </div>
-              <div className="col-span-4">
+              <div className="col-span-5">
                 <span className="font-medium">{book.title}</span>
                 {book.subtitle && (
                   <span className="text-muted-foreground ml-1">— {book.subtitle}</span>
@@ -262,10 +258,9 @@ export default function BooksPage() {
                 <p className="text-xs text-muted-foreground line-clamp-1 mb-1">
                   {getAuthors(book.contributors) || 'Unknown author'}
                 </p>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{book.publication_year || '—'}</span>
-                  <span className="font-mono">{book.user_catalog_id || ''}</span>
-                </div>
+                <p className="text-xs text-muted-foreground">
+                  {book.publication_year || '—'}
+                </p>
               </div>
             </Link>
           ))}
