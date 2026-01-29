@@ -18,6 +18,11 @@ type ReferenceData = {
   conditions: Condition[]
   bindings: Binding[]
   seriesList: string[]
+  publisherList: string[]
+  acquiredFromList: string[]
+  storageLocationList: string[]
+  publicationPlaceList: string[]
+  printingPlaceList: string[]
 }
 
 type Props = {
@@ -325,11 +330,11 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Publication</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <TextInput label="Publisher" field="publisher_name" />
-            <TextInput label="Place Published" field="publication_place" />
+            <ComboInput label="Publisher" field="publisher_name" options={referenceData.publisherList} />
+            <ComboInput label="Place Published" field="publication_place" options={referenceData.publicationPlaceList} />
             <TextInput label="Year Published" field="publication_year" placeholder="e.g. 1969 or MCMLXIX [1969]" />
             <TextInput label="Printer" field="printer" />
-            <TextInput label="Place Printed" field="printing_place" />
+            <ComboInput label="Place Printed" field="printing_place" options={referenceData.printingPlaceList} />
           </div>
         </section>
 
@@ -413,7 +418,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <TextInput label="Location" field="storage_location" />
+            <ComboInput label="Location" field="storage_location" options={referenceData.storageLocationList} />
             <TextInput label="Shelf" field="shelf" />
             <TextInput label="Section" field="shelf_section" />
           </div>
@@ -424,7 +429,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="lg:col-span-2">
-              <TextInput label="Acquired From" field="acquired_from" />
+              <ComboInput label="Acquired From" field="acquired_from" options={referenceData.acquiredFromList} />
             </div>
             <TextInput label="Date" field="acquired_date" placeholder="YYYY-MM-DD" />
             <div className="flex gap-2">
