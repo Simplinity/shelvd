@@ -6,78 +6,21 @@ import Link from 'next/link'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
+import type { Tables } from '@/lib/supabase/database.types'
 
-type BookData = {
-  id: string
-  title: string
-  subtitle: string | null
-  original_title: string | null
-  language_id: string | null
-  original_language_id: string | null
-  series: string | null
-  series_number: string | null
-  status: string
-  publisher_name: string | null
-  publication_place: string | null
-  publication_year: string | null
-  printer: string | null
-  printing_place: string | null
-  edition: string | null
-  impression: string | null
-  issue_state: string | null
-  edition_notes: string | null
-  page_count: number | null
-  pagination_description: string | null
-  volumes: string | null
-  height_mm: number | null
-  width_mm: number | null
-  depth_mm: number | null
-  weight_grams: number | null
-  cover_type: string | null
-  binding_id: string | null
-  has_dust_jacket: boolean
-  is_signed: boolean
-  condition_id: number | null
-  condition_notes: string | null
-  isbn_13: string | null
-  isbn_10: string | null
-  oclc_number: string | null
-  lccn: string | null
-  user_catalog_id: string | null
-  ddc: string | null
-  lcc: string | null
-  udc: string | null
-  topic: string | null
-  storage_location: string | null
-  shelf: string | null
-  shelf_section: string | null
-  acquired_from: string | null
-  acquired_date: string | null
-  acquired_price: number | null
-  acquired_currency: string | null
-  acquired_notes: string | null
-  lowest_price: number | null
-  highest_price: number | null
-  estimated_value: number | null
-  sales_price: number | null
-  price_currency: string | null
-  illustrations_description: string | null
-  signatures_description: string | null
-  provenance: string | null
-  bibliography: string | null
-  summary: string | null
-  catalog_entry: string | null
-  internal_notes: string | null
-}
+type Book = Tables<'books'>
+type Language = { id: string; name_en: string }
+type Condition = { id: string; name: string }
+type Binding = { id: string; name: string }
 
 type ReferenceData = {
-  languages: any[]
-  conditions: any[]
-  bindings: any[]
+  languages: Language[]
+  conditions: Condition[]
+  bindings: Binding[]
 }
 
 type Props = {
-  book: BookData
+  book: Book
   referenceData: ReferenceData
 }
 
@@ -86,9 +29,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
   const supabase = createClient()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<BookData>(book)
+  const [formData, setFormData] = useState<Book>(book)
 
-  const handleChange = (field: keyof BookData, value: any) => {
+  const handleChange = (field: keyof Book, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -98,7 +41,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
     setError(null)
 
     try {
-      const { error: updateError } = await (supabase as any)
+      const { error: updateError } = await supabase
         .from('books')
         .update({
           title: formData.title,
@@ -167,14 +110,15 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
       router.push(`/books/${book.id}`)
       router.refresh()
-    } catch (err: any) {
-      setError(err.message || 'Failed to save')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to save'
+      setError(message)
       setSaving(false)
     }
   }
 
   // Input component for text fields
-  const TextInput = ({ label, field, placeholder = '' }: { label: string; field: keyof BookData; placeholder?: string }) => (
+  const TextInput = ({ label, field, placeholder = '' }: { label: string; field: keyof Book; placeholder?: string }) => (
     <div>
       <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</label>
       <input
@@ -188,12 +132,12 @@ export default function BookEditForm({ book, referenceData }: Props) {
   )
 
   // Input for numbers
-  const NumberInput = ({ label, field, placeholder = '' }: { label: string; field: keyof BookData; placeholder?: string }) => (
+  const NumberInput = ({ label, field, placeholder = '' }: { label: string; field: keyof Book; placeholder?: string }) => (
     <div>
       <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</label>
       <input
         type="number"
-        value={(formData[field] as number) || ''}
+        value={(formData[field] as number) ?? ''}
         onChange={e => handleChange(field, e.target.value ? parseFloat(e.target.value) : null)}
         placeholder={placeholder}
         className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
@@ -202,7 +146,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
   )
 
   // Textarea for longer text
-  const TextArea = ({ label, field, rows = 3 }: { label: string; field: keyof BookData; rows?: number }) => (
+  const TextArea = ({ label, field, rows = 3 }: { label: string; field: keyof Book; rows?: number }) => (
     <div>
       <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</label>
       <textarea
@@ -217,7 +161,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
   // Select for dropdowns
   const Select = ({ label, field, options, allowEmpty = true }: { 
     label: string; 
-    field: keyof BookData; 
+    field: keyof Book; 
     options: { value: string; label: string }[];
     allowEmpty?: boolean;
   }) => (
@@ -237,7 +181,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
   )
 
   // Checkbox
-  const Checkbox = ({ label, field }: { label: string; field: keyof BookData }) => (
+  const Checkbox = ({ label, field }: { label: string; field: keyof Book }) => (
     <label className="flex items-center gap-2 cursor-pointer">
       <input
         type="checkbox"
@@ -383,19 +327,11 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">Condition</label>
-              <select
-                value={formData.condition_id || ''}
-                onChange={e => handleChange('condition_id', e.target.value ? parseInt(e.target.value) : null)}
-                className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
-              >
-                <option value="">—</option>
-                {referenceData.conditions.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
+            <Select 
+              label="Condition" 
+              field="condition_id" 
+              options={referenceData.conditions.map(c => ({ value: c.id, label: c.name }))} 
+            />
             <div className="md:col-span-1">
               <TextArea label="Condition Notes" field="condition_notes" rows={2} />
             </div>

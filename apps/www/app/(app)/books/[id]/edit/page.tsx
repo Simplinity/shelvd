@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import BookEditForm from './book-edit-form'
+import type { Tables } from '@/lib/supabase/database.types'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -33,22 +34,24 @@ export default async function BookEditPage({ params }: PageProps) {
   ])
 
   // Get unique bindings (there are duplicates in the table)
-  const uniqueBindings = (bindings as any[] || []).reduce((acc: any[], binding: any) => {
-    if (!acc.find(b => b.name === binding.name)) {
-      acc.push(binding)
+  const seenNames = new Set<string>()
+  const uniqueBindings: { id: string; name: string }[] = []
+  for (const binding of bindings || []) {
+    if (!seenNames.has(binding.name)) {
+      seenNames.add(binding.name)
+      uniqueBindings.push(binding)
     }
-    return acc
-  }, [])
+  }
 
   const referenceData = {
-    languages: (languages || []) as any[],
-    conditions: (conditions || []) as any[],
+    languages: languages || [],
+    conditions: conditions || [],
     bindings: uniqueBindings
   }
 
   return (
     <BookEditForm 
-      book={book as any} 
+      book={book} 
       referenceData={referenceData} 
     />
   )
