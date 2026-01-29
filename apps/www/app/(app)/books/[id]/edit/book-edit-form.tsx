@@ -265,9 +265,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
       )}
 
       <div className="space-y-8">
-        {/* Main Information */}
+        {/* 1. Title & Series */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Main Information</h2>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Title & Series</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <TextInput label="Title" field="title" />
@@ -278,6 +278,15 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <div className="md:col-span-2">
               <TextInput label="Original Title" field="original_title" />
             </div>
+            <TextInput label="Series" field="series" />
+            <TextInput label="Series Number" field="series_number" />
+          </div>
+        </section>
+
+        {/* 2. Language */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Language</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select 
               label="Language" 
               field="language_id" 
@@ -288,14 +297,10 @@ export default function BookEditForm({ book, referenceData }: Props) {
               field="original_language_id" 
               options={referenceData.languages.map(l => ({ value: l.id, label: l.name_en }))} 
             />
-            <TextInput label="Series" field="series" />
-            <TextInput label="Series Number" field="series_number" />
-            <Select label="Status" field="status" options={statusOptions} allowEmpty={false} />
-            <Select label="Action Needed" field="action_needed" options={actionNeededOptions} allowEmpty={false} />
           </div>
         </section>
 
-        {/* Publication */}
+        {/* 3. Publication */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Publication</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -307,7 +312,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Edition */}
+        {/* 4. Edition */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Edition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -322,7 +327,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Physical Description */}
+        {/* 5. Physical Description */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -348,22 +353,24 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Condition */}
+        {/* 6. Condition & Status */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition</h2>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition & Status</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select 
               label="Condition" 
               field="condition_id" 
               options={referenceData.conditions.map(c => ({ value: c.id, label: c.name }))} 
             />
+            <Select label="Status" field="status" options={statusOptions} allowEmpty={false} />
             <div className="md:col-span-1">
               <TextArea label="Condition Notes" field="condition_notes" rows={2} />
             </div>
+            <Select label="Action Needed" field="action_needed" options={actionNeededOptions} allowEmpty={false} />
           </div>
         </section>
 
-        {/* Identifiers */}
+        {/* 7. Identifiers */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Identifiers</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -381,9 +388,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Storage */}
+        {/* 8. Storage */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage Location</h2>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <TextInput label="Location" field="storage_location" />
             <TextInput label="Shelf" field="shelf" />
@@ -391,7 +398,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Acquisition */}
+        {/* 9. Acquisition */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -413,7 +420,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Valuation */}
+        {/* 10. Valuation */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -425,9 +432,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Notes & Description */}
+        {/* 11. Notes */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes & Description</h2>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
           <div className="space-y-4">
             <TextArea label="Summary" field="summary" rows={3} />
             <TextArea label="Provenance" field="provenance" rows={2} />
@@ -438,7 +445,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* Catalog Entry */}
+        {/* 12. Catalog Entry */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
           <TextArea label="Full Catalog Entry" field="catalog_entry" rows={4} />

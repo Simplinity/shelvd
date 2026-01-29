@@ -126,6 +126,28 @@ export default async function BookDetailPage({ params }: PageProps) {
     return null
   }
 
+  // Status display helper
+  const getStatusDisplay = (status: string) => {
+    const statusMap: Record<string, { label: string; className: string }> = {
+      'in_collection': { label: 'In Collection', className: 'bg-muted text-muted-foreground' },
+      'on_sale': { label: 'On Sale', className: 'bg-green-100 text-green-700' },
+      'to_sell': { label: 'To Sell', className: 'bg-green-50 text-green-600' },
+      'reserved': { label: 'Reserved', className: 'bg-yellow-100 text-yellow-700' },
+      'sold': { label: 'Sold', className: 'bg-gray-100 text-gray-500' },
+      'lent': { label: 'Lent', className: 'bg-blue-100 text-blue-700' },
+      'borrowed': { label: 'Borrowed', className: 'bg-purple-100 text-purple-700' },
+      'double': { label: 'Double', className: 'bg-orange-100 text-orange-700' },
+      'ordered': { label: 'Ordered', className: 'bg-cyan-100 text-cyan-700' },
+      'lost': { label: 'Lost', className: 'bg-red-100 text-red-700' },
+      'donated': { label: 'Donated', className: 'bg-pink-100 text-pink-700' },
+      'destroyed': { label: 'Destroyed', className: 'bg-red-200 text-red-800' },
+      'unknown': { label: 'Unknown', className: 'bg-gray-200 text-gray-600' },
+    }
+    return statusMap[status] || { label: status, className: 'bg-muted text-muted-foreground' }
+  }
+
+  const statusDisplay = getStatusDisplay(bookData.status)
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Navigation bar */}
@@ -203,71 +225,47 @@ export default async function BookDetailPage({ params }: PageProps) {
         </Button>
       </div>
 
-      {/* Status badge */}
-      <div className="mb-8 flex gap-2 flex-wrap">
-        <span className={`inline-block text-sm px-3 py-1 ${
-          // Sales flow - green tones
-          bookData.status === 'on_sale' ? 'bg-green-100 text-green-700' :
-          bookData.status === 'to_sell' ? 'bg-green-50 text-green-600' :
-          bookData.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
-          bookData.status === 'sold' ? 'bg-gray-100 text-gray-500' :
-          // Special possession
-          bookData.status === 'lent' ? 'bg-blue-100 text-blue-700' :
-          bookData.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
-          bookData.status === 'double' ? 'bg-orange-100 text-orange-700' :
-          // Acquisition
-          bookData.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
-          // No longer in possession
-          bookData.status === 'lost' ? 'bg-red-100 text-red-700' :
-          bookData.status === 'donated' ? 'bg-pink-100 text-pink-700' :
-          bookData.status === 'destroyed' ? 'bg-red-200 text-red-800' :
-          bookData.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
-          // Default (in_collection)
-          'bg-muted text-muted-foreground'
-        }`}>
-          {bookData.status === 'in_collection' ? 'In Collection' : 
-           bookData.status === 'on_sale' ? 'On Sale' :
-           bookData.status === 'to_sell' ? 'To Sell' :
-           bookData.status === 'reserved' ? 'Reserved' :
-           bookData.status === 'sold' ? 'Sold' :
-           bookData.status === 'lent' ? 'Lent' :
-           bookData.status === 'borrowed' ? 'Borrowed' :
-           bookData.status === 'double' ? 'Double' :
-           bookData.status === 'ordered' ? 'Ordered' :
-           bookData.status === 'lost' ? 'Lost' :
-           bookData.status === 'donated' ? 'Donated' :
-           bookData.status === 'destroyed' ? 'Destroyed' :
-           bookData.status === 'unknown' ? 'Unknown' :
-           bookData.status}
-        </span>
-        
-        {/* Action needed badge */}
-        {bookData.action_needed && bookData.action_needed !== 'none' && (
-          <span className="inline-block text-sm px-3 py-1 bg-amber-100 text-amber-700">
-            Action: {bookData.action_needed.charAt(0).toUpperCase() + bookData.action_needed.slice(1)}
-          </span>
-        )}
-      </div>
-
       {/* Main content grid */}
       <div className="space-y-8">
         
-        {/* Publication */}
-        <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Publication</h2>
-          <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Field label="Publisher" value={bookData.publisher_name} />
-            <Field label="Place" value={bookData.publication_place} />
-            <Field label="Year" value={bookData.publication_year} />
-            <Field label="Language" value={bookData.language?.name_en} />
-            <Field label="Original Title" value={bookData.original_title} />
-            <Field label="Original Language" value={bookData.original_language?.name_en} />
-            <Field label="Series" value={bookData.series} />
-            <Field label="Series Number" value={bookData.series_number} />
-          </dl>
-        </section>
+        {/* 1. Title & Series - only show if series exists */}
+        {(bookData.original_title || bookData.series) && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Title & Series</h2>
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Field label="Original Title" value={bookData.original_title} className="col-span-2" />
+              <Field label="Series" value={bookData.series} />
+              <Field label="Series Number" value={bookData.series_number} />
+            </dl>
+          </section>
+        )}
 
-        {/* Edition */}
+        {/* 2. Language */}
+        {(bookData.language?.name_en || bookData.original_language?.name_en) && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Language</h2>
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Field label="Language" value={bookData.language?.name_en} />
+              <Field label="Original Language" value={bookData.original_language?.name_en} />
+            </dl>
+          </section>
+        )}
+
+        {/* 3. Publication */}
+        {(bookData.publisher_name || bookData.publication_place || bookData.publication_year || bookData.printer) && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Publication</h2>
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Field label="Publisher" value={bookData.publisher_name} />
+              <Field label="Place" value={bookData.publication_place} />
+              <Field label="Year" value={bookData.publication_year} />
+              <Field label="Printer" value={bookData.printer} />
+              <Field label="Place Printed" value={bookData.printing_place} />
+            </dl>
+          </section>
+        )}
+
+        {/* 4. Edition */}
         {(bookData.edition || bookData.impression || bookData.issue_state || bookData.edition_notes) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Edition</h2>
@@ -280,35 +278,45 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Physical Description */}
-        <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
-          <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Field label="Pages" value={bookData.page_count} />
-            <Field label="Volumes" value={bookData.volumes} />
-            <Field label="Dimensions" value={formatDimensions()} />
-            <Field label="Weight" value={formatWeight()} />
-            <Field label="Cover Type" value={bookData.cover_type} />
-            <Field label="Binding" value={bookData.binding?.name} />
-            <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
-            <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />
-            <Field label="Pagination" value={bookData.pagination_description || bookData.pagination} />
-          </dl>
-        </section>
-
-        {/* Condition */}
-        {(bookData.condition?.name || bookData.condition_notes) && (
+        {/* 5. Physical Description */}
+        {(bookData.page_count || bookData.volumes || formatDimensions() || formatWeight() || bookData.cover_type || bookData.binding?.name || bookData.has_dust_jacket || bookData.is_signed || bookData.pagination_description || bookData.pagination) && (
           <section>
-            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition</h2>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Condition" value={bookData.condition?.name} />
-              <Field label="Condition Notes" value={bookData.condition_notes} className="col-span-2 md:col-span-3" />
+              <Field label="Pages" value={bookData.page_count} />
+              <Field label="Volumes" value={bookData.volumes} />
+              <Field label="Dimensions" value={formatDimensions()} />
+              <Field label="Weight" value={formatWeight()} />
+              <Field label="Cover Type" value={bookData.cover_type} />
+              <Field label="Binding" value={bookData.binding?.name} />
+              <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
+              <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />
+              <Field label="Pagination" value={bookData.pagination_description || bookData.pagination} className="col-span-2" />
             </dl>
           </section>
         )}
 
-        {/* Identifiers */}
-        {(bookData.isbn_13 || bookData.isbn_10 || bookData.oclc_number || bookData.lccn || bookData.user_catalog_id) && (
+        {/* 6. Condition & Status */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition & Status</h2>
+          <div className="flex gap-2 flex-wrap mb-4">
+            <span className={`inline-block text-sm px-3 py-1 ${statusDisplay.className}`}>
+              {statusDisplay.label}
+            </span>
+            {bookData.action_needed && bookData.action_needed !== 'none' && (
+              <span className="inline-block text-sm px-3 py-1 bg-amber-100 text-amber-700">
+                Action: {bookData.action_needed.charAt(0).toUpperCase() + bookData.action_needed.slice(1)}
+              </span>
+            )}
+          </div>
+          <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Field label="Condition" value={bookData.condition?.name} />
+            <Field label="Condition Notes" value={bookData.condition_notes} className="col-span-2 md:col-span-3" />
+          </dl>
+        </section>
+
+        {/* 7. Identifiers */}
+        {(bookData.isbn_13 || bookData.isbn_10 || bookData.oclc_number || bookData.lccn || bookData.user_catalog_id || bookData.ddc || bookData.lcc || bookData.udc || bookData.topic) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Identifiers</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -317,14 +325,18 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="OCLC" value={bookData.oclc_number} />
               <Field label="LCCN" value={bookData.lccn} />
               <Field label="Catalog ID" value={bookData.user_catalog_id || bookData.collection_id} />
+              <Field label="DDC" value={bookData.ddc} />
+              <Field label="LCC" value={bookData.lcc} />
+              <Field label="UDC" value={bookData.udc} />
+              <Field label="Topic" value={bookData.topic} className="col-span-2" />
             </dl>
           </section>
         )}
 
-        {/* Storage */}
+        {/* 8. Storage */}
         {(bookData.storage_location || bookData.shelf || bookData.shelf_section) && (
           <section>
-            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage Location</h2>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Field label="Location" value={bookData.storage_location} />
               <Field label="Shelf" value={bookData.shelf} />
@@ -333,7 +345,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Acquisition */}
+        {/* 9. Acquisition */}
         {(bookData.acquired_from || bookData.purchase_source || bookData.acquired_date || bookData.acquired_price || bookData.purchase_price) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
@@ -346,7 +358,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Valuation */}
+        {/* 10. Valuation */}
         {(bookData.lowest_price || bookData.price_lowest || bookData.highest_price || bookData.price_highest || bookData.estimated_value || bookData.price_estimated || bookData.sales_price || bookData.price_sales) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
@@ -359,10 +371,10 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Notes & Description */}
+        {/* 11. Notes */}
         {(bookData.summary || bookData.provenance || bookData.bibliography || bookData.illustrations || bookData.illustrations_description || bookData.signature_details || bookData.signatures_description || bookData.private_notes || bookData.internal_notes) && (
           <section>
-            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes & Description</h2>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
             <dl className="space-y-4">
               <Field label="Summary" value={bookData.summary} />
               <Field label="Provenance" value={bookData.provenance} />
@@ -374,7 +386,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Catalog Entry */}
+        {/* 12. Catalog Entry */}
         {bookData.catalog_entry && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
