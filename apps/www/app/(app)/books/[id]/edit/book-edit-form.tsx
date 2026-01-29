@@ -160,7 +160,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           summary: formData.summary || null,
           catalog_entry: formData.catalog_entry || null,
           internal_notes: formData.internal_notes || null,
-        })
+        } as any)
         .eq('id', book.id)
 
       if (updateError) throw updateError
