@@ -209,6 +209,11 @@ shelvd/
   - Toont aantal resultaten per zoekopdracht
   - Delete individuele items of "Clear all"
   - Click-outside sluit dropdown
+- **Sortable Columns**:
+  - Klik op kolomheader om te sorteren (Title, Author, Publisher, Place, Year, Status)
+  - Klik opnieuw om richting te wisselen (A-Z ↔ Z-A)
+  - Iconen: ▲ (ascending), ▼ (descending), ↕ (niet actief)
+  - Client-side sorting via useMemo voor instant response
 - **List View** (default): Tabel met Title, Author, Publisher, Place, Year, Status
   - Title beperkt tot 2 regels
   - Status badges met kleuren (In Col./For Sale/Sold/Lost)
@@ -422,7 +427,7 @@ Historische bibliografische formaten:
 
 ### 🟡 Medium Priority
 - [ ] Book cover image upload
-- [ ] Sorting options (by title, author, year)
+- [x] ~~Sorting options (by title, author, year)~~ ✅ Geïmplementeerd (klikbare kolomheaders)
 - [ ] Export functionality
 
 ### 🟢 Low Priority
@@ -490,6 +495,12 @@ Historische bibliografische formaten:
   - Delete individueel of "Clear all"
 - **Modify Search Fix**: Behoudt nu bestaande zoekcriteria
 - **Debugging**: Console.log statements toegevoegd voor searchParams issues
+- **Bug Fix**: `notes` kolom bestaat niet - heette `internal_notes`, veroorzaakte silent query failure
+- **Sortable Columns**:
+  - Klikbare headers: Title, Author, Publisher, Place, Year, Status
+  - Toggle A-Z / Z-A bij herhaald klikken
+  - Visuele iconen (ChevronUp/Down/ArrowUpDown)
+  - Client-side useMemo voor instant sorting
 
 ---
-*Laatst bijgewerkt: 2025-01-30 18:30*
+*Laatst bijgewerkt: 2025-01-30 19:15*
