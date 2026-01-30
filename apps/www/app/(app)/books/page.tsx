@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -91,6 +91,10 @@ type BookListItem = {
 
 const ITEMS_PER_PAGE = 250
 
+// Sortable fields
+type SortField = 'title' | 'author' | 'publisher' | 'place' | 'year' | 'status'
+type SortDirection = 'asc' | 'desc'
+
 // Helper: Check if filter value is empty/not-empty syntax
 const isEmptySearch = (value: string) => value === '='
 const isNotEmptySearch = (value: string) => value === '!='
@@ -147,6 +151,10 @@ export default function BooksPage() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [view, setView] = useState<'list' | 'grid'>('list')
   const [page, setPage] = useState(0)
+  
+  // Sorting state
+  const [sortField, setSortField] = useState<SortField>('title')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   
   // Global search input state
   const [globalSearchInput, setGlobalSearchInput] = useState('')
@@ -274,6 +282,65 @@ export default function BooksPage() {
       router.push('/books')
     }
   }
+
+  // Handle column sort click
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
+    } else {
+      // New field, default to ascending
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  // Get first author name for sorting
+  const getFirstAuthorName = (contributors: { name: string; role: string }[]): string => {
+    const author = contributors.find(c => c.role === 'Author')
+    return author?.name || ''
+  }
+
+  // Sort books client-side
+  const sortBooks = (booksToSort: BookListItem[]): BookListItem[] => {
+    return [...booksToSort].sort((a, b) => {
+      let aVal: string | null = ''
+      let bVal: string | null = ''
+      
+      switch (sortField) {
+        case 'title':
+          aVal = a.title || ''
+          bVal = b.title || ''
+          break
+        case 'author':
+          aVal = getFirstAuthorName(a.contributors)
+          bVal = getFirstAuthorName(b.contributors)
+          break
+        case 'publisher':
+          aVal = a.publisher || ''
+          bVal = b.publisher || ''
+          break
+        case 'place':
+          aVal = a.publication_place || ''
+          bVal = b.publication_place || ''
+          break
+        case 'year':
+          aVal = a.publication_year || ''
+          bVal = b.publication_year || ''
+          break
+        case 'status':
+          aVal = a.status || ''
+          bVal = b.status || ''
+          break
+      }
+      
+      const comparison = aVal.localeCompare(bVal)
+      return sortDirection === 'asc' ? comparison : -comparison
+    })
+  }
+
+  // Memoized sorted books
+  const sortedBooks = useMemo(() => sortBooks(books), [books, sortField, sortDirection])
 
   // Helper: Get book IDs that match author search (server-side)
   const getBookIdsByAuthor = async (authorSearch: string, isExact: boolean): Promise<string[]> => {
@@ -1135,15 +1202,75 @@ export default function BooksPage() {
               </div>
             )}
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-4">Title</div>
-              <div className="col-span-2">Author</div>
-              <div className="col-span-2">Publisher</div>
-              <div className="col-span-2">Place</div>
-              <div className="col-span-1">Year</div>
-              <div className="col-span-1">Status</div>
+              <button 
+                onClick={() => handleSort('title')} 
+                className="col-span-4 flex items-center gap-1 hover:text-foreground transition-colors text-left"
+              >
+                Title
+                {sortField === 'title' ? (
+                  sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ArrowUpDown className="w-3 h-3 opacity-30" />
+                )}
+              </button>
+              <button 
+                onClick={() => handleSort('author')} 
+                className="col-span-2 flex items-center gap-1 hover:text-foreground transition-colors text-left"
+              >
+                Author
+                {sortField === 'author' ? (
+                  sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ArrowUpDown className="w-3 h-3 opacity-30" />
+                )}
+              </button>
+              <button 
+                onClick={() => handleSort('publisher')} 
+                className="col-span-2 flex items-center gap-1 hover:text-foreground transition-colors text-left"
+              >
+                Publisher
+                {sortField === 'publisher' ? (
+                  sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ArrowUpDown className="w-3 h-3 opacity-30" />
+                )}
+              </button>
+              <button 
+                onClick={() => handleSort('place')} 
+                className="col-span-2 flex items-center gap-1 hover:text-foreground transition-colors text-left"
+              >
+                Place
+                {sortField === 'place' ? (
+                  sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ArrowUpDown className="w-3 h-3 opacity-30" />
+                )}
+              </button>
+              <button 
+                onClick={() => handleSort('year')} 
+                className="col-span-1 flex items-center gap-1 hover:text-foreground transition-colors text-left"
+              >
+                Year
+                {sortField === 'year' ? (
+                  sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ArrowUpDown className="w-3 h-3 opacity-30" />
+                )}
+              </button>
+              <button 
+                onClick={() => handleSort('status')} 
+                className="col-span-1 flex items-center gap-1 hover:text-foreground transition-colors text-left"
+              >
+                Status
+                {sortField === 'status' ? (
+                  sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ArrowUpDown className="w-3 h-3 opacity-30" />
+                )}
+              </button>
             </div>
           </div>
-          {books.map((book) => (
+          {sortedBooks.map((book) => (
             <div
               key={book.id}
               className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm ${
@@ -1220,7 +1347,7 @@ export default function BooksPage() {
       {/* Grid View */}
       {!loading && books.length > 0 && view === 'grid' && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {books.map((book) => (
+          {sortedBooks.map((book) => (
             <div
               key={book.id}
               className={`group bg-card border border-border hover:border-foreground/20 transition-colors relative ${
