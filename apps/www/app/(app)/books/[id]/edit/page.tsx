@@ -37,7 +37,7 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
     supabase.from('bindings').select('id, name').order('name'),
-    supabase.from('bisac_codes').select('code, subject').order('subject'),
+    supabase.from('bisac_codes').select('code, subject').order('subject').limit(5000),
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
