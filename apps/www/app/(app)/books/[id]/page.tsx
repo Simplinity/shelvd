@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Edit, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import DeleteBookButton from '@/components/delete-book-button'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -298,12 +299,15 @@ export default async function BookDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        <Button variant="outline" asChild>
-          <Link href={`/books/${id}/edit`} className="gap-2">
-            <Edit className="w-4 h-4" />
-            Edit
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href={`/books/${id}/edit`} className="gap-2">
+              <Edit className="w-4 h-4" />
+              Edit
+            </Link>
+          </Button>
+          <DeleteBookButton bookId={id} bookTitle={bookData.title} />
+        </div>
       </div>
 
       {/* Main content grid */}
