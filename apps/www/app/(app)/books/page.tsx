@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2 } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -30,6 +30,13 @@ export default function BooksPage() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [view, setView] = useState<'list' | 'grid'>('list')
   const [page, setPage] = useState(0)
+  
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [confirmText, setConfirmText] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const supabase = createClient()
 
@@ -115,6 +122,85 @@ export default function BooksPage() {
     return `${authors[0].name} et al.`
   }
 
+  // Selection handlers
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === books.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(books.map(b => b.id)))
+    }
+  }
+
+  const clearSelection = () => {
+    setSelectedIds(new Set())
+  }
+
+  const isAllSelected = books.length > 0 && selectedIds.size === books.length
+  const isSomeSelected = selectedIds.size > 0 && selectedIds.size < books.length
+
+  // Bulk delete
+  const handleBulkDelete = async () => {
+    const expectedText = selectedIds.size === 1 ? 'delete' : `delete ${selectedIds.size} books`
+    if (confirmText.toLowerCase() !== expectedText.toLowerCase()) return
+
+    setDeleting(true)
+    setDeleteError(null)
+
+    try {
+      const idsToDelete = Array.from(selectedIds)
+
+      // First delete book_contributors for all selected books
+      const { error: contributorsError } = await supabase
+        .from('book_contributors')
+        .delete()
+        .in('book_id', idsToDelete)
+
+      if (contributorsError) {
+        throw new Error(`Failed to delete contributors: ${contributorsError.message}`)
+      }
+
+      // Then delete the books
+      const { error: booksError } = await supabase
+        .from('books')
+        .delete()
+        .in('id', idsToDelete)
+
+      if (booksError) {
+        throw new Error(`Failed to delete books: ${booksError.message}`)
+      }
+
+      // Update local state
+      setBooks(prev => prev.filter(b => !selectedIds.has(b.id)))
+      setTotalCount(prev => prev - selectedIds.size)
+      setSelectedIds(new Set())
+      setShowDeleteModal(false)
+      setConfirmText('')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete books'
+      setDeleteError(message)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const selectedCount = selectedIds.size
+  const confirmTextExpected = selectedCount === 1 ? 'delete' : `delete ${selectedCount} books`
+  const isConfirmValid = confirmText.toLowerCase() === confirmTextExpected.toLowerCase()
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -165,6 +251,32 @@ export default function BooksPage() {
         </div>
       </div>
 
+      {/* Selection action bar */}
+      {selectedCount > 0 && (
+        <div className="mb-4 p-3 bg-muted border border-border flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium">
+              {selectedCount} {selectedCount === 1 ? 'book' : 'books'} selected
+            </span>
+            <button
+              onClick={clearSelection}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Clear selection
+            </button>
+          </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setShowDeleteModal(true)}
+            className="gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
       {/* Empty state */}
       {books.length === 0 && !loading && (
         <div className="text-center py-24 border-2 border-dashed border-border">
@@ -188,73 +300,102 @@ export default function BooksPage() {
       {books.length > 0 && view === 'list' && (
         <div className="border border-border">
           {/* Header */}
-          <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
-            <div className="col-span-4">Title</div>
-            <div className="col-span-2">Author</div>
-            <div className="col-span-2">Publisher</div>
-            <div className="col-span-2">Place</div>
-            <div className="col-span-1">Year</div>
-            <div className="col-span-1">Status</div>
+          <div className="grid grid-cols-[auto_1fr] gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                ref={(el) => {
+                  if (el) el.indeterminate = isSomeSelected
+                }}
+                onChange={toggleSelectAll}
+                className="w-4 h-4 rounded border-border cursor-pointer"
+                title={isAllSelected ? 'Deselect all' : 'Select all'}
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-4">Title</div>
+              <div className="col-span-2">Author</div>
+              <div className="col-span-2">Publisher</div>
+              <div className="col-span-2">Place</div>
+              <div className="col-span-1">Year</div>
+              <div className="col-span-1">Status</div>
+            </div>
           </div>
           {/* Rows */}
           {books.map((book) => (
-            <Link
+            <div
               key={book.id}
-              href={`/books/${book.id}`}
-              className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm"
+              className={`grid grid-cols-[auto_1fr] gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm ${
+                selectedIds.has(book.id) ? 'bg-muted/50' : ''
+              }`}
             >
-              <div className="col-span-4 text-muted-foreground line-clamp-2">
-                {book.title}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(book.id)}
+                  onChange={() => {}}
+                  onClick={(e) => toggleSelect(book.id, e)}
+                  className="w-4 h-4 rounded border-border cursor-pointer"
+                />
               </div>
-              <div className="col-span-2 text-muted-foreground truncate">
-                {getAuthors(book.contributors) || '—'}
-              </div>
-              <div className="col-span-2 text-muted-foreground truncate">
-                {book.publisher || '—'}
-              </div>
-              <div className="col-span-2 text-muted-foreground truncate">
-                {book.publication_place || '—'}
-              </div>
-              <div className="col-span-1 text-muted-foreground">
-                {book.publication_year || '—'}
-              </div>
-              <div className="col-span-1">
-                <span className={`text-xs px-2 py-0.5 ${
-                  // Sales flow
-                  book.status === 'on_sale' ? 'bg-green-100 text-green-700' :
-                  book.status === 'to_sell' ? 'bg-green-50 text-green-600' :
-                  book.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
-                  book.status === 'sold' ? 'bg-gray-100 text-gray-500' :
-                  // Special possession
-                  book.status === 'lent' ? 'bg-blue-100 text-blue-700' :
-                  book.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
-                  book.status === 'double' ? 'bg-orange-100 text-orange-700' :
-                  // Acquisition
-                  book.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
-                  // No longer in possession
-                  book.status === 'lost' ? 'bg-red-100 text-red-700' :
-                  book.status === 'donated' ? 'bg-pink-100 text-pink-700' :
-                  book.status === 'destroyed' ? 'bg-red-200 text-red-800' :
-                  book.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
-                  'bg-muted text-muted-foreground'
-                }`}>
-                  {book.status === 'in_collection' ? 'In Col.' : 
-                   book.status === 'on_sale' ? 'On Sale' :
-                   book.status === 'to_sell' ? 'To Sell' :
-                   book.status === 'reserved' ? 'Reserved' :
-                   book.status === 'sold' ? 'Sold' :
-                   book.status === 'lent' ? 'Lent' :
-                   book.status === 'borrowed' ? 'Borrowed' :
-                   book.status === 'double' ? 'Double' :
-                   book.status === 'ordered' ? 'Ordered' :
-                   book.status === 'lost' ? 'Lost' :
-                   book.status === 'donated' ? 'Donated' :
-                   book.status === 'destroyed' ? 'Destroyed' :
-                   book.status === 'unknown' ? 'Unknown' :
-                   book.status}
-                </span>
-              </div>
-            </Link>
+              <Link
+                href={`/books/${book.id}`}
+                className="grid grid-cols-12 gap-4"
+              >
+                <div className="col-span-4 text-muted-foreground line-clamp-2">
+                  {book.title}
+                </div>
+                <div className="col-span-2 text-muted-foreground truncate">
+                  {getAuthors(book.contributors) || '—'}
+                </div>
+                <div className="col-span-2 text-muted-foreground truncate">
+                  {book.publisher || '—'}
+                </div>
+                <div className="col-span-2 text-muted-foreground truncate">
+                  {book.publication_place || '—'}
+                </div>
+                <div className="col-span-1 text-muted-foreground">
+                  {book.publication_year || '—'}
+                </div>
+                <div className="col-span-1">
+                  <span className={`text-xs px-2 py-0.5 ${
+                    // Sales flow
+                    book.status === 'on_sale' ? 'bg-green-100 text-green-700' :
+                    book.status === 'to_sell' ? 'bg-green-50 text-green-600' :
+                    book.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
+                    book.status === 'sold' ? 'bg-gray-100 text-gray-500' :
+                    // Special possession
+                    book.status === 'lent' ? 'bg-blue-100 text-blue-700' :
+                    book.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
+                    book.status === 'double' ? 'bg-orange-100 text-orange-700' :
+                    // Acquisition
+                    book.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
+                    // No longer in possession
+                    book.status === 'lost' ? 'bg-red-100 text-red-700' :
+                    book.status === 'donated' ? 'bg-pink-100 text-pink-700' :
+                    book.status === 'destroyed' ? 'bg-red-200 text-red-800' :
+                    book.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
+                    'bg-muted text-muted-foreground'
+                  }`}>
+                    {book.status === 'in_collection' ? 'In Col.' : 
+                     book.status === 'on_sale' ? 'On Sale' :
+                     book.status === 'to_sell' ? 'To Sell' :
+                     book.status === 'reserved' ? 'Reserved' :
+                     book.status === 'sold' ? 'Sold' :
+                     book.status === 'lent' ? 'Lent' :
+                     book.status === 'borrowed' ? 'Borrowed' :
+                     book.status === 'double' ? 'Double' :
+                     book.status === 'ordered' ? 'Ordered' :
+                     book.status === 'lost' ? 'Lost' :
+                     book.status === 'donated' ? 'Donated' :
+                     book.status === 'destroyed' ? 'Destroyed' :
+                     book.status === 'unknown' ? 'Unknown' :
+                     book.status}
+                  </span>
+                </div>
+              </Link>
+            </div>
           ))}
         </div>
       )}
@@ -263,32 +404,46 @@ export default function BooksPage() {
       {books.length > 0 && view === 'grid' && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {books.map((book) => (
-            <Link
+            <div
               key={book.id}
-              href={`/books/${book.id}`}
-              className="group bg-card border border-border hover:border-foreground/20 transition-colors"
+              className={`group bg-card border border-border hover:border-foreground/20 transition-colors relative ${
+                selectedIds.has(book.id) ? 'ring-2 ring-primary' : ''
+              }`}
             >
-              {/* Book cover placeholder - smaller */}
-              <div className="aspect-[3/4] bg-muted flex items-center justify-center p-4">
-                <div className="text-center">
-                  <BookOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                  <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wide">No cover</p>
-                </div>
+              {/* Checkbox overlay */}
+              <div className="absolute top-2 left-2 z-10">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(book.id)}
+                  onChange={() => {}}
+                  onClick={(e) => toggleSelect(book.id, e)}
+                  className="w-4 h-4 rounded border-border cursor-pointer bg-background"
+                />
               </div>
               
-              {/* Book info */}
-              <div className="p-3">
-                <h3 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                  {book.title}
-                </h3>
-                <p className="text-xs text-muted-foreground line-clamp-1 mb-1">
-                  {getAuthors(book.contributors) || 'Unknown author'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {book.publication_year || '—'}
-                </p>
-              </div>
-            </Link>
+              <Link href={`/books/${book.id}`}>
+                {/* Book cover placeholder - smaller */}
+                <div className="aspect-[3/4] bg-muted flex items-center justify-center p-4">
+                  <div className="text-center">
+                    <BookOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                    <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wide">No cover</p>
+                  </div>
+                </div>
+                
+                {/* Book info */}
+                <div className="p-3">
+                  <h3 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    {book.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground line-clamp-1 mb-1">
+                    {getAuthors(book.contributors) || 'Unknown author'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {book.publication_year || '—'}
+                  </p>
+                </div>
+              </Link>
+            </div>
           ))}
         </div>
       )}
@@ -311,6 +466,119 @@ export default function BooksPage() {
               `Load more (${books.length} of ${totalCount.toLocaleString()})`
             )}
           </Button>
+        </div>
+      )}
+
+      {/* Bulk Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => !deleting && setShowDeleteModal(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-background border border-border shadow-lg p-6 w-full max-w-md mx-4">
+            <button
+              onClick={() => !deleting && setShowDeleteModal(false)}
+              disabled={deleting}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-100 rounded-full">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold">Delete {selectedCount} {selectedCount === 1 ? 'Book' : 'Books'}</h3>
+            </div>
+
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800">
+              <p className="text-sm font-semibold mb-1">
+                ⚠️ You are about to permanently delete {selectedCount} {selectedCount === 1 ? 'book' : 'books'}!
+              </p>
+              <p className="text-sm">
+                This action <strong>cannot be undone</strong>. All data associated with {selectedCount === 1 ? 'this book' : 'these books'} will be permanently removed.
+              </p>
+            </div>
+
+            {/* Show list of books to delete (max 5) */}
+            <div className="mb-4 text-sm">
+              <p className="text-muted-foreground mb-2">Books to delete:</p>
+              <ul className="space-y-1 max-h-32 overflow-y-auto">
+                {books
+                  .filter(b => selectedIds.has(b.id))
+                  .slice(0, 5)
+                  .map(book => (
+                    <li key={book.id} className="truncate text-muted-foreground">
+                      • {book.title}
+                    </li>
+                  ))
+                }
+                {selectedCount > 5 && (
+                  <li className="text-muted-foreground italic">
+                    ... and {selectedCount - 5} more
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            <p className="text-sm mb-2">
+              Type <strong className="font-mono bg-muted px-1">{confirmTextExpected}</strong> to confirm:
+            </p>
+
+            <input
+              type="text"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder={`Type '${confirmTextExpected}' to confirm`}
+              disabled={deleting}
+              className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 mb-4 disabled:opacity-50"
+              autoFocus
+            />
+
+            {deleteError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setConfirmText('')
+                  setDeleteError(null)
+                }}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleBulkDelete}
+                disabled={!isConfirmValid || deleting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete {selectedCount} {selectedCount === 1 ? 'Book' : 'Books'}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
