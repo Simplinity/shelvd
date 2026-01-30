@@ -35,16 +35,23 @@ Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te behere
 | dewey_classifications | 1,177 | Dewey Decimal classificaties |
 | bisac_codes | 3,887 | Book Industry Standards categorieën |
 
-### User Data Tables
+### Shared Tables (Gedeeld tussen users)
+| Tabel | Records | Beschrijving |
+|-------|---------|--------------|
+| contributors | 4,097 | Auteurs, illustratoren, etc. (gedeeld, unieke namen) |
+
+**Contributors RLS Policy:**
+- Lezen: Iedereen kan alle contributors zien
+- Aanmaken: Ingelogde user, met `created_by_user_id`
+- Bewerken/Verwijderen: Alleen de creator
+
+### User Data Tables (Per user via RLS)
 | Tabel | Records | Beschrijving |
 |-------|---------|--------------|
 | profiles | 1 | User profielen (gekoppeld aan Supabase Auth) |
 | books | 5,054 | Boeken in collectie |
-| contributors | 4,097 | Auteurs, illustratoren, etc. (unieke namen) |
 | book_contributors | 5,152 | Many-to-many relatie boeken ↔ contributors |
 | book_images | 0 | Afbeeldingen per boek (nog niet geïmplementeerd) |
-| publishers | 0 | Publishers (publisher_name direct in books tabel) |
-| user_locations | 0 | Locaties (storage_location direct in books tabel) |
 
 ### Books Table - Belangrijke Velden
 ```
@@ -144,6 +151,7 @@ updated_at          TIMESTAMPTZ
 
 ### RLS (Row Level Security)
 - Reference tables: Publiek leesbaar voor iedereen
+- Contributors: Lezen=iedereen, Bewerken=alleen creator
 - User data tables: Alleen eigen data (via `auth.uid()`)
 
 ## Bestandsstructuur
@@ -155,9 +163,9 @@ shelvd/
 │       ├── app/
 │       │   ├── (app)/                  # Authenticated routes
 │       │   │   ├── books/
-│       │   │   │   ├── page.tsx        # Books list (list/grid views)
+│       │   │   │   ├── page.tsx        # Books list (list/grid views, bulk delete)
 │       │   │   │   └── [id]/
-│       │   │   │       ├── page.tsx    # Book detail
+│       │   │   │       ├── page.tsx    # Book detail (met delete button)
 │       │   │   │       ├── not-found.tsx
 │       │   │   │       └── edit/
 │       │   │   │           ├── page.tsx
@@ -168,7 +176,8 @@ shelvd/
 │       ├── components/
 │       │   ├── ui/                     # shadcn/ui components
 │       │   ├── bisac-combobox.tsx      # BISAC code search/select
-│       │   └── catalog-entry-generator.tsx # ISBD catalog entry generator
+│       │   ├── catalog-entry-generator.tsx # ISBD catalog entry generator
+│       │   └── delete-book-button.tsx  # Single book delete with confirmation
 │       └── lib/
 │           └── supabase/
 │               ├── client.ts
@@ -193,7 +202,11 @@ shelvd/
   - 250 items per page, "Load more" knop
 - **Grid View**: Cards met placeholder cover, Title, Author, Year
   - 2-5 kolommen responsive
-- View toggle (list/grid icons)
+- **View toggle** (list/grid icons)
+- **Select mode**: Toggle button activeert checkbox selectie
+  - Checkboxes in list view (met select all) en grid view
+  - Selection bar met count en "Delete Selected" button
+  - Bulk delete met type-to-confirm modal ("delete N books")
 - Totaal count weergave
 
 ### /books/[id] - Book Detail
@@ -201,10 +214,15 @@ shelvd/
 - Secties: Publication, Edition, Physical, Condition, Identifiers, Storage, Acquisition, Valuation, Notes, Catalog Entry
 - Contributors gegroepeerd per rol
 - Status badge
-- Edit knop → /books/[id]/edit
+- **Edit knop** → /books/[id]/edit
+- **Delete knop** → modal met type-to-confirm ("delete")
 
 ### /books/[id]/edit - Book Edit
 - ALLE velden zichtbaar (ook lege)
+- **Contributors sectie**:
+  - Lijst van huidige contributors met remove (X) button
+  - Toevoegen: naam autocomplete (4,097 contributors) + role dropdown (69 rollen)
+  - Nieuwe contributor wordt automatisch aangemaakt indien niet bestaat
 - **Dropdowns** voor:
   - Language, Original Language (85 languages)
   - Binding (65 types)
@@ -221,6 +239,20 @@ shelvd/
 - **Number inputs** voor dimensions, prices
 - **Catalog Entry Generator** button → generates ISBD-compliant entry
 - Save/Cancel knoppen
+
+### Delete Functionaliteit
+- **Single delete** (detail page):
+  - Delete button naast Edit
+  - Modal: type "delete" om te bevestigen
+  - Toont boektitel in bevestigingsdialoog
+- **Bulk delete** (list page):
+  - "Select" toggle activeert selectie modus
+  - Checkboxes verschijnen in list/grid view
+  - "Delete Selected" button (disabled als niets geselecteerd)
+  - Modal: type "delete N books" om te bevestigen
+  - Toont lijst van boeken (max 5 getoond)
+- **Hard delete**: Verwijdert eerst book_contributors (FK), dan book
+- **Geen soft delete**: Actie is permanent, niet herstelbaar
 
 ### Catalog Entry Generator
 - **ISBD-compliant** (International Standard Bibliographic Description)
@@ -342,20 +374,29 @@ Historische bibliografische formaten:
 - **Square** (3): Large, Medium, Small
 - **Other**: Accordion, Broadside, Broadsheet, Scroll
 
+### Contributors (Gedeeld)
+- Contributors tabel is **gedeeld** tussen alle users
+- Voordelen: Geen duplicaten, verrijking mogelijk (VIAF, Wikidata)
+- Privacy: Andere users zien niet welke boeken jij hebt
+- Alleen de namen van contributors zijn zichtbaar voor iedereen
+
 ## TODO / Volgende Stappen
 
-### High Priority
+### 🔴 High Priority
+- [ ] **Admin interface voor contributors** - Nodig voor multi-user:
+  - Admin role (`is_admin` op profiles of aparte `user_roles` tabel)
+  - Admin UI om contributors te mergen, verrijken, corrigeren, verwijderen
+  - RLS uitbreiden zodat admins alle contributors kunnen bewerken
+  - Verificatie workflow (`is_verified` flag)
 - [ ] Add book page (/books/add)
-- [ ] Contributors editing (add/remove from book)
 - [ ] Search/filter op books list
 
-### Medium Priority
+### 🟡 Medium Priority
 - [ ] Book cover image upload
 - [ ] Sorting options (by title, author, year)
-- [ ] Bulk actions
 - [ ] Export functionality
 
-### Low Priority
+### 🟢 Low Priority
 - [ ] Auto-generate catalog IDs
 - [ ] "Show catalog ID in list" toggle setting
 - [ ] ISBN lookup/autofill
@@ -383,7 +424,7 @@ Historische bibliografische formaten:
 - Book detail page
 - Book edit page (alle velden)
 
-### 2025-01-30 - Edit Form Enhancements
+### 2025-01-30 (ochtend) - Edit Form Enhancements
 - Cover types dropdown (45+ options, gestructureerd per categorie)
 - Protective enclosure dropdown (6 options)
 - Pagination text field (bibliografische notatie)
@@ -393,5 +434,16 @@ Historische bibliografische formaten:
 - Book Format dropdown (76 formats: Folio, Quarto, Octavo, etc.)
 - **Catalog Entry Generator** met ISBD-standaard en 4 talen (EN/FR/DE/NL)
 
+### 2025-01-30 (middag) - Delete & Contributors
+- **Single delete**: Delete button op detail page met type-to-confirm modal
+- **Bulk delete**: Select mode toggle, checkboxes in list/grid view
+  - Selection bar met count
+  - Bulk delete modal met "delete N books" confirmatie
+- **Contributors editing** in book edit form:
+  - Toon huidige contributors met remove button
+  - Toevoegen: naam autocomplete + role dropdown
+  - Nieuwe contributors worden aangemaakt met `created_by_user_id`
+  - Catalog entry generator gebruikt bijgewerkte contributors
+
 ---
-*Laatst bijgewerkt: 2025-01-30 03:30*
+*Laatst bijgewerkt: 2025-01-30 13:30*
