@@ -533,7 +533,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
             BISAC (Book Industry Standards and Communications) codes categorize books by subject. 
             Select up to 3 codes, with the primary code first. Type to search by code or subject.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-4">
             <BisacCombobox
               label="Primary BISAC"
               value={(formData as any).bisac_code || null}
