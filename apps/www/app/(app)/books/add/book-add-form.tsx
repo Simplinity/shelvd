@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X } from 'lucide-react'
@@ -242,14 +242,28 @@ export default function BookAddForm({ referenceData }: Props) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<FormData>(initialFormData)
+  const [isDirty, setIsDirty] = useState(false)
   
   // Contributors state
   const [contributors, setContributors] = useState<LocalContributor[]>([])
   const [newContributorName, setNewContributorName] = useState('')
   const [newContributorRoleId, setNewContributorRoleId] = useState('')
 
+  // Warn about unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+    setIsDirty(true)
   }
 
   // Add a new contributor
@@ -268,11 +282,22 @@ export default function BookAddForm({ referenceData }: Props) {
     
     setNewContributorName('')
     setNewContributorRoleId('')
+    setIsDirty(true)
   }
 
   // Remove a contributor
   const handleRemoveContributor = (tempId: string) => {
     setContributors(prev => prev.filter(c => c.tempId !== tempId))
+    setIsDirty(true)
+  }
+
+  // Handle cancel with unsaved changes warning
+  const handleCancel = (e: React.MouseEvent) => {
+    if (isDirty) {
+      if (!window.confirm('You have unsaved changes. Are you sure you want to leave?')) {
+        e.preventDefault()
+      }
+    }
   }
 
   // Contributors for catalog entry
@@ -421,14 +446,14 @@ export default function BookAddForm({ referenceData }: Props) {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-4">
-          <Link href="/books" className="p-2 hover:bg-muted transition-colors">
+          <Link href="/books" onClick={handleCancel} className="p-2 hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-2xl font-bold">Add Book</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button type="button" variant="outline" asChild>
-            <Link href="/books">Cancel</Link>
+            <Link href="/books" onClick={handleCancel}>Cancel</Link>
           </Button>
           <Button type="submit" disabled={saving}>
             {saving ? (
@@ -907,7 +932,7 @@ export default function BookAddForm({ referenceData }: Props) {
         {/* Submit buttons at bottom */}
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button type="button" variant="outline" asChild>
-            <Link href="/books">Cancel</Link>
+            <Link href="/books" onClick={handleCancel}>Cancel</Link>
           </Button>
           <Button type="submit" disabled={saving}>
             {saving ? (
