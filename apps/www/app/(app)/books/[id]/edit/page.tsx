@@ -56,6 +56,8 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: publisherData },
     { data: acquiredFromData },
     { data: storageLocationData },
+    { data: shelfData },
+    { data: shelfSectionData },
     { data: publicationPlaceData },
     { data: printingPlaceData }
   ] = await Promise.all([
@@ -68,6 +70,8 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
     supabase.from('books').select('acquired_from').not('acquired_from', 'is', null).order('acquired_from'),
     supabase.from('books').select('storage_location').not('storage_location', 'is', null).order('storage_location'),
+    supabase.from('books').select('shelf').not('shelf', 'is', null).order('shelf'),
+    supabase.from('books').select('shelf_section').not('shelf_section', 'is', null).order('shelf_section'),
     supabase.from('books').select('publication_place').not('publication_place', 'is', null).order('publication_place'),
     supabase.from('books').select('printing_place').not('printing_place', 'is', null).order('printing_place')
   ])
@@ -96,6 +100,8 @@ export default async function BookEditPage({ params }: PageProps) {
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
     acquiredFromList: getUniqueValues(acquiredFromData, 'acquired_from'),
     storageLocationList: getUniqueValues(storageLocationData, 'storage_location'),
+    shelfList: getUniqueValues(shelfData, 'shelf'),
+    shelfSectionList: getUniqueValues(shelfSectionData, 'shelf_section'),
     publicationPlaceList: getUniqueValues(publicationPlaceData, 'publication_place'),
     printingPlaceList: getUniqueValues(printingPlaceData, 'printing_place')
   }

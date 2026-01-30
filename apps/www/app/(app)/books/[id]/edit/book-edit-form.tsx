@@ -24,6 +24,8 @@ type ReferenceData = {
   publisherList: string[]
   acquiredFromList: string[]
   storageLocationList: string[]
+  shelfList: string[]
+  shelfSectionList: string[]
   publicationPlaceList: string[]
   printingPlaceList: string[]
 }
@@ -179,18 +181,42 @@ export default function BookEditForm({ book, referenceData }: Props) {
     </div>
   )
 
-  // Textarea for longer text
-  const TextArea = ({ label, field, rows = 3 }: { label: string; field: keyof Book; rows?: number }) => (
-    <div>
-      <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</label>
-      <textarea
-        value={(formData[field] as string) || ''}
-        onChange={e => handleChange(field, e.target.value)}
-        rows={rows}
-        className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y"
-      />
-    </div>
-  )
+  // Textarea for longer text with auto-resize
+  const TextArea = ({ label, field, rows = 3 }: { label: string; field: keyof Book; rows?: number }) => {
+    const value = (formData[field] as string) || ''
+    
+    // Calculate minimum height based on rows (approximately 24px per row + padding)
+    const minHeight = rows * 24 + 16
+    
+    const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      handleChange(field, e.target.value)
+      // Resize immediately on change
+      const textarea = e.target
+      textarea.style.height = 'auto'
+      textarea.style.height = `${Math.max(textarea.scrollHeight, minHeight)}px`
+    }
+    
+    const handleTextareaMount = (textarea: HTMLTextAreaElement | null) => {
+      if (textarea) {
+        textarea.style.height = 'auto'
+        const newHeight = Math.max(textarea.scrollHeight, minHeight)
+        textarea.style.height = `${newHeight}px`
+      }
+    }
+    
+    return (
+      <div>
+        <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</label>
+        <textarea
+          ref={handleTextareaMount}
+          value={value}
+          onChange={handleTextareaChange}
+          style={{ minHeight: `${minHeight}px` }}
+          className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y overflow-hidden"
+        />
+      </div>
+    )
+  }
 
   // Select for dropdowns
   const Select = ({ label, field, options, allowEmpty = true }: { 
@@ -563,8 +589,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <ComboInput label="Location" field="storage_location" options={referenceData.storageLocationList} />
-            <TextInput label="Shelf" field="shelf" />
-            <TextInput label="Section" field="shelf_section" />
+            <ComboInput label="Shelf" field="shelf" options={referenceData.shelfList} />
+            <ComboInput label="Section" field="shelf_section" options={referenceData.shelfSectionList} />
           </div>
         </section>
 
