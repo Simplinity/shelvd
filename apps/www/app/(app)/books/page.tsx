@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -32,6 +32,7 @@ export default function BooksPage() {
   const [page, setPage] = useState(0)
   
   // Selection state
+  const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [confirmText, setConfirmText] = useState('')
@@ -149,6 +150,11 @@ export default function BooksPage() {
     setSelectedIds(new Set())
   }
 
+  const exitSelectionMode = () => {
+    setSelectionMode(false)
+    setSelectedIds(new Set())
+  }
+
   const isAllSelected = books.length > 0 && selectedIds.size === books.length
   const isSomeSelected = selectedIds.size > 0 && selectedIds.size < books.length
 
@@ -187,6 +193,7 @@ export default function BooksPage() {
       setBooks(prev => prev.filter(b => !selectedIds.has(b.id)))
       setTotalCount(prev => prev - selectedIds.size)
       setSelectedIds(new Set())
+      setSelectionMode(false)
       setShowDeleteModal(false)
       setConfirmText('')
     } catch (err) {
@@ -242,6 +249,16 @@ export default function BooksPage() {
               <LayoutGrid className="w-4 h-4" />
             </button>
           </div>
+          {/* Select mode toggle */}
+          <Button
+            variant={selectionMode ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => selectionMode ? exitSelectionMode() : setSelectionMode(true)}
+            className="gap-2"
+          >
+            <CheckSquare className="w-4 h-4" />
+            {selectionMode ? 'Cancel' : 'Select'}
+          </Button>
           <Button asChild>
             <Link href="/books/add" className="gap-2">
               <Plus className="w-4 h-4" />
@@ -252,23 +269,29 @@ export default function BooksPage() {
       </div>
 
       {/* Selection action bar */}
-      {selectedCount > 0 && (
+      {selectionMode && (
         <div className="mb-4 p-3 bg-muted border border-border flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium">
-              {selectedCount} {selectedCount === 1 ? 'book' : 'books'} selected
+              {selectedCount === 0 
+                ? 'Select books to delete' 
+                : `${selectedCount} ${selectedCount === 1 ? 'book' : 'books'} selected`
+              }
             </span>
-            <button
-              onClick={clearSelection}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Clear selection
-            </button>
+            {selectedCount > 0 && (
+              <button
+                onClick={clearSelection}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Clear selection
+              </button>
+            )}
           </div>
           <Button
             variant="destructive"
             size="sm"
             onClick={() => setShowDeleteModal(true)}
+            disabled={selectedCount === 0}
             className="gap-2"
           >
             <Trash2 className="w-4 h-4" />
@@ -300,19 +323,21 @@ export default function BooksPage() {
       {books.length > 0 && view === 'list' && (
         <div className="border border-border">
           {/* Header */}
-          <div className="grid grid-cols-[auto_1fr] gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={isAllSelected}
-                ref={(el) => {
-                  if (el) el.indeterminate = isSomeSelected
-                }}
-                onChange={toggleSelectAll}
-                className="w-4 h-4 rounded border-border cursor-pointer"
-                title={isAllSelected ? 'Deselect all' : 'Select all'}
-              />
-            </div>
+          <div className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border`}>
+            {selectionMode && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  ref={(el) => {
+                    if (el) el.indeterminate = isSomeSelected
+                  }}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-border cursor-pointer"
+                  title={isAllSelected ? 'Deselect all' : 'Select all'}
+                />
+              </div>
+            )}
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-4">Title</div>
               <div className="col-span-2">Author</div>
@@ -326,19 +351,21 @@ export default function BooksPage() {
           {books.map((book) => (
             <div
               key={book.id}
-              className={`grid grid-cols-[auto_1fr] gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm ${
-                selectedIds.has(book.id) ? 'bg-muted/50' : ''
+              className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm ${
+                selectionMode && selectedIds.has(book.id) ? 'bg-muted/50' : ''
               }`}
             >
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.has(book.id)}
-                  onChange={() => {}}
-                  onClick={(e) => toggleSelect(book.id, e)}
-                  className="w-4 h-4 rounded border-border cursor-pointer"
-                />
-              </div>
+              {selectionMode && (
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(book.id)}
+                    onChange={() => {}}
+                    onClick={(e) => toggleSelect(book.id, e)}
+                    className="w-4 h-4 rounded border-border cursor-pointer"
+                  />
+                </div>
+              )}
               <Link
                 href={`/books/${book.id}`}
                 className="grid grid-cols-12 gap-4"
@@ -407,19 +434,21 @@ export default function BooksPage() {
             <div
               key={book.id}
               className={`group bg-card border border-border hover:border-foreground/20 transition-colors relative ${
-                selectedIds.has(book.id) ? 'ring-2 ring-primary' : ''
+                selectionMode && selectedIds.has(book.id) ? 'ring-2 ring-primary' : ''
               }`}
             >
               {/* Checkbox overlay */}
-              <div className="absolute top-2 left-2 z-10">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.has(book.id)}
-                  onChange={() => {}}
-                  onClick={(e) => toggleSelect(book.id, e)}
-                  className="w-4 h-4 rounded border-border cursor-pointer bg-background"
-                />
-              </div>
+              {selectionMode && (
+                <div className="absolute top-2 left-2 z-10">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(book.id)}
+                    onChange={() => {}}
+                    onClick={(e) => toggleSelect(book.id, e)}
+                    className="w-4 h-4 rounded border-border cursor-pointer bg-background"
+                  />
+                </div>
+              )}
               
               <Link href={`/books/${book.id}`}>
                 {/* Book cover placeholder - smaller */}
@@ -553,6 +582,7 @@ export default function BooksPage() {
                   setShowDeleteModal(false)
                   setConfirmText('')
                   setDeleteError(null)
+                  exitSelectionMode()
                 }}
                 disabled={deleting}
               >
