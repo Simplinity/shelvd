@@ -26,6 +26,7 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: languages },
     { data: conditions },
     { data: bindings },
+    { data: bisacCodes },
     { data: seriesData },
     { data: publisherData },
     { data: acquiredFromData },
@@ -36,6 +37,7 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
     supabase.from('bindings').select('id, name').order('name'),
+    supabase.from('bisac_codes').select('code, subject').order('subject'),
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
@@ -64,6 +66,7 @@ export default async function BookEditPage({ params }: PageProps) {
     languages: languages || [],
     conditions: conditions || [],
     bindings: uniqueBindings,
+    bisacCodes: bisacCodes || [],
     seriesList: getUniqueValues(seriesData, 'series'),
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
     acquiredFromList: getUniqueValues(acquiredFromData, 'acquired_from'),

@@ -71,6 +71,12 @@ export default async function BookDetailPage({ params }: PageProps) {
     ? await supabase.from('bindings').select('name').eq('id', bookRecord.binding_id).single()
     : { data: null }
 
+  // Fetch BISAC codes
+  const bisacCodes = [bookRecord.bisac_code, bookRecord.bisac_code_2, bookRecord.bisac_code_3].filter(Boolean)
+  const { data: bisacData } = bisacCodes.length > 0
+    ? await supabase.from('bisac_codes').select('code, subject').in('code', bisacCodes)
+    : { data: [] }
+
   // Combine all data
   const bookData = {
     ...bookRecord,
@@ -406,7 +412,27 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 8. Storage */}
+        {/* 8. BISAC Subject Codes */}
+        {bisacData && bisacData.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">BISAC Subject Codes</h2>
+            <dl className="space-y-2">
+              {bisacData.map((bisac: { code: string; subject: string }, index: number) => (
+                <div key={bisac.code}>
+                  <dt className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                    {index === 0 ? 'Primary' : index === 1 ? 'Secondary' : 'Tertiary'}
+                  </dt>
+                  <dd className="text-sm">
+                    <span className="font-mono text-xs text-muted-foreground mr-2">{bisac.code}</span>
+                    {bisac.subject}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+
+        {/* 9. Storage */}
         {(bookData.storage_location || bookData.shelf || bookData.shelf_section) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
@@ -418,7 +444,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 9. Acquisition */}
+        {/* 10. Acquisition */}
         {(bookData.acquired_from || bookData.purchase_source || bookData.acquired_date || bookData.acquired_price || bookData.purchase_price) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
@@ -431,7 +457,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 10. Valuation */}
+        {/* 11. Valuation */}
         {(bookData.lowest_price || bookData.price_lowest || bookData.highest_price || bookData.price_highest || bookData.estimated_value || bookData.price_estimated || bookData.sales_price || bookData.price_sales) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
@@ -444,7 +470,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 11. Notes */}
+        {/* 12. Notes */}
         {(bookData.summary || bookData.provenance || bookData.bibliography || bookData.illustrations || bookData.illustrations_description || bookData.signature_details || bookData.signatures_description || bookData.private_notes || bookData.internal_notes) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
@@ -459,7 +485,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 12. Catalog Entry */}
+        {/* 13. Catalog Entry */}
         {bookData.catalog_entry && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>

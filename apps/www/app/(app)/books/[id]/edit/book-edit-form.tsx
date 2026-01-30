@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import BisacCombobox from '@/components/bisac-combobox'
 import { createClient } from '@/lib/supabase/client'
 import type { Tables } from '@/lib/supabase/database.types'
 
@@ -12,11 +13,13 @@ type Book = Tables<'books'>
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
 type Binding = { id: string; name: string }
+type BisacCode = { code: string; subject: string }
 
 type ReferenceData = {
   languages: Language[]
   conditions: Condition[]
   bindings: Binding[]
+  bisacCodes: BisacCode[]
   seriesList: string[]
   publisherList: string[]
   acquiredFromList: string[]
@@ -90,6 +93,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
           ddc: formData.ddc || null,
           lcc: formData.lcc || null,
           udc: formData.udc || null,
+          bisac_code: (formData as any).bisac_code || null,
+          bisac_code_2: (formData as any).bisac_code_2 || null,
+          bisac_code_3: (formData as any).bisac_code_3 || null,
           topic: formData.topic || null,
           storage_location: formData.storage_location || null,
           shelf: formData.shelf || null,
@@ -403,7 +409,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ComboInput label="Publisher" field="publisher_name" options={referenceData.publisherList} />
             <ComboInput label="Place Published" field="publication_place" options={referenceData.publicationPlaceList} />
-            <TextInput label="Year Published" field="publication_year" placeholder="e.g. 1969 or MCMLXIX [1969]" />
+            <TextInput label="Year Published" field="publication_year" placeholder="1969 or MCMLXIX [1969]" />
             <TextInput label="Printer" field="printer" />
             <ComboInput label="Place Printed" field="printing_place" options={referenceData.printingPlaceList} />
           </div>
@@ -413,8 +419,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Edition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextInput label="Edition" field="edition" placeholder="e.g. First Edition" />
-            <TextInput label="Impression" field="impression" placeholder="e.g. First Impression" />
+            <TextInput label="Edition" field="edition" placeholder="First Edition" />
+            <TextInput label="Impression" field="impression" placeholder="First Impression" />
             <div className="md:col-span-2">
               <TextInput label="Issue State" field="issue_state" />
             </div>
@@ -435,7 +441,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 type="text"
                 value={(formData.pagination_description as string) || ''}
                 onChange={e => handleChange('pagination_description', e.target.value)}
-                placeholder="e.g. xvi, [4], 352, [8] p., 24 plates"
+                placeholder="xvi, [4], 352, [8] p., 24 plates"
                 className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
               />
             </div>
@@ -506,21 +512,53 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Identifiers</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <TextInput label="ISBN-13" field="isbn_13" />
-            <TextInput label="ISBN-10" field="isbn_10" />
-            <TextInput label="OCLC Number" field="oclc_number" />
-            <TextInput label="LCCN" field="lccn" />
+            <TextInput label="ISBN-13" field="isbn_13" placeholder="978-0-123456-78-9" />
+            <TextInput label="ISBN-10" field="isbn_10" placeholder="0-123456-78-9" />
+            <TextInput label="OCLC Number" field="oclc_number" placeholder="12345678" />
+            <TextInput label="LCCN" field="lccn" placeholder="2020123456" />
             <TextInput label="Catalog ID" field="user_catalog_id" />
-            <TextInput label="DDC" field="ddc" />
-            <TextInput label="LCC" field="lcc" />
-            <TextInput label="UDC" field="udc" />
+            <TextInput label="DDC" field="ddc" placeholder="823.914" />
+            <TextInput label="LCC" field="lcc" placeholder="PR6068.O93" />
+            <TextInput label="UDC" field="udc" placeholder="821.111" />
             <div className="col-span-2">
               <TextInput label="Topic" field="topic" />
             </div>
           </div>
         </section>
 
-        {/* 8. Storage */}
+        {/* 8. BISAC Subject Codes */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">BISAC Subject Codes</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            BISAC (Book Industry Standards and Communications) codes categorize books by subject. 
+            Select up to 3 codes, with the primary code first. Type to search by code or subject.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <BisacCombobox
+              label="Primary BISAC"
+              value={(formData as any).bisac_code || null}
+              onChange={(value) => handleChange('bisac_code' as keyof Book, value)}
+              options={referenceData.bisacCodes}
+              placeholder="Search BISAC codes..."
+            />
+            <BisacCombobox
+              label="Secondary BISAC"
+              value={(formData as any).bisac_code_2 || null}
+              onChange={(value) => handleChange('bisac_code_2' as keyof Book, value)}
+              options={referenceData.bisacCodes}
+              placeholder="Optional..."
+            />
+            <BisacCombobox
+              label="Tertiary BISAC"
+              value={(formData as any).bisac_code_3 || null}
+              onChange={(value) => handleChange('bisac_code_3' as keyof Book, value)}
+              options={referenceData.bisacCodes}
+              placeholder="Optional..."
+            />
+          </div>
+        </section>
+
+        {/* 9. Storage */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -530,7 +568,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 9. Acquisition */}
+        {/* 10. Acquisition */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -552,7 +590,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 10. Valuation */}
+        {/* 11. Valuation */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -564,7 +602,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 11. Notes */}
+        {/* 12. Notes */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
           <div className="space-y-4">
@@ -577,7 +615,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 12. Catalog Entry */}
+        {/* 13. Catalog Entry */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
           <TextArea label="Full Catalog Entry" field="catalog_entry" rows={4} />

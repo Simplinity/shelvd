@@ -263,6 +263,8 @@ export type Database = {
           bibliography: string | null
           binding_id: string | null
           bisac_code: string | null
+          bisac_code_2: string | null
+          bisac_code_3: string | null
           catalog_entry: string | null
           collection_id: string | null
           condition_id: string | null
@@ -355,6 +357,8 @@ export type Database = {
           bibliography?: string | null
           binding_id?: string | null
           bisac_code?: string | null
+          bisac_code_2?: string | null
+          bisac_code_3?: string | null
           catalog_entry?: string | null
           collection_id?: string | null
           condition_id?: string | null
@@ -447,6 +451,8 @@ export type Database = {
           bibliography?: string | null
           binding_id?: string | null
           bisac_code?: string | null
+          bisac_code_2?: string | null
+          bisac_code_3?: string | null
           catalog_entry?: string | null
           collection_id?: string | null
           condition_id?: string | null
