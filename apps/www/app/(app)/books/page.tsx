@@ -357,11 +357,6 @@ export default function BooksPage() {
     const isAnd = (searchParams.get('mode') || 'and') === 'and'
     const isExact = (searchParams.get('match') || 'fuzzy') === 'exact'
 
-    // DEBUG: Show alert so user can see what's happening
-    if (pageNum === 0) {
-      alert(`DEBUG fetchBooks:\nqParam: "${qParam}"\nisGlobalSearch: ${isGlobalSearch}\nhasFilters: ${hasFilters}\nURL: ${window.location.search}`)
-    }
-
     // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
     if (isGlobalSearch && !hasFilters) {
       const searchTerms = qParam.toLowerCase().split(/\s+/).filter(t => t.length > 0)
@@ -372,16 +367,13 @@ export default function BooksPage() {
         .select(`
           id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
           status, cover_type, condition_id, language_id, user_catalog_id, series,
-          storage_location, shelf, isbn_13, isbn_10, notes,
+          storage_location, shelf, isbn_13, isbn_10,
           book_contributors (
             contributor:contributors ( canonical_name ),
             role:contributor_roles ( name )
           )
         `)
         .order('title', { ascending: true })
-
-      // DEBUG: Show what happened with fetch
-      alert(`DEBUG After Fetch:\nError: ${error ? error.message : 'none'}\nData count: ${data?.length ?? 'null'}`)
 
       if (error) {
         console.error('Error fetching books:', error)
@@ -401,7 +393,6 @@ export default function BooksPage() {
           book.series,
           book.publisher_name,
           book.publication_place,
-          book.notes,
           book.isbn_13,
           book.isbn_10,
           ...(book.book_contributors || []).map((bc: any) => bc.contributor?.canonical_name || '')
@@ -409,11 +400,6 @@ export default function BooksPage() {
         
         return searchTerms.every(term => searchableText.includes(term))
       })
-
-      console.log('Filtered books count:', filteredData.length)
-      
-      // DEBUG: Show filter results
-      alert(`DEBUG Filter Results:\nTotal fetched: ${data?.length}\nFiltered: ${filteredData.length}\nSearch terms: ${searchTerms.join(', ')}`)
 
       const formattedBooks: BookListItem[] = filteredData.map((book: any) => ({
         id: book.id,
@@ -722,7 +708,6 @@ export default function BooksPage() {
   }, [books, loading, hasGlobalSearch, hasAdvancedFilters])
 
   useEffect(() => {
-    console.log('useEffect triggered, searchParams:', searchParams.toString())
     setPage(0)
     if (!hasGlobalSearch || hasAdvancedFilters) {
       fetchCount()
