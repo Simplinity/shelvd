@@ -1,11 +1,71 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+
+// Recent Searches types and helpers
+type RecentSearch = {
+  id: string
+  type: 'global' | 'advanced'
+  label: string
+  url: string
+  timestamp: number
+}
+
+const RECENT_SEARCHES_KEY = 'shelvd_recent_searches'
+const MAX_RECENT_SEARCHES = 10
+
+const getRecentSearches = (): RecentSearch[] => {
+  if (typeof window === 'undefined') return []
+  try {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+const saveRecentSearch = (search: Omit<RecentSearch, 'id' | 'timestamp'>) => {
+  if (typeof window === 'undefined') return
+  try {
+    const searches = getRecentSearches()
+    // Remove duplicates by URL
+    const filtered = searches.filter(s => s.url !== search.url)
+    const newSearch: RecentSearch = {
+      ...search,
+      id: crypto.randomUUID(),
+      timestamp: Date.now()
+    }
+    const updated = [newSearch, ...filtered].slice(0, MAX_RECENT_SEARCHES)
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+const removeRecentSearch = (id: string) => {
+  if (typeof window === 'undefined') return
+  try {
+    const searches = getRecentSearches()
+    const filtered = searches.filter(s => s.id !== id)
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(filtered))
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+const clearAllRecentSearches = () => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.removeItem(RECENT_SEARCHES_KEY)
+  } catch {
+    // Ignore storage errors
+  }
+}
 
 type BookListItem = {
   id: string
@@ -90,6 +150,11 @@ export default function BooksPage() {
   // Global search input state
   const [globalSearchInput, setGlobalSearchInput] = useState('')
   
+  // Recent searches state
+  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([])
+  const [showRecentSearches, setShowRecentSearches] = useState(false)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
+  
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -124,8 +189,74 @@ export default function BooksPage() {
     setGlobalSearchInput(globalSearchQuery)
   }, [globalSearchQuery])
 
+  // Load recent searches on mount
+  useEffect(() => {
+    setRecentSearches(getRecentSearches())
+  }, [])
+
+  // Save search to recent searches when URL has search params
+  useEffect(() => {
+    if (hasGlobalSearch && !hasAdvancedFilters) {
+      // Save global search
+      saveRecentSearch({
+        type: 'global',
+        label: globalSearchQuery,
+        url: `/books?q=${encodeURIComponent(globalSearchQuery)}`
+      })
+      setRecentSearches(getRecentSearches())
+    } else if (hasAdvancedFilters) {
+      // Save advanced search
+      const filterLabels = Object.entries(activeFilters)
+        .map(([key, value]) => {
+          const shortKey = key.replace('_name', '').replace('publication_', '')
+          if (value === '=') return `${shortKey}: empty`
+          if (value === '!=') return `${shortKey}: not empty`
+          return `${shortKey}: ${value}`
+        })
+        .join(', ')
+      const label = filterLabels.length > 50 ? filterLabels.slice(0, 47) + '...' : filterLabels
+      saveRecentSearch({
+        type: 'advanced',
+        label,
+        url: `/books?${searchParams.toString()}`
+      })
+      setRecentSearches(getRecentSearches())
+    }
+  }, [searchParams.toString()])
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowRecentSearches(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const clearFilters = () => {
     router.push('/books')
+  }
+
+  // Handle removing a recent search
+  const handleRemoveRecentSearch = (id: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    removeRecentSearch(id)
+    setRecentSearches(getRecentSearches())
+  }
+
+  // Handle clearing all recent searches
+  const handleClearAllRecentSearches = () => {
+    clearAllRecentSearches()
+    setRecentSearches([])
+  }
+
+  // Handle selecting a recent search
+  const handleSelectRecentSearch = (search: RecentSearch) => {
+    setShowRecentSearches(false)
+    router.push(search.url)
   }
 
   // Handle global search submit
@@ -805,7 +936,7 @@ export default function BooksPage() {
       </div>
 
       {/* Global Search Bar */}
-      <div className="mb-6">
+      <div className="mb-6" ref={searchContainerRef}>
         <form onSubmit={handleGlobalSearch} className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -813,6 +944,7 @@ export default function BooksPage() {
               type="text"
               value={globalSearchInput}
               onChange={(e) => setGlobalSearchInput(e.target.value)}
+              onFocus={() => recentSearches.length > 0 && setShowRecentSearches(true)}
               placeholder="Search all fields..."
               className="w-full h-10 pl-10 pr-4 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground focus:border-foreground"
             />
@@ -827,6 +959,53 @@ export default function BooksPage() {
               >
                 <X className="w-4 h-4" />
               </button>
+            )}
+            
+            {/* Recent Searches Dropdown */}
+            {showRecentSearches && recentSearches.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border shadow-lg z-50 max-h-80 overflow-y-auto">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
+                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <History className="w-3 h-3" />
+                    Recent Searches
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleClearAllRecentSearches}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Clear all
+                  </button>
+                </div>
+                {recentSearches.map((search) => (
+                  <div
+                    key={search.id}
+                    onClick={() => handleSelectRecentSearch(search)}
+                    className="flex items-center justify-between px-3 py-2 hover:bg-muted/50 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {search.type === 'global' ? (
+                        <Search className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                      ) : (
+                        <SlidersHorizontal className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                      )}
+                      <span className="text-sm truncate">{search.label}</span>
+                      {search.type === 'advanced' && (
+                        <span className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground flex-shrink-0">
+                          Advanced
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => handleRemoveRecentSearch(search.id, e)}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
           <Button type="submit" variant="default">
