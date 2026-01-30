@@ -54,6 +54,8 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: bookFormats },
     bisacCodes,
     { data: bookContributors },
+    { data: contributorRoles },
+    { data: allContributors },
     { data: seriesData },
     { data: publisherData },
     { data: acquiredFromData },
@@ -68,14 +70,21 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('bindings').select('id, name').order('name'),
     supabase.from('book_formats').select('id, type, name, abbreviation').order('type').order('name'),
     fetchAllBisacCodes(),
-    // Fetch contributors for this book
+    // Fetch contributors for this book (with IDs for editing)
     supabase
       .from('book_contributors')
       .select(`
-        contributor:contributors ( canonical_name ),
-        role:contributor_roles ( name )
+        id,
+        contributor_id,
+        role_id,
+        contributor:contributors ( id, canonical_name ),
+        role:contributor_roles ( id, name )
       `)
       .eq('book_id', id),
+    // Fetch all contributor roles for dropdown
+    supabase.from('contributor_roles').select('id, name').order('name'),
+    // Fetch all contributors for autocomplete
+    supabase.from('contributors').select('id, canonical_name').order('canonical_name'),
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
@@ -108,16 +117,35 @@ export default async function BookEditPage({ params }: PageProps) {
     }
   }
 
+  // Get unique contributor roles (there are duplicates in the table)
+  const seenRoles = new Set<string>()
+  const uniqueRoles: { id: string; name: string }[] = []
+  for (const role of contributorRoles || []) {
+    if (!seenRoles.has(role.name)) {
+      seenRoles.add(role.name)
+      uniqueRoles.push(role)
+    }
+  }
+
   // Helper to extract unique values
   const getUniqueValues = (data: any[] | null, field: string): string[] => {
     return [...new Set((data || []).map(item => item[field]).filter(Boolean))] as string[]
   }
 
-  // Transform contributors for catalog entry
-  const contributors = (bookContributors || []).map((bc: any) => ({
-    name: bc.contributor?.canonical_name || '',
-    role: bc.role?.name || ''
-  })).filter((c: any) => c.name && c.role)
+  // Transform book contributors for the form (with IDs for editing)
+  const bookContributorsList = (bookContributors || []).map((bc: any) => ({
+    id: bc.id,
+    contributorId: bc.contributor?.id || '',
+    contributorName: bc.contributor?.canonical_name || '',
+    roleId: bc.role?.id || '',
+    roleName: bc.role?.name || ''
+  })).filter((c: any) => c.contributorName && c.roleName)
+
+  // Simple contributors list for catalog entry generator
+  const contributors = bookContributorsList.map(c => ({
+    name: c.contributorName,
+    role: c.roleName
+  }))
 
   const referenceData = {
     languages: languages || [],
@@ -126,6 +154,9 @@ export default async function BookEditPage({ params }: PageProps) {
     bookFormats: uniqueFormats,
     bisacCodes: bisacCodes,
     contributors: contributors,
+    bookContributors: bookContributorsList,
+    contributorRoles: uniqueRoles,
+    allContributors: (allContributors || []).map((c: any) => ({ id: c.id, name: c.canonical_name })),
     seriesList: getUniqueValues(seriesData, 'series'),
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
     acquiredFromList: getUniqueValues(acquiredFromData, 'acquired_from'),

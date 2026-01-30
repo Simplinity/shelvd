@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -17,6 +17,15 @@ type Binding = { id: string; name: string }
 type BookFormat = { id: string; type: string | null; name: string; abbreviation: string | null }
 type BisacCode = { code: string; subject: string }
 type Contributor = { name: string; role: string }
+type ContributorRole = { id: string; name: string }
+type ExistingContributor = { id: string; name: string }
+type BookContributor = {
+  id: string
+  contributorId: string
+  contributorName: string
+  roleId: string
+  roleName: string
+}
 
 type ReferenceData = {
   languages: Language[]
@@ -25,6 +34,9 @@ type ReferenceData = {
   bookFormats: BookFormat[]
   bisacCodes: BisacCode[]
   contributors: Contributor[]
+  bookContributors: BookContributor[]
+  contributorRoles: ContributorRole[]
+  allContributors: ExistingContributor[]
   seriesList: string[]
   publisherList: string[]
   acquiredFromList: string[]
@@ -40,16 +52,82 @@ type Props = {
   referenceData: ReferenceData
 }
 
+// Local contributor state (for tracking changes)
+type LocalContributor = {
+  tempId: string // Temporary ID for new contributors, or original id for existing
+  contributorName: string
+  roleId: string
+  roleName: string
+  isNew: boolean
+  isDeleted: boolean
+}
+
 export default function BookEditForm({ book, referenceData }: Props) {
   const router = useRouter()
   const supabase = createClient()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<Book>(book)
+  
+  // Contributors state
+  const [contributors, setContributors] = useState<LocalContributor[]>(
+    referenceData.bookContributors.map(bc => ({
+      tempId: bc.id,
+      contributorName: bc.contributorName,
+      roleId: bc.roleId,
+      roleName: bc.roleName,
+      isNew: false,
+      isDeleted: false
+    }))
+  )
+  const [newContributorName, setNewContributorName] = useState('')
+  const [newContributorRoleId, setNewContributorRoleId] = useState('')
 
   const handleChange = (field: keyof Book, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
+
+  // Add a new contributor
+  const handleAddContributor = () => {
+    if (!newContributorName.trim() || !newContributorRoleId) return
+    
+    const role = referenceData.contributorRoles.find(r => r.id === newContributorRoleId)
+    if (!role) return
+
+    setContributors(prev => [...prev, {
+      tempId: `new-${Date.now()}`,
+      contributorName: newContributorName.trim(),
+      roleId: newContributorRoleId,
+      roleName: role.name,
+      isNew: true,
+      isDeleted: false
+    }])
+    
+    setNewContributorName('')
+    setNewContributorRoleId('')
+  }
+
+  // Remove a contributor (mark as deleted or remove from list if new)
+  const handleRemoveContributor = (tempId: string) => {
+    setContributors(prev => prev.map(c => {
+      if (c.tempId === tempId) {
+        if (c.isNew) {
+          // New contributor - just remove from list
+          return { ...c, isDeleted: true }
+        }
+        // Existing contributor - mark as deleted
+        return { ...c, isDeleted: true }
+      }
+      return c
+    }).filter(c => !(c.isNew && c.isDeleted))) // Remove new deleted items immediately
+  }
+
+  // Get contributors for display and catalog entry
+  const activeContributors = contributors.filter(c => !c.isDeleted)
+  const contributorsForCatalog = activeContributors.map(c => ({
+    name: c.contributorName,
+    role: c.roleName
+  }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,6 +135,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
     setError(null)
 
     try {
+      // 1. Update book data
       const { error: updateError } = await supabase
         .from('books')
         .update({
@@ -129,6 +208,56 @@ export default function BookEditForm({ book, referenceData }: Props) {
         .eq('id', book.id)
 
       if (updateError) throw updateError
+
+      // 2. Handle contributor deletions
+      const deletedContributors = contributors.filter(c => c.isDeleted && !c.isNew)
+      for (const dc of deletedContributors) {
+        const { error: deleteError } = await supabase
+          .from('book_contributors')
+          .delete()
+          .eq('id', dc.tempId)
+        
+        if (deleteError) throw deleteError
+      }
+
+      // 3. Handle new contributors
+      const newContributors = contributors.filter(c => c.isNew && !c.isDeleted)
+      for (const nc of newContributors) {
+        // Check if contributor exists
+        let contributorId: string
+        const existing = referenceData.allContributors.find(
+          c => c.name.toLowerCase() === nc.contributorName.toLowerCase()
+        )
+        
+        if (existing) {
+          contributorId = existing.id
+        } else {
+          // Create new contributor
+          const { data: newContributor, error: createError } = await supabase
+            .from('contributors')
+            .insert({ 
+              canonical_name: nc.contributorName,
+              sort_name: nc.contributorName, // Use same name for sorting
+              created_by_user_id: (await supabase.auth.getUser()).data.user?.id
+            })
+            .select('id')
+            .single()
+          
+          if (createError || !newContributor) throw createError || new Error('Failed to create contributor')
+          contributorId = newContributor.id
+        }
+
+        // Create book_contributor link
+        const { error: linkError } = await supabase
+          .from('book_contributors')
+          .insert({
+            book_id: book.id,
+            contributor_id: contributorId,
+            role_id: nc.roleId
+          })
+        
+        if (linkError) throw linkError
+      }
 
       router.push(`/books/${book.id}`)
       router.refresh()
@@ -418,7 +547,91 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 2. Language */}
+        {/* 2. Contributors */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Contributors</h2>
+          
+          {/* Current contributors list */}
+          {activeContributors.length > 0 && (
+            <div className="mb-4 space-y-2">
+              {activeContributors.map(c => (
+                <div 
+                  key={c.tempId} 
+                  className="flex items-center gap-3 p-2 bg-muted/50 border border-border"
+                >
+                  <div className="flex-1">
+                    <span className="font-medium">{c.contributorName}</span>
+                    <span className="text-muted-foreground mx-2">—</span>
+                    <span className="text-muted-foreground">{c.roleName}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveContributor(c.tempId)}
+                    className="p-1 text-muted-foreground hover:text-red-600 transition-colors"
+                    title="Remove contributor"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add new contributor */}
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                Name
+              </label>
+              <input
+                type="text"
+                list="contributors-list"
+                value={newContributorName}
+                onChange={e => setNewContributorName(e.target.value)}
+                placeholder="Type or select contributor name"
+                className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+              <datalist id="contributors-list">
+                {referenceData.allContributors.map(c => (
+                  <option key={c.id} value={c.name} />
+                ))}
+              </datalist>
+            </div>
+            <div className="w-48">
+              <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                Role
+              </label>
+              <select
+                value={newContributorRoleId}
+                onChange={e => setNewContributorRoleId(e.target.value)}
+                className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+              >
+                <option value="">Select role...</option>
+                {referenceData.contributorRoles.map(r => (
+                  <option key={r.id} value={r.id}>{r.name}</option>
+                ))}
+              </select>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddContributor}
+              disabled={!newContributorName.trim() || !newContributorRoleId}
+              className="h-10"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add
+            </Button>
+          </div>
+          
+          {activeContributors.length === 0 && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              No contributors yet. Add authors, illustrators, translators, etc.
+            </p>
+          )}
+        </section>
+
+        {/* 3. Language */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Language</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -435,7 +648,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 3. Publication */}
+        {/* 4. Publication */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Publication</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -447,7 +660,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 4. Edition */}
+        {/* 5. Edition */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Edition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -462,7 +675,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 5. Physical Description */}
+        {/* 6. Physical Description */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -531,7 +744,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 6. Condition & Status */}
+        {/* 7. Condition & Status */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition & Status</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -549,7 +762,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 7. Identifiers */}
+        {/* 8. Identifiers */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Identifiers</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -567,7 +780,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 8. BISAC Subject Codes */}
+        {/* 9. BISAC Subject Codes */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">BISAC Subject Codes</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -599,7 +812,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 9. Storage */}
+        {/* 10. Storage */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -609,7 +822,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 10. Acquisition */}
+        {/* 11. Acquisition */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -631,7 +844,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 11. Valuation */}
+        {/* 12. Valuation */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -643,7 +856,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 12. Notes */}
+        {/* 13. Notes */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
           <div className="space-y-4">
@@ -656,7 +869,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 13. Catalog Entry */}
+        {/* 14. Catalog Entry */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
           <div className="mb-4">
@@ -697,7 +910,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 isbn_10: formData.isbn_10,
                 oclc_number: formData.oclc_number,
                 lccn: formData.lccn,
-                contributors: referenceData.contributors,
+                contributors: contributorsForCatalog,
               }}
               onGenerate={(entry) => handleChange('catalog_entry', entry)}
             />
