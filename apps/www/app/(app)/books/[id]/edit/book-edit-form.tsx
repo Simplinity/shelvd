@@ -13,12 +13,14 @@ type Book = Tables<'books'>
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
 type Binding = { id: string; name: string }
+type BookFormat = { id: string; type: string | null; name: string; abbreviation: string | null }
 type BisacCode = { code: string; subject: string }
 
 type ReferenceData = {
   languages: Language[]
   conditions: Condition[]
   bindings: Binding[]
+  bookFormats: BookFormat[]
   bisacCodes: BisacCode[]
   seriesList: string[]
   publisherList: string[]
@@ -82,6 +84,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           weight_grams: formData.weight_grams || null,
           cover_type: formData.cover_type || null,
           binding_id: formData.binding_id || null,
+          format_id: formData.format_id || null,
           has_dust_jacket: formData.has_dust_jacket,
           is_signed: formData.is_signed,
           protective_enclosure: (formData as any).protective_enclosure || 'none',
@@ -495,6 +498,15 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 label="Binding" 
                 field="binding_id" 
                 options={referenceData.bindings.map(b => ({ value: b.id, label: b.name }))} 
+              />
+            </div>
+            
+            {/* Book Format - double width */}
+            <div className="col-span-2">
+              <Select 
+                label="Book Format" 
+                field="format_id" 
+                options={referenceData.bookFormats.map(f => ({ value: f.id, label: f.abbreviation ? `${f.name} (${f.abbreviation})` : f.name }))} 
               />
             </div>
             

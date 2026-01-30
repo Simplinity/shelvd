@@ -71,6 +71,10 @@ export default async function BookDetailPage({ params }: PageProps) {
     ? await supabase.from('bindings').select('name').eq('id', bookRecord.binding_id).single()
     : { data: null }
 
+  const { data: bookFormat } = bookRecord.format_id
+    ? await supabase.from('book_formats').select('name, abbreviation').eq('id', bookRecord.format_id).single()
+    : { data: null }
+
   // Fetch BISAC codes
   const bisacCodes = [bookRecord.bisac_code, bookRecord.bisac_code_2, bookRecord.bisac_code_3].filter(Boolean)
   const { data: bisacData } = bisacCodes.length > 0
@@ -84,6 +88,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     original_language: originalLanguage,
     condition,
     binding,
+    bookFormat,
     book_contributors: bookContributors || []
   }
 
@@ -355,7 +360,7 @@ export default async function BookDetailPage({ params }: PageProps) {
         )}
 
         {/* 5. Physical Description */}
-        {(bookData.pagination_description || bookData.page_count || bookData.volumes || formatDimensions() || formatWeight() || bookData.cover_type || bookData.binding?.name || bookData.protective_enclosure || bookData.has_dust_jacket || bookData.is_signed) && (
+        {(bookData.pagination_description || bookData.page_count || bookData.volumes || formatDimensions() || formatWeight() || bookData.cover_type || bookData.binding?.name || bookData.bookFormat || bookData.protective_enclosure || bookData.has_dust_jacket || bookData.is_signed) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -368,6 +373,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               <div /> {/* Empty cell */}
               <Field label="Cover Type" value={formatCoverType(bookData.cover_type)} className="col-span-2" />
               <Field label="Binding" value={bookData.binding?.name} className="col-span-2" />
+              <Field label="Book Format" value={bookData.bookFormat ? (bookData.bookFormat.abbreviation ? `${bookData.bookFormat.name} (${bookData.bookFormat.abbreviation})` : bookData.bookFormat.name) : null} className="col-span-2" />
               <Field label="Protective Enclosure" value={formatProtectiveEnclosure(bookData.protective_enclosure)} className="col-span-2" />
               <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
               <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />

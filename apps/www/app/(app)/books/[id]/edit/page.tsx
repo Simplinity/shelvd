@@ -51,6 +51,7 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: languages },
     { data: conditions },
     { data: bindings },
+    { data: bookFormats },
     bisacCodes,
     { data: seriesData },
     { data: publisherData },
@@ -64,6 +65,7 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
     supabase.from('bindings').select('id, name').order('name'),
+    supabase.from('book_formats').select('id, type, name, abbreviation').order('type').order('name'),
     fetchAllBisacCodes(),
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
@@ -86,6 +88,17 @@ export default async function BookEditPage({ params }: PageProps) {
     }
   }
 
+  // Get unique book formats (there are duplicates in the table)
+  const seenFormats = new Set<string>()
+  const uniqueFormats: { id: string; type: string | null; name: string; abbreviation: string | null }[] = []
+  for (const format of bookFormats || []) {
+    const key = `${format.type}-${format.name}`
+    if (!seenFormats.has(key)) {
+      seenFormats.add(key)
+      uniqueFormats.push(format)
+    }
+  }
+
   // Helper to extract unique values
   const getUniqueValues = (data: any[] | null, field: string): string[] => {
     return [...new Set((data || []).map(item => item[field]).filter(Boolean))] as string[]
@@ -95,6 +108,7 @@ export default async function BookEditPage({ params }: PageProps) {
     languages: languages || [],
     conditions: conditions || [],
     bindings: uniqueBindings,
+    bookFormats: uniqueFormats,
     bisacCodes: bisacCodes,
     seriesList: getUniqueValues(seriesData, 'series'),
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
