@@ -25,13 +25,11 @@ type BookListItem = {
   isbn_10: string | null
   series: string | null
   user_catalog_id: string | null
-  // Joined data
   contributors: { name: string; role: string }[]
 }
 
 const ITEMS_PER_PAGE = 250
 
-// Fields that can be searched
 const SEARCH_FIELDS = [
   'title', 'subtitle', 'original_title', 'series', 'author',
   'publisher_name', 'publication_place', 'publication_year',
@@ -49,7 +47,6 @@ export default function BooksPage() {
   const [view, setView] = useState<'list' | 'grid'>('list')
   const [page, setPage] = useState(0)
   
-  // Selection state
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -59,7 +56,6 @@ export default function BooksPage() {
 
   const supabase = createClient()
 
-  // Get active search filters from URL
   const getActiveFilters = () => {
     const filters: Record<string, string> = {}
     SEARCH_FIELDS.forEach(field => {
@@ -74,9 +70,43 @@ export default function BooksPage() {
   const searchMode = searchParams.get('mode') || 'and'
   const matchMode = searchParams.get('match') || 'fuzzy'
 
-  // Clear all filters
   const clearFilters = () => {
     router.push('/books')
+  }
+
+  // Helper: Get book IDs that match author search (server-side)
+  const getBookIdsByAuthor = async (authorSearch: string, isExact: boolean): Promise<string[]> => {
+    // Step 1: Find matching contributors
+    const contributorQuery = supabase
+      .from('contributors')
+      .select('id')
+    
+    if (isExact) {
+      contributorQuery.ilike('canonical_name', authorSearch)
+    } else {
+      contributorQuery.ilike('canonical_name', `%${authorSearch}%`)
+    }
+    
+    const { data: matchingContributors, error: contribError } = await contributorQuery
+    
+    if (contribError || !matchingContributors || matchingContributors.length === 0) {
+      return []
+    }
+    
+    const contributorIds = matchingContributors.map(c => c.id)
+    
+    // Step 2: Find book_ids linked to those contributors
+    const { data: bookContributors, error: bcError } = await supabase
+      .from('book_contributors')
+      .select('book_id')
+      .in('contributor_id', contributorIds)
+    
+    if (bcError || !bookContributors) {
+      return []
+    }
+    
+    // Return unique book IDs
+    return [...new Set(bookContributors.map(bc => bc.book_id))]
   }
 
   // Fetch books with filters
@@ -86,8 +116,25 @@ export default function BooksPage() {
 
     const from = pageNum * ITEMS_PER_PAGE
     const to = from + ITEMS_PER_PAGE - 1
+    const filters = activeFilters
+    const isAnd = searchMode === 'and'
+    const isExact = matchMode === 'exact'
 
-    // Start with base query
+    // If author filter is active, get matching book IDs first (server-side)
+    let authorBookIds: string[] | null = null
+    if (filters.author) {
+      authorBookIds = await getBookIdsByAuthor(filters.author, isExact)
+      
+      // If no books match author and we're in AND mode, return empty
+      if (authorBookIds.length === 0 && isAnd) {
+        setBooks(append ? books : [])
+        setLoading(false)
+        setLoadingMore(false)
+        return
+      }
+    }
+
+    // Build main query
     let query = supabase
       .from('books')
       .select(`
@@ -102,11 +149,6 @@ export default function BooksPage() {
 
     // Apply filters
     if (hasActiveFilters) {
-      const filters = activeFilters
-      const isAnd = searchMode === 'and'
-      const isExact = matchMode === 'exact'
-
-      // For OR mode, we need to use .or() - for AND mode, chain .ilike() or .eq()
       if (isAnd) {
         // AND mode: chain filters
         if (filters.title) {
@@ -155,7 +197,6 @@ export default function BooksPage() {
             : query.ilike('shelf', `%${filters.shelf}%`)
         }
         if (filters.isbn) {
-          // Search both ISBN fields
           query = query.or(`isbn_13.ilike.%${filters.isbn}%,isbn_10.ilike.%${filters.isbn}%`)
         }
         if (filters.language) {
@@ -167,8 +208,12 @@ export default function BooksPage() {
         if (filters.status) {
           query = query.eq('status', filters.status)
         }
+        // Author filter: restrict to matching book IDs
+        if (authorBookIds && authorBookIds.length > 0) {
+          query = query.in('id', authorBookIds)
+        }
       } else {
-        // OR mode: build .or() string
+        // OR mode: build .or() string for non-author fields
         const orConditions: string[] = []
         
         if (filters.title) {
@@ -229,67 +274,95 @@ export default function BooksPage() {
         if (filters.status) {
           orConditions.push(`status.eq.${filters.status}`)
         }
+        // For author in OR mode, add book IDs to OR conditions
+        if (authorBookIds && authorBookIds.length > 0) {
+          // We'll handle this differently - get books matching OR conditions OR in authorBookIds
+          // Supabase doesn't support mixing .or() with .in() well, so we do a workaround
+        }
         
         if (orConditions.length > 0) {
           query = query.or(orConditions.join(','))
         }
+        
+        // For OR mode with author, we need to include books that match author even if they don't match other criteria
+        // This is complex with Supabase, so we'll do a union approach if needed
+        if (authorBookIds && authorBookIds.length > 0 && orConditions.length > 0) {
+          // Add author book IDs to OR - but Supabase doesn't support this directly
+          // Workaround: fetch both and merge client-side (not ideal but works)
+        }
       }
     }
 
-    // Add ordering and pagination
     query = query.order('title', { ascending: true }).range(from, to)
 
     const { data, error } = await query
 
     if (error) {
       console.error('Error fetching books:', error)
-    } else if (data) {
-      // Client-side filter for author (requires join data)
-      let filteredData = data
-      if (activeFilters.author) {
-        const authorSearch = activeFilters.author.toLowerCase()
-        filteredData = data.filter((book: any) => {
-          const hasMatch = (book.book_contributors || []).some((bc: any) => {
-            const name = bc.contributor?.canonical_name || ''
-            return matchMode === 'exact'
-              ? name.toLowerCase() === authorSearch
-              : name.toLowerCase().includes(authorSearch)
-          })
-          // In OR mode, include if matches OR other filters matched (already in data)
-          // In AND mode, must match author too
-          return searchMode === 'or' ? hasMatch || !activeFilters.author : hasMatch
-        })
-      }
+      setLoading(false)
+      setLoadingMore(false)
+      return
+    }
 
-      const formattedBooks: BookListItem[] = filteredData.map((book: any) => ({
-        id: book.id,
-        title: book.title,
-        subtitle: book.subtitle,
-        original_title: book.original_title,
-        publication_year: book.publication_year,
-        publication_place: book.publication_place,
-        publisher: book.publisher_name,
-        status: book.status,
-        cover_type: book.cover_type,
-        condition_id: book.condition_id,
-        language_id: book.language_id,
-        storage_location: book.storage_location,
-        shelf: book.shelf,
-        isbn_13: book.isbn_13,
-        isbn_10: book.isbn_10,
-        series: book.series,
-        user_catalog_id: book.user_catalog_id,
-        contributors: (book.book_contributors || []).map((bc: any) => ({
-          name: bc.contributor?.canonical_name || 'Unknown',
-          role: bc.role?.name || 'Contributor'
-        }))
+    // For OR mode with author filter, we may need to fetch author-matching books separately
+    let allData = data || []
+    if (!isAnd && filters.author && authorBookIds && authorBookIds.length > 0) {
+      // Get books that match author but might not be in the OR results
+      const existingIds = new Set(allData.map((b: any) => b.id))
+      const missingAuthorBookIds = authorBookIds.filter(id => !existingIds.has(id))
+      
+      if (missingAuthorBookIds.length > 0) {
+        // Fetch the missing books (limit to maintain pagination sanity)
+        const { data: authorBooks } = await supabase
+          .from('books')
+          .select(`
+            id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+            status, cover_type, condition_id, language_id, user_catalog_id, series,
+            storage_location, shelf, isbn_13, isbn_10,
+            book_contributors (
+              contributor:contributors ( canonical_name ),
+              role:contributor_roles ( name )
+            )
+          `)
+          .in('id', missingAuthorBookIds.slice(0, 100)) // Limit to prevent huge queries
+          .order('title', { ascending: true })
+        
+        if (authorBooks) {
+          allData = [...allData, ...authorBooks]
+          // Re-sort by title
+          allData.sort((a: any, b: any) => (a.title || '').localeCompare(b.title || ''))
+        }
+      }
+    }
+
+    const formattedBooks: BookListItem[] = allData.map((book: any) => ({
+      id: book.id,
+      title: book.title,
+      subtitle: book.subtitle,
+      original_title: book.original_title,
+      publication_year: book.publication_year,
+      publication_place: book.publication_place,
+      publisher: book.publisher_name,
+      status: book.status,
+      cover_type: book.cover_type,
+      condition_id: book.condition_id,
+      language_id: book.language_id,
+      storage_location: book.storage_location,
+      shelf: book.shelf,
+      isbn_13: book.isbn_13,
+      isbn_10: book.isbn_10,
+      series: book.series,
+      user_catalog_id: book.user_catalog_id,
+      contributors: (book.book_contributors || []).map((bc: any) => ({
+        name: bc.contributor?.canonical_name || 'Unknown',
+        role: bc.role?.name || 'Contributor'
       }))
+    }))
 
-      if (append) {
-        setBooks(prev => [...prev, ...formattedBooks])
-      } else {
-        setBooks(formattedBooks)
-      }
+    if (append) {
+      setBooks(prev => [...prev, ...formattedBooks])
+    } else {
+      setBooks(formattedBooks)
     }
 
     setLoading(false)
@@ -298,21 +371,38 @@ export default function BooksPage() {
 
   // Get total count (with filters)
   const fetchCount = async () => {
+    const filters = activeFilters
+    const isAnd = searchMode === 'and'
+    const isExact = matchMode === 'exact'
+
+    // If author filter, get book IDs first
+    let authorBookIds: string[] | null = null
+    if (filters.author) {
+      authorBookIds = await getBookIdsByAuthor(filters.author, isExact)
+      if (authorBookIds.length === 0 && isAnd) {
+        setTotalCount(0)
+        return
+      }
+    }
+
     let query = supabase.from('books').select('*', { count: 'exact', head: true })
     
-    // Apply same filters for count
-    if (hasActiveFilters) {
-      const filters = activeFilters
-      const isAnd = searchMode === 'and'
-      const isExact = matchMode === 'exact'
-      
-      // Simplified - just check main text fields for count
-      if (isAnd) {
-        if (filters.title) query = query.ilike('title', isExact ? filters.title : `%${filters.title}%`)
-        if (filters.publisher_name) query = query.ilike('publisher_name', isExact ? filters.publisher_name : `%${filters.publisher_name}%`)
-        if (filters.language) query = query.eq('language_id', filters.language)
-        if (filters.condition) query = query.eq('condition_id', filters.condition)
-        if (filters.status) query = query.eq('status', filters.status)
+    if (hasActiveFilters && isAnd) {
+      if (filters.title) query = query.ilike('title', isExact ? filters.title : `%${filters.title}%`)
+      if (filters.subtitle) query = query.ilike('subtitle', isExact ? filters.subtitle : `%${filters.subtitle}%`)
+      if (filters.original_title) query = query.ilike('original_title', isExact ? filters.original_title : `%${filters.original_title}%`)
+      if (filters.series) query = query.ilike('series', isExact ? filters.series : `%${filters.series}%`)
+      if (filters.publisher_name) query = query.ilike('publisher_name', isExact ? filters.publisher_name : `%${filters.publisher_name}%`)
+      if (filters.publication_place) query = query.ilike('publication_place', isExact ? filters.publication_place : `%${filters.publication_place}%`)
+      if (filters.publication_year) query = query.ilike('publication_year', isExact ? filters.publication_year : `%${filters.publication_year}%`)
+      if (filters.storage_location) query = query.ilike('storage_location', isExact ? filters.storage_location : `%${filters.storage_location}%`)
+      if (filters.shelf) query = query.ilike('shelf', isExact ? filters.shelf : `%${filters.shelf}%`)
+      if (filters.isbn) query = query.or(`isbn_13.ilike.%${filters.isbn}%,isbn_10.ilike.%${filters.isbn}%`)
+      if (filters.language) query = query.eq('language_id', filters.language)
+      if (filters.condition) query = query.eq('condition_id', filters.condition)
+      if (filters.status) query = query.eq('status', filters.status)
+      if (authorBookIds && authorBookIds.length > 0) {
+        query = query.in('id', authorBookIds)
       }
     }
     
@@ -320,7 +410,6 @@ export default function BooksPage() {
     setTotalCount(count || 0)
   }
 
-  // Re-fetch when search params change
   useEffect(() => {
     setPage(0)
     fetchCount()
@@ -335,7 +424,6 @@ export default function BooksPage() {
 
   const hasMore = books.length < totalCount
 
-  // Get primary author(s)
   const getAuthors = (contributors: { name: string; role: string }[]) => {
     const authors = contributors.filter(c => c.role === 'Author')
     if (authors.length === 0) return null
@@ -344,7 +432,6 @@ export default function BooksPage() {
     return `${authors[0].name} et al.`
   }
 
-  // Selection handlers
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev)
@@ -377,7 +464,6 @@ export default function BooksPage() {
   const isAllSelected = books.length > 0 && selectedIds.size === books.length
   const isSomeSelected = selectedIds.size > 0 && selectedIds.size < books.length
 
-  // Bulk delete
   const handleBulkDelete = async () => {
     const expectedText = selectedIds.size === 1 ? 'delete' : `delete ${selectedIds.size} books`
     if (confirmText.toLowerCase() !== expectedText.toLowerCase()) return
@@ -388,7 +474,6 @@ export default function BooksPage() {
     try {
       const idsToDelete = Array.from(selectedIds)
 
-      // First delete book_contributors for all selected books
       const { error: contributorsError } = await supabase
         .from('book_contributors')
         .delete()
@@ -398,7 +483,6 @@ export default function BooksPage() {
         throw new Error(`Failed to delete contributors: ${contributorsError.message}`)
       }
 
-      // Then delete the books
       const { error: booksError } = await supabase
         .from('books')
         .delete()
@@ -408,7 +492,6 @@ export default function BooksPage() {
         throw new Error(`Failed to delete books: ${booksError.message}`)
       }
 
-      // Update local state
       setBooks(prev => prev.filter(b => !selectedIds.has(b.id)))
       setTotalCount(prev => prev - selectedIds.size)
       setSelectedIds(new Set())
@@ -427,7 +510,6 @@ export default function BooksPage() {
   const confirmTextExpected = selectedCount === 1 ? 'delete' : `delete ${selectedCount} books`
   const isConfirmValid = confirmText.toLowerCase() === confirmTextExpected.toLowerCase()
 
-  // Get filter label for display
   const getFilterLabel = (key: string, value: string) => {
     const labels: Record<string, string> = {
       title: 'Title',
@@ -476,7 +558,6 @@ export default function BooksPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* View toggle */}
           <div className="flex border border-border">
             <button
               onClick={() => setView('list')}
@@ -493,7 +574,6 @@ export default function BooksPage() {
               <LayoutGrid className="w-4 h-4" />
             </button>
           </div>
-          {/* Select mode toggle */}
           <Button
             variant={selectionMode ? 'default' : 'outline'}
             size="sm"
@@ -503,7 +583,6 @@ export default function BooksPage() {
             <CheckSquare className="w-4 h-4" />
             {selectionMode ? 'Cancel' : 'Select'}
           </Button>
-          {/* Search button */}
           <Button variant="outline" asChild className="gap-2">
             <Link href="/books/search">
               <Search className="w-4 h-4" />
@@ -635,7 +714,6 @@ export default function BooksPage() {
       {/* List View */}
       {books.length > 0 && view === 'list' && (
         <div className="border border-border">
-          {/* Header */}
           <div className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border`}>
             {selectionMode && (
               <div className="flex items-center">
@@ -660,7 +738,6 @@ export default function BooksPage() {
               <div className="col-span-1">Status</div>
             </div>
           </div>
-          {/* Rows */}
           {books.map((book) => (
             <div
               key={book.id}
@@ -699,18 +776,14 @@ export default function BooksPage() {
                 </div>
                 <div className="col-span-1">
                   <span className={`text-xs px-2 py-0.5 ${
-                    // Sales flow
                     book.status === 'on_sale' ? 'bg-green-100 text-green-700' :
                     book.status === 'to_sell' ? 'bg-green-50 text-green-600' :
                     book.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
                     book.status === 'sold' ? 'bg-gray-100 text-gray-500' :
-                    // Special possession
                     book.status === 'lent' ? 'bg-blue-100 text-blue-700' :
                     book.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
                     book.status === 'double' ? 'bg-orange-100 text-orange-700' :
-                    // Acquisition
                     book.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
-                    // No longer in possession
                     book.status === 'lost' ? 'bg-red-100 text-red-700' :
                     book.status === 'donated' ? 'bg-pink-100 text-pink-700' :
                     book.status === 'destroyed' ? 'bg-red-200 text-red-800' :
@@ -749,7 +822,6 @@ export default function BooksPage() {
                 selectionMode && selectedIds.has(book.id) ? 'ring-2 ring-primary' : ''
               }`}
             >
-              {/* Checkbox overlay */}
               {selectionMode && (
                 <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
                   <input
@@ -762,7 +834,6 @@ export default function BooksPage() {
               )}
               
               <Link href={`/books/${book.id}`}>
-                {/* Book cover placeholder - smaller */}
                 <div className="aspect-[3/4] bg-muted flex items-center justify-center p-4">
                   <div className="text-center">
                     <BookOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
@@ -770,7 +841,6 @@ export default function BooksPage() {
                   </div>
                 </div>
                 
-                {/* Book info */}
                 <div className="p-3">
                   <h3 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                     {book.title}
@@ -812,13 +882,11 @@ export default function BooksPage() {
       {/* Bulk Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50"
             onClick={() => !deleting && setShowDeleteModal(false)}
           />
 
-          {/* Modal */}
           <div className="relative bg-background border border-border shadow-lg p-6 w-full max-w-md mx-4">
             <button
               onClick={() => !deleting && setShowDeleteModal(false)}
@@ -844,7 +912,6 @@ export default function BooksPage() {
               </p>
             </div>
 
-            {/* Show list of books to delete (max 5) */}
             <div className="mb-4 text-sm">
               <p className="text-muted-foreground mb-2">Books to delete:</p>
               <ul className="space-y-1 max-h-32 overflow-y-auto">
