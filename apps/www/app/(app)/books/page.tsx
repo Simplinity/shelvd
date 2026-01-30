@@ -342,13 +342,27 @@ export default function BooksPage() {
 
     const from = pageNum * ITEMS_PER_PAGE
     const to = from + ITEMS_PER_PAGE - 1
-    const filters = activeFilters
-    const isAnd = searchMode === 'and'
-    const isExact = matchMode === 'exact'
+    
+    // Read directly from searchParams to avoid closure issues
+    const qParam = searchParams.get('q') || ''
+    const isGlobalSearch = qParam.trim().length > 0
+    
+    const filters: Record<string, string> = {}
+    SEARCH_FIELDS.forEach(field => {
+      const value = searchParams.get(field)
+      if (value) filters[field] = value
+    })
+    const hasFilters = Object.keys(filters).length > 0
+    
+    const isAnd = (searchParams.get('mode') || 'and') === 'and'
+    const isExact = (searchParams.get('match') || 'fuzzy') === 'exact'
+
+    console.log('fetchBooks called:', { qParam, isGlobalSearch, hasFilters })
 
     // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
-    if (hasGlobalSearch && !hasAdvancedFilters) {
-      const searchTerms = globalSearchQuery.toLowerCase().split(/\s+/).filter(t => t.length > 0)
+    if (isGlobalSearch && !hasFilters) {
+      const searchTerms = qParam.toLowerCase().split(/\s+/).filter(t => t.length > 0)
+      console.log('Global search terms:', searchTerms)
       
       // Fetch all books (no server-side filter for global search)
       const { data, error } = await supabase
@@ -371,6 +385,8 @@ export default function BooksPage() {
         return
       }
 
+      console.log('Fetched books count:', data?.length)
+
       // Client-side filter: each term must match somewhere in the book
       const filteredData = (data || []).filter((book: any) => {
         const searchableText = [
@@ -388,6 +404,8 @@ export default function BooksPage() {
         
         return searchTerms.every(term => searchableText.includes(term))
       })
+
+      console.log('Filtered books count:', filteredData.length)
 
       const formattedBooks: BookListItem[] = filteredData.map((book: any) => ({
         id: book.id,
@@ -449,7 +467,7 @@ export default function BooksPage() {
         )
       `)
 
-    if (hasAdvancedFilters) {
+    if (hasFilters) {
       if (isAnd) {
         // Text fields with =, != support
         if (filters.title) {
