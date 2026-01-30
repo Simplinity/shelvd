@@ -357,7 +357,10 @@ export default function BooksPage() {
     const isAnd = (searchParams.get('mode') || 'and') === 'and'
     const isExact = (searchParams.get('match') || 'fuzzy') === 'exact'
 
-    console.log('fetchBooks called:', { qParam, isGlobalSearch, hasFilters })
+    // DEBUG: Show alert so user can see what's happening
+    if (pageNum === 0) {
+      alert(`DEBUG fetchBooks:\nqParam: "${qParam}"\nisGlobalSearch: ${isGlobalSearch}\nhasFilters: ${hasFilters}\nURL: ${window.location.search}`)
+    }
 
     // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
     if (isGlobalSearch && !hasFilters) {
@@ -406,6 +409,9 @@ export default function BooksPage() {
       })
 
       console.log('Filtered books count:', filteredData.length)
+      
+      // DEBUG: Show filter results
+      alert(`DEBUG Filter Results:\nTotal fetched: ${data?.length}\nFiltered: ${filteredData.length}\nSearch terms: ${searchTerms.join(', ')}`)
 
       const formattedBooks: BookListItem[] = filteredData.map((book: any) => ({
         id: book.id,
