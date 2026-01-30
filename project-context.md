@@ -29,9 +29,9 @@ Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te behere
 | conditions | 9 | Boek conditie graderingen (Fine, VG, Good, etc.) |
 | bindings | 65 | Bindtypes (incl. Sewn softcover, Unbound) |
 | book_parts | 138 | Boekonderdelen (Title page, Colophon, etc.) |
-| book_formats | 152 | Formaten (Folio, Quarto, Octavo, etc.) |
+| book_formats | 152 (76 unique) | Formaten (Folio, Quarto, Octavo, etc.) |
 | languages | 85 | ISO 639 taalcodes |
-| contributor_roles | 138 | MARC relator codes (Author, Illustrator, etc.) |
+| contributor_roles | 138 (69 unique) | MARC relator codes (Author, Illustrator, etc.) |
 | dewey_classifications | 1,177 | Dewey Decimal classificaties |
 | bisac_codes | 3,887 | Book Industry Standards categorieën |
 
@@ -61,7 +61,8 @@ language_id         UUID → languages
 original_language_id UUID → languages
 series              TEXT
 series_number       TEXT
-status              TEXT (in_collection, for_sale, sold, lost)
+status              TEXT (in_collection, for_sale, sold, lost, etc.)
+action_needed       TEXT (none, repair, bind, replace)
 
 -- Publication
 publisher_name      TEXT (direct, geen FK)
@@ -78,16 +79,18 @@ edition_notes       TEXT
 
 -- Physical
 page_count          INTEGER
-pagination_description TEXT
+pagination_description TEXT (e.g. "xvi, [4], 352, [8] p., 24 plates")
 volumes             TEXT
 height_mm           INTEGER
 width_mm            INTEGER
 depth_mm            INTEGER
 weight_grams        INTEGER
-cover_type          TEXT (Hardcover, Softcover, etc.)
+cover_type          TEXT (45+ options: hardcover, softcover, full_leather, half_leather, etc.)
 binding_id          UUID → bindings
+format_id           UUID → book_formats (Folio, Quarto, Octavo, etc.)
 has_dust_jacket     BOOLEAN
 is_signed           BOOLEAN
+protective_enclosure TEXT (none, slipcase_publisher, slipcase_custom, clamshell_box, chemise, solander_box)
 
 -- Condition
 condition_id        INTEGER → conditions
@@ -101,6 +104,9 @@ lccn                TEXT
 ddc                 TEXT
 lcc                 TEXT
 udc                 TEXT
+bisac_code          TEXT (primary BISAC)
+bisac_code_2        TEXT (secondary BISAC)
+bisac_code_3        TEXT (tertiary BISAC)
 topic               TEXT
 
 -- Storage
@@ -160,7 +166,9 @@ shelvd/
 │       │   ├── (auth)/                 # Auth routes (login, register)
 │       │   └── page.tsx                # Homepage
 │       ├── components/
-│       │   └── ui/                     # shadcn/ui components
+│       │   ├── ui/                     # shadcn/ui components
+│       │   ├── bisac-combobox.tsx      # BISAC code search/select
+│       │   └── catalog-entry-generator.tsx # ISBD catalog entry generator
 │       └── lib/
 │           └── supabase/
 │               ├── client.ts
@@ -197,11 +205,38 @@ shelvd/
 
 ### /books/[id]/edit - Book Edit
 - ALLE velden zichtbaar (ook lege)
-- Dropdowns voor Language, Binding, Condition (met reference data)
-- Checkboxes voor Dust Jacket, Signed
-- Number inputs voor dimensions, prices
-- Textareas voor notes
+- **Dropdowns** voor:
+  - Language, Original Language (85 languages)
+  - Binding (65 types)
+  - Book Format (76 formats: Folio, Quarto, Octavo, etc.)
+  - Condition (9 grades)
+  - Cover Type (45+ options)
+  - Protective Enclosure (6 options)
+  - Status (13 options)
+  - Action Needed (4 options)
+- **BISAC Combobox** (searchable, 3,887 codes, batch loading bypasses 1000-row limit)
+- **Autocomplete dropdowns** voor: Series, Publisher, Acquired From, Storage Location, Shelf, Section, Publication Place, Printing Place
+- **Auto-resizing textareas** voor alle notes/descriptions
+- **Checkboxes** voor Dust Jacket, Signed
+- **Number inputs** voor dimensions, prices
+- **Catalog Entry Generator** button → generates ISBD-compliant entry
 - Save/Cancel knoppen
+
+### Catalog Entry Generator
+- **ISBD-compliant** (International Standard Bibliographic Description)
+- **4 talen**: English 🇬🇧, Français 🇫🇷, Deutsch 🇩🇪, Nederlands 🇳🇱
+- **8 ISBD Areas**:
+  1. Title & Statement of Responsibility (authors, translators, illustrators, etc.)
+  2. Edition (edition, impression)
+  3. Material-specific (not used for books)
+  4. Publication (place, publisher, year, printer)
+  5. Physical Description (pagination, dimensions, format, binding, cover)
+  6. Series (series name, number)
+  7. Notes (original title, bibliography, provenance, illustrations, signatures, condition)
+  8. Identifiers (ISBN, OCLC, LCCN)
+- **Standardized punctuation**: `. — ` between areas, ` : ` for subtitles, ` / ` for responsibility
+- **69 contributor roles** supported (Author, Co-author, Editor, Translator, Illustrator, Artist, Photographer, Colorist, Engraver, Woodcutter, etc.)
+- **45+ cover types** translated per language
 
 ## Import Status (FileMaker → Supabase)
 
@@ -286,10 +321,30 @@ python3 scripts/import_filemaker.py
   - Onzekere datums: "[1942]", "[1927-1928?]"
   - Historisch: "An VI De La République [1798]"
 
+### Cover Types (45+ options)
+Gestructureerd in categorieën:
+- **Basic**: softcover, hardcover (± dust jacket)
+- **Full leather**: leather, calf, vellum, morocco, faux leather
+- **Full cloth**: cloth, buckram, linen, silk, canvas, moiré
+- **Quarter binding**: leather-paper, leather-cloth, faux leather-paper, cloth-paper
+- **Half binding**: leather-paper, leather-cloth, faux leather-paper, cloth-paper
+- **Three-quarter binding**: leather-paper, leather-cloth, etc.
+- **Other**: cardboard, paper boards, library binding, original wraps, printed wrappers, limp leather/vellum
+
+### Book Formats (76 unique)
+Historische bibliografische formaten:
+- **Folio** (13): Atlas, Crown, Demy, Double Elephant, Elephant, Foolscap, Imperial, etc.
+- **Quarto** (10): Crown, Demy, Foolscap, Imperial, Large Post, etc.
+- **Octavo** (12): Crown, Demy, Foolscap, Imperial, Large Crown, etc.
+- **Duodecimo** (5), **Sextodecimo** (5), **Octodecimo** (3), etc.
+- **Modern** (8): A4, A5, A6, B5, B6, US Legal, US Letter, etc.
+- **Descriptive** (4): Elephant, Miniature, Oversize, Pocket
+- **Square** (3): Large, Medium, Small
+- **Other**: Accordion, Broadside, Broadsheet, Scroll
+
 ## TODO / Volgende Stappen
 
 ### High Priority
-- [ ] Fix TypeScript error in book-edit-form.tsx (as any toegevoegd)
 - [ ] Add book page (/books/add)
 - [ ] Contributors editing (add/remove from book)
 - [ ] Search/filter op books list
@@ -328,5 +383,15 @@ python3 scripts/import_filemaker.py
 - Book detail page
 - Book edit page (alle velden)
 
+### 2025-01-30 - Edit Form Enhancements
+- Cover types dropdown (45+ options, gestructureerd per categorie)
+- Protective enclosure dropdown (6 options)
+- Pagination text field (bibliografische notatie)
+- BISAC codes combobox met batch fetching (bypasses 1000-row limit)
+- Shelf/section autocomplete dropdowns
+- Auto-resizing textareas
+- Book Format dropdown (76 formats: Folio, Quarto, Octavo, etc.)
+- **Catalog Entry Generator** met ISBD-standaard en 4 talen (EN/FR/DE/NL)
+
 ---
-*Laatst bijgewerkt: 2025-01-29 23:30*
+*Laatst bijgewerkt: 2025-01-30 03:30*
