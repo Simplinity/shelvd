@@ -431,25 +431,23 @@ export default function BooksPage() {
         }
       }
 
-      // Client-side filter: for AND mode, each term must match somewhere
-      if (searchTerms.length > 1) {
-        allData = allData.filter((book: any) => {
-          const searchableText = [
-            book.title,
-            book.subtitle,
-            book.original_title,
-            book.series,
-            book.publisher_name,
-            book.publication_place,
-            book.notes,
-            book.isbn_13,
-            book.isbn_10,
-            ...(book.book_contributors || []).map((bc: any) => bc.contributor?.canonical_name || '')
-          ].filter(Boolean).join(' ').toLowerCase()
-          
-          return searchTerms.every(term => searchableText.includes(term))
-        })
-      }
+      // Client-side filter: each term must match somewhere in the book
+      allData = allData.filter((book: any) => {
+        const searchableText = [
+          book.title,
+          book.subtitle,
+          book.original_title,
+          book.series,
+          book.publisher_name,
+          book.publication_place,
+          book.notes,
+          book.isbn_13,
+          book.isbn_10,
+          ...(book.book_contributors || []).map((bc: any) => bc.contributor?.canonical_name || '')
+        ].filter(Boolean).join(' ').toLowerCase()
+        
+        return searchTerms.every(term => searchableText.includes(term))
+      })
 
       const formattedBooks: BookListItem[] = allData.map((book: any) => ({
         id: book.id,
