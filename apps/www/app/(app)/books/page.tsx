@@ -616,7 +616,7 @@ export default function BooksPage() {
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" asChild>
-                <Link href="/books/search">
+                <Link href={`/books/search?${searchParams.toString()}`}>
                   <Search className="w-3 h-3 mr-1" />
                   Modify Search
                 </Link>
@@ -694,7 +694,7 @@ export default function BooksPage() {
           {hasActiveFilters ? (
             <div className="flex gap-3 justify-center">
               <Button variant="outline" asChild>
-                <Link href="/books/search">Modify Search</Link>
+                <Link href={`/books/search?${searchParams.toString()}`}>Modify Search</Link>
               </Button>
               <Button variant="secondary" onClick={clearFilters}>
                 Clear Filters

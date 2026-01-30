@@ -140,13 +140,22 @@ function SearchSelect({
 type Props = {
   languages: { id: string; name_en: string }[]
   conditions: { id: string; name: string }[]
+  initialValues?: SearchFields
+  initialMode?: SearchMode
+  initialMatch?: MatchMode
 }
 
-export default function BookSearchForm({ languages, conditions }: Props) {
+export default function BookSearchForm({ 
+  languages, 
+  conditions,
+  initialValues,
+  initialMode = 'and',
+  initialMatch = 'fuzzy'
+}: Props) {
   const router = useRouter()
-  const [fields, setFields] = useState<SearchFields>(emptyFields)
-  const [searchMode, setSearchMode] = useState<SearchMode>('and')
-  const [matchMode, setMatchMode] = useState<MatchMode>('fuzzy')
+  const [fields, setFields] = useState<SearchFields>(initialValues || emptyFields)
+  const [searchMode, setSearchMode] = useState<SearchMode>(initialMode)
+  const [matchMode, setMatchMode] = useState<MatchMode>(initialMatch)
 
   const handleChange = (field: string, value: string) => {
     setFields(prev => ({ ...prev, [field]: value }))
