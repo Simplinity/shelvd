@@ -335,6 +335,10 @@ export default function BookSearchForm({
         {/* Search buttons at TOP */}
         <div className="mb-8 pt-4 border-t border-dashed border-red-200 dark:border-red-900/50">
           <SearchButtons />
+          {/* Tip for empty/not-empty search */}
+          <p className="mt-3 text-xs text-muted-foreground text-center">
+            💡 Tip: Type <code className="px-1 py-0.5 bg-muted rounded font-mono">=</code> to find empty fields, <code className="px-1 py-0.5 bg-muted rounded font-mono">!=</code> to find non-empty fields
+          </p>
         </div>
 
         {/* Search Fields */}

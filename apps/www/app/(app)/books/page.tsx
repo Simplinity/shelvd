@@ -30,6 +30,46 @@ type BookListItem = {
 
 const ITEMS_PER_PAGE = 250
 
+// Helper: Check if filter value is empty/not-empty syntax
+const isEmptySearch = (value: string) => value === '='
+const isNotEmptySearch = (value: string) => value === '!='
+const isSpecialSearch = (value: string) => isEmptySearch(value) || isNotEmptySearch(value)
+
+// Helper: Apply text field filter with support for =, !=, and normal search
+const applyTextFilter = (
+  query: any,
+  field: string,
+  value: string,
+  isExact: boolean
+) => {
+  if (isEmptySearch(value)) {
+    // Empty: NULL or empty string
+    return query.or(`${field}.is.null,${field}.eq.`)
+  } else if (isNotEmptySearch(value)) {
+    // Not empty: NOT NULL and NOT empty string
+    return query.not(field, 'is', null).neq(field, '')
+  } else {
+    // Normal search
+    return isExact 
+      ? query.ilike(field, value)
+      : query.ilike(field, `%${value}%`)
+  }
+}
+
+// Helper: Get OR condition string for text field
+const getOrCondition = (field: string, value: string, isExact: boolean): string | null => {
+  if (isEmptySearch(value)) {
+    return `${field}.is.null,${field}.eq.`
+  } else if (isNotEmptySearch(value)) {
+    // Can't easily do NOT conditions in OR mode, skip for now
+    return null
+  } else {
+    return isExact 
+      ? `${field}.ilike.${value}`
+      : `${field}.ilike.%${value}%`
+  }
+}
+
 const SEARCH_FIELDS = [
   'title', 'subtitle', 'original_title', 'series', 'author',
   'publisher_name', 'publication_place', 'publication_year',
@@ -337,53 +377,44 @@ export default function BooksPage() {
 
     if (hasAdvancedFilters) {
       if (isAnd) {
+        // Text fields with =, != support
         if (filters.title) {
-          query = isExact 
-            ? query.ilike('title', filters.title)
-            : query.ilike('title', `%${filters.title}%`)
+          query = applyTextFilter(query, 'title', filters.title, isExact)
         }
         if (filters.subtitle) {
-          query = isExact 
-            ? query.ilike('subtitle', filters.subtitle)
-            : query.ilike('subtitle', `%${filters.subtitle}%`)
+          query = applyTextFilter(query, 'subtitle', filters.subtitle, isExact)
         }
         if (filters.original_title) {
-          query = isExact 
-            ? query.ilike('original_title', filters.original_title)
-            : query.ilike('original_title', `%${filters.original_title}%`)
+          query = applyTextFilter(query, 'original_title', filters.original_title, isExact)
         }
         if (filters.series) {
-          query = isExact 
-            ? query.ilike('series', filters.series)
-            : query.ilike('series', `%${filters.series}%`)
+          query = applyTextFilter(query, 'series', filters.series, isExact)
         }
         if (filters.publisher_name) {
-          query = isExact 
-            ? query.ilike('publisher_name', filters.publisher_name)
-            : query.ilike('publisher_name', `%${filters.publisher_name}%`)
+          query = applyTextFilter(query, 'publisher_name', filters.publisher_name, isExact)
         }
         if (filters.publication_place) {
-          query = isExact 
-            ? query.ilike('publication_place', filters.publication_place)
-            : query.ilike('publication_place', `%${filters.publication_place}%`)
+          query = applyTextFilter(query, 'publication_place', filters.publication_place, isExact)
         }
         if (filters.publication_year) {
-          query = isExact 
-            ? query.ilike('publication_year', filters.publication_year)
-            : query.ilike('publication_year', `%${filters.publication_year}%`)
+          query = applyTextFilter(query, 'publication_year', filters.publication_year, isExact)
         }
         if (filters.storage_location) {
-          query = isExact 
-            ? query.ilike('storage_location', filters.storage_location)
-            : query.ilike('storage_location', `%${filters.storage_location}%`)
+          query = applyTextFilter(query, 'storage_location', filters.storage_location, isExact)
         }
         if (filters.shelf) {
-          query = isExact 
-            ? query.ilike('shelf', filters.shelf)
-            : query.ilike('shelf', `%${filters.shelf}%`)
+          query = applyTextFilter(query, 'shelf', filters.shelf, isExact)
         }
         if (filters.isbn) {
-          query = query.or(`isbn_13.ilike.%${filters.isbn}%,isbn_10.ilike.%${filters.isbn}%`)
+          if (isEmptySearch(filters.isbn)) {
+            // Both ISBN fields must be empty
+            query = query.or('isbn_13.is.null,isbn_13.eq.').or('isbn_10.is.null,isbn_10.eq.')
+          } else if (isNotEmptySearch(filters.isbn)) {
+            // At least one ISBN must have a value - use OR
+            query = query.or('isbn_13.neq.,isbn_10.neq.')
+          } else {
+            query = query.or(`isbn_13.ilike.%${filters.isbn}%,isbn_10.ilike.%${filters.isbn}%`)
+          }
         }
         if (filters.language) {
           query = query.eq('language_id', filters.language)
@@ -709,7 +740,16 @@ export default function BooksPage() {
       storage_location: 'Location',
       shelf: 'Shelf'
     }
-    return `${labels[key] || key}: "${value}"`
+    const fieldLabel = labels[key] || key
+    
+    // Special labels for empty/not-empty search
+    if (value === '=') {
+      return `${fieldLabel}: empty`
+    } else if (value === '!=') {
+      return `${fieldLabel}: not empty`
+    }
+    
+    return `${fieldLabel}: "${value}"`
   }
 
   return (
