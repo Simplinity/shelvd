@@ -108,7 +108,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
   }
 
   // Remove a contributor (mark as deleted or remove from list if new)
-  const handleRemoveContributor = (tempId: string) => {
+  const handleRemoveContributor = (tempId: string, contributorName: string) => {
+    if (!window.confirm(`Remove ${contributorName}?`)) return
+    
     setContributors(prev => prev.map(c => {
       if (c.tempId === tempId) {
         if (c.isNew) {
@@ -566,7 +568,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleRemoveContributor(c.tempId)}
+                    onClick={() => handleRemoveContributor(c.tempId, c.contributorName)}
                     className="p-1 text-muted-foreground hover:text-red-600 transition-colors"
                     title="Remove contributor"
                   >
