@@ -714,12 +714,13 @@ export default function BooksPage() {
   }, [books, loading, hasGlobalSearch, hasAdvancedFilters])
 
   useEffect(() => {
+    console.log('useEffect triggered, searchParams:', searchParams.toString())
     setPage(0)
     if (!hasGlobalSearch || hasAdvancedFilters) {
       fetchCount()
     }
     fetchBooks(0)
-  }, [searchParams])
+  }, [searchParams.toString()])
 
   const loadMore = () => {
     const nextPage = page + 1
