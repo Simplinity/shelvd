@@ -163,7 +163,10 @@ shelvd/
 │       ├── app/
 │       │   ├── (app)/                  # Authenticated routes
 │       │   │   ├── books/
-│       │   │   │   ├── page.tsx        # Books list (list/grid views, bulk delete)
+│       │   │   │   ├── page.tsx        # Books list (list/grid views, bulk delete, global search)
+│       │   │   │   ├── search/
+│       │   │   │   │   ├── page.tsx    # Advanced search page
+│       │   │   │   │   └── book-search-form.tsx  # Search form component
 │       │   │   │   └── [id]/
 │       │   │   │       ├── page.tsx    # Book detail (met delete button)
 │       │   │   │       ├── not-found.tsx
@@ -196,6 +199,16 @@ shelvd/
 ## Pagina's & Features
 
 ### /books - Collection List
+- **Global Search Bar**: Zoekt in alle tekstvelden (title, subtitle, original_title, series, author, publisher, place, notes, ISBN)
+  - Meerdere woorden = AND logica (alle termen moeten matchen)
+  - URL parameter: `?q=search+terms`
+  - Client-side filtering voor snelle resultaten
+- **Recent Searches Dropdown**: 
+  - Toont laatste 10 zoekopdrachten (localStorage)
+  - Ondersteunt global én advanced searches
+  - Toont aantal resultaten per zoekopdracht
+  - Delete individuele items of "Clear all"
+  - Click-outside sluit dropdown
 - **List View** (default): Tabel met Title, Author, Publisher, Place, Year, Status
   - Title beperkt tot 2 regels
   - Status badges met kleuren (In Col./For Sale/Sold/Lost)
@@ -208,6 +221,21 @@ shelvd/
   - Selection bar met count en "Delete Selected" button
   - Bulk delete met type-to-confirm modal ("delete N books")
 - Totaal count weergave
+- **Advanced Search link**: Knop naar /books/search
+
+### /books/search - Advanced Search
+- **14 zoekbare velden**: Title, Subtitle, Original Title, Series, Author, Publisher, Publication Place, Publication Year, Language, Condition, Status, ISBN, Storage Location, Shelf
+- **Search Modes**:
+  - AND (default): Alle criteria moeten matchen
+  - OR: Minstens één criterium moet matchen
+- **Match Types**:
+  - Contains/Fuzzy (default): Zoekt met `%term%`
+  - Exact: Zoekt exact match
+- **Empty Field Search**: 
+  - Type `=` om lege velden te vinden
+  - Type `!=` om niet-lege velden te vinden
+- **Modify Search**: Button om bestaande zoekcriteria aan te passen (behoudt huidige filters)
+- **Tip banner**: Legt `=` en `!=` syntax uit
 
 ### /books/[id] - Book Detail
 - Toont alleen ingevulde velden (lege velden verborgen)
@@ -389,7 +417,8 @@ Historische bibliografische formaten:
   - RLS uitbreiden zodat admins alle contributors kunnen bewerken
   - Verificatie workflow (`is_verified` flag)
 - [ ] Add book page (/books/add)
-- [ ] Search/filter op books list
+- [x] ~~Search/filter op books list~~ ✅ Geïmplementeerd (global + advanced search)
+- [ ] **Saved Searches** (Subtask 4) - Bewaar zoekopdrachten in database voor hergebruik
 
 ### 🟡 Medium Priority
 - [ ] Book cover image upload
@@ -445,5 +474,22 @@ Historische bibliografische formaten:
   - Nieuwe contributors worden aangemaakt met `created_by_user_id`
   - Catalog entry generator gebruikt bijgewerkte contributors
 
+### 2025-01-30 (avond) - Search Features
+- **Global Search Bar** (Subtask 1):
+  - Zoekt in title, subtitle, original_title, series, author, publisher_name, publication_place, notes, ISBN
+  - Meerdere woorden = AND logica
+  - Client-side filtering na fetch alle boeken
+- **Empty Field Search** (Subtask 2):
+  - `=` syntax voor lege velden
+  - `!=` syntax voor niet-lege velden
+  - Tip banner in UI
+- **Recent Searches** (Subtask 3):
+  - localStorage met max 10 items
+  - Dropdown bij focus op search bar
+  - Toont type (global/advanced), label, en resultaat count
+  - Delete individueel of "Clear all"
+- **Modify Search Fix**: Behoudt nu bestaande zoekcriteria
+- **Debugging**: Console.log statements toegevoegd voor searchParams issues
+
 ---
-*Laatst bijgewerkt: 2025-01-30 13:30*
+*Laatst bijgewerkt: 2025-01-30 18:30*
