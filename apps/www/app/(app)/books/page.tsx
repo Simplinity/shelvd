@@ -14,6 +14,7 @@ type RecentSearch = {
   label: string
   url: string
   timestamp: number
+  resultCount?: number
 }
 
 const RECENT_SEARCHES_KEY = 'shelvd_recent_searches'
@@ -194,18 +195,21 @@ export default function BooksPage() {
     setRecentSearches(getRecentSearches())
   }, [])
 
-  // Save search to recent searches when URL has search params
+  // Save search to recent searches AFTER results are loaded
   useEffect(() => {
+    if (loading) return // Wait for results
+    
     if (hasGlobalSearch && !hasAdvancedFilters) {
-      // Save global search
+      // Save global search with result count
       saveRecentSearch({
         type: 'global',
         label: globalSearchQuery,
-        url: `/books?q=${encodeURIComponent(globalSearchQuery)}`
+        url: `/books?q=${encodeURIComponent(globalSearchQuery)}`,
+        resultCount: books.length
       })
       setRecentSearches(getRecentSearches())
     } else if (hasAdvancedFilters) {
-      // Save advanced search
+      // Save advanced search with result count
       const filterLabels = Object.entries(activeFilters)
         .map(([key, value]) => {
           const shortKey = key.replace('_name', '').replace('publication_', '')
@@ -218,11 +222,12 @@ export default function BooksPage() {
       saveRecentSearch({
         type: 'advanced',
         label,
-        url: `/books?${searchParams.toString()}`
+        url: `/books?${searchParams.toString()}`,
+        resultCount: totalCount || books.length
       })
       setRecentSearches(getRecentSearches())
     }
-  }, [searchParams.toString()])
+  }, [loading, books.length, totalCount])
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -993,6 +998,11 @@ export default function BooksPage() {
                       {search.type === 'advanced' && (
                         <span className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground flex-shrink-0">
                           Advanced
+                        </span>
+                      )}
+                      {search.resultCount !== undefined && (
+                        <span className="text-[10px] text-muted-foreground flex-shrink-0">
+                          ({search.resultCount})
                         </span>
                       )}
                     </div>
