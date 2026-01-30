@@ -126,6 +126,76 @@ export default async function BookDetailPage({ params }: PageProps) {
     return null
   }
 
+  // Format cover type from snake_case to readable
+  const formatCoverType = (coverType: string | null) => {
+    if (!coverType) return null
+    const coverTypeMap: Record<string, string> = {
+      'softcover': 'Softcover',
+      'softcover_dj': 'Softcover with dust jacket',
+      'hardcover': 'Hardcover',
+      'hardcover_dj': 'Hardcover with dust jacket',
+      'full_leather_hardcover': 'Full leather hardcover',
+      'full_leather_softcover': 'Full leather softcover',
+      'full_calf_hardcover': 'Full calf hardcover',
+      'full_calf_softcover': 'Full calf softcover',
+      'full_vellum_hardcover': 'Full vellum hardcover',
+      'full_vellum_softcover': 'Full vellum softcover',
+      'full_morocco_hardcover': 'Full morocco hardcover',
+      'full_morocco_softcover': 'Full morocco softcover',
+      'full_faux_leather_hardcover': 'Full faux leather hardcover',
+      'full_faux_leather_softcover': 'Full faux leather softcover',
+      'full_cloth_hardcover': 'Full cloth hardcover',
+      'full_cloth_softcover': 'Full cloth softcover',
+      'full_buckram_hardcover': 'Full buckram hardcover',
+      'full_buckram_softcover': 'Full buckram softcover',
+      'full_linen_hardcover': 'Full linen hardcover',
+      'full_linen_softcover': 'Full linen softcover',
+      'full_silk_hardcover': 'Full silk hardcover',
+      'full_silk_softcover': 'Full silk softcover',
+      'full_canvas_hardcover': 'Full canvas hardcover',
+      'full_canvas_softcover': 'Full canvas softcover',
+      'full_moire_hardcover': 'Full moiré hardcover',
+      'full_moire_softcover': 'Full moiré softcover',
+      'quarter_leather_paper': 'Quarter binding (leather-paper)',
+      'quarter_leather_cloth': 'Quarter binding (leather-cloth)',
+      'quarter_faux_leather_paper': 'Quarter binding (faux leather-paper)',
+      'quarter_faux_leather_cloth': 'Quarter binding (faux leather-cloth)',
+      'quarter_cloth_paper': 'Quarter binding (cloth-paper)',
+      'half_leather_paper': 'Half binding (leather-paper)',
+      'half_leather_cloth': 'Half binding (leather-cloth)',
+      'half_faux_leather_paper': 'Half binding (faux leather-paper)',
+      'half_faux_leather_cloth': 'Half binding (faux leather-cloth)',
+      'half_cloth_paper': 'Half binding (cloth-paper)',
+      'three_quarter_leather_paper': 'Three quarter binding (leather-paper)',
+      'three_quarter_leather_cloth': 'Three quarter binding (leather-cloth)',
+      'three_quarter_faux_leather_paper': 'Three quarter binding (faux leather-paper)',
+      'three_quarter_faux_leather_cloth': 'Three quarter binding (faux leather-cloth)',
+      'three_quarter_cloth_paper': 'Three quarter binding (cloth-paper)',
+      'cardboard_covers': 'Cardboard covers',
+      'paper_boards': 'Paper boards',
+      'library_binding': 'Library binding',
+      'original_wraps': 'Original wraps',
+      'printed_wrappers': 'Printed wrappers',
+      'stiff_wraps': 'Stiff wraps',
+      'limp_leather': 'Limp leather',
+      'limp_vellum': 'Limp vellum',
+    }
+    return coverTypeMap[coverType] || coverType
+  }
+
+  // Format protective enclosure
+  const formatProtectiveEnclosure = (enclosure: string | null) => {
+    if (!enclosure || enclosure === 'none') return null
+    const enclosureMap: Record<string, string> = {
+      'slipcase_publisher': "Slipcase (publisher's)",
+      'slipcase_custom': 'Slipcase (custom)',
+      'clamshell_box': 'Clamshell box',
+      'chemise': 'Chemise',
+      'solander_box': 'Solander box',
+    }
+    return enclosureMap[enclosure] || enclosure
+  }
+
   // Status display helper
   const getStatusDisplay = (status: string) => {
     const statusMap: Record<string, { label: string; className: string }> = {
@@ -279,19 +349,22 @@ export default async function BookDetailPage({ params }: PageProps) {
         )}
 
         {/* 5. Physical Description */}
-        {(bookData.page_count || bookData.volumes || formatDimensions() || formatWeight() || bookData.cover_type || bookData.binding?.name || bookData.has_dust_jacket || bookData.is_signed || bookData.pagination_description || bookData.pagination) && (
+        {(bookData.pagination_description || bookData.page_count || bookData.volumes || formatDimensions() || formatWeight() || bookData.cover_type || bookData.binding?.name || bookData.protective_enclosure || bookData.has_dust_jacket || bookData.is_signed) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Pages" value={bookData.page_count} />
+              <Field label="Pagination" value={bookData.pagination_description || bookData.pagination} className="col-span-2" />
               <Field label="Volumes" value={bookData.volumes} />
+              <div /> {/* Empty cell */}
               <Field label="Dimensions" value={formatDimensions()} />
               <Field label="Weight" value={formatWeight()} />
-              <Field label="Cover Type" value={bookData.cover_type} />
-              <Field label="Binding" value={bookData.binding?.name} />
+              <div /> {/* Empty cell */}
+              <div /> {/* Empty cell */}
+              <Field label="Cover Type" value={formatCoverType(bookData.cover_type)} className="col-span-2" />
+              <Field label="Binding" value={bookData.binding?.name} className="col-span-2" />
+              <Field label="Protective Enclosure" value={formatProtectiveEnclosure(bookData.protective_enclosure)} className="col-span-2" />
               <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
               <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />
-              <Field label="Pagination" value={bookData.pagination_description || bookData.pagination} className="col-span-2" />
             </dl>
           </section>
         )}

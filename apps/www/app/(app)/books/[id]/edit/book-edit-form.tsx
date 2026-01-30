@@ -79,6 +79,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           binding_id: formData.binding_id || null,
           has_dust_jacket: formData.has_dust_jacket,
           is_signed: formData.is_signed,
+          protective_enclosure: (formData as any).protective_enclosure || 'none',
           condition_id: formData.condition_id || null,
           condition_notes: formData.condition_notes || null,
           isbn_13: formData.isbn_13 || null,
@@ -251,6 +252,76 @@ export default function BookEditForm({ book, referenceData }: Props) {
     { value: 'replace', label: 'Replace' },
   ]
 
+  // Cover type options
+  const coverTypeOptions = [
+    // Basic
+    { value: 'softcover', label: 'Softcover' },
+    { value: 'softcover_dj', label: 'Softcover with dust jacket' },
+    { value: 'hardcover', label: 'Hardcover' },
+    { value: 'hardcover_dj', label: 'Hardcover with dust jacket' },
+    // Full leather
+    { value: 'full_leather_hardcover', label: 'Full leather hardcover' },
+    { value: 'full_leather_softcover', label: 'Full leather softcover' },
+    { value: 'full_calf_hardcover', label: 'Full calf hardcover' },
+    { value: 'full_calf_softcover', label: 'Full calf softcover' },
+    { value: 'full_vellum_hardcover', label: 'Full vellum hardcover' },
+    { value: 'full_vellum_softcover', label: 'Full vellum softcover' },
+    { value: 'full_morocco_hardcover', label: 'Full morocco hardcover' },
+    { value: 'full_morocco_softcover', label: 'Full morocco softcover' },
+    { value: 'full_faux_leather_hardcover', label: 'Full faux leather hardcover' },
+    { value: 'full_faux_leather_softcover', label: 'Full faux leather softcover' },
+    // Full cloth
+    { value: 'full_cloth_hardcover', label: 'Full cloth hardcover' },
+    { value: 'full_cloth_softcover', label: 'Full cloth softcover' },
+    { value: 'full_buckram_hardcover', label: 'Full buckram hardcover' },
+    { value: 'full_buckram_softcover', label: 'Full buckram softcover' },
+    { value: 'full_linen_hardcover', label: 'Full linen hardcover' },
+    { value: 'full_linen_softcover', label: 'Full linen softcover' },
+    { value: 'full_silk_hardcover', label: 'Full silk hardcover' },
+    { value: 'full_silk_softcover', label: 'Full silk softcover' },
+    { value: 'full_canvas_hardcover', label: 'Full canvas hardcover' },
+    { value: 'full_canvas_softcover', label: 'Full canvas softcover' },
+    { value: 'full_moire_hardcover', label: 'Full moiré hardcover' },
+    { value: 'full_moire_softcover', label: 'Full moiré softcover' },
+    // Quarter binding
+    { value: 'quarter_leather_paper', label: 'Quarter binding (leather-paper)' },
+    { value: 'quarter_leather_cloth', label: 'Quarter binding (leather-cloth)' },
+    { value: 'quarter_faux_leather_paper', label: 'Quarter binding (faux leather-paper)' },
+    { value: 'quarter_faux_leather_cloth', label: 'Quarter binding (faux leather-cloth)' },
+    { value: 'quarter_cloth_paper', label: 'Quarter binding (cloth-paper)' },
+    // Half binding
+    { value: 'half_leather_paper', label: 'Half binding (leather-paper)' },
+    { value: 'half_leather_cloth', label: 'Half binding (leather-cloth)' },
+    { value: 'half_faux_leather_paper', label: 'Half binding (faux leather-paper)' },
+    { value: 'half_faux_leather_cloth', label: 'Half binding (faux leather-cloth)' },
+    { value: 'half_cloth_paper', label: 'Half binding (cloth-paper)' },
+    // Three quarter binding
+    { value: 'three_quarter_leather_paper', label: 'Three quarter binding (leather-paper)' },
+    { value: 'three_quarter_leather_cloth', label: 'Three quarter binding (leather-cloth)' },
+    { value: 'three_quarter_faux_leather_paper', label: 'Three quarter binding (faux leather-paper)' },
+    { value: 'three_quarter_faux_leather_cloth', label: 'Three quarter binding (faux leather-cloth)' },
+    { value: 'three_quarter_cloth_paper', label: 'Three quarter binding (cloth-paper)' },
+    // Other
+    { value: 'cardboard_covers', label: 'Cardboard covers' },
+    { value: 'paper_boards', label: 'Paper boards' },
+    { value: 'library_binding', label: 'Library binding' },
+    { value: 'original_wraps', label: 'Original wraps' },
+    { value: 'printed_wrappers', label: 'Printed wrappers' },
+    { value: 'stiff_wraps', label: 'Stiff wraps' },
+    { value: 'limp_leather', label: 'Limp leather' },
+    { value: 'limp_vellum', label: 'Limp vellum' },
+  ]
+
+  // Protective enclosure options
+  const protectiveEnclosureOptions = [
+    { value: 'none', label: 'None' },
+    { value: 'slipcase_publisher', label: "Slipcase (publisher's)" },
+    { value: 'slipcase_custom', label: 'Slipcase (custom)' },
+    { value: 'clamshell_box', label: 'Clamshell box' },
+    { value: 'chemise', label: 'Chemise' },
+    { value: 'solander_box', label: 'Solander box' },
+  ]
+
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
@@ -357,22 +428,56 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <NumberInput label="Pages" field="page_count" />
+            {/* Pagination - text field, double width */}
+            <div className="col-span-2">
+              <label className="block text-xs uppercase tracking-wide text-muted-foreground mb-1">Pagination</label>
+              <input
+                type="text"
+                value={(formData.pagination_description as string) || ''}
+                onChange={e => handleChange('pagination_description', e.target.value)}
+                placeholder="e.g. xvi, [4], 352, [8] p., 24 plates"
+                className="w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
             <TextInput label="Volumes" field="volumes" />
+            <div /> {/* Empty cell for alignment */}
+            
+            {/* Height, Width, Depth, Weight on same row */}
             <NumberInput label="Height (mm)" field="height_mm" />
             <NumberInput label="Width (mm)" field="width_mm" />
             <NumberInput label="Depth (mm)" field="depth_mm" />
             <NumberInput label="Weight (g)" field="weight_grams" />
-            <TextInput label="Cover Type" field="cover_type" placeholder="e.g. Hardcover, Softcover" />
-            <Select 
-              label="Binding" 
-              field="binding_id" 
-              options={referenceData.bindings.map(b => ({ value: b.id, label: b.name }))} 
-            />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <TextInput label="Pagination Description" field="pagination_description" />
-            <div className="flex items-end gap-6">
+            
+            {/* Cover Type - dropdown, double width */}
+            <div className="col-span-2">
+              <Select 
+                label="Cover Type" 
+                field="cover_type" 
+                options={coverTypeOptions}
+              />
+            </div>
+            
+            {/* Binding - double width */}
+            <div className="col-span-2">
+              <Select 
+                label="Binding" 
+                field="binding_id" 
+                options={referenceData.bindings.map(b => ({ value: b.id, label: b.name }))} 
+              />
+            </div>
+            
+            {/* Protective Enclosure - double width */}
+            <div className="col-span-2">
+              <Select 
+                label="Protective Enclosure" 
+                field="protective_enclosure" 
+                options={protectiveEnclosureOptions}
+                allowEmpty={false}
+              />
+            </div>
+            
+            {/* Checkboxes */}
+            <div className="col-span-2 flex items-end gap-6">
               <Checkbox label="Has Dust Jacket" field="has_dust_jacket" />
               <Checkbox label="Signed" field="is_signed" />
             </div>
@@ -389,10 +494,11 @@ export default function BookEditForm({ book, referenceData }: Props) {
               options={referenceData.conditions.map(c => ({ value: c.id, label: c.name }))} 
             />
             <Select label="Status" field="status" options={statusOptions} allowEmpty={false} />
-            <div className="md:col-span-1">
-              <TextArea label="Condition Notes" field="condition_notes" rows={2} />
-            </div>
             <Select label="Action Needed" field="action_needed" options={actionNeededOptions} allowEmpty={false} />
+            <div /> {/* Empty cell for alignment */}
+            <div className="md:col-span-2">
+              <TextArea label="Condition Notes" field="condition_notes" rows={4} />
+            </div>
           </div>
         </section>
 
