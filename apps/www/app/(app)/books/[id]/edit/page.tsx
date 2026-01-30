@@ -53,6 +53,7 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: bindings },
     { data: bookFormats },
     bisacCodes,
+    { data: bookContributors },
     { data: seriesData },
     { data: publisherData },
     { data: acquiredFromData },
@@ -67,6 +68,14 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('bindings').select('id, name').order('name'),
     supabase.from('book_formats').select('id, type, name, abbreviation').order('type').order('name'),
     fetchAllBisacCodes(),
+    // Fetch contributors for this book
+    supabase
+      .from('book_contributors')
+      .select(`
+        contributor:contributors ( canonical_name ),
+        role:contributor_roles ( name )
+      `)
+      .eq('book_id', id),
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
@@ -104,12 +113,19 @@ export default async function BookEditPage({ params }: PageProps) {
     return [...new Set((data || []).map(item => item[field]).filter(Boolean))] as string[]
   }
 
+  // Transform contributors for catalog entry
+  const contributors = (bookContributors || []).map((bc: any) => ({
+    name: bc.contributor?.canonical_name || '',
+    role: bc.role?.name || ''
+  })).filter((c: any) => c.name && c.role)
+
   const referenceData = {
     languages: languages || [],
     conditions: conditions || [],
     bindings: uniqueBindings,
     bookFormats: uniqueFormats,
     bisacCodes: bisacCodes,
+    contributors: contributors,
     seriesList: getUniqueValues(seriesData, 'series'),
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
     acquiredFromList: getUniqueValues(acquiredFromData, 'acquired_from'),

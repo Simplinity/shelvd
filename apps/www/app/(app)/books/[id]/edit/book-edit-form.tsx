@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
+import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
 import type { Tables } from '@/lib/supabase/database.types'
 
@@ -15,6 +16,7 @@ type Condition = { id: string; name: string }
 type Binding = { id: string; name: string }
 type BookFormat = { id: string; type: string | null; name: string; abbreviation: string | null }
 type BisacCode = { code: string; subject: string }
+type Contributor = { name: string; role: string }
 
 type ReferenceData = {
   languages: Language[]
@@ -22,6 +24,7 @@ type ReferenceData = {
   bindings: Binding[]
   bookFormats: BookFormat[]
   bisacCodes: BisacCode[]
+  contributors: Contributor[]
   seriesList: string[]
   publisherList: string[]
   acquiredFromList: string[]
@@ -656,6 +659,49 @@ export default function BookEditForm({ book, referenceData }: Props) {
         {/* 13. Catalog Entry */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
+          <div className="mb-4">
+            <CatalogEntryGenerator
+              book={{
+                title: formData.title,
+                subtitle: formData.subtitle,
+                original_title: formData.original_title,
+                series: formData.series,
+                series_number: formData.series_number,
+                publisher_name: formData.publisher_name,
+                publication_place: formData.publication_place,
+                publication_year: formData.publication_year,
+                printer: formData.printer,
+                printing_place: formData.printing_place,
+                edition: formData.edition,
+                impression: formData.impression,
+                issue_state: formData.issue_state,
+                edition_notes: formData.edition_notes,
+                pagination_description: formData.pagination_description,
+                page_count: formData.page_count,
+                volumes: formData.volumes,
+                height_mm: formData.height_mm,
+                width_mm: formData.width_mm,
+                cover_type: formData.cover_type,
+                binding_name: referenceData.bindings.find(b => b.id === formData.binding_id)?.name || null,
+                format_name: referenceData.bookFormats.find(f => f.id === formData.format_id)?.name || null,
+                format_abbreviation: referenceData.bookFormats.find(f => f.id === formData.format_id)?.abbreviation || null,
+                has_dust_jacket: formData.has_dust_jacket,
+                is_signed: formData.is_signed,
+                condition_name: referenceData.conditions.find(c => c.id === formData.condition_id)?.name || null,
+                condition_notes: formData.condition_notes,
+                bibliography: formData.bibliography,
+                provenance: formData.provenance,
+                illustrations_description: formData.illustrations_description,
+                signatures_description: formData.signatures_description,
+                isbn_13: formData.isbn_13,
+                isbn_10: formData.isbn_10,
+                oclc_number: formData.oclc_number,
+                lccn: formData.lccn,
+                contributors: referenceData.contributors,
+              }}
+              onGenerate={(entry) => handleChange('catalog_entry', entry)}
+            />
+          </div>
           <TextArea label="Full Catalog Entry" field="catalog_entry" rows={4} />
         </section>
 
