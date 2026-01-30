@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -10,12 +11,19 @@ type BookListItem = {
   id: string
   title: string
   subtitle: string | null
+  original_title: string | null
   publication_year: string | null
   publication_place: string | null
   publisher: string | null
   status: string
   cover_type: string | null
-  condition_id: number | null
+  condition_id: string | null
+  language_id: string | null
+  storage_location: string | null
+  shelf: string | null
+  isbn_13: string | null
+  isbn_10: string | null
+  series: string | null
   user_catalog_id: string | null
   // Joined data
   contributors: { name: string; role: string }[]
@@ -23,7 +31,17 @@ type BookListItem = {
 
 const ITEMS_PER_PAGE = 250
 
+// Fields that can be searched
+const SEARCH_FIELDS = [
+  'title', 'subtitle', 'original_title', 'series', 'author',
+  'publisher_name', 'publication_place', 'publication_year',
+  'language', 'condition', 'status', 'isbn', 'storage_location', 'shelf'
+]
+
 export default function BooksPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  
   const [books, setBooks] = useState<BookListItem[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -41,7 +59,27 @@ export default function BooksPage() {
 
   const supabase = createClient()
 
-  // Fetch books
+  // Get active search filters from URL
+  const getActiveFilters = () => {
+    const filters: Record<string, string> = {}
+    SEARCH_FIELDS.forEach(field => {
+      const value = searchParams.get(field)
+      if (value) filters[field] = value
+    })
+    return filters
+  }
+
+  const activeFilters = getActiveFilters()
+  const hasActiveFilters = Object.keys(activeFilters).length > 0
+  const searchMode = searchParams.get('mode') || 'and'
+  const matchMode = searchParams.get('match') || 'fuzzy'
+
+  // Clear all filters
+  const clearFilters = () => {
+    router.push('/books')
+  }
+
+  // Fetch books with filters
   const fetchBooks = async (pageNum: number, append = false) => {
     if (pageNum === 0) setLoading(true)
     else setLoadingMore(true)
@@ -49,32 +87,197 @@ export default function BooksPage() {
     const from = pageNum * ITEMS_PER_PAGE
     const to = from + ITEMS_PER_PAGE - 1
 
-    const { data, error } = await supabase
+    // Start with base query
+    let query = supabase
       .from('books')
       .select(`
-        id, title, subtitle, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, user_catalog_id,
+        id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+        status, cover_type, condition_id, language_id, user_catalog_id, series,
+        storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
           role:contributor_roles ( name )
         )
       `)
-      .order('title', { ascending: true })
-      .range(from, to)
+
+    // Apply filters
+    if (hasActiveFilters) {
+      const filters = activeFilters
+      const isAnd = searchMode === 'and'
+      const isExact = matchMode === 'exact'
+
+      // For OR mode, we need to use .or() - for AND mode, chain .ilike() or .eq()
+      if (isAnd) {
+        // AND mode: chain filters
+        if (filters.title) {
+          query = isExact 
+            ? query.ilike('title', filters.title)
+            : query.ilike('title', `%${filters.title}%`)
+        }
+        if (filters.subtitle) {
+          query = isExact 
+            ? query.ilike('subtitle', filters.subtitle)
+            : query.ilike('subtitle', `%${filters.subtitle}%`)
+        }
+        if (filters.original_title) {
+          query = isExact 
+            ? query.ilike('original_title', filters.original_title)
+            : query.ilike('original_title', `%${filters.original_title}%`)
+        }
+        if (filters.series) {
+          query = isExact 
+            ? query.ilike('series', filters.series)
+            : query.ilike('series', `%${filters.series}%`)
+        }
+        if (filters.publisher_name) {
+          query = isExact 
+            ? query.ilike('publisher_name', filters.publisher_name)
+            : query.ilike('publisher_name', `%${filters.publisher_name}%`)
+        }
+        if (filters.publication_place) {
+          query = isExact 
+            ? query.ilike('publication_place', filters.publication_place)
+            : query.ilike('publication_place', `%${filters.publication_place}%`)
+        }
+        if (filters.publication_year) {
+          query = isExact 
+            ? query.ilike('publication_year', filters.publication_year)
+            : query.ilike('publication_year', `%${filters.publication_year}%`)
+        }
+        if (filters.storage_location) {
+          query = isExact 
+            ? query.ilike('storage_location', filters.storage_location)
+            : query.ilike('storage_location', `%${filters.storage_location}%`)
+        }
+        if (filters.shelf) {
+          query = isExact 
+            ? query.ilike('shelf', filters.shelf)
+            : query.ilike('shelf', `%${filters.shelf}%`)
+        }
+        if (filters.isbn) {
+          // Search both ISBN fields
+          query = query.or(`isbn_13.ilike.%${filters.isbn}%,isbn_10.ilike.%${filters.isbn}%`)
+        }
+        if (filters.language) {
+          query = query.eq('language_id', filters.language)
+        }
+        if (filters.condition) {
+          query = query.eq('condition_id', filters.condition)
+        }
+        if (filters.status) {
+          query = query.eq('status', filters.status)
+        }
+      } else {
+        // OR mode: build .or() string
+        const orConditions: string[] = []
+        
+        if (filters.title) {
+          orConditions.push(isExact 
+            ? `title.ilike.${filters.title}`
+            : `title.ilike.%${filters.title}%`)
+        }
+        if (filters.subtitle) {
+          orConditions.push(isExact 
+            ? `subtitle.ilike.${filters.subtitle}`
+            : `subtitle.ilike.%${filters.subtitle}%`)
+        }
+        if (filters.original_title) {
+          orConditions.push(isExact 
+            ? `original_title.ilike.${filters.original_title}`
+            : `original_title.ilike.%${filters.original_title}%`)
+        }
+        if (filters.series) {
+          orConditions.push(isExact 
+            ? `series.ilike.${filters.series}`
+            : `series.ilike.%${filters.series}%`)
+        }
+        if (filters.publisher_name) {
+          orConditions.push(isExact 
+            ? `publisher_name.ilike.${filters.publisher_name}`
+            : `publisher_name.ilike.%${filters.publisher_name}%`)
+        }
+        if (filters.publication_place) {
+          orConditions.push(isExact 
+            ? `publication_place.ilike.${filters.publication_place}`
+            : `publication_place.ilike.%${filters.publication_place}%`)
+        }
+        if (filters.publication_year) {
+          orConditions.push(isExact 
+            ? `publication_year.ilike.${filters.publication_year}`
+            : `publication_year.ilike.%${filters.publication_year}%`)
+        }
+        if (filters.storage_location) {
+          orConditions.push(isExact 
+            ? `storage_location.ilike.${filters.storage_location}`
+            : `storage_location.ilike.%${filters.storage_location}%`)
+        }
+        if (filters.shelf) {
+          orConditions.push(isExact 
+            ? `shelf.ilike.${filters.shelf}`
+            : `shelf.ilike.%${filters.shelf}%`)
+        }
+        if (filters.isbn) {
+          orConditions.push(`isbn_13.ilike.%${filters.isbn}%`)
+          orConditions.push(`isbn_10.ilike.%${filters.isbn}%`)
+        }
+        if (filters.language) {
+          orConditions.push(`language_id.eq.${filters.language}`)
+        }
+        if (filters.condition) {
+          orConditions.push(`condition_id.eq.${filters.condition}`)
+        }
+        if (filters.status) {
+          orConditions.push(`status.eq.${filters.status}`)
+        }
+        
+        if (orConditions.length > 0) {
+          query = query.or(orConditions.join(','))
+        }
+      }
+    }
+
+    // Add ordering and pagination
+    query = query.order('title', { ascending: true }).range(from, to)
+
+    const { data, error } = await query
 
     if (error) {
       console.error('Error fetching books:', error)
     } else if (data) {
-      const formattedBooks: BookListItem[] = data.map((book: any) => ({
+      // Client-side filter for author (requires join data)
+      let filteredData = data
+      if (activeFilters.author) {
+        const authorSearch = activeFilters.author.toLowerCase()
+        filteredData = data.filter((book: any) => {
+          const hasMatch = (book.book_contributors || []).some((bc: any) => {
+            const name = bc.contributor?.canonical_name || ''
+            return matchMode === 'exact'
+              ? name.toLowerCase() === authorSearch
+              : name.toLowerCase().includes(authorSearch)
+          })
+          // In OR mode, include if matches OR other filters matched (already in data)
+          // In AND mode, must match author too
+          return searchMode === 'or' ? hasMatch || !activeFilters.author : hasMatch
+        })
+      }
+
+      const formattedBooks: BookListItem[] = filteredData.map((book: any) => ({
         id: book.id,
         title: book.title,
         subtitle: book.subtitle,
+        original_title: book.original_title,
         publication_year: book.publication_year,
         publication_place: book.publication_place,
         publisher: book.publisher_name,
         status: book.status,
         cover_type: book.cover_type,
         condition_id: book.condition_id,
+        language_id: book.language_id,
+        storage_location: book.storage_location,
+        shelf: book.shelf,
+        isbn_13: book.isbn_13,
+        isbn_10: book.isbn_10,
+        series: book.series,
         user_catalog_id: book.user_catalog_id,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
@@ -93,18 +296,36 @@ export default function BooksPage() {
     setLoadingMore(false)
   }
 
-  // Get total count
+  // Get total count (with filters)
   const fetchCount = async () => {
-    const { count } = await supabase
-      .from('books')
-      .select('*', { count: 'exact', head: true })
+    let query = supabase.from('books').select('*', { count: 'exact', head: true })
+    
+    // Apply same filters for count
+    if (hasActiveFilters) {
+      const filters = activeFilters
+      const isAnd = searchMode === 'and'
+      const isExact = matchMode === 'exact'
+      
+      // Simplified - just check main text fields for count
+      if (isAnd) {
+        if (filters.title) query = query.ilike('title', isExact ? filters.title : `%${filters.title}%`)
+        if (filters.publisher_name) query = query.ilike('publisher_name', isExact ? filters.publisher_name : `%${filters.publisher_name}%`)
+        if (filters.language) query = query.eq('language_id', filters.language)
+        if (filters.condition) query = query.eq('condition_id', filters.condition)
+        if (filters.status) query = query.eq('status', filters.status)
+      }
+    }
+    
+    const { count } = await query
     setTotalCount(count || 0)
   }
 
+  // Re-fetch when search params change
   useEffect(() => {
+    setPage(0)
     fetchCount()
     fetchBooks(0)
-  }, [])
+  }, [searchParams])
 
   const loadMore = () => {
     const nextPage = page + 1
@@ -206,6 +427,27 @@ export default function BooksPage() {
   const confirmTextExpected = selectedCount === 1 ? 'delete' : `delete ${selectedCount} books`
   const isConfirmValid = confirmText.toLowerCase() === confirmTextExpected.toLowerCase()
 
+  // Get filter label for display
+  const getFilterLabel = (key: string, value: string) => {
+    const labels: Record<string, string> = {
+      title: 'Title',
+      subtitle: 'Subtitle',
+      original_title: 'Original Title',
+      series: 'Series',
+      author: 'Author',
+      publisher_name: 'Publisher',
+      publication_place: 'Place',
+      publication_year: 'Year',
+      language: 'Language',
+      condition: 'Condition',
+      status: 'Status',
+      isbn: 'ISBN',
+      storage_location: 'Location',
+      shelf: 'Shelf'
+    }
+    return `${labels[key] || key}: "${value}"`
+  }
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -221,11 +463,15 @@ export default function BooksPage() {
       {/* Page header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">My Collection</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
+            {hasActiveFilters ? 'Search Results' : 'My Collection'}
+          </h1>
           <p className="text-muted-foreground">
-            {totalCount === 0 
-              ? "You haven't added any books yet"
-              : `${totalCount.toLocaleString()} ${totalCount === 1 ? 'book' : 'books'} in your collection`
+            {hasActiveFilters 
+              ? `Found ${totalCount.toLocaleString()} ${totalCount === 1 ? 'book' : 'books'}`
+              : totalCount === 0 
+                ? "You haven't added any books yet"
+                : `${totalCount.toLocaleString()} ${totalCount === 1 ? 'book' : 'books'} in your collection`
             }
           </p>
         </div>
@@ -257,6 +503,13 @@ export default function BooksPage() {
             <CheckSquare className="w-4 h-4" />
             {selectionMode ? 'Cancel' : 'Select'}
           </Button>
+          {/* Search button */}
+          <Button variant="outline" asChild className="gap-2">
+            <Link href="/books/search">
+              <Search className="w-4 h-4" />
+              Search
+            </Link>
+          </Button>
           <Button asChild>
             <Link href="/books/add" className="gap-2">
               <Plus className="w-4 h-4" />
@@ -265,6 +518,48 @@ export default function BooksPage() {
           </Button>
         </div>
       </div>
+
+      {/* Active filters bar */}
+      {hasActiveFilters && (
+        <div className="mb-6 p-4 bg-red-50/50 dark:bg-red-950/20 border border-dashed border-red-200 dark:border-red-900/50">
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-red-600" />
+              <span className="text-sm font-medium text-red-900 dark:text-red-100">
+                Active Search
+              </span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300">
+                {searchMode.toUpperCase()}
+              </span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300">
+                {matchMode === 'fuzzy' ? 'Contains' : 'Exact'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/books/search">
+                  <Search className="w-3 h-3 mr-1" />
+                  Modify Search
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" onClick={clearFilters}>
+                <X className="w-3 h-3 mr-1" />
+                Clear All
+              </Button>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(activeFilters).map(([key, value]) => (
+              <span
+                key={key}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
+              >
+                {getFilterLabel(key, value)}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Selection action bar */}
       {selectionMode && (
@@ -302,18 +597,38 @@ export default function BooksPage() {
       {books.length === 0 && !loading && (
         <div className="text-center py-24 border-2 border-dashed border-border">
           <div className="w-16 h-16 bg-muted flex items-center justify-center mx-auto mb-6">
-            <BookOpen className="w-8 h-8 text-muted-foreground" />
+            {hasActiveFilters ? (
+              <Search className="w-8 h-8 text-muted-foreground" />
+            ) : (
+              <BookOpen className="w-8 h-8 text-muted-foreground" />
+            )}
           </div>
-          <h3 className="text-xl font-bold mb-2">No books yet</h3>
+          <h3 className="text-xl font-bold mb-2">
+            {hasActiveFilters ? 'No books found' : 'No books yet'}
+          </h3>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            Start building your collection by adding your first book.
+            {hasActiveFilters 
+              ? 'Try adjusting your search criteria or clear the filters.'
+              : 'Start building your collection by adding your first book.'
+            }
           </p>
-          <Button variant="secondary" asChild>
-            <Link href="/books/add" className="gap-2">
-              <Plus className="w-4 h-4" />
-              Add Your First Book
-            </Link>
-          </Button>
+          {hasActiveFilters ? (
+            <div className="flex gap-3 justify-center">
+              <Button variant="outline" asChild>
+                <Link href="/books/search">Modify Search</Link>
+              </Button>
+              <Button variant="secondary" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+            </div>
+          ) : (
+            <Button variant="secondary" asChild>
+              <Link href="/books/add" className="gap-2">
+                <Plus className="w-4 h-4" />
+                Add Your First Book
+              </Link>
+            </Button>
+          )}
         </div>
       )}
 
