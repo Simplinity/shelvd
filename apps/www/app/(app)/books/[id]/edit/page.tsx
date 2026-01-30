@@ -23,12 +23,35 @@ export default async function BookEditPage({ params }: PageProps) {
     notFound()
   }
 
+  // Fetch BISAC codes in batches (Supabase has 1000 row default limit)
+  const fetchAllBisacCodes = async () => {
+    const allCodes: { code: string; subject: string }[] = []
+    const batchSize = 1000
+    let offset = 0
+    
+    while (true) {
+      const { data, error } = await supabase
+        .from('bisac_codes')
+        .select('code, subject')
+        .order('subject')
+        .range(offset, offset + batchSize - 1)
+      
+      if (error || !data || data.length === 0) break
+      
+      allCodes.push(...data)
+      if (data.length < batchSize) break
+      offset += batchSize
+    }
+    
+    return allCodes
+  }
+
   // Fetch reference data
   const [
     { data: languages },
     { data: conditions },
     { data: bindings },
-    { data: bisacCodes },
+    bisacCodes,
     { data: seriesData },
     { data: publisherData },
     { data: acquiredFromData },
@@ -39,7 +62,7 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
     supabase.from('bindings').select('id, name').order('name'),
-    supabase.from('bisac_codes').select('code, subject').order('subject').limit(5000),
+    fetchAllBisacCodes(),
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
@@ -68,7 +91,7 @@ export default async function BookEditPage({ params }: PageProps) {
     languages: languages || [],
     conditions: conditions || [],
     bindings: uniqueBindings,
-    bisacCodes: bisacCodes || [],
+    bisacCodes: bisacCodes,
     seriesList: getUniqueValues(seriesData, 'series'),
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
     acquiredFromList: getUniqueValues(acquiredFromData, 'acquired_from'),
