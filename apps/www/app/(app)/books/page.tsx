@@ -346,17 +346,12 @@ export default function BooksPage() {
     const isAnd = searchMode === 'and'
     const isExact = matchMode === 'exact'
 
-    // GLOBAL SEARCH MODE
+    // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
     if (hasGlobalSearch && !hasAdvancedFilters) {
-      // Split into terms (multiple words = AND)
       const searchTerms = globalSearchQuery.toLowerCase().split(/\s+/).filter(t => t.length > 0)
       
-      // Get book IDs that match any term in author names
-      const authorBookIds = await getBookIdsForGlobalAuthorSearch(searchTerms)
-      
-      // Build OR query for text fields for each term
-      // For AND behavior: each term must match somewhere
-      let query = supabase
+      // Fetch all books (no server-side filter for global search)
+      const { data, error } = await supabase
         .from('books')
         .select(`
           id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
@@ -367,34 +362,7 @@ export default function BooksPage() {
             role:contributor_roles ( name )
           )
         `)
-      
-      // For each search term, we need to match it somewhere
-      // We use OR across fields for each term
-      for (const term of searchTerms) {
-        const fieldConditions = [
-          `title.ilike.%${term}%`,
-          `subtitle.ilike.%${term}%`,
-          `original_title.ilike.%${term}%`,
-          `series.ilike.%${term}%`,
-          `publisher_name.ilike.%${term}%`,
-          `publication_place.ilike.%${term}%`,
-          `notes.ilike.%${term}%`,
-          `isbn_13.ilike.%${term}%`,
-          `isbn_10.ilike.%${term}%`,
-        ]
-        
-        // If this term matches any authors, include those book IDs
-        if (authorBookIds.length > 0) {
-          // We can't easily mix OR field conditions with IN for IDs
-          // So we'll do a combined approach
-        }
-        
-        query = query.or(fieldConditions.join(','))
-      }
-      
-      query = query.order('title', { ascending: true }).range(from, to)
-      
-      const { data, error } = await query
+        .order('title', { ascending: true })
 
       if (error) {
         console.error('Error fetching books:', error)
@@ -403,36 +371,8 @@ export default function BooksPage() {
         return
       }
 
-      // Also fetch books that match author but not other fields
-      let allData = data || []
-      if (authorBookIds.length > 0) {
-        const existingIds = new Set(allData.map((b: any) => b.id))
-        const missingIds = authorBookIds.filter(id => !existingIds.has(id))
-        
-        if (missingIds.length > 0) {
-          const { data: authorBooks } = await supabase
-            .from('books')
-            .select(`
-              id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-              status, cover_type, condition_id, language_id, user_catalog_id, series,
-              storage_location, shelf, isbn_13, isbn_10, notes,
-              book_contributors (
-                contributor:contributors ( canonical_name ),
-                role:contributor_roles ( name )
-              )
-            `)
-            .in('id', missingIds.slice(0, 500))
-            .order('title', { ascending: true })
-          
-          if (authorBooks) {
-            allData = [...allData, ...authorBooks]
-            allData.sort((a: any, b: any) => (a.title || '').localeCompare(b.title || ''))
-          }
-        }
-      }
-
       // Client-side filter: each term must match somewhere in the book
-      allData = allData.filter((book: any) => {
+      const filteredData = (data || []).filter((book: any) => {
         const searchableText = [
           book.title,
           book.subtitle,
@@ -449,7 +389,7 @@ export default function BooksPage() {
         return searchTerms.every(term => searchableText.includes(term))
       })
 
-      const formattedBooks: BookListItem[] = allData.map((book: any) => ({
+      const formattedBooks: BookListItem[] = filteredData.map((book: any) => ({
         id: book.id,
         title: book.title,
         subtitle: book.subtitle,
