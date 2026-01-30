@@ -365,7 +365,6 @@ export default function BooksPage() {
     // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
     if (isGlobalSearch && !hasFilters) {
       const searchTerms = qParam.toLowerCase().split(/\s+/).filter(t => t.length > 0)
-      console.log('Global search terms:', searchTerms)
       
       // Fetch all books (no server-side filter for global search)
       const { data, error } = await supabase
@@ -380,6 +379,9 @@ export default function BooksPage() {
           )
         `)
         .order('title', { ascending: true })
+
+      // DEBUG: Show what happened with fetch
+      alert(`DEBUG After Fetch:\nError: ${error ? error.message : 'none'}\nData count: ${data?.length ?? 'null'}`)
 
       if (error) {
         console.error('Error fetching books:', error)
