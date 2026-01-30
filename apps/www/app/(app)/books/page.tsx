@@ -124,9 +124,7 @@ export default function BooksPage() {
   }
 
   // Selection handlers
-  const toggleSelect = (id: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev)
       if (next.has(id)) {
@@ -356,12 +354,11 @@ export default function BooksPage() {
               }`}
             >
               {selectionMode && (
-                <div className="flex items-center">
+                <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={selectedIds.has(book.id)}
-                    onChange={() => {}}
-                    onClick={(e) => toggleSelect(book.id, e)}
+                    onChange={() => toggleSelect(book.id)}
                     className="w-4 h-4 rounded border-border cursor-pointer"
                   />
                 </div>
@@ -439,12 +436,11 @@ export default function BooksPage() {
             >
               {/* Checkbox overlay */}
               {selectionMode && (
-                <div className="absolute top-2 left-2 z-10">
+                <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={selectedIds.has(book.id)}
-                    onChange={() => {}}
-                    onClick={(e) => toggleSelect(book.id, e)}
+                    onChange={() => toggleSelect(book.id)}
                     className="w-4 h-4 rounded border-border cursor-pointer bg-background"
                   />
                 </div>
