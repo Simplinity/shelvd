@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.5.0  
-> **Laatste update:** 2025-01-31 18:00 CET  
+> **Versie:** 1.5.1  
+> **Laatste update:** 2025-01-31 18:15 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1047,8 +1047,9 @@ Historische bibliografische formaten:
 
 ### ✅ Prio 2 - Export Functies **VOLTOOID**
 - [x] **Excel export** - Zelfde template als import, flatten contributors
-- [ ] **CSV export** - Alle velden (optioneel, later)
-- [ ] **CSV import** - Zelfde als Excel import (optioneel, later)
+- [x] **CSV export** - Alle velden, quoted en escaped
+- [x] **JSON export** - Pretty-printed array
+- [x] **Dropdown UI** - 3 opties in menu
 
 ### 🟡 Prio 3 - Custom Tags
 - [ ] **user_tags tabel** - Met kleur support
@@ -1318,6 +1319,10 @@ Historische bibliografische formaten:
   - Styled header row, alternating row colors
   - Auto-generated filename met datum
 - **Export button** toegevoegd in books list (naast Import)
+- **Export dropdown** met 3 opties:
+  - Excel (.xlsx) - styled headers, alternating rows
+  - CSV (.csv) - quoted fields, escaped
+  - JSON (.json) - pretty-printed
 - **Build succesvol** ✅
 
 ---
@@ -1326,6 +1331,7 @@ Historische bibliografische formaten:
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.5.1 | 2025-01-31 | Export dropdown (Excel/CSV/JSON) |
 | 1.5.0 | 2025-01-31 | Excel export (Prio 2) |
 | 1.4.0 | 2025-01-31 | Publisher FK geschrapt, roadmap 10→9 prio's |
 | 1.3.1 | 2025-01-31 | Action needed badge rood |
