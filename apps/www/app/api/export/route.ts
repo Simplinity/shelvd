@@ -339,11 +339,20 @@ export async function GET(request: NextRequest) {
     }
   }
   
-  // Fetch all contributors
-  const { data: allContributors } = await supabase
-    .from('contributors')
-    .select('id, canonical_name, sort_name')
-    .limit(50000)
+  // Fetch all contributors with pagination (same limit issue as books)
+  let allContributors: any[] = []
+  let contribOffset = 0
+  while (true) {
+    const { data: contribPage } = await supabase
+      .from('contributors')
+      .select('id, canonical_name, sort_name')
+      .range(contribOffset, contribOffset + 999)
+    
+    if (!contribPage || contribPage.length === 0) break
+    allContributors = [...allContributors, ...contribPage]
+    if (contribPage.length < 1000) break
+    contribOffset += 1000
+  }
   
   // Fetch contributor roles
   const { data: contributorRoles } = await supabase
@@ -352,7 +361,7 @@ export async function GET(request: NextRequest) {
   
   // Create lookup maps
   const contributorLookup = new Map<string, { canonical_name: string; sort_name: string }>(
-    (allContributors || []).map(c => [c.id, { canonical_name: c.canonical_name, sort_name: c.sort_name }])
+    allContributors.map(c => [c.id, { canonical_name: c.canonical_name, sort_name: c.sort_name }])
   )
   const roleLookup = new Map<string, string>(
     (contributorRoles || []).map(r => [r.id, r.name] as [string, string])
