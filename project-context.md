@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.5.2  
-> **Laatste update:** 2025-01-31 19:30 CET  
+> **Versie:** 1.6.0  
+> **Laatste update:** 2025-01-31 20:00 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1080,6 +1080,7 @@ Historische bibliografische formaten:
 - [x] **CSV export** - Alle velden, quoted en escaped
 - [x] **JSON export** - Pretty-printed array
 - [x] **Dropdown UI** - 3 opties in menu
+- [x] **Selective export** - Geen selectie = alles, met selectie = alleen geselecteerde
 
 ### 🟡 Prio 3 - Custom Tags
 - [ ] **user_tags tabel** - Met kleur support
@@ -1309,6 +1310,15 @@ Historische bibliografische formaten:
 - **TypeScript types** geregenereerd
 - **Build succesvol** ✅
 
+### 2025-01-31 (avond) - Selective Export
+- **Selective export** toegevoegd:
+  - Geen selectie → alle boeken exporteren (bestaand gedrag behouden)
+  - Met selectie → alleen geselecteerde boeken exporteren
+  - Werkt ook met zoekresultaten
+- **API uitgebreid** met optionele `ids` parameter
+- **Security**: nog steeds gefilterd op `user_id`
+- **Build succesvol** ✅
+
 ### 2025-01-31 (namiddag 2) - UI/UX Swiss Design
 - **Header redesign** (Optie B gekozen):
   - Witte achtergrond met dikke rode lijn onderaan (4px)
@@ -1368,6 +1378,7 @@ Historische bibliografische formaten:
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.6.0 | 2025-01-31 | Selective export (geen selectie = alles, met selectie = alleen die) |
 | 1.5.2 | 2025-01-31 | Export bugfixes (pagination, contributors, kolom namen) |
 | 1.5.1 | 2025-01-31 | Export dropdown (Excel/CSV/JSON) |
 | 1.5.0 | 2025-01-31 | Excel export (Prio 2) |
