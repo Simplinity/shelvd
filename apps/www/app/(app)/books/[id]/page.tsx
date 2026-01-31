@@ -453,7 +453,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               {statusDisplay.label}
             </span>
             {bookData.action_needed && bookData.action_needed !== 'none' && (
-              <span className="inline-block text-sm px-3 py-1 bg-amber-100 text-amber-700">
+              <span className="inline-block text-sm px-3 py-1 bg-red-100 text-red-700">
                 Action: {bookData.action_needed.charAt(0).toUpperCase() + bookData.action_needed.slice(1)}
               </span>
             )}
