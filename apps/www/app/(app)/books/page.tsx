@@ -536,18 +536,6 @@ export default function BooksPage() {
 
       const data = allBooks
 
-      // DEBUG: Log to help diagnose search issues
-      console.log('GLOBAL SEARCH DEBUG:', {
-        searchTerms,
-        qParam,
-        totalFetched: data?.length ?? 0
-      })
-
-      // TEMP DEBUG ALERT - REMOVE AFTER FIXING
-      if (typeof window !== 'undefined') {
-        alert(`DEBUG Global Search:\nSearch: "${qParam}"\nBooks fetched: ${data?.length ?? 0}`)
-      }
-
       // Client-side filter: each term must match somewhere in the book
       const filteredData = (data || []).filter((book: any) => {
         const searchableText = [
