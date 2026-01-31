@@ -510,6 +510,19 @@ export default function BooksPage() {
         `)
         .order('title', { ascending: true })
 
+      // DEBUG: Log to help diagnose search issues
+      console.log('GLOBAL SEARCH DEBUG:', {
+        searchTerms,
+        qParam,
+        totalFetched: data?.length ?? 0,
+        error: error?.message ?? null
+      })
+
+      // TEMP DEBUG ALERT - REMOVE AFTER FIXING
+      if (typeof window !== 'undefined') {
+        alert(`DEBUG Global Search:\nSearch: "${qParam}"\nBooks fetched: ${data?.length ?? 0}\nError: ${error?.message ?? 'none'}`)
+      }
+
       if (error) {
         console.error('Error fetching books:', error)
         setLoading(false)
