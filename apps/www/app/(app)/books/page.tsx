@@ -424,10 +424,8 @@ export default function BooksPage() {
     const isAnd = (searchParams.get('mode') || 'and') === 'and'
     const isExact = (searchParams.get('match') || 'fuzzy') === 'exact'
 
-    // DEFAULT MODE - No search, no filters - just show all books
-    console.log('fetchBooks called:', { isGlobalSearch, hasFilters, from, to })
+    // DEFAULT MODE - No search, no filters - show all books
     if (!isGlobalSearch && !hasFilters) {
-      console.log('DEFAULT MODE - fetching all books')
       const { data, error } = await supabase
         .from('books')
         .select(`
@@ -441,8 +439,6 @@ export default function BooksPage() {
         `)
         .order('title', { ascending: true })
         .range(from, to)
-
-      console.log('DEFAULT MODE result:', { dataLength: data?.length, error })
 
       if (error) {
         console.error('Error fetching books:', error)
@@ -510,8 +506,6 @@ export default function BooksPage() {
         setLoadingMore(false)
         return
       }
-
-      console.log('Fetched books count:', data?.length)
 
       // Client-side filter: each term must match somewhere in the book
       const filteredData = (data || []).filter((book: any) => {
@@ -806,7 +800,6 @@ export default function BooksPage() {
 
     let query = supabase.from('books').select('*', { count: 'exact', head: true })
     
-    // Only apply filters if there ARE filters
     if (hasAdvancedFilters && isAnd) {
       if (filters.title) query = query.ilike('title', isExact ? filters.title : `%${filters.title}%`)
       if (filters.subtitle) query = query.ilike('subtitle', isExact ? filters.subtitle : `%${filters.subtitle}%`)
@@ -826,8 +819,7 @@ export default function BooksPage() {
       }
     }
     
-    const { count, error } = await query
-    console.log('fetchCount result:', { count, error, hasAdvancedFilters })
+    const { count } = await query
     setTotalCount(count || 0)
   }
 
