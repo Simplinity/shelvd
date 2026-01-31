@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.6.0  
-> **Laatste update:** 2025-01-31 20:00 CET  
+> **Versie:** 1.6.1  
+> **Laatste update:** 2025-01-31 20:15 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1082,41 +1082,37 @@ Historische bibliografische formaten:
 - [x] **Dropdown UI** - 3 opties in menu
 - [x] **Selective export** - Geen selectie = alles, met selectie = alleen geselecteerde
 
-### 🟡 Prio 3 - Custom Tags
-- [ ] **user_tags tabel** - Met kleur support
-- [ ] **book_tags junction** - Many-to-many
-- [ ] **Tag UI** - Chips, filter, management
-
-### 🟡 Prio 4 - Duplicate Detection
+### 🟡 Prio 3 - Duplicate Detection
 - [ ] **ISBN exact match** - Hoogste prioriteit
 - [ ] **Title + Author fuzzy** - Voor pre-ISBN boeken
 - [ ] **Warning bij Add/Import** - Potentiële duplicates
 - [ ] **Find Duplicates tool** - Dedicated pagina
 
-### 🟡 Prio 5 - Statistics Dashboard
+### 🟡 Prio 4 - Statistics Dashboard
 - [ ] **20 statistieken** - Counts, values, charts
 - [ ] **Collection value** - Met currency conversie
 
-### 🟡 Prio 6 - External Links
+### 🟡 Prio 5 - External Links
 - [ ] **WorldCat, Google Books, AbeBooks** - Via ISBN/OCLC
 - [ ] **VIAF, Wikidata** - Voor contributors
 - [ ] **Library of Congress** - Via LCCN
 
-### 🟢 Prio 7 - User Settings
+### 🟢 Prio 6 - User Settings
 - [ ] **Settings pagina** - Currency, date format, view preferences
 - [ ] **GDPR compliance** - Export all data, delete account
 
-### 🟢 Prio 8 - Sharing & Public Catalog
+### 🟢 Prio 7 - Sharing & Public Catalog
 - [ ] **Public catalog URL** - shelvd.com/u/{username}
 - [ ] **Privacy settings** - Welke velden publiek
 - [ ] **Shareable wishlist** - Publieke link
 - [ ] **Embed widget** - HTML snippet
 
-### 🟢 Prio 9 - Currency & Valuation
+### 🟢 Prio 8 - Currency & Valuation
 - [ ] **Exchange rates** - Handmatig in settings of API
 - [ ] **Collection value berekening** - Converteer naar default currency
 
-### Parallel Track
+### Parallel Track / Nice-to-Have
+- [ ] **Custom Tags** - user_tags tabel, book_tags junction, tag UI
 - [ ] **Landing page + Kennisbank** - Marketing site, SEO
 - [ ] **Duplicate book functie** - Kopieer als template
 - [ ] **Templates systeem** - Pre-filled forms
