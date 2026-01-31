@@ -321,14 +321,23 @@ export async function GET(request: NextRequest) {
   const conditionMap = new Map<string, string>((conditionsRes.data || []).map(c => [c.id, c.name] as [string, string]))
   const locationMap = new Map<string, string>((locationsRes.data || []).map(l => [l.id, l.name] as [string, string]))
 
-  // Fetch contributors for all books
-  // Note: .in() has limits, so we fetch all book_contributors and filter
-  const bookIds = new Set(books?.map(b => b.id) || [])
+  // Fetch contributors for user's books in batches (RLS + .in() limits)
+  const bookIdArray = books.map(b => b.id)
+  const allBookContributors: any[] = []
   
-  const { data: bookContributors } = await supabase
-    .from('book_contributors')
-    .select('book_id, role, contributor_id')
-    .limit(100000)
+  // Fetch in batches of 500 book IDs (Supabase .in() limit)
+  const batchSize = 500
+  for (let i = 0; i < bookIdArray.length; i += batchSize) {
+    const batchIds = bookIdArray.slice(i, i + batchSize)
+    const { data: batchContributors } = await supabase
+      .from('book_contributors')
+      .select('book_id, role_id, contributor_id')
+      .in('book_id', batchIds)
+    
+    if (batchContributors) {
+      allBookContributors.push(...batchContributors)
+    }
+  }
   
   // Fetch all contributors
   const { data: allContributors } = await supabase
@@ -336,26 +345,30 @@ export async function GET(request: NextRequest) {
     .select('id, canonical_name, sort_name')
     .limit(50000)
   
-  // Create contributor lookup
+  // Fetch contributor roles
+  const { data: contributorRoles } = await supabase
+    .from('contributor_roles')
+    .select('id, name')
+  
+  // Create lookup maps
   const contributorLookup = new Map<string, { canonical_name: string; sort_name: string }>(
     (allContributors || []).map(c => [c.id, { canonical_name: c.canonical_name, sort_name: c.sort_name }])
   )
+  const roleLookup = new Map<string, string>(
+    (contributorRoles || []).map(r => [r.id, r.name] as [string, string])
+  )
 
-  // Group contributors by book (only for this user's books)
+  // Group contributors by book
   const contributorsByBook: Record<string, string[]> = {}
-  bookContributors?.forEach((bc: any) => {
-    // Only process if this book belongs to the user
-    if (!bookIds.has(bc.book_id)) return
-    
+  allBookContributors.forEach((bc: any) => {
     if (!contributorsByBook[bc.book_id]) {
       contributorsByBook[bc.book_id] = []
     }
     
     const contributor = contributorLookup.get(bc.contributor_id)
     const name = contributor?.sort_name || contributor?.canonical_name || 'Unknown'
-    const role = bc.role || 'Contributor'
-    const formattedRole = role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, ' ')
-    contributorsByBook[bc.book_id].push(`${name} (${formattedRole})`)
+    const role = roleLookup.get(bc.role_id) || 'Contributor'
+    contributorsByBook[bc.book_id].push(`${name} (${role})`)
   })
 
   // Transform all books
