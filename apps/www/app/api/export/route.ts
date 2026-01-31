@@ -277,19 +277,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Fetch all books (without complex FK joins to avoid errors)
-  // Use a high limit to get all books (Supabase default is 1000)
-  const { data: books, error } = await supabase
-    .from('books')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('title')
-    .limit(50000)
-
-  if (error) {
-    console.error('Export error:', error)
-    return NextResponse.json({ error: 'Failed to fetch books', details: error.message, code: error.code }, { status: 500 })
+  // Fetch ALL books using pagination (Supabase has limits)
+  let allBooks: any[] = []
+  let offset = 0
+  const pageSize = 1000
+  
+  while (true) {
+    const { data: booksPage, error: pageError } = await supabase
+      .from('books')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('title')
+      .range(offset, offset + pageSize - 1)
+    
+    if (pageError) {
+      console.error('Export error:', pageError)
+      return NextResponse.json({ error: 'Failed to fetch books', details: pageError.message, code: pageError.code }, { status: 500 })
+    }
+    
+    if (!booksPage || booksPage.length === 0) break
+    
+    allBooks = [...allBooks, ...booksPage]
+    
+    if (booksPage.length < pageSize) break // Last page
+    offset += pageSize
   }
+  
+  const books = allBooks
 
   // Fetch related data separately
   const [languagesRes, bindingsRes, formatsRes, conditionsRes, locationsRes] = await Promise.all([
