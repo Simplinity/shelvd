@@ -267,18 +267,18 @@ export default async function BookDetailPage({ params }: PageProps) {
   // Status display helper
   const getStatusDisplay = (status: string) => {
     const statusMap: Record<string, { label: string; className: string }> = {
-      'in_collection': { label: 'In Collection', className: 'bg-muted text-muted-foreground' },
-      'on_sale': { label: 'On Sale', className: 'bg-green-100 text-green-700' },
-      'to_sell': { label: 'To Sell', className: 'bg-green-50 text-green-600' },
-      'reserved': { label: 'Reserved', className: 'bg-yellow-100 text-yellow-700' },
+      'in_collection': { label: 'In Collection', className: 'bg-gray-100 text-gray-600' },
+      'on_sale': { label: 'On Sale', className: 'bg-red-600 text-white' },
+      'to_sell': { label: 'To Sell', className: 'bg-red-100 text-red-700' },
+      'reserved': { label: 'Reserved', className: 'border border-red-600 text-red-600' },
       'sold': { label: 'Sold', className: 'bg-gray-100 text-gray-500' },
-      'lent': { label: 'Lent', className: 'bg-blue-100 text-blue-700' },
-      'borrowed': { label: 'Borrowed', className: 'bg-purple-100 text-purple-700' },
-      'double': { label: 'Double', className: 'bg-orange-100 text-orange-700' },
-      'ordered': { label: 'Ordered', className: 'bg-cyan-100 text-cyan-700' },
-      'lost': { label: 'Lost', className: 'bg-red-100 text-red-700' },
-      'donated': { label: 'Donated', className: 'bg-pink-100 text-pink-700' },
-      'destroyed': { label: 'Destroyed', className: 'bg-red-200 text-red-800' },
+      'lent': { label: 'Lent', className: 'border border-black text-black' },
+      'borrowed': { label: 'Borrowed', className: 'border border-black text-black' },
+      'double': { label: 'Double', className: 'bg-gray-100 text-gray-600' },
+      'ordered': { label: 'Ordered', className: 'bg-gray-100 text-gray-600' },
+      'lost': { label: 'Lost', className: 'bg-black text-white' },
+      'donated': { label: 'Donated', className: 'bg-gray-100 text-gray-500' },
+      'destroyed': { label: 'Destroyed', className: 'bg-black text-white' },
       'unknown': { label: 'Unknown', className: 'bg-gray-200 text-gray-600' },
     }
     return statusMap[status] || { label: status, className: 'bg-muted text-muted-foreground' }

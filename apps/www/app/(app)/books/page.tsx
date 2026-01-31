@@ -1400,19 +1400,19 @@ export default function BooksPage() {
                 </div>
                 <div className="col-span-1">
                   <span className={`text-xs px-2 py-0.5 ${
-                    book.status === 'on_sale' ? 'bg-green-100 text-green-700' :
-                    book.status === 'to_sell' ? 'bg-green-50 text-green-600' :
-                    book.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
+                    book.status === 'on_sale' ? 'bg-red-600 text-white' :
+                    book.status === 'to_sell' ? 'bg-red-100 text-red-700' :
+                    book.status === 'reserved' ? 'border border-red-600 text-red-600' :
                     book.status === 'sold' ? 'bg-gray-100 text-gray-500' :
-                    book.status === 'lent' ? 'bg-blue-100 text-blue-700' :
-                    book.status === 'borrowed' ? 'bg-purple-100 text-purple-700' :
-                    book.status === 'double' ? 'bg-orange-100 text-orange-700' :
-                    book.status === 'ordered' ? 'bg-cyan-100 text-cyan-700' :
-                    book.status === 'lost' ? 'bg-red-100 text-red-700' :
-                    book.status === 'donated' ? 'bg-pink-100 text-pink-700' :
-                    book.status === 'destroyed' ? 'bg-red-200 text-red-800' :
+                    book.status === 'lent' ? 'border border-black text-black' :
+                    book.status === 'borrowed' ? 'border border-black text-black' :
+                    book.status === 'double' ? 'bg-gray-100 text-gray-600' :
+                    book.status === 'ordered' ? 'bg-gray-100 text-gray-600' :
+                    book.status === 'lost' ? 'bg-black text-white' :
+                    book.status === 'donated' ? 'bg-gray-100 text-gray-500' :
+                    book.status === 'destroyed' ? 'bg-black text-white' :
                     book.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
-                    'bg-muted text-muted-foreground'
+                    'bg-gray-100 text-gray-600'
                   }`}>
                     {book.status === 'in_collection' ? 'In Col.' : 
                      book.status === 'on_sale' ? 'On Sale' :
