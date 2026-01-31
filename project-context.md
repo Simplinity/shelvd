@@ -1018,15 +1018,20 @@ Historische bibliografische formaten:
 
 ## TODO / Volgende Stappen
 
-### 🔴 Prio 1 - Nieuwe Velden & Views
-- [ ] **Nieuwe database velden** - paper_type, edge_treatment, endpapers_type, text_block_condition, dedication_text, colophon_text
-- [ ] **Printer in alle views** - Edit form, detail view, list view
-- [ ] **Printing Place in alle views** - Edit form, detail view, list view
-- [ ] **Dust Jacket Condition** - Edit form, detail view (zelfde conditions dropdown)
-- [ ] **Valuation Date** - Edit form, detail view
-- [ ] **Topic in detail view** - Bestaat al in edit form
-- [ ] **Dedication Text** - Edit form, detail view
-- [ ] **Colophon Text** - Edit form, detail view
+### ✅ Prio 1 - Nieuwe Velden & Views (VOLTOOID)
+- [x] **Nieuwe database velden** - paper_type, edge_treatment, endpapers_type, text_block_condition, dedication_text, colophon_text
+- [x] **Paper Type dropdown** - 16 waarden (wove, laid, rag, vellum, japan, india, etc.)
+- [x] **Edge Treatment dropdown** - 18 waarden (untrimmed, gilt, gauffered, fore-edge painting, etc.)
+- [x] **Endpapers dropdown** - 16 waarden (marbled, paste paper, leather doublures, etc.)
+- [x] **Text Block Condition dropdown** - 11 waarden (tight, solid, shaken, rebacked, etc.)
+- [x] **Dust Jacket Condition** - Edit form, detail view (zelfde conditions dropdown)
+- [x] **Valuation Date** - Edit form, detail view
+- [x] **Dedication Text** - Edit form, detail view
+- [x] **Colophon Text** - Edit form, detail view
+- [x] **Add Book form** - Alle nieuwe velden toegevoegd
+- [x] **TypeScript types** - Geregenereerd
+
+**Opmerking:** Printer & Printing Place stonden al in Publication sectie ✅
 
 ### 🔴 Prio 2 - Publisher & Contributor Koppeling
 - [ ] **Publisher FK koppeling** - Hybride: autocomplete + automatisch aanmaken
@@ -1243,6 +1248,28 @@ Historische bibliografische formaten:
   10. Currency & Valuation (laatste)
 - **Export beslissing**: Contributors flatten ("Author 1; Author 2")
 - **Currency beslissing**: Per-boek currency, conversie naar default bij totals, handmatige exchange rates in settings
+- **Golden Rules toegevoegd**: Code wijzigings-protocol gedocumenteerd om bestaande features niet te breken
+
+### 2025-01-31 (namiddag) - Prio 1 Implementatie
+- **Database migration** (004_physical_description_fields.sql):
+  - paper_type VARCHAR(50) - 16 waarden
+  - edge_treatment VARCHAR(50) - 18 waarden
+  - endpapers_type VARCHAR(50) - 16 waarden
+  - text_block_condition VARCHAR(50) - 11 waarden
+  - dedication_text TEXT
+  - colophon_text TEXT
+- **Edit form** (`book-edit-form.tsx`):
+  - 4 nieuwe dropdowns in Physical Description
+  - Dust Jacket Condition in Condition & Status
+  - Valuation Date in Valuation
+  - Dedication/Colophon in Notes
+- **Detail view** (`page.tsx`):
+  - Alle nieuwe velden met format helpers
+  - Dust Jacket Condition fetch
+- **Add book form** (`book-add-form.tsx`):
+  - Alle nieuwe velden toegevoegd
+- **TypeScript types** geregenereerd
+- **Build succesvol** ✅
 
 ---
-*Laatst bijgewerkt: 2025-01-31 14:30*
+*Laatst bijgewerkt: 2025-01-31 16:00*
