@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.4.0  
-> **Laatste update:** 2025-01-31 17:45 CET  
+> **Versie:** 1.5.0  
+> **Laatste update:** 2025-01-31 18:00 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1045,10 +1045,10 @@ Historische bibliografische formaten:
 > Publisher_name als vrij tekst + autocomplete werkt goed genoeg.
 > Contributors tabel blijft WEL (M:N relatie, 8194 entries, actief in gebruik).
 
-### 🔴 Prio 2 - Export Functies
-- [ ] **Excel export** - Zelfde template als import, flatten contributors
-- [ ] **CSV export** - Alle velden
-- [ ] **CSV import** - Zelfde als Excel import
+### ✅ Prio 2 - Export Functies **VOLTOOID**
+- [x] **Excel export** - Zelfde template als import, flatten contributors
+- [ ] **CSV export** - Alle velden (optioneel, later)
+- [ ] **CSV import** - Zelfde als Excel import (optioneel, later)
 
 ### 🟡 Prio 3 - Custom Tags
 - [ ] **user_tags tabel** - Met kleur support
@@ -1308,12 +1308,25 @@ Historische bibliografische formaten:
   - Essentieel voor rollen (Author, Illustrator, Translator, etc.)
 - **Roadmap hernummerd**: 10 → 9 prioriteiten
 
+### 2025-01-31 (namiddag 4) - Prio 2 Export Implementatie
+- **Excel export API** (`/api/export`):
+  - Exporteert alle boeken van user naar .xlsx
+  - Zelfde kolom structuur als import template
+  - Flattened contributors: "Name (Role); Name2 (Role2)"
+  - Resolves alle FK relaties (language, binding, condition, format, location)
+  - Inclusief nieuwe Prio 1 velden (paper_type, edge_treatment, etc.)
+  - Styled header row, alternating row colors
+  - Auto-generated filename met datum
+- **Export button** toegevoegd in books list (naast Import)
+- **Build succesvol** ✅
+
 ---
 
 ## Changelog
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.5.0 | 2025-01-31 | Excel export (Prio 2) |
 | 1.4.0 | 2025-01-31 | Publisher FK geschrapt, roadmap 10→9 prio's |
 | 1.3.1 | 2025-01-31 | Action needed badge rood |
 | 1.3.0 | 2025-01-31 | Swiss Design UI (header, status kleuren) |
