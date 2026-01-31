@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.5.1  
-> **Laatste update:** 2025-01-31 18:15 CET  
+> **Versie:** 1.5.2  
+> **Laatste update:** 2025-01-31 19:30 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -535,6 +535,7 @@ Deze features zijn volledig werkend en mogen NIET gebroken worden:
 - ✅ Bulk Delete (select mode, checkboxes)
 - ✅ Single Delete (type-to-confirm)
 - ✅ Excel Import (template, preview, validation)
+- ✅ Excel/CSV/JSON Export (pagination, contributors, alle velden)
 - ✅ Add Book (form, contributors)
 - ✅ Edit Book (alle velden, contributors, catalog generator)
 - ✅ BISAC Combobox (batch loading)
@@ -595,9 +596,38 @@ Als niet 100% duidelijk is hoe nieuwe code toe te voegen zonder bestaande te bre
 - **Database Password**: LsY1yr4siVYlZhiN
 
 ### Supabase Limits & Workarounds
-- **Default row limit**: 1000 rijen per query
-- **Workaround**: Batch fetching met `.range(from, to)` in loops van 1000
-- **Toegepast in**: Global search, BISAC codes dropdown
+
+**⚠️ KRITIEK: `.limit()` WERKT NIET BETROUWBAAR!**
+
+Ook met `.limit(50000)` krijg je maar 1000 rows. Gebruik ALTIJD pagination:
+
+```typescript
+// ❌ FOUT - geeft maar 1000 rows
+const { data } = await supabase.from('books').select('*').limit(50000)
+
+// ✅ CORRECT - pagination met .range()
+let allData: any[] = []
+let offset = 0
+while (true) {
+  const { data: page } = await supabase
+    .from('table')
+    .select('*')
+    .range(offset, offset + 999)
+  
+  if (!page || page.length === 0) break
+  allData = [...allData, ...page]
+  if (page.length < 1000) break
+  offset += 1000
+}
+```
+
+**Andere Supabase gotchas:**
+- **FK joins kunnen stil falen** - gebruik aparte queries + lookup Maps
+- **`.in()` heeft limiet** - batch in groepen van 500 IDs
+- **Kolom namen checken** - bijv. `languages.name_en` (niet `name`), `book_contributors.role_id` (niet `role`)
+- **RLS blokkeert soms** - check policies als data leeg is
+
+**Toegepast in**: Global search, BISAC codes, Export API
 
 ## Database Schema
 
@@ -1323,6 +1353,13 @@ Historische bibliografische formaten:
   - Excel (.xlsx) - styled headers, alternating rows
   - CSV (.csv) - quoted fields, escaped
   - JSON (.json) - pretty-printed
+
+**Kritieke bugfixes tijdens implementatie:**
+1. **Supabase `.limit()` werkt NIET betrouwbaar** - altijd pagination gebruiken met `.range()`
+2. **FK joins falen stil** - aparte queries + lookup Maps gebruiken
+3. **Tabel/kolom namen checken** - `languages.name_en` (niet `name`), `role_id` (niet `role`)
+4. **Download via fetch()** - `<a href download>` werkt niet met authenticated routes
+
 - **Build succesvol** ✅
 
 ---
@@ -1331,6 +1368,7 @@ Historische bibliografische formaten:
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.5.2 | 2025-01-31 | Export bugfixes (pagination, contributors, kolom namen) |
 | 1.5.1 | 2025-01-31 | Export dropdown (Excel/CSV/JSON) |
 | 1.5.0 | 2025-01-31 | Excel export (Prio 2) |
 | 1.4.0 | 2025-01-31 | Publisher FK geschrapt, roadmap 10→9 prio's |
