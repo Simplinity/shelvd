@@ -171,6 +171,7 @@ export default function BooksPage() {
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showExportMenu, setShowExportMenu] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const exportMenuRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
@@ -963,6 +964,39 @@ export default function BooksPage() {
     }
   }
 
+  // Export handler - downloads file via fetch to handle authentication
+  const handleExport = async (format: 'xlsx' | 'csv' | 'json') => {
+    setExporting(true)
+    setShowExportMenu(false)
+    
+    try {
+      const response = await fetch(`/api/export?format=${format}`)
+      
+      if (!response.ok) {
+        throw new Error('Export failed')
+      }
+      
+      const blob = await response.blob()
+      const date = new Date().toISOString().split('T')[0]
+      const filename = `shelvd_export_${date}.${format}`
+      
+      // Create download link and trigger it
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (err) {
+      console.error('Export error:', err)
+      alert('Export failed. Please try again.')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   const selectedCount = selectedIds.size
   const confirmTextExpected = selectedCount === 1 ? 'delete' : `delete ${selectedCount} books`
   const isConfirmValid = confirmText.toLowerCase() === confirmTextExpected.toLowerCase()
@@ -1050,37 +1084,36 @@ export default function BooksPage() {
               variant="outline" 
               onClick={() => setShowExportMenu(!showExportMenu)}
               className="gap-2"
+              disabled={exporting}
             >
-              <Download className="w-4 h-4" />
-              Export
-              <ChevronDown className="w-3 h-3" />
+              {exporting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              {exporting ? 'Exporting...' : 'Export'}
+              {!exporting && <ChevronDown className="w-3 h-3" />}
             </Button>
             {showExportMenu && (
               <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                <a 
-                  href="/api/export?format=xlsx" 
-                  download
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => setShowExportMenu(false)}
+                <button 
+                  onClick={() => handleExport('xlsx')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Excel (.xlsx)
-                </a>
-                <a 
-                  href="/api/export?format=csv" 
-                  download
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => setShowExportMenu(false)}
+                </button>
+                <button 
+                  onClick={() => handleExport('csv')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   CSV (.csv)
-                </a>
-                <a 
-                  href="/api/export?format=json" 
-                  download
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => setShowExportMenu(false)}
+                </button>
+                <button 
+                  onClick={() => handleExport('json')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   JSON (.json)
-                </a>
+                </button>
               </div>
             )}
           </div>
