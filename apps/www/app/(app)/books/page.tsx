@@ -970,7 +970,16 @@ export default function BooksPage() {
     setShowExportMenu(false)
     
     try {
-      const response = await fetch(`/api/export?format=${format}`)
+      // Build API URL with format, and optionally with selected IDs
+      let apiUrl = `/api/export?format=${format}`
+      if (selectedIds.size > 0) {
+        // Export only selected books
+        const idsParam = Array.from(selectedIds).join(',')
+        apiUrl += `&ids=${encodeURIComponent(idsParam)}`
+      }
+      // If no selection, export all (no ids param = current behavior)
+      
+      const response = await fetch(apiUrl)
       
       if (!response.ok) {
         // Try to get error details from response

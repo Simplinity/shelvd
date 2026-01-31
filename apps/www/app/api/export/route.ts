@@ -264,6 +264,7 @@ function generateJSON(rows: Record<string, any>[]): string {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const format = searchParams.get('format') || 'xlsx'
+  const idsParam = searchParams.get('ids') // Optional: comma-separated book IDs
   
   if (!['xlsx', 'csv', 'json'].includes(format)) {
     return NextResponse.json({ error: 'Invalid format. Use xlsx, csv, or json.' }, { status: 400 })
@@ -277,33 +278,60 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Fetch ALL books using pagination (Supabase has limits)
-  let allBooks: any[] = []
-  let offset = 0
-  const pageSize = 1000
+  let books: any[] = []
   
-  while (true) {
-    const { data: booksPage, error: pageError } = await supabase
-      .from('books')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('title')
-      .range(offset, offset + pageSize - 1)
+  if (idsParam) {
+    // Export only selected books (IDs provided)
+    const selectedIds = idsParam.split(',').filter(id => id.trim())
     
-    if (pageError) {
-      console.error('Export error:', pageError)
-      return NextResponse.json({ error: 'Failed to fetch books', details: pageError.message, code: pageError.code }, { status: 500 })
+    // Fetch in batches of 500 (Supabase .in() limit)
+    const batchSize = 500
+    for (let i = 0; i < selectedIds.length; i += batchSize) {
+      const batchIds = selectedIds.slice(i, i + batchSize)
+      const { data: batchBooks, error: batchError } = await supabase
+        .from('books')
+        .select('*')
+        .eq('user_id', user.id) // Security: ensure user owns these books
+        .in('id', batchIds)
+      
+      if (batchError) {
+        console.error('Export error:', batchError)
+        return NextResponse.json({ error: 'Failed to fetch books', details: batchError.message }, { status: 500 })
+      }
+      
+      if (batchBooks) {
+        books = [...books, ...batchBooks]
+      }
     }
     
-    if (!booksPage || booksPage.length === 0) break
+    // Sort by title (since we fetched in batches)
+    books.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+  } else {
+    // Export ALL books using pagination (no IDs = current behavior)
+    let offset = 0
+    const pageSize = 1000
     
-    allBooks = [...allBooks, ...booksPage]
-    
-    if (booksPage.length < pageSize) break // Last page
-    offset += pageSize
+    while (true) {
+      const { data: booksPage, error: pageError } = await supabase
+        .from('books')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('title')
+        .range(offset, offset + pageSize - 1)
+      
+      if (pageError) {
+        console.error('Export error:', pageError)
+        return NextResponse.json({ error: 'Failed to fetch books', details: pageError.message, code: pageError.code }, { status: 500 })
+      }
+      
+      if (!booksPage || booksPage.length === 0) break
+      
+      books = [...books, ...booksPage]
+      
+      if (booksPage.length < pageSize) break // Last page
+      offset += pageSize
+    }
   }
-  
-  const books = allBooks
 
   // Fetch related data separately
   const [languagesRes, bindingsRes, formatsRes, conditionsRes, locationsRes] = await Promise.all([
