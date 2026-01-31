@@ -280,7 +280,7 @@ export async function GET(request: NextRequest) {
       format:book_formats(name),
       condition:conditions!books_condition_id_fkey(name),
       dust_jacket_condition:conditions!books_dust_jacket_condition_id_fkey(name),
-      location:storage_locations(name)
+      location:user_locations(name)
     `)
     .eq('user_id', user.id)
     .order('title')
