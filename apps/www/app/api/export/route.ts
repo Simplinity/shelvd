@@ -278,11 +278,13 @@ export async function GET(request: NextRequest) {
   }
 
   // Fetch all books (without complex FK joins to avoid errors)
+  // Use a high limit to get all books (Supabase default is 1000)
   const { data: books, error } = await supabase
     .from('books')
     .select('*')
     .eq('user_id', user.id)
     .order('title')
+    .limit(50000)
 
   if (error) {
     console.error('Export error:', error)
@@ -306,23 +308,37 @@ export async function GET(request: NextRequest) {
   const locationMap = new Map<string, string>((locationsRes.data || []).map(l => [l.id, l.name] as [string, string]))
 
   // Fetch contributors for all books
-  const bookIds = books?.map(b => b.id) || []
+  // Note: .in() has limits, so we fetch all book_contributors and filter
+  const bookIds = new Set(books?.map(b => b.id) || [])
+  
   const { data: bookContributors } = await supabase
     .from('book_contributors')
-    .select(`
-      book_id,
-      role,
-      contributor:contributors(canonical_name, sort_name)
-    `)
-    .in('book_id', bookIds)
+    .select('book_id, role, contributor_id')
+    .limit(100000)
+  
+  // Fetch all contributors
+  const { data: allContributors } = await supabase
+    .from('contributors')
+    .select('id, canonical_name, sort_name')
+    .limit(50000)
+  
+  // Create contributor lookup
+  const contributorLookup = new Map<string, { canonical_name: string; sort_name: string }>(
+    (allContributors || []).map(c => [c.id, { canonical_name: c.canonical_name, sort_name: c.sort_name }])
+  )
 
-  // Group contributors by book
+  // Group contributors by book (only for this user's books)
   const contributorsByBook: Record<string, string[]> = {}
   bookContributors?.forEach((bc: any) => {
+    // Only process if this book belongs to the user
+    if (!bookIds.has(bc.book_id)) return
+    
     if (!contributorsByBook[bc.book_id]) {
       contributorsByBook[bc.book_id] = []
     }
-    const name = bc.contributor?.sort_name || bc.contributor?.canonical_name || 'Unknown'
+    
+    const contributor = contributorLookup.get(bc.contributor_id)
+    const name = contributor?.sort_name || contributor?.canonical_name || 'Unknown'
     const role = bc.role || 'Contributor'
     const formattedRole = role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, ' ')
     contributorsByBook[bc.book_id].push(`${name} (${formattedRole})`)
