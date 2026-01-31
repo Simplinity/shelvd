@@ -102,7 +102,15 @@ const columns: { header: string; key: string; width: number }[] = [
 ]
 
 // Helper to transform book data
-function transformBookData(book: any, contributorsByBook: Record<string, string[]>): Record<string, any> {
+function transformBookData(
+  book: any, 
+  contributorsByBook: Record<string, string[]>,
+  languageMap: Map<string, string>,
+  bindingMap: Map<string, string>,
+  formatMap: Map<string, string>,
+  conditionMap: Map<string, string>,
+  locationMap: Map<string, string>
+): Record<string, any> {
   return {
     title: book.title,
     subtitle: book.subtitle,
@@ -110,8 +118,8 @@ function transformBookData(book: any, contributorsByBook: Record<string, string[
     series: book.series,
     series_number: book.series_number,
     contributors: contributorsByBook[book.id]?.join('; ') || '',
-    language: (book.language as any)?.name || '',
-    original_language: (book.original_language as any)?.name || '',
+    language: languageMap.get(book.language_id) || '',
+    original_language: languageMap.get(book.original_language_id) || '',
     publisher_name: book.publisher_name,
     publication_place: book.publication_place,
     publication_year: book.publication_year,
@@ -129,8 +137,8 @@ function transformBookData(book: any, contributorsByBook: Record<string, string[
     depth_mm: book.depth_mm,
     weight_grams: book.weight_grams,
     cover_type: book.cover_type,
-    binding: (book.binding as any)?.name || '',
-    format: (book.format as any)?.name || '',
+    binding: bindingMap.get(book.binding_id) || '',
+    format: formatMap.get(book.format_id) || '',
     protective_enclosure: book.protective_enclosure,
     paper_type: book.paper_type,
     edge_treatment: book.edge_treatment,
@@ -138,8 +146,8 @@ function transformBookData(book: any, contributorsByBook: Record<string, string[
     text_block_condition: book.text_block_condition,
     has_dust_jacket: book.has_dust_jacket ? 'yes' : (book.has_dust_jacket === false ? 'no' : ''),
     is_signed: book.is_signed ? 'yes' : (book.is_signed === false ? 'no' : ''),
-    condition: (book.condition as any)?.name || '',
-    dust_jacket_condition: (book.dust_jacket_condition as any)?.name || '',
+    condition: conditionMap.get(book.condition_id) || '',
+    dust_jacket_condition: conditionMap.get(book.dust_jacket_condition_id) || '',
     condition_notes: book.condition_notes,
     status: book.status,
     action_needed: book.action_needed,
@@ -153,7 +161,7 @@ function transformBookData(book: any, contributorsByBook: Record<string, string[
     udc: book.udc,
     topic: book.topic,
     bisac_code: book.bisac_code,
-    location: (book.location as any)?.name || '',
+    location: locationMap.get(book.location_id) || '',
     shelf: book.shelf,
     shelf_section: book.shelf_section,
     acquired_from: book.acquired_from,
@@ -269,19 +277,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Fetch all books with relations
+  // Fetch all books (without complex FK joins to avoid errors)
   const { data: books, error } = await supabase
     .from('books')
-    .select(`
-      *,
-      language:languages!books_language_id_fkey(name),
-      original_language:languages!books_original_language_id_fkey(name),
-      binding:bindings(name),
-      format:book_formats(name),
-      condition:conditions!books_condition_id_fkey(name),
-      dust_jacket_condition:conditions!books_dust_jacket_condition_id_fkey(name),
-      location:user_locations(name)
-    `)
+    .select('*')
     .eq('user_id', user.id)
     .order('title')
 
@@ -289,6 +288,22 @@ export async function GET(request: NextRequest) {
     console.error('Export error:', error)
     return NextResponse.json({ error: 'Failed to fetch books', details: error.message, code: error.code }, { status: 500 })
   }
+
+  // Fetch related data separately
+  const [languagesRes, bindingsRes, formatsRes, conditionsRes, locationsRes] = await Promise.all([
+    supabase.from('languages').select('id, name_en'),
+    supabase.from('bindings').select('id, name'),
+    supabase.from('book_formats').select('id, name'),
+    supabase.from('conditions').select('id, name'),
+    supabase.from('user_locations').select('id, name').eq('user_id', user.id),
+  ])
+
+  // Create lookup maps
+  const languageMap = new Map<string, string>((languagesRes.data || []).map(l => [l.id, l.name_en] as [string, string]))
+  const bindingMap = new Map<string, string>((bindingsRes.data || []).map(b => [b.id, b.name] as [string, string]))
+  const formatMap = new Map<string, string>((formatsRes.data || []).map(f => [f.id, f.name] as [string, string]))
+  const conditionMap = new Map<string, string>((conditionsRes.data || []).map(c => [c.id, c.name] as [string, string]))
+  const locationMap = new Map<string, string>((locationsRes.data || []).map(l => [l.id, l.name] as [string, string]))
 
   // Fetch contributors for all books
   const bookIds = books?.map(b => b.id) || []
@@ -314,7 +329,15 @@ export async function GET(request: NextRequest) {
   })
 
   // Transform all books
-  const rows = books?.map(book => transformBookData(book, contributorsByBook)) || []
+  const rows = books?.map(book => transformBookData(
+    book, 
+    contributorsByBook,
+    languageMap,
+    bindingMap,
+    formatMap,
+    conditionMap,
+    locationMap
+  )) || []
 
   // Generate filename with date
   const date = new Date().toISOString().split('T')[0]
