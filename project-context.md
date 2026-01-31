@@ -1,5 +1,12 @@
 # Shelvd - Project Context
 
+> **Versie:** 1.3.0  
+> **Laatste update:** 2025-01-31 17:15 CET  
+> **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
+> **Status:** Actief in ontwikkeling
+
+---
+
 ## Project Overzicht
 Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te beheren.
 
@@ -1271,5 +1278,31 @@ Historische bibliografische formaten:
 - **TypeScript types** geregenereerd
 - **Build succesvol** ✅
 
+### 2025-01-31 (namiddag 2) - UI/UX Swiss Design
+- **Header redesign** (Optie B gekozen):
+  - Witte achtergrond met dikke rode lijn onderaan (4px)
+  - Rode logo behouden (bg-primary)
+  - SHELVD tekst nu uppercase
+  - Alle nav items toegevoegd: Collection, Add, Import, Search
+  - Iconen voor Add (+), Import (upload), Search (magnifier)
+  - Consistente gray-500/black kleurenschema voor user menu
+- **Status kleuren** (Swiss Design palette):
+  - on_sale: solid rood (`bg-red-600 text-white`)
+  - to_sell: licht rood (`bg-red-100 text-red-700`)
+  - reserved: rode outline (`border border-red-600 text-red-600`)
+  - lent/borrowed: zwarte outline (`border border-black text-black`)
+  - lost/destroyed: solid zwart (`bg-black text-white`)
+  - in_collection/sold/double/ordered/donated: grijs variaties
+- **Demo pagina verwijderd** (/header-demo)
+- **Build succesvol** ✅
+
 ---
-*Laatst bijgewerkt: 2025-01-31 16:00*
+
+## Changelog
+
+| Versie | Datum | Wijzigingen |
+|--------|-------|-------------|
+| 1.3.0 | 2025-01-31 | Swiss Design UI (header, status kleuren) |
+| 1.2.0 | 2025-01-31 | Prio 1 implementatie (nieuwe velden) |
+| 1.1.0 | 2025-01-31 | Golden Rules, 10-punts roadmap |
+| 1.0.0 | 2025-01-30 | Initiële documentatie |
