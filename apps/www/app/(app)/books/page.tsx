@@ -424,6 +424,64 @@ export default function BooksPage() {
     const isAnd = (searchParams.get('mode') || 'and') === 'and'
     const isExact = (searchParams.get('match') || 'fuzzy') === 'exact'
 
+    // DEFAULT MODE - No search, no filters - just show all books
+    if (!isGlobalSearch && !hasFilters) {
+      const { data, error } = await supabase
+        .from('books')
+        .select(`
+          id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+          status, cover_type, condition_id, language_id, user_catalog_id, series,
+          storage_location, shelf, isbn_13, isbn_10,
+          book_contributors (
+            contributor:contributors ( canonical_name ),
+            role:contributor_roles ( name )
+          )
+        `)
+        .order('title', { ascending: true })
+        .range(from, to)
+
+      if (error) {
+        console.error('Error fetching books:', error)
+        setLoading(false)
+        setLoadingMore(false)
+        return
+      }
+
+      const formattedBooks: BookListItem[] = (data || []).map((book: any) => ({
+        id: book.id,
+        title: book.title,
+        subtitle: book.subtitle,
+        original_title: book.original_title,
+        publication_year: book.publication_year,
+        publication_place: book.publication_place,
+        publisher: book.publisher_name,
+        status: book.status,
+        cover_type: book.cover_type,
+        condition_id: book.condition_id,
+        language_id: book.language_id,
+        storage_location: book.storage_location,
+        shelf: book.shelf,
+        isbn_13: book.isbn_13,
+        isbn_10: book.isbn_10,
+        series: book.series,
+        user_catalog_id: book.user_catalog_id,
+        contributors: (book.book_contributors || []).map((bc: any) => ({
+          name: bc.contributor?.canonical_name || 'Unknown',
+          role: bc.role?.name || 'Contributor'
+        }))
+      }))
+
+      if (append) {
+        setBooks(prev => [...prev, ...formattedBooks])
+      } else {
+        setBooks(formattedBooks)
+      }
+
+      setLoading(false)
+      setLoadingMore(false)
+      return
+    }
+
     // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
     if (isGlobalSearch && !hasFilters) {
       const searchTerms = qParam.toLowerCase().split(/\s+/).filter(t => t.length > 0)
