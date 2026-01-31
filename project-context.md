@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.3.1  
-> **Laatste update:** 2025-01-31 17:25 CET  
+> **Versie:** 1.4.0  
+> **Laatste update:** 2025-01-31 17:45 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1040,47 +1040,47 @@ Historische bibliografische formaten:
 
 **Opmerking:** Printer & Printing Place stonden al in Publication sectie ✅
 
-### 🔴 Prio 2 - Publisher & Contributor Koppeling
-- [ ] **Publisher FK koppeling** - Hybride: autocomplete + automatisch aanmaken
-- [ ] **Printer FK koppeling** - Zelfde aanpak als publisher
-- [ ] **Migratie bestaande data** - Match publisher_name naar publishers tabel
+### ~~Prio 2 - Publisher & Contributor Koppeling~~ **GESCHRAPT**
+> **Reden:** De publishers tabel is leeg en zou een data-kerkhof worden bij schaal.
+> Publisher_name als vrij tekst + autocomplete werkt goed genoeg.
+> Contributors tabel blijft WEL (M:N relatie, 8194 entries, actief in gebruik).
 
-### 🔴 Prio 3 - Export Functies
+### 🔴 Prio 2 - Export Functies
 - [ ] **Excel export** - Zelfde template als import, flatten contributors
 - [ ] **CSV export** - Alle velden
 - [ ] **CSV import** - Zelfde als Excel import
 
-### 🟡 Prio 4 - Custom Tags
+### 🟡 Prio 3 - Custom Tags
 - [ ] **user_tags tabel** - Met kleur support
 - [ ] **book_tags junction** - Many-to-many
 - [ ] **Tag UI** - Chips, filter, management
 
-### 🟡 Prio 5 - Duplicate Detection
+### 🟡 Prio 4 - Duplicate Detection
 - [ ] **ISBN exact match** - Hoogste prioriteit
 - [ ] **Title + Author fuzzy** - Voor pre-ISBN boeken
 - [ ] **Warning bij Add/Import** - Potentiële duplicates
 - [ ] **Find Duplicates tool** - Dedicated pagina
 
-### 🟡 Prio 6 - Statistics Dashboard
+### 🟡 Prio 5 - Statistics Dashboard
 - [ ] **20 statistieken** - Counts, values, charts
 - [ ] **Collection value** - Met currency conversie
 
-### 🟡 Prio 7 - External Links
+### 🟡 Prio 6 - External Links
 - [ ] **WorldCat, Google Books, AbeBooks** - Via ISBN/OCLC
 - [ ] **VIAF, Wikidata** - Voor contributors
 - [ ] **Library of Congress** - Via LCCN
 
-### 🟢 Prio 8 - User Settings
+### 🟢 Prio 7 - User Settings
 - [ ] **Settings pagina** - Currency, date format, view preferences
 - [ ] **GDPR compliance** - Export all data, delete account
 
-### 🟢 Prio 9 - Sharing & Public Catalog
+### 🟢 Prio 8 - Sharing & Public Catalog
 - [ ] **Public catalog URL** - shelvd.com/u/{username}
 - [ ] **Privacy settings** - Welke velden publiek
 - [ ] **Shareable wishlist** - Publieke link
 - [ ] **Embed widget** - HTML snippet
 
-### 🟢 Prio 10 - Currency & Valuation
+### 🟢 Prio 9 - Currency & Valuation
 - [ ] **Exchange rates** - Handmatig in settings of API
 - [ ] **Collection value berekening** - Converteer naar default currency
 
@@ -1297,12 +1297,24 @@ Historische bibliografische formaten:
 - **Action needed badge**: amber → rood (`bg-red-100 text-red-700`)
 - **Build succesvol** ✅
 
+### 2025-01-31 (namiddag 3) - Roadmap Herziening
+- **Prio 2 (Publisher FK) GESCHRAPT**:
+  - Publishers tabel is leeg (0 entries)
+  - Zou data-kerkhof worden bij schaal (wie vult metadata in voor 500k+ publishers?)
+  - Huidige aanpak werkt: `publisher_name` vrij tekst + autocomplete
+- **Contributors tabel BLIJFT**:
+  - M:N relatie (meerdere contributors per boek)
+  - Actief in gebruik: 8194 contributors, 5152 koppelingen
+  - Essentieel voor rollen (Author, Illustrator, Translator, etc.)
+- **Roadmap hernummerd**: 10 → 9 prioriteiten
+
 ---
 
 ## Changelog
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.4.0 | 2025-01-31 | Publisher FK geschrapt, roadmap 10→9 prio's |
 | 1.3.1 | 2025-01-31 | Action needed badge rood |
 | 1.3.0 | 2025-01-31 | Swiss Design UI (header, status kleuren) |
 | 1.2.0 | 2025-01-31 | Prio 1 implementatie (nieuwe velden) |
