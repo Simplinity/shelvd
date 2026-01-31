@@ -973,7 +973,13 @@ export default function BooksPage() {
       const response = await fetch(`/api/export?format=${format}`)
       
       if (!response.ok) {
-        throw new Error('Export failed')
+        // Try to get error details from response
+        const contentType = response.headers.get('content-type')
+        if (contentType?.includes('application/json')) {
+          const errorData = await response.json()
+          throw new Error(errorData.details || errorData.error || 'Export failed')
+        }
+        throw new Error(`Export failed: ${response.status}`)
       }
       
       const blob = await response.blob()
@@ -991,7 +997,8 @@ export default function BooksPage() {
       document.body.removeChild(a)
     } catch (err) {
       console.error('Export error:', err)
-      alert('Export failed. Please try again.')
+      const message = err instanceof Error ? err.message : 'Export failed'
+      alert(`Export failed: ${message}`)
     } finally {
       setExporting(false)
     }

@@ -287,7 +287,7 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error('Export error:', error)
-    return NextResponse.json({ error: 'Failed to fetch books' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch books', details: error.message, code: error.code }, { status: 500 })
   }
 
   // Fetch contributors for all books
