@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.3.0  
-> **Laatste update:** 2025-01-31 17:15 CET  
+> **Versie:** 1.3.1  
+> **Laatste update:** 2025-01-31 17:25 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1294,6 +1294,7 @@ Historische bibliografische formaten:
   - lost/destroyed: solid zwart (`bg-black text-white`)
   - in_collection/sold/double/ordered/donated: grijs variaties
 - **Demo pagina verwijderd** (/header-demo)
+- **Action needed badge**: amber → rood (`bg-red-100 text-red-700`)
 - **Build succesvol** ✅
 
 ---
@@ -1302,6 +1303,7 @@ Historische bibliografische formaten:
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.3.1 | 2025-01-31 | Action needed badge rood |
 | 1.3.0 | 2025-01-31 | Swiss Design UI (header, status kleuren) |
 | 1.2.0 | 2025-01-31 | Prio 1 implementatie (nieuwe velden) |
 | 1.1.0 | 2025-01-31 | Golden Rules, 10-punts roadmap |
