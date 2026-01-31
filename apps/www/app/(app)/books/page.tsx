@@ -424,7 +424,15 @@ export default function BooksPage() {
     const isAnd = (searchParams.get('mode') || 'and') === 'and'
     const isExact = (searchParams.get('match') || 'fuzzy') === 'exact'
 
+    // ========================================================================
+    // CRITICAL: DO NOT MODIFY THESE THREE MODES WITHOUT TESTING ALL OF THEM!
+    // 1. DEFAULT MODE - No search, no filters
+    // 2. GLOBAL SEARCH MODE - Search box with ?q= parameter  
+    // 3. ADVANCED FILTERS MODE - Individual field filters
+    // ========================================================================
+
     // DEFAULT MODE - No search, no filters - show all books
+    // IMPORTANT: This must come FIRST and return early!
     if (!isGlobalSearch && !hasFilters) {
       const { data, error } = await supabase
         .from('books')
@@ -482,7 +490,9 @@ export default function BooksPage() {
       return
     }
 
-    // GLOBAL SEARCH MODE - Simple approach: fetch all, filter client-side
+    // GLOBAL SEARCH MODE - User typed in the search box (?q=something)
+    // IMPORTANT: This must come SECOND and return early!
+    // Fetches ALL books and filters client-side for maximum flexibility
     if (isGlobalSearch && !hasFilters) {
       const searchTerms = qParam.toLowerCase().split(/\s+/).filter(t => t.length > 0)
       
@@ -559,7 +569,8 @@ export default function BooksPage() {
       return
     }
 
-    // ADVANCED FILTERS MODE (existing logic)
+    // ADVANCED FILTERS MODE - Individual field filters from /books/search
+    // This runs when hasFilters is true (uses server-side filtering)
     let authorBookIds: string[] | null = null
     if (filters.author) {
       authorBookIds = await getBookIdsByAuthor(filters.author, isExact)
