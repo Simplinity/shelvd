@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -947,6 +947,12 @@ export default function BooksPage() {
           >
             <CheckSquare className="w-4 h-4" />
             {selectionMode ? 'Cancel' : 'Select'}
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/books/import" className="gap-2">
+              <Upload className="w-4 h-4" />
+              Import
+            </Link>
           </Button>
           <Button asChild>
             <Link href="/books/add" className="gap-2">
