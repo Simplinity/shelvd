@@ -1,227 +1,292 @@
 import { NextResponse } from 'next/server'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 // Column definitions for the import template
-const columns = [
+const columns: { header: string; width: number; example: string }[] = [
   // Title & Series
-  { header: 'Title *', example: 'The Name of the Rose' },
-  { header: 'Subtitle', example: "Including the Author's Postscript" },
-  { header: 'Original Title', example: 'Il nome della rosa (if translated)' },
-  { header: 'Series', example: 'Penguin Modern Classics' },
-  { header: 'Series Number', example: '3 (position in series)' },
+  { header: 'Title *', width: 35, example: 'The Name of the Rose' },
+  { header: 'Subtitle', width: 30, example: "Including the Author's Postscript" },
+  { header: 'Original Title', width: 30, example: 'Il nome della rosa (if translated)' },
+  { header: 'Series', width: 25, example: 'Penguin Modern Classics' },
+  { header: 'Series Number', width: 14, example: '3 (position in series)' },
   
   // Contributors
-  { header: 'Contributors', example: 'Eco, Umberto (Author); Weaver, William (Translator); Molinari, Jim (Cover Designer)' },
+  { header: 'Contributors', width: 60, example: 'Eco, Umberto (Author); Weaver, William (Translator); Molinari, Jim (Cover Designer)' },
   
   // Language
-  { header: 'Language', example: "English (book's language)" },
-  { header: 'Original Language', example: 'Italian (if translated)' },
+  { header: 'Language', width: 20, example: "English (book's language)" },
+  { header: 'Original Language', width: 20, example: 'Italian (if translated)' },
   
   // Publication
-  { header: 'Publisher', example: 'Harcourt Brace Jovanovich' },
-  { header: 'Publication Place', example: 'New York; London' },
-  { header: 'Publication Year', example: '1983 or [1983]' },
-  { header: 'Printer', example: 'Clays Ltd, St Ives plc' },
-  { header: 'Printing Place', example: 'Bungay, Suffolk' },
+  { header: 'Publisher', width: 25, example: 'Harcourt Brace Jovanovich' },
+  { header: 'Publication Place', width: 20, example: 'New York; London' },
+  { header: 'Publication Year', width: 16, example: '1983 or [1983]' },
+  { header: 'Printer', width: 25, example: 'Clays Ltd, St Ives plc' },
+  { header: 'Printing Place', width: 20, example: 'Bungay, Suffolk' },
   
   // Edition
-  { header: 'Edition', example: 'First Edition or 2nd revised ed.' },
-  { header: 'Impression', example: 'First Printing or 3rd impression' },
-  { header: 'Issue State', example: "First issue with 'adn' typo on p.45" },
-  { header: 'Edition Notes', example: 'Limited to 500 numbered copies, signed by author' },
+  { header: 'Edition', width: 25, example: 'First Edition or 2nd revised ed.' },
+  { header: 'Impression', width: 20, example: 'First Printing or 3rd impression' },
+  { header: 'Issue State', width: 30, example: "First issue with 'adn' typo on p.45" },
+  { header: 'Edition Notes', width: 40, example: 'Limited to 500 numbered copies, signed by author' },
   
   // Physical Description
-  { header: 'Pagination', example: 'xvi, 502, [4] p., 12 plates' },
-  { header: 'Page Count', example: '502 (number only)' },
-  { header: 'Volumes', example: '3 (if multi-volume)' },
-  { header: 'Height (mm)', example: '240' },
-  { header: 'Width (mm)', example: '156' },
-  { header: 'Depth (mm)', example: '35' },
-  { header: 'Weight (g)', example: '650' },
-  { header: 'Cover Type', example: 'hardcover_dj' },
-  { header: 'Binding', example: 'Quarter leather with marbled boards' },
-  { header: 'Book Format', example: 'Octavo (8vo)' },
-  { header: 'Protective Enclosure', example: 'slipcase_publisher' },
-  { header: 'Has Dust Jacket', example: 'yes' },
-  { header: 'Signed', example: 'yes' },
+  { header: 'Pagination', width: 30, example: 'xvi, 502, [4] p., 12 plates' },
+  { header: 'Page Count', width: 14, example: '502 (number only)' },
+  { header: 'Volumes', width: 14, example: '3 (if multi-volume)' },
+  { header: 'Height (mm)', width: 12, example: '240' },
+  { header: 'Width (mm)', width: 12, example: '156' },
+  { header: 'Depth (mm)', width: 12, example: '35' },
+  { header: 'Weight (g)', width: 12, example: '650' },
+  { header: 'Cover Type', width: 25, example: 'hardcover_dj' },
+  { header: 'Binding', width: 25, example: 'Quarter leather with marbled boards' },
+  { header: 'Book Format', width: 20, example: 'Octavo (8vo)' },
+  { header: 'Protective Enclosure', width: 22, example: 'slipcase_publisher' },
+  { header: 'Has Dust Jacket', width: 14, example: 'yes' },
+  { header: 'Signed', width: 10, example: 'yes' },
   
   // Condition & Status
-  { header: 'Condition', example: 'Very Good' },
-  { header: 'Condition Notes', example: 'Dust jacket has small tear at spine head; foxing to endpapers; text block clean' },
-  { header: 'Status', example: 'in_collection' },
-  { header: 'Action Needed', example: 'repair' },
+  { header: 'Condition', width: 15, example: 'Very Good' },
+  { header: 'Condition Notes', width: 45, example: 'Dust jacket has small tear at spine head; foxing to endpapers; text block clean' },
+  { header: 'Status', width: 18, example: 'in_collection' },
+  { header: 'Action Needed', width: 15, example: 'repair' },
   
   // Identifiers
-  { header: 'ISBN-13', example: '978-0-15-600131-4' },
-  { header: 'ISBN-10', example: '0-15-600131-4' },
-  { header: 'OCLC Number', example: '9332925 (WorldCat ID)' },
-  { header: 'LCCN', example: '83-273 (Library of Congress)' },
-  { header: 'Catalog ID', example: 'ECO-001 (your own ID)' },
-  { header: 'DDC', example: '853.914 (Dewey)' },
-  { header: 'LCC', example: 'PQ4865.C6 (LoC class)' },
-  { header: 'UDC', example: '821.131.1 (Universal)' },
-  { header: 'Topic', example: 'Medieval monasteries; Semiotics; Murder mystery' },
-  { header: 'BISAC Code 1', example: 'FIC019000' },
-  { header: 'BISAC Code 2', example: 'FIC022000 (optional)' },
-  { header: 'BISAC Code 3', example: 'FIC014000 (optional)' },
+  { header: 'ISBN-13', width: 18, example: '978-0-15-600131-4' },
+  { header: 'ISBN-10', width: 15, example: '0-15-600131-4' },
+  { header: 'OCLC Number', width: 18, example: '9332925 (WorldCat ID)' },
+  { header: 'LCCN', width: 18, example: '83-273 (Library of Congress)' },
+  { header: 'Catalog ID', width: 18, example: 'ECO-001 (your own ID)' },
+  { header: 'DDC', width: 14, example: '853.914 (Dewey)' },
+  { header: 'LCC', width: 16, example: 'PQ4865.C6 (LoC class)' },
+  { header: 'UDC', width: 14, example: '821.131.1 (Universal)' },
+  { header: 'Topic', width: 30, example: 'Medieval monasteries; Semiotics; Murder mystery' },
+  { header: 'BISAC Code 1', width: 16, example: 'FIC019000' },
+  { header: 'BISAC Code 2', width: 16, example: 'FIC022000 (optional)' },
+  { header: 'BISAC Code 3', width: 16, example: 'FIC014000 (optional)' },
   
   // Storage
-  { header: 'Location', example: 'Living Room Bookcase' },
-  { header: 'Shelf', example: 'A3 or Top shelf' },
-  { header: 'Section', example: 'Fiction-E' },
+  { header: 'Location', width: 20, example: 'Living Room Bookcase' },
+  { header: 'Shelf', width: 14, example: 'A3 or Top shelf' },
+  { header: 'Section', width: 14, example: 'Fiction-E' },
   
   // Acquisition
-  { header: 'Acquired From', example: 'Antiquariaat De Roo, Ghent' },
-  { header: 'Acquired Date', example: '2024-03-15' },
-  { header: 'Acquired Price', example: '45.00' },
-  { header: 'Acquired Currency', example: 'EUR' },
-  { header: 'Acquisition Notes', example: "Bought at book fair; includes seller's invoice #1234" },
+  { header: 'Acquired From', width: 25, example: 'Antiquariaat De Roo, Ghent' },
+  { header: 'Acquired Date', width: 14, example: '2024-03-15' },
+  { header: 'Acquired Price', width: 14, example: '45.00' },
+  { header: 'Acquired Currency', width: 14, example: 'EUR' },
+  { header: 'Acquisition Notes', width: 40, example: "Bought at book fair; includes seller's invoice #1234" },
   
   // Valuation
-  { header: 'Lowest Price', example: '30.00 (market low)' },
-  { header: 'Highest Price', example: '120.00 (market high)' },
-  { header: 'Estimated Value', example: '75.00 (your estimate)' },
-  { header: 'Sales Price', example: '85.00 (if selling)' },
-  { header: 'Price Currency', example: 'EUR' },
+  { header: 'Lowest Price', width: 16, example: '30.00 (market low)' },
+  { header: 'Highest Price', width: 16, example: '120.00 (market high)' },
+  { header: 'Estimated Value', width: 16, example: '75.00 (your estimate)' },
+  { header: 'Sales Price', width: 16, example: '85.00 (if selling)' },
+  { header: 'Price Currency', width: 14, example: 'EUR' },
   
   // Notes
-  { header: 'Summary', example: 'Brother William investigates murders in a Benedictine monastery in 1327' },
-  { header: 'Provenance', example: 'Ex-library copy from University of Ghent; bookplate of Prof. Jan De Vries' },
-  { header: 'Bibliography', example: 'Carter A23a; First edition, first printing per Gaskell' },
-  { header: 'Illustrations Description', example: 'Frontispiece portrait; 12 b/w plates of monastery plans' },
-  { header: 'Signatures Description', example: 'A-Z⁸ Aa-Ff⁸ (collation formula for bibliographers)' },
-  { header: 'Private Notes', example: 'Gift from Maria for my 40th birthday; keep in family' },
-  { header: 'Catalog Entry', example: 'Enter your own description, or leave empty to auto-generate' },
+  { header: 'Summary', width: 55, example: 'Brother William investigates murders in a Benedictine monastery in 1327' },
+  { header: 'Provenance', width: 45, example: 'Ex-library copy from University of Ghent; bookplate of Prof. Jan De Vries' },
+  { header: 'Bibliography', width: 45, example: 'Carter A23a; First edition, first printing per Gaskell' },
+  { header: 'Illustrations Description', width: 45, example: 'Frontispiece portrait; 12 b/w plates of monastery plans' },
+  { header: 'Signatures Description', width: 45, example: 'A-Z⁸ Aa-Ff⁸ (collation formula for bibliographers)' },
+  { header: 'Private Notes', width: 45, example: 'Gift from Maria for my 40th birthday; keep in family' },
+  { header: 'Catalog Entry', width: 55, example: 'Enter your own description, or leave empty to auto-generate' },
 ]
 
 // Instructions for the second sheet
-const instructions = [
-  ['Shelvd Import Template'],
-  [''],
-  ['HOW TO USE'],
-  ['• Row 1 contains column headers — do not modify'],
-  ['• Row 2 shows examples with explanations — delete this row before importing'],
-  ["• Only 'Title' is required (marked with *), all other fields are optional"],
-  ["• Leave cells empty if you don't have the data"],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['CONTRIBUTORS'],
-  ['Format: Lastname, Firstname (Role); Lastname2, Firstname2 (Role2)'],
-  [''],
-  ['Examples:'],
-  ['  • Single author: Eco, Umberto (Author)'],
-  ['  • With translator: Eco, Umberto (Author); Weaver, William (Translator)'],
-  ['  • Multiple roles: Tolkien, J.R.R. (Author); Lee, Alan (Illustrator); Howe, John (Illustrator)'],
-  [''],
-  ['Available roles: Author, Co-author, Editor, Translator, Illustrator, Photographer,'],
-  ['                 Introduction by, Foreword by, Afterword by, Cover Designer, Contributor'],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['STATUS VALUES'],
-  ['  in_collection — Book is in your collection (default)'],
-  ['  lent — Lent to someone'],
-  ['  borrowed — Borrowed from someone'],
-  ['  double — Duplicate copy'],
-  ['  to_sell — Marked for selling'],
-  ['  on_sale — Currently listed for sale'],
-  ['  reserved — Reserved for someone'],
-  ['  sold — Has been sold'],
-  ['  ordered — On order, not yet received'],
-  ['  lost, donated, destroyed, unknown'],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['ACTION NEEDED VALUES'],
-  ['  none — No action needed (default)'],
-  ['  repair — Needs repair'],
-  ['  bind — Needs binding/rebinding'],
-  ['  replace — Should be replaced'],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['COVER TYPE VALUES'],
-  ['  softcover — Paperback'],
-  ['  hardcover — Hardcover without dust jacket'],
-  ['  softcover_dj — Paperback with dust jacket (rare)'],
-  ['  hardcover_dj — Hardcover with dust jacket'],
-  ['  full_leather_hardcover, full_cloth_hardcover — Bound in leather/cloth'],
-  ['  quarter_leather_paper — Leather spine, paper sides'],
-  ['  half_leather_paper — Leather spine and corners, paper sides'],
-  ['  library_binding — Reinforced library binding'],
-  ['  original_wraps — Original paper wrappers (antiquarian)'],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['PROTECTIVE ENCLOSURE VALUES'],
-  ['  none — No protective enclosure (default)'],
-  ["  slipcase_publisher — Publisher's slipcase"],
-  ['  slipcase_custom — Custom-made slipcase'],
-  ['  clamshell_box — Clamshell box'],
-  ['  chemise — Protective chemise'],
-  ['  solander_box — Solander box'],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['CONDITION VALUES (standard book trade terms)'],
-  ['  As New — Perfect, unread condition'],
-  ['  Fine — Nearly perfect, minimal signs of handling'],
-  ['  Very Good — Shows some wear but no major defects'],
-  ['  Good — Average used condition, all pages intact'],
-  ['  Fair — Worn but complete and readable'],
-  ['  Poor — Heavily worn, may have defects'],
-  [''],
-  ['─'.repeat(80)],
-  [''],
-  ['YES/NO FIELDS (Has Dust Jacket, Signed)'],
-  ['  Accepted values: yes, no, true, false, 1, 0'],
-  [''],
-  ['DATE FORMAT'],
-  ['  Use YYYY-MM-DD format (e.g., 2024-03-15)'],
-  ['  Partial dates OK: 2024-03 or just 2024'],
-  [''],
-  ['LANGUAGE'],
-  ['  Use full English names: English, Dutch, French, German, Italian, Spanish,'],
-  ['  Portuguese, Russian, Japanese, Chinese, Arabic, Latin, Greek, etc.'],
-  [''],
-  ['PAGINATION'],
-  ['  Use bibliographic notation: xvi, 502, [4] p., 12 plates'],
-  ['  Roman numerals for front matter, Arabic for main text, brackets for unnumbered'],
-  [''],
-  ['BISAC CODES'],
-  ['  Optional subject classification codes (e.g., FIC019000 for Literary Fiction)'],
-  ['  Find codes at: bisg.org/page/BISACSubjectCodes'],
+const instructions: [string, boolean, number][] = [
+  ['Shelvd Import Template', true, 16],
+  ['', false, 11],
+  ['HOW TO USE', true, 12],
+  ['• Row 1 contains column headers — do not modify', false, 11],
+  ['• Row 2 shows examples with explanations — delete this row before importing', false, 11],
+  ["• Only 'Title' is required (marked with *), all other fields are optional", false, 11],
+  ["• Leave cells empty if you don't have the data", false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['CONTRIBUTORS', true, 12],
+  ['Format: Lastname, Firstname (Role); Lastname2, Firstname2 (Role2)', false, 11],
+  ['', false, 11],
+  ['Examples:', false, 11],
+  ['  • Single author: Eco, Umberto (Author)', false, 11],
+  ['  • With translator: Eco, Umberto (Author); Weaver, William (Translator)', false, 11],
+  ['  • Multiple roles: Tolkien, J.R.R. (Author); Lee, Alan (Illustrator); Howe, John (Illustrator)', false, 11],
+  ['', false, 11],
+  ['Available roles: Author, Co-author, Editor, Translator, Illustrator, Photographer,', false, 11],
+  ['                 Introduction by, Foreword by, Afterword by, Cover Designer, Contributor', false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['STATUS VALUES', true, 12],
+  ['  in_collection — Book is in your collection (default)', false, 11],
+  ['  lent — Lent to someone', false, 11],
+  ['  borrowed — Borrowed from someone', false, 11],
+  ['  double — Duplicate copy', false, 11],
+  ['  to_sell — Marked for selling', false, 11],
+  ['  on_sale — Currently listed for sale', false, 11],
+  ['  reserved — Reserved for someone', false, 11],
+  ['  sold — Has been sold', false, 11],
+  ['  ordered — On order, not yet received', false, 11],
+  ['  lost, donated, destroyed, unknown', false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['ACTION NEEDED VALUES', true, 12],
+  ['  none — No action needed (default)', false, 11],
+  ['  repair — Needs repair', false, 11],
+  ['  bind — Needs binding/rebinding', false, 11],
+  ['  replace — Should be replaced', false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['COVER TYPE VALUES', true, 12],
+  ['  softcover — Paperback', false, 11],
+  ['  hardcover — Hardcover without dust jacket', false, 11],
+  ['  softcover_dj — Paperback with dust jacket (rare)', false, 11],
+  ['  hardcover_dj — Hardcover with dust jacket', false, 11],
+  ['  full_leather_hardcover, full_cloth_hardcover — Bound in leather/cloth', false, 11],
+  ['  quarter_leather_paper — Leather spine, paper sides', false, 11],
+  ['  half_leather_paper — Leather spine and corners, paper sides', false, 11],
+  ['  library_binding — Reinforced library binding', false, 11],
+  ['  original_wraps — Original paper wrappers (antiquarian)', false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['PROTECTIVE ENCLOSURE VALUES', true, 12],
+  ['  none — No protective enclosure (default)', false, 11],
+  ["  slipcase_publisher — Publisher's slipcase", false, 11],
+  ['  slipcase_custom — Custom-made slipcase', false, 11],
+  ['  clamshell_box — Clamshell box', false, 11],
+  ['  chemise — Protective chemise', false, 11],
+  ['  solander_box — Solander box', false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['CONDITION VALUES (standard book trade terms)', true, 12],
+  ['  As New — Perfect, unread condition', false, 11],
+  ['  Fine — Nearly perfect, minimal signs of handling', false, 11],
+  ['  Very Good — Shows some wear but no major defects', false, 11],
+  ['  Good — Average used condition, all pages intact', false, 11],
+  ['  Fair — Worn but complete and readable', false, 11],
+  ['  Poor — Heavily worn, may have defects', false, 11],
+  ['', false, 11],
+  ['─'.repeat(80), false, 11],
+  ['', false, 11],
+  ['YES/NO FIELDS (Has Dust Jacket, Signed)', true, 12],
+  ['  Accepted values: yes, no, true, false, 1, 0', false, 11],
+  ['', false, 11],
+  ['DATE FORMAT', true, 12],
+  ['  Use YYYY-MM-DD format (e.g., 2024-03-15)', false, 11],
+  ['  Partial dates OK: 2024-03 or just 2024', false, 11],
+  ['', false, 11],
+  ['LANGUAGE', true, 12],
+  ['  Use full English names: English, Dutch, French, German, Italian, Spanish,', false, 11],
+  ['  Portuguese, Russian, Japanese, Chinese, Arabic, Latin, Greek, etc.', false, 11],
+  ['', false, 11],
+  ['PAGINATION', true, 12],
+  ['  Use bibliographic notation: xvi, 502, [4] p., 12 plates', false, 11],
+  ['  Roman numerals for front matter, Arabic for main text, brackets for unnumbered', false, 11],
+  ['', false, 11],
+  ['BISAC CODES', true, 12],
+  ['  Optional subject classification codes (e.g., FIC019000 for Literary Fiction)', false, 11],
+  ['  Find codes at: bisg.org/page/BISACSubjectCodes', false, 11],
 ]
 
 export async function GET() {
-  // Create workbook
-  const wb = XLSX.utils.book_new()
+  const workbook = new ExcelJS.Workbook()
+  workbook.creator = 'Shelvd'
+  workbook.created = new Date()
   
-  // Create Books sheet data
-  const headers = columns.map(c => c.header)
-  const examples = columns.map(c => c.example)
-  const booksData = [headers, examples]
+  // ===== BOOKS SHEET =====
+  const wsBooks = workbook.addWorksheet('Books', {
+    views: [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
+  })
   
-  const wsBooks = XLSX.utils.aoa_to_sheet(booksData)
+  // Set up columns with widths
+  wsBooks.columns = columns.map((col, index) => ({
+    key: `col${index}`,
+    width: col.width
+  }))
   
-  // Set column widths
-  wsBooks['!cols'] = columns.map(() => ({ wch: 25 }))
+  // Header row (row 1)
+  const headerRow = wsBooks.getRow(1)
+  columns.forEach((col, index) => {
+    const cell = headerRow.getCell(index + 1)
+    cell.value = col.header
+    cell.font = {
+      name: 'Arial',
+      size: 10,
+      bold: true,
+      color: { argb: 'FFFFFFFF' }
+    }
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1A1A1A' }
+    }
+    cell.alignment = {
+      horizontal: 'left',
+      vertical: 'middle',
+      wrapText: true
+    }
+    cell.border = {
+      bottom: { style: 'thin', color: { argb: 'FFE0E0E0' } }
+    }
+  })
+  headerRow.height = 30
   
-  // Add Books sheet
-  XLSX.utils.book_append_sheet(wb, wsBooks, 'Books')
+  // Example row (row 2)
+  const exampleRow = wsBooks.getRow(2)
+  columns.forEach((col, index) => {
+    const cell = exampleRow.getCell(index + 1)
+    cell.value = col.example
+    cell.font = {
+      name: 'Arial',
+      size: 10,
+      italic: true,
+      color: { argb: 'FF666666' }
+    }
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFF5F5F5' }
+    }
+    cell.alignment = {
+      horizontal: 'left',
+      vertical: 'middle'
+    }
+    cell.border = {
+      bottom: { style: 'thin', color: { argb: 'FFE0E0E0' } }
+    }
+  })
+  exampleRow.height = 22
   
-  // Create Instructions sheet
-  const wsInstructions = XLSX.utils.aoa_to_sheet(instructions)
-  wsInstructions['!cols'] = [{ wch: 90 }]
+  // ===== INSTRUCTIONS SHEET =====
+  const wsInstructions = workbook.addWorksheet('Instructions')
+  wsInstructions.getColumn(1).width = 90
   
-  XLSX.utils.book_append_sheet(wb, wsInstructions, 'Instructions')
+  instructions.forEach(([text, isBold, size], index) => {
+    const row = wsInstructions.getRow(index + 1)
+    const cell = row.getCell(1)
+    cell.value = text
+    cell.font = {
+      name: 'Arial',
+      size: size,
+      bold: isBold
+    }
+    cell.alignment = {
+      horizontal: 'left',
+      vertical: 'middle'
+    }
+  })
   
   // Generate buffer
-  const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+  const buffer = await workbook.xlsx.writeBuffer()
   
   // Return as downloadable file
-  return new NextResponse(buf, {
+  return new NextResponse(buffer, {
     headers: {
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': 'attachment; filename="shelvd_import_template.xlsx"',
