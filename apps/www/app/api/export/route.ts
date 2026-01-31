@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import ExcelJS from 'exceljs'
 
@@ -101,7 +101,166 @@ const columns: { header: string; key: string; width: number }[] = [
   { header: 'Catalog Entry', key: 'catalog_entry', width: 55 },
 ]
 
-export async function GET() {
+// Helper to transform book data
+function transformBookData(book: any, contributorsByBook: Record<string, string[]>): Record<string, any> {
+  return {
+    title: book.title,
+    subtitle: book.subtitle,
+    original_title: book.original_title,
+    series: book.series,
+    series_number: book.series_number,
+    contributors: contributorsByBook[book.id]?.join('; ') || '',
+    language: (book.language as any)?.name || '',
+    original_language: (book.original_language as any)?.name || '',
+    publisher_name: book.publisher_name,
+    publication_place: book.publication_place,
+    publication_year: book.publication_year,
+    printer: book.printer,
+    printing_place: book.printing_place,
+    edition: book.edition,
+    impression: book.impression,
+    issue_state: book.issue_state,
+    edition_notes: book.edition_notes,
+    pagination_description: book.pagination_description,
+    page_count: book.page_count,
+    volumes: book.volumes,
+    height_mm: book.height_mm,
+    width_mm: book.width_mm,
+    depth_mm: book.depth_mm,
+    weight_grams: book.weight_grams,
+    cover_type: book.cover_type,
+    binding: (book.binding as any)?.name || '',
+    format: (book.format as any)?.name || '',
+    protective_enclosure: book.protective_enclosure,
+    paper_type: book.paper_type,
+    edge_treatment: book.edge_treatment,
+    endpapers_type: book.endpapers_type,
+    text_block_condition: book.text_block_condition,
+    has_dust_jacket: book.has_dust_jacket ? 'yes' : (book.has_dust_jacket === false ? 'no' : ''),
+    is_signed: book.is_signed ? 'yes' : (book.is_signed === false ? 'no' : ''),
+    condition: (book.condition as any)?.name || '',
+    dust_jacket_condition: (book.dust_jacket_condition as any)?.name || '',
+    condition_notes: book.condition_notes,
+    status: book.status,
+    action_needed: book.action_needed,
+    isbn_13: book.isbn_13,
+    isbn_10: book.isbn_10,
+    oclc_number: book.oclc_number,
+    lccn: book.lccn,
+    user_catalog_id: book.user_catalog_id,
+    ddc: book.ddc,
+    lcc: book.lcc,
+    udc: book.udc,
+    topic: book.topic,
+    bisac_code: book.bisac_code,
+    location: (book.location as any)?.name || '',
+    shelf: book.shelf,
+    shelf_section: book.shelf_section,
+    acquired_from: book.acquired_from,
+    acquired_date: book.acquired_date,
+    acquired_price: book.acquired_price,
+    acquired_currency: book.acquired_currency,
+    acquired_notes: book.acquired_notes,
+    lowest_price: book.lowest_price,
+    highest_price: book.highest_price,
+    estimated_value: book.estimated_value,
+    sales_price: book.sales_price,
+    price_currency: book.price_currency,
+    valuation_date: book.valuation_date,
+    summary: book.summary,
+    provenance: book.provenance,
+    bibliography: book.bibliography,
+    illustrations_description: book.illustrations_description,
+    signatures_description: book.signatures_description,
+    dedication_text: book.dedication_text,
+    colophon_text: book.colophon_text,
+    internal_notes: book.internal_notes,
+    catalog_entry: book.catalog_entry,
+  }
+}
+
+// Generate Excel file
+async function generateExcel(rows: Record<string, any>[]) {
+  const workbook = new ExcelJS.Workbook()
+  workbook.creator = 'Shelvd'
+  workbook.created = new Date()
+
+  const worksheet = workbook.addWorksheet('Books', {
+    views: [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
+  })
+
+  worksheet.columns = columns.map(col => ({
+    header: col.header,
+    key: col.key,
+    width: col.width
+  }))
+
+  // Style header row
+  const headerRow = worksheet.getRow(1)
+  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } }
+  headerRow.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FF1A1A1A' }
+  }
+  headerRow.alignment = { horizontal: 'left', vertical: 'middle' }
+  headerRow.height = 25
+
+  // Add data rows
+  rows.forEach(row => worksheet.addRow(row))
+
+  // Style data rows
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber > 1) {
+      row.eachCell(cell => {
+        cell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true }
+        if (rowNumber % 2 === 0) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF9F9F9' }
+          }
+        }
+      })
+    }
+  })
+
+  return await workbook.xlsx.writeBuffer()
+}
+
+// Generate CSV file
+function generateCSV(rows: Record<string, any>[]): string {
+  const headers = columns.map(col => col.header)
+  const keys = columns.map(col => col.key)
+  
+  const csvRows = [
+    headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','),
+    ...rows.map(row => 
+      keys.map(key => {
+        const value = row[key]
+        if (value === null || value === undefined) return ''
+        const str = String(value).replace(/"/g, '""')
+        return `"${str}"`
+      }).join(',')
+    )
+  ]
+  
+  return csvRows.join('\n')
+}
+
+// Generate JSON file
+function generateJSON(rows: Record<string, any>[]): string {
+  return JSON.stringify(rows, null, 2)
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const format = searchParams.get('format') || 'xlsx'
+  
+  if (!['xlsx', 'csv', 'json'].includes(format)) {
+    return NextResponse.json({ error: 'Invalid format. Use xlsx, csv, or json.' }, { status: 400 })
+  }
+
   const supabase = await createClient()
   
   // Check authentication
@@ -150,144 +309,43 @@ export async function GET() {
     }
     const name = bc.contributor?.sort_name || bc.contributor?.canonical_name || 'Unknown'
     const role = bc.role || 'Contributor'
-    // Capitalize role
     const formattedRole = role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, ' ')
     contributorsByBook[bc.book_id].push(`${name} (${formattedRole})`)
   })
 
-  // Create workbook
-  const workbook = new ExcelJS.Workbook()
-  workbook.creator = 'Shelvd'
-  workbook.created = new Date()
-
-  const worksheet = workbook.addWorksheet('Books', {
-    views: [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
-  })
-
-  // Set up columns
-  worksheet.columns = columns.map(col => ({
-    header: col.header,
-    key: col.key,
-    width: col.width
-  }))
-
-  // Style header row
-  const headerRow = worksheet.getRow(1)
-  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } }
-  headerRow.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FF1A1A1A' }
-  }
-  headerRow.alignment = { horizontal: 'left', vertical: 'middle' }
-  headerRow.height = 25
-
-  // Add data rows
-  books?.forEach(book => {
-    const rowData: Record<string, any> = {
-      title: book.title,
-      subtitle: book.subtitle,
-      original_title: book.original_title,
-      series: book.series,
-      series_number: book.series_number,
-      contributors: contributorsByBook[book.id]?.join('; ') || '',
-      language: (book.language as any)?.name || '',
-      original_language: (book.original_language as any)?.name || '',
-      publisher_name: book.publisher_name,
-      publication_place: book.publication_place,
-      publication_year: book.publication_year,
-      printer: book.printer,
-      printing_place: book.printing_place,
-      edition: book.edition,
-      impression: book.impression,
-      issue_state: book.issue_state,
-      edition_notes: book.edition_notes,
-      pagination_description: book.pagination_description,
-      page_count: book.page_count,
-      volumes: book.volumes,
-      height_mm: book.height_mm,
-      width_mm: book.width_mm,
-      depth_mm: book.depth_mm,
-      weight_grams: book.weight_grams,
-      cover_type: book.cover_type,
-      binding: (book.binding as any)?.name || '',
-      format: (book.format as any)?.name || '',
-      protective_enclosure: book.protective_enclosure,
-      paper_type: book.paper_type,
-      edge_treatment: book.edge_treatment,
-      endpapers_type: book.endpapers_type,
-      text_block_condition: book.text_block_condition,
-      has_dust_jacket: book.has_dust_jacket ? 'yes' : (book.has_dust_jacket === false ? 'no' : ''),
-      is_signed: book.is_signed ? 'yes' : (book.is_signed === false ? 'no' : ''),
-      condition: (book.condition as any)?.name || '',
-      dust_jacket_condition: (book.dust_jacket_condition as any)?.name || '',
-      condition_notes: book.condition_notes,
-      status: book.status,
-      action_needed: book.action_needed,
-      isbn_13: book.isbn_13,
-      isbn_10: book.isbn_10,
-      oclc_number: book.oclc_number,
-      lccn: book.lccn,
-      user_catalog_id: book.user_catalog_id,
-      ddc: book.ddc,
-      lcc: book.lcc,
-      udc: book.udc,
-      topic: book.topic,
-      bisac_code: book.bisac_code,
-      location: (book.location as any)?.name || '',
-      shelf: book.shelf,
-      shelf_section: book.shelf_section,
-      acquired_from: book.acquired_from,
-      acquired_date: book.acquired_date,
-      acquired_price: book.acquired_price,
-      acquired_currency: book.acquired_currency,
-      acquired_notes: book.acquired_notes,
-      lowest_price: book.lowest_price,
-      highest_price: book.highest_price,
-      estimated_value: book.estimated_value,
-      sales_price: book.sales_price,
-      price_currency: book.price_currency,
-      valuation_date: book.valuation_date,
-      summary: book.summary,
-      provenance: book.provenance,
-      bibliography: book.bibliography,
-      illustrations_description: book.illustrations_description,
-      signatures_description: book.signatures_description,
-      dedication_text: book.dedication_text,
-      colophon_text: book.colophon_text,
-      internal_notes: book.internal_notes,
-      catalog_entry: book.catalog_entry,
-    }
-    worksheet.addRow(rowData)
-  })
-
-  // Style data rows (alternate colors)
-  worksheet.eachRow((row, rowNumber) => {
-    if (rowNumber > 1) {
-      row.eachCell(cell => {
-        cell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true }
-        if (rowNumber % 2 === 0) {
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFF9F9F9' }
-          }
-        }
-      })
-    }
-  })
-
-  // Generate buffer
-  const buffer = await workbook.xlsx.writeBuffer()
+  // Transform all books
+  const rows = books?.map(book => transformBookData(book, contributorsByBook)) || []
 
   // Generate filename with date
   const date = new Date().toISOString().split('T')[0]
-  const filename = `shelvd_export_${date}.xlsx`
-
-  return new NextResponse(buffer, {
+  
+  // Return appropriate format
+  if (format === 'xlsx') {
+    const buffer = await generateExcel(rows)
+    return new NextResponse(buffer, {
+      headers: {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="shelvd_export_${date}.xlsx"`,
+      },
+    })
+  }
+  
+  if (format === 'csv') {
+    const csv = generateCSV(rows)
+    return new NextResponse(csv, {
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="shelvd_export_${date}.csv"`,
+      },
+    })
+  }
+  
+  // JSON
+  const json = generateJSON(rows)
+  return new NextResponse(json, {
     headers: {
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="shelvd_export_${date}.json"`,
     },
   })
 }

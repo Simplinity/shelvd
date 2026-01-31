@@ -170,6 +170,8 @@ export default function BooksPage() {
   const [confirmText, setConfirmText] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [showExportMenu, setShowExportMenu] = useState(false)
+  const exportMenuRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
 
@@ -242,6 +244,9 @@ export default function BooksPage() {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
         setShowRecentSearches(false)
+      }
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setShowExportMenu(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -1040,12 +1045,45 @@ export default function BooksPage() {
               Import
             </Link>
           </Button>
-          <Button asChild variant="outline">
-            <a href="/api/export" download className="gap-2">
+          <div className="relative" ref={exportMenuRef}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="gap-2"
+            >
               <Download className="w-4 h-4" />
               Export
-            </a>
-          </Button>
+              <ChevronDown className="w-3 h-3" />
+            </Button>
+            {showExportMenu && (
+              <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                <a 
+                  href="/api/export?format=xlsx" 
+                  download
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setShowExportMenu(false)}
+                >
+                  Excel (.xlsx)
+                </a>
+                <a 
+                  href="/api/export?format=csv" 
+                  download
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setShowExportMenu(false)}
+                >
+                  CSV (.csv)
+                </a>
+                <a 
+                  href="/api/export?format=json" 
+                  download
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setShowExportMenu(false)}
+                >
+                  JSON (.json)
+                </a>
+              </div>
+            )}
+          </div>
           <Button asChild>
             <Link href="/books/add" className="gap-2">
               <Plus className="w-4 h-4" />
