@@ -10,6 +10,25 @@ Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te behere
 - **Styling**: Tailwind CSS 4 + shadcn/ui
 - **Design**: Swiss Design theme
 
+## Development Tools
+
+### Deployment & Version Control
+- **Hosting**: Vercel (auto-deploy bij push naar main)
+- **Version Control**: GitHub Desktop (Mac app)
+- **Repository**: https://github.com/Simplinity/shelvd
+
+### Lokale Development
+- **IDE**: Cursor / VS Code
+- **Package Manager**: npm
+- **Build**: `npm run build` (Next.js)
+- **Dev Server**: `npm run dev` (localhost:3000)
+
+### Workflow
+1. Code wijzigen lokaal
+2. `npm run build` om te testen
+3. Commit in GitHub Desktop
+4. Push via GitHub Desktop → Vercel deploy automatisch
+
 ## URLs
 - **Live Site**: https://shelvd-www.vercel.app
 - **GitHub**: https://github.com/Simplinity/shelvd
@@ -20,6 +39,11 @@ Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te behere
 - **Region**: EU Frankfurt
 - **Database URL**: `postgresql://postgres:[PASSWORD]@db.euieagntkbhzkyzvnllx.supabase.co:5432/postgres`
 - **Database Password**: LsY1yr4siVYlZhiN
+
+### Supabase Limits & Workarounds
+- **Default row limit**: 1000 rijen per query
+- **Workaround**: Batch fetching met `.range(from, to)` in loops van 1000
+- **Toegepast in**: Global search, BISAC codes dropdown
 
 ## Database Schema
 
@@ -164,6 +188,12 @@ shelvd/
 │       │   ├── (app)/                  # Authenticated routes
 │       │   │   ├── books/
 │       │   │   │   ├── page.tsx        # Books list (list/grid views, bulk delete, global search)
+│       │   │   │   ├── add/
+│       │   │   │   │   ├── page.tsx    # Add new book manually
+│       │   │   │   │   └── book-add-form.tsx
+│       │   │   │   ├── import/
+│       │   │   │   │   ├── page.tsx    # Excel bulk import
+│       │   │   │   │   └── book-import-form.tsx
 │       │   │   │   ├── search/
 │       │   │   │   │   ├── page.tsx    # Advanced search page
 │       │   │   │   │   └── book-search-form.tsx  # Search form component
@@ -202,6 +232,7 @@ shelvd/
 - **Global Search Bar**: Zoekt in alle tekstvelden (title, subtitle, original_title, series, author, publisher, place, notes, ISBN)
   - Meerdere woorden = AND logica (alle termen moeten matchen)
   - URL parameter: `?q=search+terms`
+  - **Batch fetching**: Haalt ALLE boeken op in batches van 1000 (bypasses Supabase limit)
   - Client-side filtering voor snelle resultaten
 - **Recent Searches Dropdown**: 
   - Toont laatste 10 zoekopdrachten (localStorage)
@@ -226,7 +257,32 @@ shelvd/
   - Selection bar met count en "Delete Selected" button
   - Bulk delete met type-to-confirm modal ("delete N books")
 - Totaal count weergave
+- **Add Book link**: Knop naar /books/add
+- **Import link**: Knop naar /books/import
 - **Advanced Search link**: Knop naar /books/search
+
+### /books/add - Add Book Manually
+- Formulier voor handmatig toevoegen van een boek
+- Zelfde velden als Edit form
+- Contributors kunnen direct worden toegevoegd
+- Na save: redirect naar book detail page
+
+### /books/import - Excel Bulk Import
+- **Template Download**: Genereer Excel template met alle velden
+  - Swiss Design styling (rood/zwart headers)
+  - Kolommen: Title, Subtitle, Original Title, Series, Author, Publisher, etc.
+  - Gegeneerd met `exceljs` library
+- **Upload & Preview**:
+  - Drag & drop of file picker voor .xlsx/.xls
+  - Preview tabel met eerste 10 rijen
+  - Validatie: verplichte velden, data types
+  - Toont errors per rij (rode highlighting)
+- **Bulk Import**:
+  - Importeert alle geldige rijen
+  - Contributors worden automatisch aangemaakt indien nieuw
+  - Parseert contributor strings ("Author Name (Role)" format)
+  - Progress indicator tijdens import
+- **Import Button** op /books page header
 
 ### /books/search - Advanced Search
 - **14 zoekbare velden**: Title, Subtitle, Original Title, Series, Author, Publisher, Publication Place, Publication Year, Language, Condition, Status, ISBN, Storage Location, Shelf
@@ -421,8 +477,9 @@ Historische bibliografische formaten:
   - Admin UI om contributors te mergen, verrijken, corrigeren, verwijderen
   - RLS uitbreiden zodat admins alle contributors kunnen bewerken
   - Verificatie workflow (`is_verified` flag)
-- [ ] Add book page (/books/add)
+- [x] ~~Add book page (/books/add)~~ ✅ Geïmplementeerd
 - [x] ~~Search/filter op books list~~ ✅ Geïmplementeerd (global + advanced search)
+- [x] ~~Excel import (/books/import)~~ ✅ Geïmplementeerd
 - [ ] **Saved Searches** (Subtask 4) - Bewaar zoekopdrachten in database voor hergebruik
 
 ### 🟡 Medium Priority
@@ -502,5 +559,27 @@ Historische bibliografische formaten:
   - Visuele iconen (ChevronUp/Down/ArrowUpDown)
   - Client-side useMemo voor instant sorting
 
+### 2025-01-31 - Add Book & Excel Import
+- **Add Book Page** (/books/add):
+  - Formulier voor handmatig toevoegen van boeken
+  - Zelfde structuur als Edit form
+  - Contributors toevoegen met autocomplete
+  - Redirect naar detail page na save
+- **Excel Import** (/books/import):
+  - Template download met Swiss Design styling (exceljs)
+  - Drag & drop upload voor .xlsx/.xls
+  - Preview met validatie (eerste 10 rijen)
+  - Bulk import met progress indicator
+  - Automatische contributor parsing en creatie
+  - Import knop toegevoegd aan /books header
+- **Global Search Bug Fix**:
+  - Probleem: Supabase default limit van 1000 rijen
+  - Oplossing: Batch fetching in chunks van 1000
+  - Nu worden alle 5000+ boeken correct doorzocht
+- **Code Cleanup**:
+  - Debug alerts verwijderd
+  - Protective comments toegevoegd aan fetchBooks modes
+  - Drie search modes gedocumenteerd: DEFAULT, GLOBAL SEARCH, ADVANCED FILTERS
+
 ---
-*Laatst bijgewerkt: 2025-01-30 19:15*
+*Laatst bijgewerkt: 2025-01-31 02:30*
