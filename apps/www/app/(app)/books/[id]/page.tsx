@@ -68,6 +68,10 @@ export default async function BookDetailPage({ params }: PageProps) {
     ? await supabase.from('conditions').select('name').eq('id', bookRecord.condition_id).single()
     : { data: null }
 
+  const { data: dustJacketCondition } = bookRecord.dust_jacket_condition_id
+    ? await supabase.from('conditions').select('name').eq('id', bookRecord.dust_jacket_condition_id).single()
+    : { data: null }
+
   const { data: binding } = bookRecord.binding_id
     ? await supabase.from('bindings').select('name').eq('id', bookRecord.binding_id).single()
     : { data: null }
@@ -88,6 +92,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     language,
     original_language: originalLanguage,
     condition,
+    dust_jacket_condition: dustJacketCondition,
     binding,
     bookFormat,
     book_contributors: bookContributors || []
@@ -206,6 +211,57 @@ export default async function BookDetailPage({ params }: PageProps) {
       'solander_box': 'Solander box',
     }
     return enclosureMap[enclosure] || enclosure
+  }
+
+  // Format paper type
+  const formatPaperType = (paperType: string | null) => {
+    if (!paperType) return null
+    const paperTypeMap: Record<string, string> = {
+      'wove': 'Wove paper', 'laid': 'Laid paper', 'rag': 'Rag paper', 'wood_pulp': 'Wood pulp paper',
+      'acid_free': 'Acid-free paper', 'vellum': 'Vellum', 'parchment': 'Parchment', 'japan': 'Japan paper',
+      'india': 'India paper', 'handmade': 'Handmade paper', 'machine_made': 'Machine-made paper',
+      'coated': 'Coated paper', 'uncoated': 'Uncoated paper', 'calendered': 'Calendered paper',
+      'rice': 'Rice paper', 'tapa': 'Tapa/bark cloth',
+    }
+    return paperTypeMap[paperType] || paperType
+  }
+
+  // Format edge treatment
+  const formatEdgeTreatment = (edge: string | null) => {
+    if (!edge) return null
+    const edgeMap: Record<string, string> = {
+      'untrimmed': 'Untrimmed', 'uncut': 'Uncut', 'rough_cut': 'Rough cut', 'trimmed': 'Trimmed',
+      'gilt_all': 'Gilt (all edges)', 'gilt_top': 'Gilt (top edge only)', 'gilt_fore': 'Gilt (fore-edge)',
+      'silver': 'Silver edges', 'gauffered': 'Gauffered', 'painted': 'Painted edges',
+      'fore_edge_painting': 'Fore-edge painting', 'sprinkled': 'Sprinkled', 'stained': 'Stained',
+      'marbled': 'Marbled edges', 'deckle': 'Deckle edges', 'red_edges': 'Red stained',
+      'blue_edges': 'Blue stained', 'yellow_edges': 'Yellow stained',
+    }
+    return edgeMap[edge] || edge
+  }
+
+  // Format endpapers type
+  const formatEndpapersType = (endpapers: string | null) => {
+    if (!endpapers || endpapers === 'none') return null
+    const endpapersMap: Record<string, string> = {
+      'plain_white': 'Plain white', 'plain_colored': 'Plain colored', 'marbled': 'Marbled',
+      'combed_marbled': 'Combed marbled', 'paste_paper': 'Paste paper', 'printed': 'Printed',
+      'illustrated': 'Illustrated', 'maps': 'Maps', 'photographic': 'Photographic',
+      'decorative': 'Decorative pattern', 'self_ends': 'Self-ends', 'cloth': 'Cloth',
+      'leather': 'Leather doublures', 'silk': 'Silk', 'vellum': 'Vellum',
+    }
+    return endpapersMap[endpapers] || endpapers
+  }
+
+  // Format text block condition
+  const formatTextBlockCondition = (condition: string | null) => {
+    if (!condition) return null
+    const conditionMap: Record<string, string> = {
+      'tight': 'Tight', 'solid': 'Solid', 'sound': 'Sound', 'tender': 'Tender',
+      'shaken': 'Shaken', 'loose': 'Loose', 'detached': 'Detached', 'broken': 'Broken',
+      'recased': 'Recased', 'rebacked': 'Rebacked', 'rebound': 'Rebound',
+    }
+    return conditionMap[condition] || condition
   }
 
   // Status display helper
@@ -379,6 +435,10 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="Binding" value={bookData.binding?.name} className="col-span-2" />
               <Field label="Book Format" value={bookData.bookFormat ? (bookData.bookFormat.abbreviation ? `${bookData.bookFormat.name} (${bookData.bookFormat.abbreviation})` : bookData.bookFormat.name) : null} className="col-span-2" />
               <Field label="Protective Enclosure" value={formatProtectiveEnclosure(bookData.protective_enclosure)} className="col-span-2" />
+              <Field label="Paper Type" value={formatPaperType(bookData.paper_type)} />
+              <Field label="Edge Treatment" value={formatEdgeTreatment(bookData.edge_treatment)} />
+              <Field label="Endpapers" value={formatEndpapersType(bookData.endpapers_type)} />
+              <Field label="Text Block" value={formatTextBlockCondition(bookData.text_block_condition)} />
               <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
               <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />
             </dl>
@@ -400,7 +460,8 @@ export default async function BookDetailPage({ params }: PageProps) {
           </div>
           <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Field label="Condition" value={bookData.condition?.name} />
-            <Field label="Condition Notes" value={bookData.condition_notes} className="col-span-2 md:col-span-3" />
+            <Field label="Dust Jacket Condition" value={bookData.dust_jacket_condition?.name} />
+            <Field label="Condition Notes" value={bookData.condition_notes} className="col-span-2" />
           </dl>
         </section>
 
@@ -476,6 +537,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="Highest Price" value={formatPrice(bookData.highest_price || bookData.price_highest, bookData.price_currency)} />
               <Field label="Estimated Value" value={formatPrice(bookData.estimated_value || bookData.price_estimated, bookData.price_currency)} />
               <Field label="Sales Price" value={formatPrice(bookData.sales_price || bookData.price_sales, bookData.price_currency)} />
+              <Field label="Valuation Date" value={bookData.valuation_date} />
             </dl>
           </section>
         )}
@@ -487,6 +549,8 @@ export default async function BookDetailPage({ params }: PageProps) {
             <dl className="space-y-4">
               <Field label="Summary" value={bookData.summary} />
               <Field label="Provenance" value={bookData.provenance} />
+              <Field label="Dedication / Inscription" value={bookData.dedication_text} />
+              <Field label="Colophon" value={bookData.colophon_text} />
               <Field label="Bibliography" value={bookData.bibliography} />
               <Field label="Illustrations" value={bookData.illustrations || bookData.illustrations_description} />
               <Field label="Signatures" value={bookData.signature_details || bookData.signatures_description} />

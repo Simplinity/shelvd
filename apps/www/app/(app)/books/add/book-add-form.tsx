@@ -73,6 +73,13 @@ type FormData = {
   is_signed: boolean
   protective_enclosure: string
   condition_id: string
+  dust_jacket_condition_id: string
+  paper_type: string
+  edge_treatment: string
+  endpapers_type: string
+  text_block_condition: string
+  dedication_text: string
+  colophon_text: string
   condition_notes: string
   isbn_13: string
   isbn_10: string
@@ -142,6 +149,13 @@ const initialFormData: FormData = {
   is_signed: false,
   protective_enclosure: 'none',
   condition_id: '',
+  dust_jacket_condition_id: '',
+  paper_type: '',
+  edge_treatment: '',
+  endpapers_type: '',
+  text_block_condition: '',
+  dedication_text: '',
+  colophon_text: '',
   condition_notes: '',
   isbn_13: '',
   isbn_10: '',
@@ -230,6 +244,79 @@ const protectiveEnclosureOptions = [
   { value: 'clamshell_box', label: 'Clamshell box' },
   { value: 'chemise', label: 'Chemise' },
   { value: 'solander_box', label: 'Solander box' },
+]
+
+const paperTypeOptions = [
+  { value: 'wove', label: 'Wove paper' },
+  { value: 'laid', label: 'Laid paper' },
+  { value: 'rag', label: 'Rag paper' },
+  { value: 'wood_pulp', label: 'Wood pulp paper' },
+  { value: 'acid_free', label: 'Acid-free paper' },
+  { value: 'vellum', label: 'Vellum' },
+  { value: 'parchment', label: 'Parchment' },
+  { value: 'japan', label: 'Japan paper' },
+  { value: 'india', label: 'India paper' },
+  { value: 'handmade', label: 'Handmade paper' },
+  { value: 'machine_made', label: 'Machine-made paper' },
+  { value: 'coated', label: 'Coated paper' },
+  { value: 'uncoated', label: 'Uncoated paper' },
+  { value: 'calendered', label: 'Calendered paper' },
+  { value: 'rice', label: 'Rice paper' },
+  { value: 'tapa', label: 'Tapa/bark cloth' },
+]
+
+const edgeTreatmentOptions = [
+  { value: 'untrimmed', label: 'Untrimmed' },
+  { value: 'uncut', label: 'Uncut' },
+  { value: 'rough_cut', label: 'Rough cut' },
+  { value: 'trimmed', label: 'Trimmed' },
+  { value: 'gilt_all', label: 'Gilt (all edges)' },
+  { value: 'gilt_top', label: 'Gilt (top edge only)' },
+  { value: 'gilt_fore', label: 'Gilt (fore-edge)' },
+  { value: 'silver', label: 'Silver edges' },
+  { value: 'gauffered', label: 'Gauffered' },
+  { value: 'painted', label: 'Painted edges' },
+  { value: 'fore_edge_painting', label: 'Fore-edge painting' },
+  { value: 'sprinkled', label: 'Sprinkled' },
+  { value: 'stained', label: 'Stained' },
+  { value: 'marbled', label: 'Marbled edges' },
+  { value: 'deckle', label: 'Deckle edges' },
+  { value: 'red_edges', label: 'Red stained' },
+  { value: 'blue_edges', label: 'Blue stained' },
+  { value: 'yellow_edges', label: 'Yellow stained' },
+]
+
+const endpapersTypeOptions = [
+  { value: 'plain_white', label: 'Plain white' },
+  { value: 'plain_colored', label: 'Plain colored' },
+  { value: 'marbled', label: 'Marbled' },
+  { value: 'combed_marbled', label: 'Combed marbled' },
+  { value: 'paste_paper', label: 'Paste paper' },
+  { value: 'printed', label: 'Printed' },
+  { value: 'illustrated', label: 'Illustrated' },
+  { value: 'maps', label: 'Maps' },
+  { value: 'photographic', label: 'Photographic' },
+  { value: 'decorative', label: 'Decorative pattern' },
+  { value: 'self_ends', label: 'Self-ends' },
+  { value: 'cloth', label: 'Cloth' },
+  { value: 'leather', label: 'Leather doublures' },
+  { value: 'silk', label: 'Silk' },
+  { value: 'vellum', label: 'Vellum' },
+  { value: 'none', label: 'None' },
+]
+
+const textBlockConditionOptions = [
+  { value: 'tight', label: 'Tight' },
+  { value: 'solid', label: 'Solid' },
+  { value: 'sound', label: 'Sound' },
+  { value: 'tender', label: 'Tender' },
+  { value: 'shaken', label: 'Shaken' },
+  { value: 'loose', label: 'Loose' },
+  { value: 'detached', label: 'Detached' },
+  { value: 'broken', label: 'Broken' },
+  { value: 'recased', label: 'Recased' },
+  { value: 'rebacked', label: 'Rebacked' },
+  { value: 'rebound', label: 'Rebound' },
 ]
 
 // Input class for consistent styling
@@ -358,6 +445,13 @@ export default function BookAddForm({ referenceData }: Props) {
           is_signed: formData.is_signed,
           protective_enclosure: formData.protective_enclosure,
           condition_id: formData.condition_id || null,
+          dust_jacket_condition_id: formData.dust_jacket_condition_id || null,
+          paper_type: formData.paper_type || null,
+          edge_treatment: formData.edge_treatment || null,
+          endpapers_type: formData.endpapers_type || null,
+          text_block_condition: formData.text_block_condition || null,
+          dedication_text: formData.dedication_text || null,
+          colophon_text: formData.colophon_text || null,
           condition_notes: formData.condition_notes || null,
           isbn_13: formData.isbn_13 || null,
           isbn_10: formData.isbn_10 || null,
@@ -670,6 +764,34 @@ export default function BookAddForm({ referenceData }: Props) {
                 {protectiveEnclosureOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
+            <div>
+              <label className={labelClass}>Paper Type</label>
+              <select value={formData.paper_type} onChange={e => handleChange('paper_type', e.target.value)} className={inputClass}>
+                <option value="">—</option>
+                {paperTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Edge Treatment</label>
+              <select value={formData.edge_treatment} onChange={e => handleChange('edge_treatment', e.target.value)} className={inputClass}>
+                <option value="">—</option>
+                {edgeTreatmentOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Endpapers</label>
+              <select value={formData.endpapers_type} onChange={e => handleChange('endpapers_type', e.target.value)} className={inputClass}>
+                <option value="">—</option>
+                {endpapersTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Text Block</label>
+              <select value={formData.text_block_condition} onChange={e => handleChange('text_block_condition', e.target.value)} className={inputClass}>
+                <option value="">—</option>
+                {textBlockConditionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
             <div className="col-span-2 flex items-end gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={formData.has_dust_jacket} onChange={e => handleChange('has_dust_jacket', e.target.checked)} className="w-4 h-4" />
@@ -690,6 +812,13 @@ export default function BookAddForm({ referenceData }: Props) {
             <div>
               <label className={labelClass}>Condition</label>
               <select value={formData.condition_id} onChange={e => handleChange('condition_id', e.target.value)} className={inputClass}>
+                <option value="">—</option>
+                {referenceData.conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Dust Jacket Condition</label>
+              <select value={formData.dust_jacket_condition_id} onChange={e => handleChange('dust_jacket_condition_id', e.target.value)} className={inputClass}>
                 <option value="">—</option>
                 {referenceData.conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -857,6 +986,14 @@ export default function BookAddForm({ referenceData }: Props) {
             <div>
               <label className={labelClass}>Provenance</label>
               <textarea value={formData.provenance} onChange={e => handleChange('provenance', e.target.value)} rows={2} className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
+            </div>
+            <div>
+              <label className={labelClass}>Dedication / Inscription</label>
+              <textarea value={formData.dedication_text} onChange={e => handleChange('dedication_text', e.target.value)} rows={2} placeholder="Transcription of dedication or inscription" className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
+            </div>
+            <div>
+              <label className={labelClass}>Colophon</label>
+              <textarea value={formData.colophon_text} onChange={e => handleChange('colophon_text', e.target.value)} rows={2} placeholder="Transcription of colophon" className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
             </div>
             <div>
               <label className={labelClass}>Bibliography</label>

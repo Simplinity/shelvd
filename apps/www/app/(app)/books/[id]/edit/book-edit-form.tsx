@@ -108,6 +108,79 @@ const protectiveEnclosureOptions = [
   { value: 'solander_box', label: 'Solander box' },
 ]
 
+const paperTypeOptions = [
+  { value: 'wove', label: 'Wove paper' },
+  { value: 'laid', label: 'Laid paper' },
+  { value: 'rag', label: 'Rag paper' },
+  { value: 'wood_pulp', label: 'Wood pulp paper' },
+  { value: 'acid_free', label: 'Acid-free paper' },
+  { value: 'vellum', label: 'Vellum' },
+  { value: 'parchment', label: 'Parchment' },
+  { value: 'japan', label: 'Japan paper' },
+  { value: 'india', label: 'India paper' },
+  { value: 'handmade', label: 'Handmade paper' },
+  { value: 'machine_made', label: 'Machine-made paper' },
+  { value: 'coated', label: 'Coated paper' },
+  { value: 'uncoated', label: 'Uncoated paper' },
+  { value: 'calendered', label: 'Calendered paper' },
+  { value: 'rice', label: 'Rice paper' },
+  { value: 'tapa', label: 'Tapa/bark cloth' },
+]
+
+const edgeTreatmentOptions = [
+  { value: 'untrimmed', label: 'Untrimmed' },
+  { value: 'uncut', label: 'Uncut' },
+  { value: 'rough_cut', label: 'Rough cut' },
+  { value: 'trimmed', label: 'Trimmed' },
+  { value: 'gilt_all', label: 'Gilt (all edges)' },
+  { value: 'gilt_top', label: 'Gilt (top edge only)' },
+  { value: 'gilt_fore', label: 'Gilt (fore-edge)' },
+  { value: 'silver', label: 'Silver edges' },
+  { value: 'gauffered', label: 'Gauffered' },
+  { value: 'painted', label: 'Painted edges' },
+  { value: 'fore_edge_painting', label: 'Fore-edge painting' },
+  { value: 'sprinkled', label: 'Sprinkled' },
+  { value: 'stained', label: 'Stained' },
+  { value: 'marbled', label: 'Marbled edges' },
+  { value: 'deckle', label: 'Deckle edges' },
+  { value: 'red_edges', label: 'Red stained' },
+  { value: 'blue_edges', label: 'Blue stained' },
+  { value: 'yellow_edges', label: 'Yellow stained' },
+]
+
+const endpapersTypeOptions = [
+  { value: 'plain_white', label: 'Plain white' },
+  { value: 'plain_colored', label: 'Plain colored' },
+  { value: 'marbled', label: 'Marbled' },
+  { value: 'combed_marbled', label: 'Combed marbled' },
+  { value: 'paste_paper', label: 'Paste paper' },
+  { value: 'printed', label: 'Printed' },
+  { value: 'illustrated', label: 'Illustrated' },
+  { value: 'maps', label: 'Maps' },
+  { value: 'photographic', label: 'Photographic' },
+  { value: 'decorative', label: 'Decorative pattern' },
+  { value: 'self_ends', label: 'Self-ends' },
+  { value: 'cloth', label: 'Cloth' },
+  { value: 'leather', label: 'Leather doublures' },
+  { value: 'silk', label: 'Silk' },
+  { value: 'vellum', label: 'Vellum' },
+  { value: 'none', label: 'None' },
+]
+
+const textBlockConditionOptions = [
+  { value: 'tight', label: 'Tight' },
+  { value: 'solid', label: 'Solid' },
+  { value: 'sound', label: 'Sound' },
+  { value: 'tender', label: 'Tender' },
+  { value: 'shaken', label: 'Shaken' },
+  { value: 'loose', label: 'Loose' },
+  { value: 'detached', label: 'Detached' },
+  { value: 'broken', label: 'Broken' },
+  { value: 'recased', label: 'Recased' },
+  { value: 'rebacked', label: 'Rebacked' },
+  { value: 'rebound', label: 'Rebound' },
+]
+
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
 const textareaClass = "w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y"
@@ -219,6 +292,14 @@ export default function BookEditForm({ book, referenceData }: Props) {
           protective_enclosure: (formData as any).protective_enclosure || 'none',
           condition_id: formData.condition_id || null,
           condition_notes: formData.condition_notes || null,
+          dust_jacket_condition_id: formData.dust_jacket_condition_id || null,
+          paper_type: (formData as any).paper_type || null,
+          edge_treatment: (formData as any).edge_treatment || null,
+          endpapers_type: (formData as any).endpapers_type || null,
+          text_block_condition: (formData as any).text_block_condition || null,
+          dedication_text: (formData as any).dedication_text || null,
+          colophon_text: (formData as any).colophon_text || null,
+          valuation_date: formData.valuation_date || null,
           isbn_13: formData.isbn_13 || null,
           isbn_10: formData.isbn_10 || null,
           oclc_number: formData.oclc_number || null,
@@ -532,6 +613,34 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 {protectiveEnclosureOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
+            <div>
+              <label className={labelClass}>Paper Type</label>
+              <select value={(formData as any).paper_type || ''} onChange={e => handleChange('paper_type' as keyof Book, e.target.value || null)} className={inputClass}>
+                <option value="">—</option>
+                {paperTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Edge Treatment</label>
+              <select value={(formData as any).edge_treatment || ''} onChange={e => handleChange('edge_treatment' as keyof Book, e.target.value || null)} className={inputClass}>
+                <option value="">—</option>
+                {edgeTreatmentOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Endpapers</label>
+              <select value={(formData as any).endpapers_type || ''} onChange={e => handleChange('endpapers_type' as keyof Book, e.target.value || null)} className={inputClass}>
+                <option value="">—</option>
+                {endpapersTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Text Block</label>
+              <select value={(formData as any).text_block_condition || ''} onChange={e => handleChange('text_block_condition' as keyof Book, e.target.value || null)} className={inputClass}>
+                <option value="">—</option>
+                {textBlockConditionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
             <div className="col-span-2 flex items-end gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={formData.has_dust_jacket || false} onChange={e => handleChange('has_dust_jacket', e.target.checked)} className="w-4 h-4" />
@@ -552,6 +661,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <div>
               <label className={labelClass}>Condition</label>
               <select value={formData.condition_id || ''} onChange={e => handleChange('condition_id', e.target.value || null)} className={inputClass}>
+                <option value="">—</option>
+                {referenceData.conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Dust Jacket Condition</label>
+              <select value={formData.dust_jacket_condition_id || ''} onChange={e => handleChange('dust_jacket_condition_id', e.target.value || null)} className={inputClass}>
                 <option value="">—</option>
                 {referenceData.conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -705,6 +821,10 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <label className={labelClass}>Currency</label>
               <input type="text" value={formData.price_currency || ''} onChange={e => handleChange('price_currency', e.target.value)} placeholder="EUR" className={inputClass} />
             </div>
+            <div>
+              <label className={labelClass}>Valuation Date</label>
+              <input type="text" value={formData.valuation_date || ''} onChange={e => handleChange('valuation_date', e.target.value)} placeholder="YYYY-MM-DD" className={inputClass} />
+            </div>
           </div>
         </section>
 
@@ -719,6 +839,14 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <div>
               <label className={labelClass}>Provenance</label>
               <textarea value={formData.provenance || ''} onChange={e => handleChange('provenance', e.target.value)} rows={2} className={textareaClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Dedication / Inscription</label>
+              <textarea value={(formData as any).dedication_text || ''} onChange={e => handleChange('dedication_text' as keyof Book, e.target.value)} rows={2} placeholder="Transcription of dedication or inscription" className={textareaClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Colophon</label>
+              <textarea value={(formData as any).colophon_text || ''} onChange={e => handleChange('colophon_text' as keyof Book, e.target.value)} rows={2} placeholder="Transcription of colophon" className={textareaClass} />
             </div>
             <div>
               <label className={labelClass}>Bibliography</label>

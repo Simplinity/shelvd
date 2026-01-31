@@ -507,6 +507,58 @@ Automatisch gegenereerde links naar externe bronnen:
 
 ## Development Tools
 
+### 🚨 GOLDEN RULES - Code Wijzigingen
+
+**REGEL 1: NOOIT bestaande code vervangen zonder analyse**
+
+Voordat Claude code wijzigt in een bestaand bestand:
+1. **LEES** eerst het HELE bestand (of relevante secties)
+2. **IDENTIFICEER** bestaande functionaliteit die NIET geraakt mag worden
+3. **GEBRUIK** `str_replace` met EXACTE oude tekst, NOOIT hele bestanden overschrijven
+4. **VERIFIEER** dat alleen de bedoelde wijziging is gemaakt
+
+**REGEL 2: Protected Features - NIET AANRAKEN**
+
+Deze features zijn volledig werkend en mogen NIET gebroken worden:
+- ✅ Global Search (batch fetching 5000+ boeken, client-side filtering)
+- ✅ Advanced Search (14 velden, AND/OR, exact/fuzzy)
+- ✅ Recent Searches (localStorage, dropdown)
+- ✅ Sortable Columns (6 kolommen, toggle direction)
+- ✅ List/Grid View toggle
+- ✅ Bulk Delete (select mode, checkboxes)
+- ✅ Single Delete (type-to-confirm)
+- ✅ Excel Import (template, preview, validation)
+- ✅ Add Book (form, contributors)
+- ✅ Edit Book (alle velden, contributors, catalog generator)
+- ✅ BISAC Combobox (batch loading)
+
+**REGEL 3: Wijzigings-protocol**
+
+```
+1. VOOR wijziging:
+   - `view` het bestand
+   - Noteer bestaande imports, state, functies
+   - Identificeer EXACT waar nieuwe code moet komen
+
+2. BIJ wijziging:
+   - Gebruik str_replace met minimale context
+   - Voeg code TOE, vervang niet
+   - Behoud ALLE bestaande imports en state
+
+3. NA wijziging:
+   - Check of bestand compileert: `npm run build`
+   - Verifieer dat protected features nog werken
+```
+
+**REGEL 4: Bij twijfel - VRAAG**
+
+Als niet 100% duidelijk is hoe nieuwe code toe te voegen zonder bestaande te breken:
+- Stop
+- Toon de gebruiker wat je van plan bent
+- Vraag bevestiging
+
+---
+
 ### Deployment & Version Control
 - **Hosting**: Vercel (auto-deploy bij push naar main)
 - **Version Control**: GitHub Desktop (Mac app)

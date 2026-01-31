@@ -267,15 +267,19 @@ export type Database = {
           bisac_code_3: string | null
           catalog_entry: string | null
           collection_id: string | null
+          colophon_text: string | null
           condition_id: string | null
           condition_notes: string | null
           cover_type: string | null
           created_at: string | null
           ddc: string | null
+          dedication_text: string | null
           depth_mm: number | null
           dust_jacket_condition_id: string | null
+          edge_treatment: string | null
           edition: string | null
           edition_notes: string | null
+          endpapers_type: string | null
           estimated_value: number | null
           filemaker_id: string | null
           format_id: string | null
@@ -303,6 +307,7 @@ export type Database = {
           page_count: number | null
           pagination: string | null
           pagination_description: string | null
+          paper_type: string | null
           place_printed: string | null
           price_currency: string | null
           price_estimated: number | null
@@ -334,6 +339,7 @@ export type Database = {
           storage_shelf: string | null
           subtitle: string | null
           summary: string | null
+          text_block_condition: string | null
           title: string
           topic: string | null
           udc: string | null
@@ -361,15 +367,19 @@ export type Database = {
           bisac_code_3?: string | null
           catalog_entry?: string | null
           collection_id?: string | null
+          colophon_text?: string | null
           condition_id?: string | null
           condition_notes?: string | null
           cover_type?: string | null
           created_at?: string | null
           ddc?: string | null
+          dedication_text?: string | null
           depth_mm?: number | null
           dust_jacket_condition_id?: string | null
+          edge_treatment?: string | null
           edition?: string | null
           edition_notes?: string | null
+          endpapers_type?: string | null
           estimated_value?: number | null
           filemaker_id?: string | null
           format_id?: string | null
@@ -397,6 +407,7 @@ export type Database = {
           page_count?: number | null
           pagination?: string | null
           pagination_description?: string | null
+          paper_type?: string | null
           place_printed?: string | null
           price_currency?: string | null
           price_estimated?: number | null
@@ -428,6 +439,7 @@ export type Database = {
           storage_shelf?: string | null
           subtitle?: string | null
           summary?: string | null
+          text_block_condition?: string | null
           title: string
           topic?: string | null
           udc?: string | null
@@ -455,15 +467,19 @@ export type Database = {
           bisac_code_3?: string | null
           catalog_entry?: string | null
           collection_id?: string | null
+          colophon_text?: string | null
           condition_id?: string | null
           condition_notes?: string | null
           cover_type?: string | null
           created_at?: string | null
           ddc?: string | null
+          dedication_text?: string | null
           depth_mm?: number | null
           dust_jacket_condition_id?: string | null
+          edge_treatment?: string | null
           edition?: string | null
           edition_notes?: string | null
+          endpapers_type?: string | null
           estimated_value?: number | null
           filemaker_id?: string | null
           format_id?: string | null
@@ -491,6 +507,7 @@ export type Database = {
           page_count?: number | null
           pagination?: string | null
           pagination_description?: string | null
+          paper_type?: string | null
           place_printed?: string | null
           price_currency?: string | null
           price_estimated?: number | null
@@ -522,6 +539,7 @@ export type Database = {
           storage_shelf?: string | null
           subtitle?: string | null
           summary?: string | null
+          text_block_condition?: string | null
           title?: string
           topic?: string | null
           udc?: string | null
