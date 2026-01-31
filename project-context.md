@@ -104,34 +104,337 @@ shelvd.com/
 
 ## Feature Roadmap
 
-### Prioriteiten
+### Geprioriteerde Roadmap
 
 | Prio | Feature | Status | Beschrijving |
 |------|---------|--------|---------------|
-| 1 | Landing page + Kennisbank basis | 🔴 Todo | Marketing site, SEO starten |
-| 2 | Duplicate book functie | 🔴 Todo | Kopieer boek als template voor variant/editie |
-| 3 | CSV export | 🔴 Todo | Data eigenaarschap, backup |
-| 4 | Templates systeem | 🔴 Todo | Pre-filled forms voor boektypes |
-| 5 | Uitgebreide autocomplete | 🟡 Partial | Printer, binder, previous owner |
-| 6 | PDF catalogus export | 🔴 Todo | ISBD-formatted professionele output |
-| 7 | Multiple images per boek | 🔴 Todo | Cover, spine, details, inscriptions |
-| 8 | Image upload (single cover) | 🔴 Todo | Basis image functionaliteit |
+| 1 | **Nieuwe fysieke velden** | 🔴 Todo | Paper type, edge treatment, endpapers, text block condition |
+| 1 | **Bestaande velden in views** | 🔴 Todo | Printer, DJ condition, valuation date, dedication, colophon in alle views |
+| 2 | **Publisher & Contributor koppeling** | 🔴 Todo | Echte FK koppeling naar reference tables |
+| 3 | **Export functies** | 🔴 Todo | Excel export, CSV import/export (flatten contributors) |
+| 4 | **Custom Tags** | 🔴 Todo | User-defined labels voor boeken |
+| 5 | **Duplicate Detection** | 🔴 Todo | Identificeer dubbelen op ISBN, titel+auteur, etc. |
+| 6 | **Statistics Dashboard** | 🔴 Todo | 20 statistieken met grafieken |
+| 7 | **External Links** | 🔴 Todo | WorldCat, Google Books, AbeBooks, VIAF, etc. |
+| 8 | **User Settings** | 🔴 Todo | Preferences, default currency, GDPR export/delete |
+| 9 | **Sharing & Public Catalog** | 🔴 Todo | Publieke catalogus URL, embed widget |
+| 10 | **Currency & Valuation** | 🔴 Todo | Exchange rates, collection value berekening |
+| — | Landing page + Kennisbank | 🔴 Todo | Marketing site, SEO (parallel track) |
+| — | Duplicate book functie | 🔴 Todo | Kopieer boek als template |
+| — | Templates systeem | 🔴 Todo | Pre-filled forms |
+| — | PDF catalogus export | 🔴 Todo | ISBD-formatted |
+| — | Insurance Report | 🔴 Todo | PDF met waarde + foto's |
+| — | JSON/MARC export | 🔴 Todo | Backup/bibliotheek integratie |
+| — | Image upload | 🔴 Todo | Single + multiple images |
 
-### Focus Principes
+---
+
+## Nieuwe Database Velden (Prio 1)
+
+### Paper Type
+Nieuw veld: `paper_type VARCHAR(50)`
+
+| Code | Naam | Beschrijving |
+|------|------|--------------|
+| `wove` | Wove paper | Smooth, uniform texture (post-1750s standard) |
+| `laid` | Laid paper | Visible chain/wire lines (traditional) |
+| `rag` | Rag paper | 100% cotton/linen fibers (pre-1850, archival) |
+| `wood_pulp` | Wood pulp paper | Standard modern paper (post-1850, acidic) |
+| `acid_free` | Acid-free paper | Modern archival quality |
+| `vellum` | Vellum | Calfskin parchment |
+| `parchment` | Parchment | Sheep/goat skin |
+| `japan` | Japan paper | Thin, strong, translucent (Japanese tissue) |
+| `india` | India paper | Very thin, opaque (Bible paper) |
+| `handmade` | Handmade paper | Individual sheet production |
+| `machine_made` | Machine-made paper | Industrial production |
+| `coated` | Coated paper | Glossy/matte surface coating |
+| `uncoated` | Uncoated paper | No surface coating |
+| `calendered` | Calendered paper | Smoothed by rolling |
+| `rice` | Rice paper | Asian paper from rice straw |
+| `tapa` | Tapa/bark cloth | Pacific Islands bark paper |
+
+### Edge Treatment
+Nieuw veld: `edge_treatment VARCHAR(50)`
+
+| Code | Naam | Beschrijving |
+|------|------|--------------|
+| `untrimmed` | Untrimmed | Edges left rough from papermaking |
+| `uncut` | Uncut | Pages not separated (unopened) |
+| `rough_cut` | Rough cut | Irregularly trimmed |
+| `trimmed` | Trimmed | Cleanly cut, uniform edges |
+| `gilt_all` | Gilt (all edges) | Gold on top, fore-edge, and bottom |
+| `gilt_top` | Gilt (top edge only) | Gold on top edge only (t.e.g.) |
+| `gilt_fore` | Gilt (fore-edge) | Gold on fore-edge |
+| `silver` | Silver edges | Silver leaf on edges |
+| `gauffered` | Gauffered | Tooled/decorated gilt edges |
+| `painted` | Painted edges | Hand-painted decoration |
+| `fore_edge_painting` | Fore-edge painting | Hidden painting visible when fanned |
+| `sprinkled` | Sprinkled | Speckled color pattern |
+| `stained` | Stained | Single color stain (red, blue, etc.) |
+| `marbled` | Marbled edges | Marbled pattern on edges |
+| `deckle` | Deckle edges | Feathered, irregular (handmade paper) |
+| `red_edges` | Red stained | Traditional red stain |
+| `blue_edges` | Blue stained | Blue stain |
+| `yellow_edges` | Yellow stained | Yellow stain |
+
+### Endpapers Type
+Nieuw veld: `endpapers_type VARCHAR(50)`
+
+| Code | Naam | Beschrijving |
+|------|------|--------------|
+| `plain_white` | Plain white | Standard white endpapers |
+| `plain_colored` | Plain colored | Single color endpapers |
+| `marbled` | Marbled | Traditional marbled pattern |
+| `combed_marbled` | Combed marbled | Combed marbling pattern |
+| `paste_paper` | Paste paper | Decorated with paste |
+| `printed` | Printed | Printed pattern or text |
+| `illustrated` | Illustrated | With illustrations |
+| `maps` | Maps | Endpaper maps |
+| `photographic` | Photographic | Photo endpapers |
+| `decorative` | Decorative pattern | Publisher's decorative design |
+| `self_ends` | Self-ends | Same paper as text block |
+| `cloth` | Cloth | Fabric endpapers |
+| `leather` | Leather doublures | Leather-lined |
+| `silk` | Silk | Silk endpapers (fine bindings) |
+| `vellum` | Vellum | Vellum endpapers |
+| `none` | None | No endpapers (pamphlets) |
+
+### Text Block Condition
+Nieuw veld: `text_block_condition VARCHAR(50)`
+
+| Code | Naam | Beschrijving |
+|------|------|--------------|
+| `tight` | Tight | Firmly bound, opens with resistance |
+| `solid` | Solid | Well-attached, no looseness |
+| `sound` | Sound | Good condition, minor wear acceptable |
+| `tender` | Tender | Fragile, handle with care |
+| `shaken` | Shaken | Loose in binding, but attached |
+| `loose` | Loose | Pages detaching from binding |
+| `detached` | Detached | Text block separated from covers |
+| `broken` | Broken | Spine broken, sections loose |
+| `recased` | Recased | Reattached to original covers |
+| `rebacked` | Rebacked | New spine, original boards |
+| `rebound` | Rebound | Completely new binding |
+
+### Nieuwe Tekstvelden
+- `dedication_text TEXT` - Transcriptie van de opdracht/dedicatie
+- `colophon_text TEXT` - Transcriptie van het colofon
+
+---
+
+## Bestaande Velden → Toevoegen aan Views (Prio 1)
+
+| Veld | Database | Edit Form | Detail View | List View |
+|------|----------|-----------|-------------|----------|
+| Printer | ✅ `printer` | 🔴 Add | 🔴 Add | 🔴 Add |
+| Printing Place | ✅ `printing_place` | 🔴 Add | 🔴 Add | 🔴 Add |
+| Dust Jacket Condition | ✅ `dust_jacket_condition_id` | 🔴 Add | 🔴 Add | - |
+| Valuation Date | ✅ `valuation_date` | 🔴 Add | 🔴 Add | - |
+| Topic | ✅ `topic` | ✅ Exists | 🔴 Add | - |
+| Dedication Text | 🔴 New | 🔴 Add | 🔴 Add | - |
+| Colophon Text | 🔴 New | 🔴 Add | 🔴 Add | - |
+
+**Dust Jacket Condition** gebruikt dezelfde `conditions` dropdown (10 waarden).
+
+---
+
+## Publisher & Contributor Koppeling (Prio 2)
+
+### Huidige Situatie
+- **Publisher**: Vrij tekstveld `publisher_name` met autocomplete
+- **Contributors**: Koppeling via `book_contributors` junction table
+
+### Probleem
+- `publishers` tabel bestaat met rijke data (city, country, founded_year, VIAF, Wikidata)
+- Maar `books.publisher_name` is gewoon tekst, geen FK
+- Zelfde voor printer (`books.printer` is tekst)
+
+### Gewenste Oplossing
+Hybride aanpak:
+1. Autocomplete toont bestaande publishers
+2. Bij selectie: sla `publisher_id` op (FK)
+3. Bij nieuwe naam: maak automatisch nieuwe publisher aan
+4. Behoud backward compatibility met bestaande data
+
+**Complexiteit**: Migratie van bestaande data, UI aanpassingen, RLS policies.
+
+---
+
+## Custom Tags (Prio 4)
+
+### Implementatie
+Nieuwe tabellen:
+```sql
+CREATE TABLE user_tags (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  name VARCHAR(100) NOT NULL,
+  color VARCHAR(7),  -- Hex color
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE book_tags (
+  book_id UUID REFERENCES books(id),
+  tag_id UUID REFERENCES user_tags(id),
+  PRIMARY KEY (book_id, tag_id)
+);
+```
+
+### UI
+- Tag chips op book cards/rows
+- Tag filter in search
+- Tag management in settings
+
+---
+
+## Duplicate Detection (Prio 5)
+
+### Match Criteria (user configurable)
+1. **ISBN exact match** - Hoogste betrouwbaarheid
+2. **Title + Author fuzzy** - Voor pre-ISBN boeken
+3. **Title + Publisher + Year** - Alternatief
+4. **Custom combinatie** - User kiest velden
+
+### UI
+- Warning bij Add/Import als potentiële duplicate gevonden
+- Dedicated "Find Duplicates" tool
+- Merge functionaliteit
+
+---
+
+## Export Functies (Prio 3)
+
+### Excel/CSV Export
+- Zelfde template als import
+- **Contributors flatten**: "Author 1; Author 2; Author 3" in één kolom
+- Alle velden inclusief nieuwe (paper, edges, etc.)
+
+### Andere Exports (later)
+- **PDF Catalog**: ISBD-formatted, met covers
+- **JSON**: Complete backup, API-ready
+- **MARC**: Voor bibliotheek integratie
+- **Insurance Report**: Waardevolle boeken met foto's
+
+---
+
+## Statistics Dashboard (Prio 6)
+
+### 20 Statistieken
+
+| # | Statistiek | Type |
+|---|------------|------|
+| 1 | Total books count | Number |
+| 2 | Total estimated value | Currency |
+| 3 | Total acquisition cost | Currency |
+| 4 | Unrealized gain/loss | Currency (value - cost) |
+| 5 | Books by status | Pie chart |
+| 6 | Books by condition | Pie chart |
+| 7 | Books by century | Bar chart |
+| 8 | Books by decade | Bar chart |
+| 9 | Top 10 authors | List |
+| 10 | Top 10 publishers | List |
+| 11 | Top 10 publication places | List |
+| 12 | Books by language | Pie chart |
+| 13 | Books by cover type | Pie chart |
+| 14 | Most valuable books | Top 10 list |
+| 15 | Recent acquisitions | Timeline |
+| 16 | Acquisition spending by year | Line chart |
+| 17 | Acquisition spending by month | Bar chart |
+| 18 | Books by storage location | Pie chart |
+| 19 | Average book value | Number |
+| 20 | Collection growth over time | Line chart |
+
+---
+
+## External Links (Prio 7)
+
+Automatisch gegenereerde links naar externe bronnen:
+
+| Service | URL Pattern | Vereist veld |
+|---------|-------------|---------------|
+| WorldCat | `https://www.worldcat.org/oclc/{oclc_number}` | OCLC |
+| Google Books | `https://books.google.com/books?vid=ISBN{isbn}` | ISBN |
+| OpenLibrary | `https://openlibrary.org/isbn/{isbn}` | ISBN |
+| AbeBooks | `https://www.abebooks.com/servlet/SearchResults?isbn={isbn}` | ISBN |
+| Library of Congress | `https://lccn.loc.gov/{lccn}` | LCCN |
+| VIAF (contributors) | `https://viaf.org/viaf/{viaf_id}` | Contributor VIAF |
+| Wikidata | `https://www.wikidata.org/wiki/{wikidata_id}` | Wikidata ID |
+
+**Implementatie**: Iconen naast identifier velden, openen in nieuwe tab.
+
+---
+
+## User Settings (Prio 8)
+
+### Settings Pagina
+
+| Setting | Type | Default |
+|---------|------|----------|
+| Display name | Text | - |
+| Default currency | Dropdown (EUR, USD, GBP, etc.) | EUR |
+| Date format | DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD | DD/MM/YYYY |
+| Default view | List / Grid | List |
+| Items per page | Number | 250 |
+| UI language | EN, NL, FR, DE | EN |
+| Measurement units | Metric (mm) / Imperial (inches) | Metric |
+
+### GDPR Compliance
+- **Export all data** - Download complete collection as JSON
+- **Delete account** - Verwijder alles met confirmation
+
+### Exchange Rates (voor currency conversie)
+- Handmatig instelbaar in settings
+- Of: periodiek ophalen van externe API (later)
+- Gebruikt voor collection value berekening
+
+---
+
+## Sharing & Public Catalog (Prio 9)
+
+### Features
+1. **Public catalog URL**: `shelvd.com/u/{username}`
+2. **Privacy settings**: Welke velden publiek tonen
+3. **Shareable wishlist**: Publieke link naar wishlist items
+4. **Embed widget**: HTML snippet voor eigen website
+5. **Static HTML export**: Download als standalone website
+
+---
+
+## Currency & Collection Value (Prio 10 - Laatste)
+
+### Aanpak
+1. Elk boek behoudt eigen `price_currency`
+2. User heeft `default_currency` in settings
+3. Bij berekening totale waarde: converteer naar default currency
+4. Exchange rates: handmatig in settings OF via API
+
+### Collection Value Display
+- Dashboard widget met totale waarde
+- Breakdown per currency (optioneel)
+- Waarschuwing als exchange rates verouderd zijn
+
+---
+
+## Focus Principes
 
 **Wel focussen op:**
 - Snelle handmatige invoer (keyboard-first)
 - Slimme autocomplete (leer van eigen collectie)
 - Templates voor veelvoorkomende formaten
-- Import uit Excel/CSV
-- Image upload (geen externe bron voor pre-1970 boeken)
+- Import/Export (Excel, CSV, JSON)
+- Bibliografische diepte (paper, edges, endpapers, etc.)
+- Professional cataloging output
 
 **Niet focussen op:**
 - ISBN barcode scanner (nice-to-have, niet core)
 - Cover lookup via ISBN APIs (irrelevant voor doelgroep)
 - "Auto-fill" magie
+- Location management / shelf visualization
+- Map view
 
-### Templates Systeem (Gepland)
+---
+
+## Templates Systeem (Gepland)
 
 | Template | Pre-filled velden |
 |----------|-------------------|
@@ -663,19 +966,68 @@ Historische bibliografische formaten:
 
 ## TODO / Volgende Stappen
 
-### 🔴 High Priority (Roadmap 1-3)
-- [ ] **Landing page + Kennisbank basis** - Marketing site, SEO starten
-- [ ] **Duplicate book functie** - Kopieer boek als template voor variant/editie
-- [ ] **CSV export** - Data eigenaarschap, backup
+### 🔴 Prio 1 - Nieuwe Velden & Views
+- [ ] **Nieuwe database velden** - paper_type, edge_treatment, endpapers_type, text_block_condition, dedication_text, colophon_text
+- [ ] **Printer in alle views** - Edit form, detail view, list view
+- [ ] **Printing Place in alle views** - Edit form, detail view, list view
+- [ ] **Dust Jacket Condition** - Edit form, detail view (zelfde conditions dropdown)
+- [ ] **Valuation Date** - Edit form, detail view
+- [ ] **Topic in detail view** - Bestaat al in edit form
+- [ ] **Dedication Text** - Edit form, detail view
+- [ ] **Colophon Text** - Edit form, detail view
 
-### 🟡 Medium Priority (Roadmap 4-6)
-- [ ] **Templates systeem** - Pre-filled forms voor boektypes
-- [ ] **Uitgebreide autocomplete** - Printer, binder, previous owner velden
-- [ ] **PDF catalogus export** - ISBD-formatted professionele output
+### 🔴 Prio 2 - Publisher & Contributor Koppeling
+- [ ] **Publisher FK koppeling** - Hybride: autocomplete + automatisch aanmaken
+- [ ] **Printer FK koppeling** - Zelfde aanpak als publisher
+- [ ] **Migratie bestaande data** - Match publisher_name naar publishers tabel
 
-### 🟢 Lower Priority (Roadmap 7-8)
-- [ ] **Multiple images per boek** - Cover, spine, details, inscriptions
-- [ ] **Image upload (single cover)** - Basis image functionaliteit
+### 🔴 Prio 3 - Export Functies
+- [ ] **Excel export** - Zelfde template als import, flatten contributors
+- [ ] **CSV export** - Alle velden
+- [ ] **CSV import** - Zelfde als Excel import
+
+### 🟡 Prio 4 - Custom Tags
+- [ ] **user_tags tabel** - Met kleur support
+- [ ] **book_tags junction** - Many-to-many
+- [ ] **Tag UI** - Chips, filter, management
+
+### 🟡 Prio 5 - Duplicate Detection
+- [ ] **ISBN exact match** - Hoogste prioriteit
+- [ ] **Title + Author fuzzy** - Voor pre-ISBN boeken
+- [ ] **Warning bij Add/Import** - Potentiële duplicates
+- [ ] **Find Duplicates tool** - Dedicated pagina
+
+### 🟡 Prio 6 - Statistics Dashboard
+- [ ] **20 statistieken** - Counts, values, charts
+- [ ] **Collection value** - Met currency conversie
+
+### 🟡 Prio 7 - External Links
+- [ ] **WorldCat, Google Books, AbeBooks** - Via ISBN/OCLC
+- [ ] **VIAF, Wikidata** - Voor contributors
+- [ ] **Library of Congress** - Via LCCN
+
+### 🟢 Prio 8 - User Settings
+- [ ] **Settings pagina** - Currency, date format, view preferences
+- [ ] **GDPR compliance** - Export all data, delete account
+
+### 🟢 Prio 9 - Sharing & Public Catalog
+- [ ] **Public catalog URL** - shelvd.com/u/{username}
+- [ ] **Privacy settings** - Welke velden publiek
+- [ ] **Shareable wishlist** - Publieke link
+- [ ] **Embed widget** - HTML snippet
+
+### 🟢 Prio 10 - Currency & Valuation
+- [ ] **Exchange rates** - Handmatig in settings of API
+- [ ] **Collection value berekening** - Converteer naar default currency
+
+### Parallel Track
+- [ ] **Landing page + Kennisbank** - Marketing site, SEO
+- [ ] **Duplicate book functie** - Kopieer als template
+- [ ] **Templates systeem** - Pre-filled forms
+- [ ] **PDF catalogus export** - ISBD-formatted
+- [ ] **Insurance Report** - PDF met waarde + foto's
+- [ ] **JSON/MARC export** - Backup/bibliotheek
+- [ ] **Image upload** - Single + multiple
 
 ### ✅ Voltooid
 - [x] ~~Add book page (/books/add)~~ Geïmplementeerd
@@ -685,10 +1037,12 @@ Historische bibliografische formaten:
 
 ### Later / Nice-to-have
 - [ ] Admin interface voor contributors (multi-user)
-- [ ] Saved Searches in database
 - [ ] Auto-generate catalog IDs
-- [ ] ISBN lookup/autofill (nice-to-have, niet core)
-- [ ] Barcode scanner (nice-to-have, niet core)
+- [ ] ISBN lookup/autofill
+- [ ] Barcode scanner
+- [ ] Customizable columns
+- [ ] Print view
+- [ ] Timeline view
 
 ## Sessie Log
 
@@ -810,5 +1164,33 @@ Historische bibliografische formaten:
   - Wel: snelle handmatige invoer, autocomplete, templates, Excel/CSV
   - Niet: ISBN scanner, auto-fill, cover lookup APIs
 
+### 2025-01-31 (middag) - Feature Planning & Roadmap
+- **Correcties geïdentificeerd**:
+  - Weight, OCLC, LCCN, DDC, LCC, UDC stonden al in UI
+  - Publisher bestaat in UI als vrij tekstveld
+  - Previous Owners zit in provenance veld
+  - Limited Edition Number zit in edition_notes
+  - Recent Searches bestaat al (laatste 10)
+- **4 Nieuwe fysieke velden gedefinieerd**:
+  - Paper Type (16 waarden): wove, laid, rag, vellum, japan, india, etc.
+  - Edge Treatment (18 waarden): untrimmed, gilt_all, gauffered, fore_edge_painting, etc.
+  - Endpapers Type (16 waarden): marbled, paste_paper, illustrated, leather doublures, etc.
+  - Text Block Condition (11 waarden): tight, solid, shaken, loose, rebacked, etc.
+- **2 Nieuwe tekstvelden**: dedication_text, colophon_text
+- **Bestaande velden voor views**: printer, printing_place, dust_jacket_condition, valuation_date, topic
+- **10-punts Roadmap vastgesteld**:
+  1. Nieuwe velden + bestaande velden in views
+  2. Publisher & Contributor FK koppeling
+  3. Export functies (Excel/CSV)
+  4. Custom Tags
+  5. Duplicate Detection
+  6. Statistics Dashboard (20 stats)
+  7. External Links (WorldCat, AbeBooks, VIAF, etc.)
+  8. User Settings + GDPR
+  9. Sharing & Public Catalog
+  10. Currency & Valuation (laatste)
+- **Export beslissing**: Contributors flatten ("Author 1; Author 2")
+- **Currency beslissing**: Per-boek currency, conversie naar default bij totals, handmatige exchange rates in settings
+
 ---
-*Laatst bijgewerkt: 2025-01-31 12:45*
+*Laatst bijgewerkt: 2025-01-31 14:30*
