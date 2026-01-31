@@ -3,6 +3,198 @@
 ## Project Overzicht
 Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te beheren.
 
+## Visie & Doelgroep
+
+### Kernvisie
+> **Shelvd is de eerste moderne webapp voor serieuze boekverzamelaars - mensen die hun boeken zien als waardevolle objecten, niet alleen tekst. Met bibliografische diepte, professionele catalogisering, en de kennis om het goed te doen.**
+
+### Doelgroep: Serieuze Boekverzamelaars
+Mensen die verzamelen:
+- Eerste edities (ook moderne)
+- Gesigneerde exemplaren
+- Private press uitgaven
+- Bijzondere banden
+- Beperkte oplages
+- Antiquarische boeken
+
+**Niet primair gericht op:**
+- Casual lezers die hun leeslijst bijhouden
+- Bibliotheken (andere needs)
+- Boekhandelaren (verkoop-focus)
+
+### Concurrentiepositie
+
+| Platform | Sterkte | Zwakte | Shelvd's Voordeel |
+|----------|---------|--------|-------------------|
+| **CLZ Books** | Grootste, veel data | Verouderde UX, ISBN-centric | Moderne web-app, bibliografische diepte |
+| **LibraryThing** | Community, 2M+ users | Lezers-focus, rommelige UI | Focus op fysiek exemplaar |
+| **Libib** | Modern, simpel | Te basic | Professionele catalogisering |
+
+**Shelvd's unieke features:**
+- ISBD-compliant catalogus entries (4 talen)
+- 69 MARC contributor roles
+- Historische boekformaten (Folio, Quarto, Octavo, etc.)
+- 45+ cover/binding types
+- Bibliografische paginering
+- Romeinse jaartallen support
+
+**Belangrijk inzicht:** ISBN is grotendeels irrelevant voor serieuze verzamelaars - elk boek vóór 1970 heeft geen ISBN. CLZ/LibraryThing zijn gebouwd rond ISBN scanning. Shelvd is gebouwd rond bibliografisch catalogiseren.
+
+## Website Strategie: Kennisplatform
+
+### Concept
+De marketing website moet zich focussen op de kennis die vereist is voor het gebruik van Shelvd. Dit bouwt autoriteit, trekt traffic via SEO, en helpt gebruikers de app te begrijpen.
+
+### Website Structuur
+```
+shelvd.com/
+├── / (landing)
+├── /features
+├── /pricing
+├── /knowledge/                    ← Kennisbank
+│   ├── /glossary                  # A-Z alle termen
+│   ├── /guides/
+│   │   ├── /condition-grading     # Conditie bepalen
+│   │   ├── /book-formats          # Folio, Quarto, etc.
+│   │   ├── /binding-types         # Alle bindtypes
+│   │   ├── /first-editions        # Eerste drukken herkennen
+│   │   └── /cataloging-basics     # Hoe catalogiseer je?
+│   └── /reference/
+│       ├── /conditions            # 9 graderingen uitgelegd
+│       ├── /formats               # 76 formaten
+│       ├── /bindings              # 65 bindtypes
+│       ├── /cover-types           # 45+ cover types
+│       └── /contributor-roles     # 69 MARC rollen
+├── /blog
+└── /app (de applicatie zelf)
+```
+
+### Kennisbank Onderwerpen
+
+**Fysieke Beschrijving:**
+- Wat is Folio / Quarto / Octavo / Duodecimo?
+- Bindtypes uitgelegd (half leather, quarter cloth, etc.)
+- Cover types en hun kenmerken
+- Hoe meet je een boek?
+
+**Conditie:**
+- Fine / Near Fine / Very Good / Good / Fair / Poor
+- Dust jacket conditie apart
+- Veelvoorkomende gebreken en terminologie
+
+**Bibliografisch:**
+- Wat is een eerste druk vs eerste editie?
+- Hoe herken je een eerste druk?
+- Wat is collatie?
+- ISBD uitgelegd
+- MARC codes voor contributors
+
+**Waarde & Provenance:**
+- Wat maakt een boek waardevol?
+- Provenance documenteren
+- Ex-libris en stempels
+- Handtekeningen en inscripties
+
+### Waarom Dit Werkt
+1. **SEO:** Verzamelaars zoeken deze termen → vinden Shelvd
+2. **Autoriteit:** "Ze weten waar ze over praten"
+3. **Onboarding:** Users begrijpen de velden in de app
+4. **Differentiatie:** CLZ/LibraryThing hebben dit niet
+5. **Content marketing:** Gratis waarde → vertrouwen → conversie
+
+## Feature Roadmap
+
+### Prioriteiten
+
+| Prio | Feature | Status | Beschrijving |
+|------|---------|--------|---------------|
+| 1 | Landing page + Kennisbank basis | 🔴 Todo | Marketing site, SEO starten |
+| 2 | Duplicate book functie | 🔴 Todo | Kopieer boek als template voor variant/editie |
+| 3 | CSV export | 🔴 Todo | Data eigenaarschap, backup |
+| 4 | Templates systeem | 🔴 Todo | Pre-filled forms voor boektypes |
+| 5 | Uitgebreide autocomplete | 🟡 Partial | Printer, binder, previous owner |
+| 6 | PDF catalogus export | 🔴 Todo | ISBD-formatted professionele output |
+| 7 | Multiple images per boek | 🔴 Todo | Cover, spine, details, inscriptions |
+| 8 | Image upload (single cover) | 🔴 Todo | Basis image functionaliteit |
+
+### Focus Principes
+
+**Wel focussen op:**
+- Snelle handmatige invoer (keyboard-first)
+- Slimme autocomplete (leer van eigen collectie)
+- Templates voor veelvoorkomende formaten
+- Import uit Excel/CSV
+- Image upload (geen externe bron voor pre-1970 boeken)
+
+**Niet focussen op:**
+- ISBN barcode scanner (nice-to-have, niet core)
+- Cover lookup via ISBN APIs (irrelevant voor doelgroep)
+- "Auto-fill" magie
+
+### Templates Systeem (Gepland)
+
+| Template | Pre-filled velden |
+|----------|-------------------|
+| Modern Hardcover | Cover: hardcover, Format: Octavo, Binding: Case binding |
+| Modern Paperback | Cover: softcover, Format: Octavo, Binding: Perfect binding |
+| 19th Century Cloth | Cover: cloth, Binding: Sewn, Has dust jacket: No |
+| Leather Binding | Cover: full_leather, Binding: Sewn |
+| Private Press | Cover: quarter_leather_paper, Limited edition: Yes |
+| Pamphlet | Cover: paper_wrappers, Binding: Saddle stitch |
+
+## Image Strategie
+
+### Waarom Images Belangrijk Zijn
+- Geen externe bronnen voor pre-1970 boeken
+- Binding, conditie, provenance → visueel bewijs
+- Handtekeningen, inscripties, ex-libris
+- Verkoop: kopers willen foto's zien
+
+### Technische Aanpak
+
+| Aspect | Beslissing | Reden |
+|--------|------------|-------|
+| Formaat | WebP (JPEG fallback) | Beste compressie |
+| Opslag | 1 formaat: 1200px breed | On-the-fly resize via Supabase |
+| Max upload | 10MB | Hoge kwaliteit foto's toestaan |
+| Max per boek | 10 images (Free: 3) | Kosten beheersen |
+| Storage | Supabase Storage + Cloudflare CDN | Egress bescherming |
+
+### Image Types voor Boekverzamelaars
+
+| Type | Gebruik |
+|------|--------|
+| `cover_front` | Voorkant band (primair) |
+| `cover_back` | Achterkant band |
+| `spine` | Rug |
+| `title_page` | Titelpagina |
+| `colophon` | Colofon/drukkersinfo |
+| `inscription` | Inscriptie/opdracht |
+| `signature` | Handtekening |
+| `ex_libris` | Ex-libris/stempel |
+| `binding_detail` | Bindwerk detail |
+| `damage` | Beschadiging |
+| `illustration` | Illustratie/plaat |
+
+### Kosten Schatting
+
+| Scenario | Boeken | Images | Storage | Kosten/maand |
+|----------|--------|--------|---------|---------------|
+| 1 user (5K boeken) | 5,000 | 15,000 | 2.2 GB | ~€0.05 |
+| 10 users | 30,000 | 90,000 | 13 GB | ~€0.27 |
+| 100 users | 200,000 | 600,000 | 90 GB | ~€1.90 |
+
+**Met Cloudflare CDN:** Egress praktisch €0.
+
+## Pricing Model (Voorstel)
+
+| Tier | Prijs | Boeken | Images/boek | Features |
+|------|-------|--------|-------------|----------|
+| **Free** | €0 | 100 | 1 | Basis catalogiseren |
+| **Collector** | €7/maand | 5,000 | 5 | + Templates, Export |
+| **Scholar** | €15/maand | Onbeperkt | 10 | + ISBD export, API |
+| **Dealer** | €29/maand | Onbeperkt | 20 | + Multi-user, Verkoop integratie |
+
 ## Tech Stack
 - **Frontend**: Next.js 15.5.11 (App Router)
 - **Database**: Supabase (PostgreSQL)
@@ -471,27 +663,32 @@ Historische bibliografische formaten:
 
 ## TODO / Volgende Stappen
 
-### 🔴 High Priority
-- [ ] **Admin interface voor contributors** - Nodig voor multi-user:
-  - Admin role (`is_admin` op profiles of aparte `user_roles` tabel)
-  - Admin UI om contributors te mergen, verrijken, corrigeren, verwijderen
-  - RLS uitbreiden zodat admins alle contributors kunnen bewerken
-  - Verificatie workflow (`is_verified` flag)
-- [x] ~~Add book page (/books/add)~~ ✅ Geïmplementeerd
-- [x] ~~Search/filter op books list~~ ✅ Geïmplementeerd (global + advanced search)
-- [x] ~~Excel import (/books/import)~~ ✅ Geïmplementeerd
-- [ ] **Saved Searches** (Subtask 4) - Bewaar zoekopdrachten in database voor hergebruik
+### 🔴 High Priority (Roadmap 1-3)
+- [ ] **Landing page + Kennisbank basis** - Marketing site, SEO starten
+- [ ] **Duplicate book functie** - Kopieer boek als template voor variant/editie
+- [ ] **CSV export** - Data eigenaarschap, backup
 
-### 🟡 Medium Priority
-- [ ] Book cover image upload
-- [x] ~~Sorting options (by title, author, year)~~ ✅ Geïmplementeerd (klikbare kolomheaders)
-- [ ] Export functionality
+### 🟡 Medium Priority (Roadmap 4-6)
+- [ ] **Templates systeem** - Pre-filled forms voor boektypes
+- [ ] **Uitgebreide autocomplete** - Printer, binder, previous owner velden
+- [ ] **PDF catalogus export** - ISBD-formatted professionele output
 
-### 🟢 Low Priority
+### 🟢 Lower Priority (Roadmap 7-8)
+- [ ] **Multiple images per boek** - Cover, spine, details, inscriptions
+- [ ] **Image upload (single cover)** - Basis image functionaliteit
+
+### ✅ Voltooid
+- [x] ~~Add book page (/books/add)~~ Geïmplementeerd
+- [x] ~~Search/filter op books list~~ Geïmplementeerd (global + advanced search)
+- [x] ~~Excel import (/books/import)~~ Geïmplementeerd
+- [x] ~~Sorting options (by title, author, year)~~ Geïmplementeerd (klikbare kolomheaders)
+
+### Later / Nice-to-have
+- [ ] Admin interface voor contributors (multi-user)
+- [ ] Saved Searches in database
 - [ ] Auto-generate catalog IDs
-- [ ] "Show catalog ID in list" toggle setting
-- [ ] ISBN lookup/autofill
-- [ ] Barcode scanner
+- [ ] ISBN lookup/autofill (nice-to-have, niet core)
+- [ ] Barcode scanner (nice-to-have, niet core)
 
 ## Sessie Log
 
@@ -581,5 +778,37 @@ Historische bibliografische formaten:
   - Protective comments toegevoegd aan fetchBooks modes
   - Drie search modes gedocumenteerd: DEFAULT, GLOBAL SEARCH, ADVANCED FILTERS
 
+### 2025-01-31 (ochtend) - Strategische Planning
+- **Visie & Doelgroep gedocumenteerd**:
+  - Kernvisie: moderne webapp voor serieuze boekverzamelaars
+  - Doelgroep: mensen die boeken zien als waardevolle objecten
+  - Niet: casual lezers, bibliotheken, boekhandelaren
+- **Concurrentie-analyse**:
+  - CLZ Books, LibraryThing, Libib vergeleken
+  - Shelvd's unieke positie: bibliografische diepte + moderne UX
+  - Belangrijk inzicht: ISBN irrelevant voor pre-1970 boeken
+- **Website Strategie: Kennisplatform**:
+  - Marketing site moet focussen op kennis voor boekverzamelaars
+  - Glossary, guides, reference pages gepland
+  - SEO + autoriteit + onboarding in één
+- **Feature Roadmap geprioriteerd**:
+  1. Landing page + Kennisbank
+  2. Duplicate book functie
+  3. CSV export
+  4. Templates systeem
+  5. Uitgebreide autocomplete
+  6. PDF catalogus export
+  7. Multiple images
+  8. Image upload (single)
+- **Image Strategie uitgewerkt**:
+  - WebP formaat, 1200px breed, Supabase Storage
+  - 11 image types voor boekverzamelaars gedefinieerd
+  - Cloudflare CDN voor egress bescherming
+- **Pricing Model voorstel**:
+  - Free (€0/100 boeken), Collector (€7), Scholar (€15), Dealer (€29)
+- **Focus principes**:
+  - Wel: snelle handmatige invoer, autocomplete, templates, Excel/CSV
+  - Niet: ISBN scanner, auto-fill, cover lookup APIs
+
 ---
-*Laatst bijgewerkt: 2025-01-31 02:30*
+*Laatst bijgewerkt: 2025-01-31 12:45*
