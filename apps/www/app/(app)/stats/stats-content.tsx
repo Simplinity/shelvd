@@ -1,98 +1,59 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { RefreshCw } from 'lucide-react'
 
-export default function StatsPage() {
-  const [stats, setStats] = useState<any>(null)
-  const [calculatedAt, setCalculatedAt] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+interface StatsContentProps {
+  initialStats: any
+  calculatedAt: string | null
+}
 
-  const supabase = createClient()
+export function StatsContent({ initialStats, calculatedAt }: StatsContentProps) {
+  const [stats, setStats] = useState(initialStats)
+  const [lastCalculated, setLastCalculated] = useState(calculatedAt)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [autoRefreshing, setAutoRefreshing] = useState(false)
 
-  // Load stats from user_stats table
-  const loadStats = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      setError('Not authorized')
-      setLoading(false)
-      return
+  // Auto-refresh if no stats or stats are older than 24 hours
+  useEffect(() => {
+    if (!stats && !autoRefreshing) {
+      setAutoRefreshing(true)
+      handleRefresh()
     }
+  }, [stats])
 
-    const { data, error: fetchError } = await supabase
-      .from('user_stats')
-      .select('stats, calculated_at')
-      .eq('user_id', user.id)
-      .single()
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      // PGRST116 = no rows returned (not an error, just no stats yet)
-      console.error('Fetch error:', fetchError)
-    }
-
-    if (data) {
-      setStats(data.stats)
-      setCalculatedAt(data.calculated_at)
-      setLoading(false)
-    } else {
-      // No stats yet, trigger calculation
-      await refreshStats()
-    }
-  }
-
-  // Refresh stats by calling the API
-  const refreshStats = async () => {
-    setRefreshing(true)
-    setError(null)
-
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
     try {
       const response = await fetch('/api/stats/calculate', { method: 'POST' })
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to calculate stats')
+      if (response.ok) {
+        // Reload page to get fresh data
+        window.location.reload()
+      } else {
+        const error = await response.json()
+        alert('Failed to refresh stats: ' + error.error)
       }
-
-      // Reload stats from database
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('user_stats')
-          .select('stats, calculated_at')
-          .eq('user_id', user.id)
-          .single()
-
-        if (data) {
-          setStats(data.stats)
-          setCalculatedAt(data.calculated_at)
-        }
-      }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (error) {
+      alert('Failed to refresh stats')
     } finally {
-      setRefreshing(false)
-      setLoading(false)
+      setIsRefreshing(false)
+      setAutoRefreshing(false)
     }
   }
-
-  useEffect(() => {
-    loadStats()
-  }, [])
 
   // Format helpers
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Never'
     return new Date(dateString).toLocaleString('nl-BE', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -104,98 +65,72 @@ export default function StatsPage() {
     in_collection: 'bg-gray-800', on_sale: 'bg-red-600', sold: 'bg-gray-400', lent: 'bg-gray-500', lost: 'bg-red-600', donated: 'bg-gray-400', unknown: 'bg-gray-300',
   }
 
-  if (loading) {
+  // Show loading/calculating state
+  if (!stats || isRefreshing) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center h-64">
-          <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
-          <span className="ml-3 text-gray-500">Calculating statistics...</span>
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <RefreshCw className="w-8 h-8 animate-spin text-gray-400 mb-4" />
+          <p className="text-gray-500">{autoRefreshing ? 'Calculating statistics for the first time...' : 'Refreshing statistics...'}</p>
+          <p className="text-sm text-gray-400 mt-2">This may take a moment for large collections</p>
         </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-red-50 border border-red-200 p-4 rounded">
-          <p className="text-red-700">{error}</p>
-          <button
-            onClick={refreshStats}
-            className="mt-2 text-sm text-red-600 underline"
-          >
-            Try again
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (!stats) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <p className="text-gray-500">No statistics available.</p>
       </div>
     )
   }
 
   const {
-    totalBooks,
-    totalEstimatedValue,
-    totalAcquiredPrice,
-    profitLoss,
-    avgValuePerBook,
-    avgAcquiredPrice,
-    booksWithValue,
-    booksWithPrice,
-    actionNeededCount,
-    mostExpensiveBook,
-    soldCount,
-    totalSoldRevenue,
-    pctWithISBN,
-    pctWithPhoto,
-    booksAddedThisYear,
-    booksSoldThisYear,
-    signedCount,
-    dustJacketCount,
-    latestAcquisitionDate,
-    currentYear,
-    statusCounts,
-    conditionCounts,
-    topAuthors,
-    topPublishers,
-    topLanguages,
-    topPlaces,
-    topCoverTypes,
-    topShelves,
-    topAcquisitionYears,
+    totalBooks = 0,
+    totalEstimatedValue = 0,
+    totalAcquiredPrice = 0,
+    profitLoss = 0,
+    avgValuePerBook = 0,
+    avgAcquiredPrice = 0,
+    booksWithValue = 0,
+    booksWithPrice = 0,
+    actionNeededCount = 0,
+    mostExpensiveBook = null,
+    soldCount = 0,
+    totalSoldRevenue = 0,
+    booksWithISBN = 0,
+    pctWithISBN = 0,
+    booksWithPhoto = 0,
+    pctWithPhoto = 0,
+    booksAddedThisYear = 0,
+    booksSoldThisYear = 0,
+    signedCount = 0,
+    dustJacketCount = 0,
+    latestAcquisitionDate = null,
+    currentYear = new Date().getFullYear().toString(),
+    statusCounts = {},
+    conditionCounts = {},
+    topAuthors = [],
+    topPublishers = [],
+    topLanguages = [],
+    topPlaces = [],
+    topCoverTypes = [],
+    topShelves = [],
+    topAcquisitionYears = [],
   } = stats
 
-  const sortedConditions = Object.entries(conditionCounts || {}).sort((a, b) => (b[1] as number) - (a[1] as number))
+  const sortedConditions = Object.entries(conditionCounts).sort((a, b) => (b[1] as number) - (a[1] as number))
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Statistics</h1>
           <p className="text-gray-500 mt-1">Overview of your collection</p>
+          <p className="text-xs text-gray-400 mt-1">Last updated: {formatDate(lastCalculated)}</p>
         </div>
-        <div className="flex items-center gap-4">
-          {calculatedAt && (
-            <span className="text-xs text-gray-400">
-              Updated: {formatDate(calculatedAt)}
-            </span>
-          )}
-          <button
-            onClick={refreshStats}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Refreshing...' : 'Refresh'}
-          </button>
-        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
 
       {/* Tier 1: Key Metrics */}
@@ -205,25 +140,25 @@ export default function StatsPage() {
           
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Total Books</p>
-            <p className="text-3xl font-bold mt-1">{(totalBooks || 0).toLocaleString()}</p>
+            <p className="text-3xl font-bold mt-1">{totalBooks.toLocaleString()}</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Estimated Value</p>
-            <p className="text-3xl font-bold mt-1">{formatCurrency(totalEstimatedValue || 0)}</p>
-            <p className="text-xs text-gray-400 mt-1">{booksWithValue || 0} books with value</p>
+            <p className="text-3xl font-bold mt-1">{formatCurrency(totalEstimatedValue)}</p>
+            <p className="text-xs text-gray-400 mt-1">{booksWithValue} books with value</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Total Invested</p>
-            <p className="text-3xl font-bold mt-1">{formatCurrency(totalAcquiredPrice || 0)}</p>
-            <p className="text-xs text-gray-400 mt-1">{booksWithPrice || 0} books with price</p>
+            <p className="text-3xl font-bold mt-1">{formatCurrency(totalAcquiredPrice)}</p>
+            <p className="text-xs text-gray-400 mt-1">{booksWithPrice} books with price</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Profit / Loss</p>
-            <p className={`text-3xl font-bold mt-1 ${(profitLoss || 0) >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
-              {(profitLoss || 0) >= 0 ? '+' : ''}{formatCurrency(profitLoss || 0)}
+            <p className={`text-3xl font-bold mt-1 ${profitLoss >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+              {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)}
             </p>
             <p className="text-xs text-gray-400 mt-1">
               {totalEstimatedValue > 0 && totalAcquiredPrice > 0 ? `${((profitLoss / totalAcquiredPrice) * 100).toFixed(0)}% return` : 'Need both values'}
@@ -232,26 +167,26 @@ export default function StatsPage() {
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Avg. Value per Book</p>
-            <p className="text-3xl font-bold mt-1">{formatCurrency(avgValuePerBook || 0)}</p>
+            <p className="text-3xl font-bold mt-1">{formatCurrency(avgValuePerBook)}</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Avg. Purchase Price</p>
-            <p className="text-3xl font-bold mt-1">{formatCurrency(avgAcquiredPrice || 0)}</p>
+            <p className="text-3xl font-bold mt-1">{formatCurrency(avgAcquiredPrice)}</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Total Sold</p>
-            <p className="text-3xl font-bold mt-1">{soldCount || 0}</p>
-            <p className="text-xs text-gray-400 mt-1">{formatCurrency(totalSoldRevenue || 0)} revenue</p>
+            <p className="text-3xl font-bold mt-1">{soldCount}</p>
+            <p className="text-xs text-gray-400 mt-1">{formatCurrency(totalSoldRevenue)} revenue</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Action Needed</p>
-            <p className={`text-3xl font-bold mt-1 ${(actionNeededCount || 0) > 0 ? 'text-red-600' : 'text-gray-900'}`}>
-              {actionNeededCount || 0}
+            <p className={`text-3xl font-bold mt-1 ${actionNeededCount > 0 ? 'text-red-600' : 'text-gray-900'}`}>
+              {actionNeededCount}
             </p>
-            <p className="text-xs text-gray-400 mt-1">{(actionNeededCount || 0) > 0 ? 'books need attention' : 'all good'}</p>
+            <p className="text-xs text-gray-400 mt-1">{actionNeededCount > 0 ? 'books need attention' : 'all good'}</p>
           </div>
 
         </div>
@@ -265,7 +200,7 @@ export default function StatsPage() {
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">By Status</h3>
             <div className="space-y-3">
-              {Object.entries(statusCounts || {}).sort((a, b) => (b[1] as number) - (a[1] as number)).map(([status, count]) => {
+              {Object.entries(statusCounts).sort((a, b) => (b[1] as number) - (a[1] as number)).map(([status, count]) => {
                 const percentage = totalBooks ? (((count as number) / totalBooks) * 100).toFixed(1) : 0
                 return (
                   <div key={status}>
@@ -306,11 +241,11 @@ export default function StatsPage() {
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Special Items</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{signedCount || 0}</p>
+                <p className="text-2xl font-bold">{signedCount}</p>
                 <p className="text-sm text-gray-500">Signed</p>
               </div>
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{dustJacketCount || 0}</p>
+                <p className="text-2xl font-bold">{dustJacketCount}</p>
                 <p className="text-sm text-gray-500">Dust Jacket</p>
               </div>
               <div className="text-center p-4 bg-gray-50">
@@ -329,11 +264,11 @@ export default function StatsPage() {
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Data Quality</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{(pctWithPhoto || 0).toFixed(0)}%</p>
+                <p className="text-2xl font-bold">{pctWithPhoto.toFixed(0)}%</p>
                 <p className="text-sm text-gray-500">With Photo</p>
               </div>
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{(pctWithISBN || 0).toFixed(0)}%</p>
+                <p className="text-2xl font-bold">{pctWithISBN.toFixed(0)}%</p>
                 <p className="text-sm text-gray-500">With ISBN</p>
               </div>
             </div>
@@ -350,7 +285,7 @@ export default function StatsPage() {
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Top 10 Authors</h3>
             <div className="space-y-2">
-              {(topAuthors || []).map(([name, count]: [string, number], index: number) => (
+              {topAuthors.map(([name, count]: [string, number], index: number) => (
                 <div key={name} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
@@ -359,14 +294,14 @@ export default function StatsPage() {
                   <span className="text-sm font-medium">{count}</span>
                 </div>
               ))}
-              {(!topAuthors || topAuthors.length === 0) && <p className="text-sm text-gray-400">No author data available</p>}
+              {topAuthors.length === 0 && <p className="text-sm text-gray-400">No author data available</p>}
             </div>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Top 10 Publishers</h3>
             <div className="space-y-2">
-              {(topPublishers || []).map(([name, count]: [string, number], index: number) => (
+              {topPublishers.map(([name, count]: [string, number], index: number) => (
                 <div key={name} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
@@ -375,14 +310,14 @@ export default function StatsPage() {
                   <span className="text-sm font-medium">{count}</span>
                 </div>
               ))}
-              {(!topPublishers || topPublishers.length === 0) && <p className="text-sm text-gray-400">No publisher data available</p>}
+              {topPublishers.length === 0 && <p className="text-sm text-gray-400">No publisher data available</p>}
             </div>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">By Language</h3>
             <div className="space-y-3">
-              {(topLanguages || []).map(([lang, count]: [string, number]) => {
+              {topLanguages.map(([lang, count]: [string, number]) => {
                 const percentage = totalBooks ? ((count / totalBooks) * 100).toFixed(1) : 0
                 return (
                   <div key={lang}>
@@ -402,7 +337,7 @@ export default function StatsPage() {
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Top 10 Publication Places</h3>
             <div className="space-y-2">
-              {(topPlaces || []).map(([place, count]: [string, number], index: number) => (
+              {topPlaces.map(([place, count]: [string, number], index: number) => (
                 <div key={place} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
@@ -411,7 +346,7 @@ export default function StatsPage() {
                   <span className="text-sm font-medium">{count}</span>
                 </div>
               ))}
-              {(!topPlaces || topPlaces.length === 0) && <p className="text-sm text-gray-400">No publication place data available</p>}
+              {topPlaces.length === 0 && <p className="text-sm text-gray-400">No publication place data available</p>}
             </div>
           </div>
 
@@ -426,7 +361,7 @@ export default function StatsPage() {
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">By Cover Type</h3>
             <div className="space-y-3">
-              {(topCoverTypes || []).map(([coverType, count]: [string, number]) => {
+              {topCoverTypes.map(([coverType, count]: [string, number]) => {
                 const percentage = totalBooks ? ((count / totalBooks) * 100).toFixed(1) : 0
                 return (
                   <div key={coverType}>
@@ -440,14 +375,14 @@ export default function StatsPage() {
                   </div>
                 )
               })}
-              {(!topCoverTypes || topCoverTypes.length === 0) && <p className="text-sm text-gray-400">No cover type data available</p>}
+              {topCoverTypes.length === 0 && <p className="text-sm text-gray-400">No cover type data available</p>}
             </div>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Top 10 Shelves</h3>
             <div className="space-y-2">
-              {(topShelves || []).map(([shelf, count]: [string, number], index: number) => (
+              {topShelves.map(([shelf, count]: [string, number], index: number) => (
                 <div key={shelf} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
@@ -456,7 +391,7 @@ export default function StatsPage() {
                   <span className="text-sm font-medium">{count}</span>
                 </div>
               ))}
-              {(!topShelves || topShelves.length === 0) && <p className="text-sm text-gray-400">No shelf data available</p>}
+              {topShelves.length === 0 && <p className="text-sm text-gray-400">No shelf data available</p>}
             </div>
           </div>
 
@@ -471,25 +406,25 @@ export default function StatsPage() {
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Acquisitions by Year</h3>
             <div className="space-y-2">
-              {(topAcquisitionYears || []).map(([year, count]: [string, number]) => (
+              {topAcquisitionYears.map(([year, count]: [string, number]) => (
                 <div key={year} className="flex justify-between items-center py-1">
                   <span className="text-sm text-gray-700">{year}</span>
                   <span className="text-sm font-medium">{count}</span>
                 </div>
               ))}
-              {(!topAcquisitionYears || topAcquisitionYears.length === 0) && <p className="text-sm text-gray-400">No acquisition date data available</p>}
+              {topAcquisitionYears.length === 0 && <p className="text-sm text-gray-400">No acquisition date data available</p>}
             </div>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">This Year ({currentYear || new Date().getFullYear()})</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">This Year ({currentYear})</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{booksAddedThisYear || 0}</p>
+                <p className="text-2xl font-bold">{booksAddedThisYear}</p>
                 <p className="text-sm text-gray-500">Added</p>
               </div>
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{booksSoldThisYear || 0}</p>
+                <p className="text-2xl font-bold">{booksSoldThisYear}</p>
                 <p className="text-sm text-gray-500">Sold</p>
               </div>
             </div>
