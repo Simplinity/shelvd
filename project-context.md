@@ -1082,15 +1082,15 @@ Historische bibliografische formaten:
 - [x] **Dropdown UI** - 3 opties in menu
 - [x] **Selective export** - Geen selectie = alles, met selectie = alleen geselecteerde
 
-### 🟡 Prio 3 - Duplicate Detection
+### 🟡 Prio 3 - Statistics Dashboard
+- [ ] **20 statistieken** - Counts, values, charts
+- [ ] **Collection value** - Met currency conversie
+
+### 🟡 Prio 4 - Duplicate Detection
 - [ ] **ISBN exact match** - Hoogste prioriteit
 - [ ] **Title + Author fuzzy** - Voor pre-ISBN boeken
 - [ ] **Warning bij Add/Import** - Potentiële duplicates
 - [ ] **Find Duplicates tool** - Dedicated pagina
-
-### 🟡 Prio 4 - Statistics Dashboard
-- [ ] **20 statistieken** - Counts, values, charts
-- [ ] **Collection value** - Met currency conversie
 
 ### 🟡 Prio 5 - External Links
 - [ ] **WorldCat, Google Books, AbeBooks** - Via ISBN/OCLC
