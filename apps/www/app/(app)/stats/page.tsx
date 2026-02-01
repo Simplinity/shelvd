@@ -108,17 +108,30 @@ export default async function StatsPage() {
   const languageMap = new Map(languagesLookup?.map(l => [l.id, l.name_en]) || [])
   
   // Get ALL Author role IDs (there are multiple!)
-  const authorRoleIds = new Set(
-    contributorRolesLookup?.filter(r => r.name === 'Author').map(r => r.id) || []
-  )
+  const authorRoleIdArray = contributorRolesLookup
+    ?.filter(r => r.name === 'Author')
+    .map(r => r.id) || []
+  
+  // Use array includes instead of Set (avoids potential type issues)
+  const isAuthorRole = (roleId: string) => authorRoleIdArray.includes(roleId)
 
-  // Fetch book IDs for this user (for contributor query)
-  const { data: userBooks } = await supabase
-    .from('books')
-    .select('id')
-    .eq('user_id', user.id)
-
-  const bookIds = userBooks?.map(b => b.id) || []
+  // Fetch ALL book IDs for this user (with pagination!)
+  let allBookIds: string[] = []
+  let bookOffset = 0
+  while (true) {
+    const { data: bookPage } = await supabase
+      .from('books')
+      .select('id')
+      .eq('user_id', user.id)
+      .range(bookOffset, bookOffset + 999)
+    
+    if (!bookPage || bookPage.length === 0) break
+    allBookIds = [...allBookIds, ...bookPage.map(b => b.id)]
+    if (bookPage.length < 1000) break
+    bookOffset += 1000
+  }
+  
+  const bookIds = allBookIds
 
   // Fetch contributors for user's books (in batches)
   let allBookContributors: any[] = []
@@ -197,7 +210,7 @@ export default async function StatsPage() {
   // Calculate Tier 3: Top 10 Authors (check ALL author role IDs)
   const authorCounts: Record<string, number> = {}
   allBookContributors
-    .filter(bc => authorRoleIds.has(bc.role_id))
+    .filter(bc => isAuthorRole(bc.role_id))
     .forEach(bc => {
       const name = contributorMap.get(bc.contributor_id) || 'Unknown'
       authorCounts[name] = (authorCounts[name] || 0) + 1
