@@ -291,15 +291,6 @@ export default async function StatsPage() {
   const sortedConditions = Object.entries(conditionCounts)
     .sort((a, b) => b[1] - a[1])
 
-  // Debug info
-  const debugInfo = {
-    totalBooks,
-    bookContributorsCount: allBookContributors.length,
-    contributorsCount: allContributors.length,
-    authorRoleIdsCount: authorRoleIds.length,
-    authorRoleIds: authorRoleIds,
-  }
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -308,10 +299,6 @@ export default async function StatsPage() {
         <p className="text-gray-500 mt-1">Overview of your collection</p>
       </div>
 
-      {/* Debug section - temporary */}
-      <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 text-xs font-mono">
-        <p>DEBUG: books={debugInfo.totalBooks}, book_contributors={debugInfo.bookContributorsCount}, contributors={debugInfo.contributorsCount}, authorRoleIds={debugInfo.authorRoleIdsCount} ({debugInfo.authorRoleIds.join(', ')})</p>
-      </div>
 
       {/* Tier 1: Key Metrics */}
       <div className="mb-10">
