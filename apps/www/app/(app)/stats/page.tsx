@@ -117,7 +117,7 @@ export default async function StatsPage() {
   let booksWithValue = 0
   let booksWithPrice = 0
   let actionNeededCount = 0
-  let mostExpensiveBook: { title: string, value: number } | null = null
+  let mostExpensiveBook: { title: string; value: number } | null = null
   let soldCount = 0
   let totalSoldRevenue = 0
   let booksWithISBN = 0
@@ -131,7 +131,7 @@ export default async function StatsPage() {
       totalEstimatedValue += value
       booksWithValue++
       if (!mostExpensiveBook || value > mostExpensiveBook.value) {
-        mostExpensiveBook = { title: book.title || 'Untitled', value }
+        mostExpensiveBook = { title: book.title || 'Untitled', value: value }
       }
     }
     if (book.acquired_price) {
@@ -395,13 +395,13 @@ export default async function StatsPage() {
                 <p className="text-sm text-gray-500">Dust Jacket</p>
               </div>
               <div className="text-center p-4 bg-gray-50">
-                <p className="text-2xl font-bold">{mostExpensiveBook ? formatCurrency(mostExpensiveBook.value) : '—'}</p>
-                <p className="text-sm text-gray-500 truncate" title={mostExpensiveBook?.title}>Most Valuable</p>
+                <p className="text-2xl font-bold">{mostExpensiveBook ? formatCurrency((mostExpensiveBook as { title: string; value: number }).value) : '—'}</p>
+                <p className="text-sm text-gray-500 truncate" title={(mostExpensiveBook as { title: string; value: number } | null)?.title}>Most Valuable</p>
               </div>
             </div>
             {mostExpensiveBook && (
-              <p className="text-xs text-gray-400 mt-2 truncate" title={mostExpensiveBook.title}>
-                Most valuable: {mostExpensiveBook.title}
+              <p className="text-xs text-gray-400 mt-2 truncate" title={(mostExpensiveBook as { title: string; value: number }).title}>
+                Most valuable: {(mostExpensiveBook as { title: string; value: number }).title}
               </p>
             )}
           </div>
