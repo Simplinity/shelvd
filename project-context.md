@@ -1,7 +1,7 @@
 # Shelvd - Project Context
 
-> **Versie:** 1.6.1  
-> **Laatste update:** 2025-01-31 20:15 CET  
+> **Versie:** 1.7.0  
+> **Laatste update:** 2025-01-31 21:00 CET  
 > **Auteur:** Bruno (eigenaar) + Claude (AI assistant)  
 > **Status:** Actief in ontwikkeling
 
@@ -1082,9 +1082,12 @@ Historische bibliografische formaten:
 - [x] **Dropdown UI** - 3 opties in menu
 - [x] **Selective export** - Geen selectie = alles, met selectie = alleen geselecteerde
 
-### 🟡 Prio 3 - Statistics Dashboard
-- [ ] **20 statistieken** - Counts, values, charts
-- [ ] **Collection value** - Met currency conversie
+### ✅ Prio 3 - Statistics Dashboard **VOLTOOID**
+- [x] **Tier 1: Key Metrics** - Total books, value, invested, profit/loss, action needed
+- [x] **Tier 2: Status & Condition** - Status, condition, signed, dust jacket
+- [x] **Tier 3: Content & Origin** - Authors, publishers, languages, places
+- [x] **Tier 4: Physical & Storage** - Cover types, shelves
+- [x] **Tier 5: Time & Growth** - Acquisitions by year, milestones
 
 ### 🟡 Prio 4 - Duplicate Detection
 - [ ] **ISBN exact match** - Hoogste prioriteit
@@ -1315,6 +1318,17 @@ Historische bibliografische formaten:
 - **Security**: nog steeds gefilterd op `user_id`
 - **Build succesvol** ✅
 
+### 2025-01-31 (avond 2) - Statistics Dashboard (Prio 3)
+- **Nieuwe /stats pagina** met 5 tiers:
+  - Tier 1: Key Metrics (5 cards: totaal, waarde, invested, profit/loss, action needed)
+  - Tier 2: Status & Condition (status bars, condition bars, signed/dust jacket)
+  - Tier 3: Content & Origin (top 10 authors, publishers, languages, places)
+  - Tier 4: Physical & Storage (cover types, shelves)
+  - Tier 5: Time & Growth (acquisitions by year, milestones)
+- **Bug fix**: Author stats faalde door meerdere 'Author' role IDs
+- **Navigatie**: Stats link toegevoegd aan header
+- **Build succesvol** ✅
+
 ### 2025-01-31 (namiddag 2) - UI/UX Swiss Design
 - **Header redesign** (Optie B gekozen):
   - Witte achtergrond met dikke rode lijn onderaan (4px)
@@ -1374,6 +1388,7 @@ Historische bibliografische formaten:
 
 | Versie | Datum | Wijzigingen |
 |--------|-------|-------------|
+| 1.7.0 | 2025-01-31 | Statistics Dashboard (Prio 3) - alle 5 tiers voltooid |
 | 1.6.0 | 2025-01-31 | Selective export (geen selectie = alles, met selectie = alleen die) |
 | 1.5.2 | 2025-01-31 | Export bugfixes (pagination, contributors, kolom namen) |
 | 1.5.1 | 2025-01-31 | Export dropdown (Excel/CSV/JSON) |
