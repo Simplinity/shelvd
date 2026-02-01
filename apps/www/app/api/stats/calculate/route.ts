@@ -76,6 +76,6 @@ export async function POST() {
     oldestYear: oldest, newestYear: newest, latestAcquisitionDate: latestAcq,
   }
 
-  await supabase.from('user_stats').upsert({ user_id: user.id, stats, calculated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+  await (supabase as any).from('user_stats').upsert({ user_id: user.id, stats, calculated_at: new Date().toISOString() }, { onConflict: 'user_id' })
   return NextResponse.json({ success: true, calculated_at: new Date().toISOString(), stats })
 }
