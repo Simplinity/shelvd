@@ -269,7 +269,7 @@ export async function POST() {
     // ============================================
     // UPSERT into user_stats
     // ============================================
-    const { error: upsertError } = await supabase
+    const { error: upsertError } = await (supabase as any)
       .from('user_stats')
       .upsert({
         user_id: user.id,

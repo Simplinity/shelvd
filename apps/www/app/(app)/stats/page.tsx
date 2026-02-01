@@ -22,7 +22,7 @@ export default function StatsPage() {
       return
     }
 
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await (supabase as any)
       .from('user_stats')
       .select('stats, calculated_at')
       .eq('user_id', user.id)
@@ -58,7 +58,7 @@ export default function StatsPage() {
       // Reload stats from database
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data } = await supabase
+        const { data } = await (supabase as any)
           .from('user_stats')
           .select('stats, calculated_at')
           .eq('user_id', user.id)
