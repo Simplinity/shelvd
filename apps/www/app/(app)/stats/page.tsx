@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { BookOpen, Euro, TrendingUp, TrendingDown, AlertTriangle, PenTool, BookMarked, Users, Building2, Globe, MapPin, BookCopy, Layers } from 'lucide-react'
+import { BookOpen, Euro, TrendingUp, TrendingDown, AlertTriangle, PenTool, BookMarked, Users, Building2, Globe, MapPin, BookCopy, Layers, Calendar, History } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,89 +11,30 @@ export default async function StatsPage() {
     return <div>Not authorized</div>
   }
 
-  // Fetch all stats in parallel
-  const [
-    { count: totalBooks },
-    { data: valueData },
-    { data: actionNeededData },
-    { data: statusData },
-    { data: conditionData },
-    { data: specialData },
-    { data: languageData },
-    { data: publisherData },
-    { data: placeData },
-    { data: coverTypeData },
-    { data: shelfData },
-  ] = await Promise.all([
-    // Total books count
-    supabase
+  // ============================================
+  // STEP 1: Fetch ALL books with pagination (same as export)
+  // ============================================
+  let allBooks: any[] = []
+  let bookOffset = 0
+  while (true) {
+    const { data: booksPage } = await supabase
       .from('books')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id),
-    
-    // Sum of estimated_value and acquired_price
-    supabase
-      .from('books')
-      .select('estimated_value, acquired_price')
-      .eq('user_id', user.id),
-    
-    // Books with action needed
-    supabase
-      .from('books')
-      .select('id')
+      .select('id, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, action_needed, publication_year, acquired_date')
       .eq('user_id', user.id)
-      .neq('action_needed', 'none'),
+      .range(bookOffset, bookOffset + 999)
     
-    // Status counts
-    supabase
-      .from('books')
-      .select('status')
-      .eq('user_id', user.id),
-    
-    // Condition counts
-    supabase
-      .from('books')
-      .select('condition_id')
-      .eq('user_id', user.id),
-    
-    // Special books (signed, dust jacket)
-    supabase
-      .from('books')
-      .select('is_signed, has_dust_jacket')
-      .eq('user_id', user.id),
-    
-    // Language data
-    supabase
-      .from('books')
-      .select('language_id')
-      .eq('user_id', user.id),
-    
-    // Publisher data
-    supabase
-      .from('books')
-      .select('publisher_name')
-      .eq('user_id', user.id),
-    
-    // Publication place data
-    supabase
-      .from('books')
-      .select('publication_place')
-      .eq('user_id', user.id),
-    
-    // Cover type data
-    supabase
-      .from('books')
-      .select('cover_type')
-      .eq('user_id', user.id),
-    
-    // Shelf data
-    supabase
-      .from('books')
-      .select('shelf')
-      .eq('user_id', user.id),
-  ])
+    if (!booksPage || booksPage.length === 0) break
+    allBooks = [...allBooks, ...booksPage]
+    if (booksPage.length < 1000) break
+    bookOffset += 1000
+  }
 
-  // Fetch lookups
+  const totalBooks = allBooks.length
+  const bookIds = allBooks.map(b => b.id)
+
+  // ============================================
+  // STEP 2: Fetch lookups
+  // ============================================
   const [
     { data: conditionsLookup },
     { data: languagesLookup },
@@ -106,41 +47,24 @@ export default async function StatsPage() {
 
   const conditionMap = new Map(conditionsLookup?.map(c => [c.id, c.name]) || [])
   const languageMap = new Map(languagesLookup?.map(l => [l.id, l.name_en]) || [])
-  
-  // Get ALL Author role IDs (there are multiple!)
-  const authorRoleIdArray = contributorRolesLookup
-    ?.filter(r => r.name === 'Author')
-    .map(r => r.id) || []
-  
-  // Use array includes instead of Set (avoids potential type issues)
-  const isAuthorRole = (roleId: string) => authorRoleIdArray.includes(roleId)
 
-  // Fetch ALL book IDs for this user (with pagination!)
-  let allBookIds: string[] = []
-  let bookOffset = 0
-  while (true) {
-    const { data: bookPage } = await supabase
-      .from('books')
-      .select('id')
-      .eq('user_id', user.id)
-      .range(bookOffset, bookOffset + 999)
-    
-    if (!bookPage || bookPage.length === 0) break
-    allBookIds = [...allBookIds, ...bookPage.map(b => b.id)]
-    if (bookPage.length < 1000) break
-    bookOffset += 1000
-  }
-  
-  const bookIds = allBookIds
+  // ============================================
+  // STEP 3: Get Author role IDs (all of them!)
+  // ============================================
+  const authorRoleIds = (contributorRolesLookup || [])
+    .filter(r => r.name === 'Author')
+    .map(r => r.id)
 
-  // Fetch contributors for user's books (in batches)
+  // ============================================
+  // STEP 4: Fetch book_contributors in batches (SAME AS EXPORT!)
+  // ============================================
   let allBookContributors: any[] = []
   const batchSize = 500
   for (let i = 0; i < bookIds.length; i += batchSize) {
     const batchIds = bookIds.slice(i, i + batchSize)
     const { data: batchContributors } = await supabase
       .from('book_contributors')
-      .select('book_id, contributor_id, role_id')
+      .select('book_id, role_id, contributor_id')
       .in('book_id', batchIds)
     
     if (batchContributors) {
@@ -148,7 +72,9 @@ export default async function StatsPage() {
     }
   }
 
-  // Fetch all contributors with pagination
+  // ============================================
+  // STEP 5: Fetch ALL contributors with pagination (SAME AS EXPORT!)
+  // ============================================
   let allContributors: any[] = []
   let contribOffset = 0
   while (true) {
@@ -165,13 +91,18 @@ export default async function StatsPage() {
 
   const contributorMap = new Map(allContributors.map(c => [c.id, c.canonical_name]))
 
-  // Calculate Tier 1 totals
+  // ============================================
+  // CALCULATIONS
+  // ============================================
+
+  // Tier 1: Key Metrics
   let totalEstimatedValue = 0
   let totalAcquiredPrice = 0
   let booksWithValue = 0
   let booksWithPrice = 0
+  let actionNeededCount = 0
 
-  valueData?.forEach(book => {
+  allBooks.forEach(book => {
     if (book.estimated_value) {
       totalEstimatedValue += Number(book.estimated_value)
       booksWithValue++
@@ -180,49 +111,51 @@ export default async function StatsPage() {
       totalAcquiredPrice += Number(book.acquired_price)
       booksWithPrice++
     }
+    if (book.action_needed && book.action_needed !== 'none') {
+      actionNeededCount++
+    }
   })
 
   const profitLoss = totalEstimatedValue - totalAcquiredPrice
-  const actionNeededCount = actionNeededData?.length || 0
 
-  // Calculate Tier 2: Status counts
+  // Tier 2: Status counts
   const statusCounts: Record<string, number> = {}
-  statusData?.forEach(book => {
+  allBooks.forEach(book => {
     const status = book.status || 'unknown'
     statusCounts[status] = (statusCounts[status] || 0) + 1
   })
 
-  // Calculate Tier 2: Condition counts
+  // Tier 2: Condition counts
   const conditionCounts: Record<string, number> = {}
-  conditionData?.forEach(book => {
+  allBooks.forEach(book => {
     const conditionName = book.condition_id ? conditionMap.get(book.condition_id) || 'Unknown' : 'Not set'
     conditionCounts[conditionName] = (conditionCounts[conditionName] || 0) + 1
   })
 
-  // Calculate Tier 2: Special counts
+  // Tier 2: Special counts
   let signedCount = 0
   let dustJacketCount = 0
-  specialData?.forEach(book => {
+  allBooks.forEach(book => {
     if (book.is_signed) signedCount++
     if (book.has_dust_jacket) dustJacketCount++
   })
 
-  // Calculate Tier 3: Top 10 Authors (check ALL author role IDs)
+  // Tier 3: Top 10 Authors
   const authorCounts: Record<string, number> = {}
-  allBookContributors
-    .filter(bc => isAuthorRole(bc.role_id))
-    .forEach(bc => {
+  allBookContributors.forEach(bc => {
+    if (authorRoleIds.includes(bc.role_id)) {
       const name = contributorMap.get(bc.contributor_id) || 'Unknown'
       authorCounts[name] = (authorCounts[name] || 0) + 1
-    })
+    }
+  })
   
   const topAuthors = Object.entries(authorCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
-  // Calculate Tier 3: Top 10 Publishers
+  // Tier 3: Top 10 Publishers
   const publisherCounts: Record<string, number> = {}
-  publisherData?.forEach(book => {
+  allBooks.forEach(book => {
     if (book.publisher_name) {
       publisherCounts[book.publisher_name] = (publisherCounts[book.publisher_name] || 0) + 1
     }
@@ -232,9 +165,9 @@ export default async function StatsPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
-  // Calculate Tier 3: By Language
+  // Tier 3: By Language
   const languageCounts: Record<string, number> = {}
-  languageData?.forEach(book => {
+  allBooks.forEach(book => {
     const langName = book.language_id ? languageMap.get(book.language_id) || 'Unknown' : 'Not set'
     languageCounts[langName] = (languageCounts[langName] || 0) + 1
   })
@@ -243,9 +176,9 @@ export default async function StatsPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
-  // Calculate Tier 3: By Publication Place
+  // Tier 3: By Publication Place
   const placeCounts: Record<string, number> = {}
-  placeData?.forEach(book => {
+  allBooks.forEach(book => {
     if (book.publication_place) {
       placeCounts[book.publication_place] = (placeCounts[book.publication_place] || 0) + 1
     }
@@ -255,11 +188,10 @@ export default async function StatsPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
-  // Calculate Tier 4: By Cover Type (normalize case)
+  // Tier 4: By Cover Type (normalize case)
   const coverTypeCounts: Record<string, number> = {}
-  coverTypeData?.forEach(book => {
+  allBooks.forEach(book => {
     if (book.cover_type) {
-      // Normalize: capitalize first letter of each word
       const normalized = book.cover_type
         .toLowerCase()
         .split(' ')
@@ -273,9 +205,9 @@ export default async function StatsPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
-  // Calculate Tier 4: By Shelf
+  // Tier 4: By Shelf
   const shelfCounts: Record<string, number> = {}
-  shelfData?.forEach(book => {
+  allBooks.forEach(book => {
     if (book.shelf) {
       shelfCounts[book.shelf] = (shelfCounts[book.shelf] || 0) + 1
     }
@@ -283,6 +215,44 @@ export default async function StatsPage() {
   
   const topShelves = Object.entries(shelfCounts)
     .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+
+  // Tier 5: By Publication Year
+  const yearCounts: Record<string, number> = {}
+  let oldestYear: number | null = null
+  let newestYear: number | null = null
+  
+  allBooks.forEach(book => {
+    if (book.publication_year) {
+      const year = Number(book.publication_year)
+      if (!isNaN(year) && year > 1000 && year < 2100) {
+        yearCounts[year.toString()] = (yearCounts[year.toString()] || 0) + 1
+        if (oldestYear === null || year < oldestYear) {
+          oldestYear = year
+        }
+        if (newestYear === null || year > newestYear) {
+          newestYear = year
+        }
+      }
+    }
+  })
+
+  // Tier 5: By Acquisition Year
+  const acquisitionYearCounts: Record<string, number> = {}
+  let latestAcquisitionDate: string | null = null
+  
+  allBooks.forEach(book => {
+    if (book.acquired_date) {
+      const year = book.acquired_date.substring(0, 4)
+      acquisitionYearCounts[year] = (acquisitionYearCounts[year] || 0) + 1
+      if (latestAcquisitionDate === null || book.acquired_date > latestAcquisitionDate) {
+        latestAcquisitionDate = book.acquired_date
+      }
+    }
+  })
+
+  const topAcquisitionYears = Object.entries(acquisitionYearCounts)
+    .sort((a, b) => b[0].localeCompare(a[0])) // Sort by year descending
     .slice(0, 10)
 
   // Format currency
@@ -321,12 +291,26 @@ export default async function StatsPage() {
   const sortedConditions = Object.entries(conditionCounts)
     .sort((a, b) => b[1] - a[1])
 
+  // Debug info
+  const debugInfo = {
+    totalBooks,
+    bookContributorsCount: allBookContributors.length,
+    contributorsCount: allContributors.length,
+    authorRoleIdsCount: authorRoleIds.length,
+    authorRoleIds: authorRoleIds,
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">Statistics</h1>
         <p className="text-gray-500 mt-1">Overview of your collection</p>
+      </div>
+
+      {/* Debug section - temporary */}
+      <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 text-xs font-mono">
+        <p>DEBUG: books={debugInfo.totalBooks}, book_contributors={debugInfo.bookContributorsCount}, contributors={debugInfo.contributorsCount}, authorRoleIds={debugInfo.authorRoleIdsCount} ({debugInfo.authorRoleIds.join(', ')})</p>
       </div>
 
       {/* Tier 1: Key Metrics */}
@@ -655,9 +639,53 @@ export default async function StatsPage() {
         </div>
       </div>
 
-      {/* Placeholder for more tiers */}
-      <div className="text-center py-12 text-gray-400">
-        <p>More statistics coming soon...</p>
+      {/* Tier 5: Time & Growth */}
+      <div className="mb-10">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Time & Growth</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Acquisitions by Year */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Acquisitions by Year</h3>
+            </div>
+            <div className="space-y-2">
+              {topAcquisitionYears.map(([year, count]) => (
+                <div key={year} className="flex justify-between items-center py-1">
+                  <span className="text-sm text-gray-700">{year}</span>
+                  <span className="text-sm font-medium">{count}</span>
+                </div>
+              ))}
+              {topAcquisitionYears.length === 0 && (
+                <p className="text-sm text-gray-400">No acquisition date data available</p>
+              )}
+            </div>
+          </div>
+
+          {/* Milestones */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <History className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Collection Milestones</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-4 bg-gray-50">
+                <p className="text-2xl font-bold">{oldestYear || '—'}</p>
+                <p className="text-sm text-gray-500">Oldest Publication</p>
+              </div>
+              <div className="text-center p-4 bg-gray-50">
+                <p className="text-2xl font-bold">{newestYear || '—'}</p>
+                <p className="text-sm text-gray-500">Newest Publication</p>
+              </div>
+              <div className="text-center p-4 bg-gray-50 col-span-2">
+                <p className="text-lg font-bold">{latestAcquisitionDate || '—'}</p>
+                <p className="text-sm text-gray-500">Latest Acquisition</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   )
