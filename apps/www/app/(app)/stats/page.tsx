@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { BookOpen, Euro, TrendingUp, TrendingDown, AlertTriangle, PenTool, BookMarked, Users, Building2, Globe, MapPin } from 'lucide-react'
+import { BookOpen, Euro, TrendingUp, TrendingDown, AlertTriangle, PenTool, BookMarked, Users, Building2, Globe, MapPin, BookCopy, Layers } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,6 +22,8 @@ export default async function StatsPage() {
     { data: languageData },
     { data: publisherData },
     { data: placeData },
+    { data: coverTypeData },
+    { data: shelfData },
   ] = await Promise.all([
     // Total books count
     supabase
@@ -77,6 +79,18 @@ export default async function StatsPage() {
       .from('books')
       .select('publication_place')
       .eq('user_id', user.id),
+    
+    // Cover type data
+    supabase
+      .from('books')
+      .select('cover_type')
+      .eq('user_id', user.id),
+    
+    // Shelf data
+    supabase
+      .from('books')
+      .select('shelf')
+      .eq('user_id', user.id),
   ])
 
   // Fetch lookups
@@ -92,7 +106,11 @@ export default async function StatsPage() {
 
   const conditionMap = new Map(conditionsLookup?.map(c => [c.id, c.name]) || [])
   const languageMap = new Map(languagesLookup?.map(l => [l.id, l.name_en]) || [])
-  const authorRoleId = contributorRolesLookup?.find(r => r.name === 'Author')?.id
+  
+  // Get ALL Author role IDs (there are multiple!)
+  const authorRoleIds = new Set(
+    contributorRolesLookup?.filter(r => r.name === 'Author').map(r => r.id) || []
+  )
 
   // Fetch book IDs for this user (for contributor query)
   const { data: userBooks } = await supabase
@@ -117,7 +135,7 @@ export default async function StatsPage() {
     }
   }
 
-  // Fetch all contributors
+  // Fetch all contributors with pagination
   let allContributors: any[] = []
   let contribOffset = 0
   while (true) {
@@ -176,10 +194,10 @@ export default async function StatsPage() {
     if (book.has_dust_jacket) dustJacketCount++
   })
 
-  // Calculate Tier 3: Top 10 Authors
+  // Calculate Tier 3: Top 10 Authors (check ALL author role IDs)
   const authorCounts: Record<string, number> = {}
   allBookContributors
-    .filter(bc => bc.role_id === authorRoleId)
+    .filter(bc => authorRoleIds.has(bc.role_id))
     .forEach(bc => {
       const name = contributorMap.get(bc.contributor_id) || 'Unknown'
       authorCounts[name] = (authorCounts[name] || 0) + 1
@@ -221,6 +239,36 @@ export default async function StatsPage() {
   })
   
   const topPlaces = Object.entries(placeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+
+  // Calculate Tier 4: By Cover Type (normalize case)
+  const coverTypeCounts: Record<string, number> = {}
+  coverTypeData?.forEach(book => {
+    if (book.cover_type) {
+      // Normalize: capitalize first letter of each word
+      const normalized = book.cover_type
+        .toLowerCase()
+        .split(' ')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+      coverTypeCounts[normalized] = (coverTypeCounts[normalized] || 0) + 1
+    }
+  })
+  
+  const topCoverTypes = Object.entries(coverTypeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+
+  // Calculate Tier 4: By Shelf
+  const shelfCounts: Record<string, number> = {}
+  shelfData?.forEach(book => {
+    if (book.shelf) {
+      shelfCounts[book.shelf] = (shelfCounts[book.shelf] || 0) + 1
+    }
+  })
+  
+  const topShelves = Object.entries(shelfCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
@@ -527,6 +575,66 @@ export default async function StatsPage() {
               ))}
               {topPlaces.length === 0 && (
                 <p className="text-sm text-gray-400">No publication place data available</p>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Tier 4: Physical & Storage */}
+      <div className="mb-10">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Physical & Storage</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* By Cover Type */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <BookCopy className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">By Cover Type</h3>
+            </div>
+            <div className="space-y-3">
+              {topCoverTypes.map(([coverType, count]) => {
+                const percentage = totalBooks ? ((count / totalBooks) * 100).toFixed(1) : 0
+                return (
+                  <div key={coverType}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">{coverType}</span>
+                      <span className="font-medium">{count.toLocaleString()} <span className="text-gray-400">({percentage}%)</span></span>
+                    </div>
+                    <div className="w-full bg-gray-100 h-2">
+                      <div 
+                        className="h-2 bg-amber-500"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+              {topCoverTypes.length === 0 && (
+                <p className="text-sm text-gray-400">No cover type data available</p>
+              )}
+            </div>
+          </div>
+
+          {/* By Shelf */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Layers className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Top 10 Shelves</h3>
+            </div>
+            <div className="space-y-2">
+              {topShelves.map(([shelf, count], index) => (
+                <div key={shelf} className="flex justify-between items-center py-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
+                    <span className="text-sm text-gray-700 truncate max-w-[200px]" title={shelf}>{shelf}</span>
+                  </div>
+                  <span className="text-sm font-medium">{count}</span>
+                </div>
+              ))}
+              {topShelves.length === 0 && (
+                <p className="text-sm text-gray-400">No shelf data available</p>
               )}
             </div>
           </div>
