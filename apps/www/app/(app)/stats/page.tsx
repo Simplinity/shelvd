@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { BookOpen, Euro, TrendingUp, TrendingDown, AlertTriangle, PenTool, BookMarked } from 'lucide-react'
+import { BookOpen, Euro, TrendingUp, TrendingDown, AlertTriangle, PenTool, BookMarked, Users, Building2, Globe, MapPin } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,6 +19,9 @@ export default async function StatsPage() {
     { data: statusData },
     { data: conditionData },
     { data: specialData },
+    { data: languageData },
+    { data: publisherData },
+    { data: placeData },
   ] = await Promise.all([
     // Total books count
     supabase
@@ -45,7 +48,7 @@ export default async function StatsPage() {
       .select('status')
       .eq('user_id', user.id),
     
-    // Condition counts (with condition names)
+    // Condition counts
     supabase
       .from('books')
       .select('condition_id')
@@ -56,14 +59,80 @@ export default async function StatsPage() {
       .from('books')
       .select('is_signed, has_dust_jacket')
       .eq('user_id', user.id),
+    
+    // Language data
+    supabase
+      .from('books')
+      .select('language_id')
+      .eq('user_id', user.id),
+    
+    // Publisher data
+    supabase
+      .from('books')
+      .select('publisher_name')
+      .eq('user_id', user.id),
+    
+    // Publication place data
+    supabase
+      .from('books')
+      .select('publication_place')
+      .eq('user_id', user.id),
   ])
 
-  // Fetch conditions lookup
-  const { data: conditionsLookup } = await supabase
-    .from('conditions')
-    .select('id, name')
+  // Fetch lookups
+  const [
+    { data: conditionsLookup },
+    { data: languagesLookup },
+    { data: contributorRolesLookup },
+  ] = await Promise.all([
+    supabase.from('conditions').select('id, name'),
+    supabase.from('languages').select('id, name_en'),
+    supabase.from('contributor_roles').select('id, name'),
+  ])
 
   const conditionMap = new Map(conditionsLookup?.map(c => [c.id, c.name]) || [])
+  const languageMap = new Map(languagesLookup?.map(l => [l.id, l.name_en]) || [])
+  const authorRoleId = contributorRolesLookup?.find(r => r.name === 'Author')?.id
+
+  // Fetch book IDs for this user (for contributor query)
+  const { data: userBooks } = await supabase
+    .from('books')
+    .select('id')
+    .eq('user_id', user.id)
+
+  const bookIds = userBooks?.map(b => b.id) || []
+
+  // Fetch contributors for user's books (in batches)
+  let allBookContributors: any[] = []
+  const batchSize = 500
+  for (let i = 0; i < bookIds.length; i += batchSize) {
+    const batchIds = bookIds.slice(i, i + batchSize)
+    const { data: batchContributors } = await supabase
+      .from('book_contributors')
+      .select('book_id, contributor_id, role_id')
+      .in('book_id', batchIds)
+    
+    if (batchContributors) {
+      allBookContributors = [...allBookContributors, ...batchContributors]
+    }
+  }
+
+  // Fetch all contributors
+  let allContributors: any[] = []
+  let contribOffset = 0
+  while (true) {
+    const { data: contribPage } = await supabase
+      .from('contributors')
+      .select('id, canonical_name')
+      .range(contribOffset, contribOffset + 999)
+    
+    if (!contribPage || contribPage.length === 0) break
+    allContributors = [...allContributors, ...contribPage]
+    if (contribPage.length < 1000) break
+    contribOffset += 1000
+  }
+
+  const contributorMap = new Map(allContributors.map(c => [c.id, c.canonical_name]))
 
   // Calculate Tier 1 totals
   let totalEstimatedValue = 0
@@ -106,6 +175,54 @@ export default async function StatsPage() {
     if (book.is_signed) signedCount++
     if (book.has_dust_jacket) dustJacketCount++
   })
+
+  // Calculate Tier 3: Top 10 Authors
+  const authorCounts: Record<string, number> = {}
+  allBookContributors
+    .filter(bc => bc.role_id === authorRoleId)
+    .forEach(bc => {
+      const name = contributorMap.get(bc.contributor_id) || 'Unknown'
+      authorCounts[name] = (authorCounts[name] || 0) + 1
+    })
+  
+  const topAuthors = Object.entries(authorCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+
+  // Calculate Tier 3: Top 10 Publishers
+  const publisherCounts: Record<string, number> = {}
+  publisherData?.forEach(book => {
+    if (book.publisher_name) {
+      publisherCounts[book.publisher_name] = (publisherCounts[book.publisher_name] || 0) + 1
+    }
+  })
+  
+  const topPublishers = Object.entries(publisherCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+
+  // Calculate Tier 3: By Language
+  const languageCounts: Record<string, number> = {}
+  languageData?.forEach(book => {
+    const langName = book.language_id ? languageMap.get(book.language_id) || 'Unknown' : 'Not set'
+    languageCounts[langName] = (languageCounts[langName] || 0) + 1
+  })
+  
+  const topLanguages = Object.entries(languageCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+
+  // Calculate Tier 3: By Publication Place
+  const placeCounts: Record<string, number> = {}
+  placeData?.forEach(book => {
+    if (book.publication_place) {
+      placeCounts[book.publication_place] = (placeCounts[book.publication_place] || 0) + 1
+    }
+  })
+  
+  const topPlaces = Object.entries(placeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -310,6 +427,107 @@ export default async function StatsPage() {
                 <p className="text-2xl font-bold">{dustJacketCount}</p>
                 <p className="text-sm text-gray-500">With Dust Jacket</p>
               </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Tier 3: Content & Origin */}
+      <div className="mb-10">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Content & Origin</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Top 10 Authors */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Users className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Top 10 Authors</h3>
+            </div>
+            <div className="space-y-2">
+              {topAuthors.map(([name, count], index) => (
+                <div key={name} className="flex justify-between items-center py-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
+                    <span className="text-sm text-gray-700">{name}</span>
+                  </div>
+                  <span className="text-sm font-medium">{count}</span>
+                </div>
+              ))}
+              {topAuthors.length === 0 && (
+                <p className="text-sm text-gray-400">No author data available</p>
+              )}
+            </div>
+          </div>
+
+          {/* Top 10 Publishers */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Building2 className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Top 10 Publishers</h3>
+            </div>
+            <div className="space-y-2">
+              {topPublishers.map(([name, count], index) => (
+                <div key={name} className="flex justify-between items-center py-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
+                    <span className="text-sm text-gray-700">{name}</span>
+                  </div>
+                  <span className="text-sm font-medium">{count}</span>
+                </div>
+              ))}
+              {topPublishers.length === 0 && (
+                <p className="text-sm text-gray-400">No publisher data available</p>
+              )}
+            </div>
+          </div>
+
+          {/* By Language */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Globe className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">By Language</h3>
+            </div>
+            <div className="space-y-3">
+              {topLanguages.map(([lang, count]) => {
+                const percentage = totalBooks ? ((count / totalBooks) * 100).toFixed(1) : 0
+                return (
+                  <div key={lang}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">{lang}</span>
+                      <span className="font-medium">{count.toLocaleString()} <span className="text-gray-400">({percentage}%)</span></span>
+                    </div>
+                    <div className="w-full bg-gray-100 h-2">
+                      <div 
+                        className="h-2 bg-blue-500"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* By Publication Place */}
+          <div className="bg-white border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MapPin className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Top 10 Publication Places</h3>
+            </div>
+            <div className="space-y-2">
+              {topPlaces.map(([place, count], index) => (
+                <div key={place} className="flex justify-between items-center py-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-gray-400 w-5">{index + 1}.</span>
+                    <span className="text-sm text-gray-700">{place}</span>
+                  </div>
+                  <span className="text-sm font-medium">{count}</span>
+                </div>
+              ))}
+              {topPlaces.length === 0 && (
+                <p className="text-sm text-gray-400">No publication place data available</p>
+              )}
             </div>
           </div>
 
