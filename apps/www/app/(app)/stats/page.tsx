@@ -276,14 +276,14 @@ export default async function StatsPage() {
     unknown: 'Unknown',
   }
 
-  // Status colors
+  // Status colors - Swiss Design (red for attention, grays for rest)
   const statusColors: Record<string, string> = {
-    in_collection: 'bg-green-500',
-    on_sale: 'bg-blue-500',
+    in_collection: 'bg-gray-800',
+    on_sale: 'bg-red-600',
     sold: 'bg-gray-400',
-    lent: 'bg-yellow-500',
-    lost: 'bg-red-500',
-    donated: 'bg-purple-500',
+    lent: 'bg-gray-500',
+    lost: 'bg-red-600',
+    donated: 'bg-gray-400',
     unknown: 'bg-gray-300',
   }
 
@@ -351,7 +351,7 @@ export default async function StatsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Profit / Loss</p>
-                <p className={`text-3xl font-bold mt-1 ${profitLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-3xl font-bold mt-1 ${profitLoss >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
                   {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
@@ -360,9 +360,9 @@ export default async function StatsPage() {
                     : 'Need both values'}
                 </p>
               </div>
-              <div className={`w-12 h-12 flex items-center justify-center ${profitLoss >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
+              <div className={`w-12 h-12 flex items-center justify-center ${profitLoss >= 0 ? 'bg-gray-100' : 'bg-red-100'}`}>
                 {profitLoss >= 0 
-                  ? <TrendingUp className="w-6 h-6 text-green-600" />
+                  ? <TrendingUp className="w-6 h-6 text-gray-600" />
                   : <TrendingDown className="w-6 h-6 text-red-600" />
                 }
               </div>
@@ -374,15 +374,15 @@ export default async function StatsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Action Needed</p>
-                <p className={`text-3xl font-bold mt-1 ${actionNeededCount > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                <p className={`text-3xl font-bold mt-1 ${actionNeededCount > 0 ? 'text-red-600' : 'text-gray-900'}`}>
                   {actionNeededCount}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {actionNeededCount > 0 ? 'books need attention' : 'all good!'}
+                  {actionNeededCount > 0 ? 'books need attention' : 'all good'}
                 </p>
               </div>
-              <div className={`w-12 h-12 flex items-center justify-center ${actionNeededCount > 0 ? 'bg-red-100' : 'bg-green-100'}`}>
-                <AlertTriangle className={`w-6 h-6 ${actionNeededCount > 0 ? 'text-red-600' : 'text-green-600'}`} />
+              <div className={`w-12 h-12 flex items-center justify-center ${actionNeededCount > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>
+                <AlertTriangle className={`w-6 h-6 ${actionNeededCount > 0 ? 'text-red-600' : 'text-gray-600'}`} />
               </div>
             </div>
           </div>
@@ -531,7 +531,7 @@ export default async function StatsPage() {
                     </div>
                     <div className="w-full bg-gray-100 h-2">
                       <div 
-                        className="h-2 bg-blue-500"
+                        className="h-2 bg-gray-600"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -588,7 +588,7 @@ export default async function StatsPage() {
                     </div>
                     <div className="w-full bg-gray-100 h-2">
                       <div 
-                        className="h-2 bg-amber-500"
+                        className="h-2 bg-gray-600"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
