@@ -1327,6 +1327,7 @@ Historische bibliografische formaten:
   - Tier 5: Time & Growth (acquisitions by year, milestones)
 - **Bug fix**: Author stats faalde door meerdere 'Author' role IDs
 - **Navigatie**: Stats link toegevoegd aan header
+- **Swiss Design kleuren**: rood alleen voor aandacht, grijs/zwart voor de rest
 - **Build succesvol** ✅
 
 ### 2025-01-31 (namiddag 2) - UI/UX Swiss Design
