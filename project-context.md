@@ -1213,26 +1213,20 @@ Historische bibliografische formaten:
 
 ### 🟠 Mogelijk Zeer Belangrijk
 
-**4. UITLEENADMINISTRATIE**
-- Aan wie uitgeleend + datum
-- Verwachte retour + herinneringen
-- Uitleengeschiedenis
-- *Impact:* Voorkomt verlies van uitgeleende boeken
-
-**5. VERZEKERING & TAXATIE RAPPORTEN**
+**4. VERZEKERING & TAXATIE RAPPORTEN**
 - Taxatiegeschiedenis per boek (waarde over tijd)
 - PDF rapport genereren voor verzekeraar
 - Certificaat met foto's + beschrijving + waarde
 - *Impact:* Essentieel bij schade of diefstal
 
-**6. PROVENANCE (uitgebreid)**
+**5. PROVENANCE (uitgebreid)**
 - Vorige eigenaren (naam, periode) als aparte records
 - Veilinggeschiedenis (huis, datum, lot, prijs)
 - Herkomstcertificaten uploaden
 - Visuele tijdlijn van eigendom
 - *Impact:* Provenance bepaalt vaak 50%+ van de waarde
 
-**7. CONDITIE HISTORIE**
+**6. CONDITIE HISTORIE**
 - Conditie bij aankoop vs nu
 - Restauraties documenteren (wat, wanneer, door wie)
 - Schade-incidenten loggen
@@ -1241,22 +1235,22 @@ Historische bibliografische formaten:
 
 ### 🟢 Mogelijk Geavanceerd
 
-**8. DEALER & CONTACT BEHEER**
+**7. DEALER & CONTACT BEHEER**
 - Favoriete dealers/veilinghuizen
 - Contactinfo + specialisaties
 - Aankoopgeschiedenis per dealer
 
-**9. MARKTPRIJZEN & VERGELIJKING**
+**8. MARKTPRIJZEN & VERGELIJKING**
 - Links naar recente veilingresultaten
 - Prijstrends over tijd
 - Realisme-check voor eigen schattingen
 
-**10. COLLATIE & BIBLIOGRAFISCHE TOOLS**
+**9. COLLATIE & BIBLIOGRAFISCHE TOOLS**
 - Signature formule invoeren (π⁴ A-Z⁸ 2A-2B⁸)
 - Platen/illustraties checklist
 - "Points of issue" documenteren
 
-**11. REFERENCE LIBRARY**
+**10. REFERENCE LIBRARY**
 - Welke bibliografieën gebruik je?
 - Link boek naar bibliografie-entry ("BAL 1234")
 - Identificatiepunten noteren
