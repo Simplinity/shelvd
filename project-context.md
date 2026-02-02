@@ -7,6 +7,47 @@
 
 ---
 
+## 🚨 CLAUDE INSTRUCTIES - VERPLICHT LEZEN BIJ ELKE SESSIE
+
+### REGEL 1: DATABASE SCHEMA EERST
+**VOORDAT je een database query schrijft, ALTIJD eerst het schema opvragen:**
+```bash
+/opt/homebrew/opt/libpq/bin/psql "postgresql://postgres:LsY1yr4siVYlZhiN@db.euieagntkbhzkyzvnllx.supabase.co:5432/postgres" -c "\d tablename"
+```
+NOOIT aannemen dat een kolom bestaat. NOOIT kolommen verzinnen. ALTIJD checken.
+
+### REGEL 2: LOGBESTAND BIJHOUDEN
+Bij elke actie die je uitvoert, schrijf in CLAUDE_SESSION_LOG.md:
+- Wat je gaat doen
+- Wat je gedaan hebt
+- Resultaat (success/error)
+
+Zo weet je bij een timeout/hang wat al gedaan was.
+
+### REGEL 3: KOLOM NAMEN
+Bekende valkuilen in Shelvd database:
+- `sales_price` (NIET sold_price)
+- `isbn_13` / `isbn_10` (NIET isbn)
+- `sold_date` BESTAAT NIET
+- `internal_notes` (NIET notes)
+- `languages.name_en` (NIET name)
+- `book_contributors.role_id` (NIET role)
+
+### REGEL 4: SUPABASE LIMIETEN
+- `.limit()` werkt NIET betrouwbaar - gebruik ALTIJD `.range()` met pagination
+- FK joins kunnen stil falen - gebruik aparte queries + lookup Maps
+- `.in()` heeft limiet - batch in groepen van 500 IDs
+
+### REGEL 5: FILESYSTEM TOOL
+Gebruik `filesystem:` (lowercase), NIET `Filesystem:` (heeft een bug)
+
+### REGEL 6: NIET STOPPEN ZONDER REDEN
+- Rond elke taak volledig af
+- Als je meerdere stappen hebt, doorloop ze ALLEMAAL
+- Bij twijfel: check CLAUDE_SESSION_LOG.md wat al gedaan is
+
+---
+
 ## Project Overzicht
 Shelvd is een SaaS applicatie voor boekenverzamelaars om hun collectie te beheren.
 

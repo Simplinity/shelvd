@@ -45,3 +45,16 @@ Na Vercel build: check browser console OF Vercel Function logs
 - [x] Error: `column books.sold_date does not exist`
 - [x] Fix: sold_date verwijderd uit query en code
 - [x] Gepusht: commit 6e186ee
+
+## Fix - isbn bestaat niet
+- [x] Error: `column books.isbn does not exist`
+- [x] Fix: isbn -> isbn_13
+- [x] Gepusht: commit 5586ef0
+
+## ✅ OPGELOST
+Stats pagina werkt nu correct. Alle kolom fouten gefixed.
+
+## Lessen geleerd
+1. ALTIJD database schema checken VOORDAT je queries schrijft
+2. NOOIT kolom namen aannemen/verzinnen
+3. Instructies toegevoegd aan project-context.md voor toekomstige sessies
