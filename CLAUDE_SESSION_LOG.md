@@ -40,3 +40,8 @@ Na Vercel build: check browser console OF Vercel Function logs
 - [x] Error gevonden: `column books.sold_price does not exist`
 - [x] Fix: `sold_price` → `sales_price` (2 plekken)
 - [x] Gepusht: commit 04110e9
+
+## Fix - sold_date bestaat niet
+- [x] Error: `column books.sold_date does not exist`
+- [x] Fix: sold_date verwijderd uit query en code
+- [x] Gepusht: commit 6e186ee
