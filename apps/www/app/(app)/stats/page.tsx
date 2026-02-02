@@ -50,10 +50,9 @@ export default function StatsPage() {
 
     try {
       const response = await fetch('/api/stats/calculate', { method: 'POST' })
-      const result = await response.json()
-      console.log('Stats API response:', result)
       if (!response.ok) {
-        throw new Error(JSON.stringify(result))
+        const result = await response.json()
+        throw new Error(result.error || 'Failed to calculate stats')
       }
 
       // Reload stats from database

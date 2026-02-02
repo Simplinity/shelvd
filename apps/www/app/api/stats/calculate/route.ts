@@ -3,18 +3,11 @@ import { NextResponse } from 'next/server'
 
 export async function POST() {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-  if (authError) {
-    console.error('Auth error:', authError)
-    return NextResponse.json({ error: 'Auth failed', details: authError }, { status: 401 })
-  }
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 })
   }
-
-  console.log('Stats API - user.id:', user.id)
 
   try {
     // ============================================
@@ -30,8 +23,7 @@ export async function POST() {
         .range(bookOffset, bookOffset + 999)
       
       if (booksError) {
-        console.error('Books query error:', booksError)
-        return NextResponse.json({ error: 'Books query failed', details: booksError }, { status: 500 })
+        return NextResponse.json({ error: 'Books query failed' }, { status: 500 })
       }
       
       if (!booksPage || booksPage.length === 0) break
@@ -42,8 +34,6 @@ export async function POST() {
 
     const totalBooks = allBooks.length
     const bookIds = allBooks.map(b => b.id)
-    
-    console.log('Stats API - totalBooks found:', totalBooks)
 
     // ============================================
     // STEP 2: Fetch lookups
@@ -293,13 +283,11 @@ export async function POST() {
       })
 
     if (upsertError) {
-      console.error('Upsert error:', upsertError)
-      return NextResponse.json({ error: upsertError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to save stats' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, calculated_at: new Date().toISOString(), debug: { userId: user.id, totalBooks, booksWithValue } })
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Stats calculation error:', error)
     return NextResponse.json({ error: 'Failed to calculate stats' }, { status: 500 })
   }
 }
