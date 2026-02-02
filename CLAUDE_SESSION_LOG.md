@@ -19,3 +19,11 @@ De API route vindt geen boeken. Vermoedelijk RLS/auth probleem in server-side AP
 
 ## Volgende stap
 Check of de supabase client in de API route correct auth doorgeeft.
+
+## Acties uitgevoerd
+- [x] Debug logging toegevoegd aan API route (retourneert userId, totalBooks, booksWithValue)
+- [x] Console.log in pagina om API response te zien
+- [x] Gepusht: commit c8ca9bd
+
+## Wacht op
+Vercel build, dan browser console checken bij Refresh click
