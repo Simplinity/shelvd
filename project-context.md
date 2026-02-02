@@ -41,7 +41,11 @@ Bekende valkuilen in Shelvd database:
 ### REGEL 5: FILESYSTEM TOOL
 Gebruik `filesystem:` (lowercase), NIET `Filesystem:` (heeft een bug)
 
-### REGEL 6: NIET STOPPEN ZONDER REDEN
+### REGEL 6: SHELL COMMANDO'S
+- `rm` commando WERKT WEL - niet opgeven bij eerste error
+- Gebruik `cd /path && rm bestand` als het niet direct werkt
+
+### REGEL 7: NIET STOPPEN ZONDER REDEN
 - Rond elke taak volledig af
 - Als je meerdere stappen hebt, doorloop ze ALLEMAAL
 - Bij twijfel: check CLAUDE_SESSION_LOG.md wat al gedaan is
