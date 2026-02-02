@@ -27,3 +27,11 @@ Check of de supabase client in de API route correct auth doorgeeft.
 
 ## Wacht op
 Vercel build, dan browser console checken bij Refresh click
+
+## Update - Extra debug logging
+- [x] Auth error handling toegevoegd
+- [x] Books query error handling toegevoegd
+- [x] Console.log voor user.id en totalBooks
+- [x] Gepusht: commit 13f66cf
+
+Na Vercel build: check browser console OF Vercel Function logs

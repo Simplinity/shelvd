@@ -53,7 +53,7 @@ export default function StatsPage() {
       const result = await response.json()
       console.log('Stats API response:', result)
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to calculate stats')
+        throw new Error(JSON.stringify(result))
       }
 
       // Reload stats from database
