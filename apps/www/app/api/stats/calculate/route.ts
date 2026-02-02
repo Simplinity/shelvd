@@ -25,7 +25,7 @@ export async function POST() {
     while (true) {
       const { data: booksPage, error: booksError } = await supabase
         .from('books')
-        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, sold_price, action_needed, publication_year, acquired_date, sold_date, isbn')
+        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, sales_price, action_needed, publication_year, acquired_date, sold_date, isbn')
         .eq('user_id', user.id)
         .range(bookOffset, bookOffset + 999)
       
@@ -170,7 +170,7 @@ export async function POST() {
       }
       if (book.status === 'sold') {
         soldCount++
-        if (book.sold_price) totalSoldRevenue += Number(book.sold_price)
+        if (book.sales_price) totalSoldRevenue += Number(book.sales_price)
         if (book.sold_date?.startsWith(currentYear)) booksSoldThisYear++
       }
       if (book.isbn) booksWithISBN++
