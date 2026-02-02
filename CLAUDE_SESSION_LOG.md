@@ -35,3 +35,8 @@ Vercel build, dan browser console checken bij Refresh click
 - [x] Gepusht: commit 13f66cf
 
 Na Vercel build: check browser console OF Vercel Function logs
+
+## Fix - Kolom naam fout
+- [x] Error gevonden: `column books.sold_price does not exist`
+- [x] Fix: `sold_price` → `sales_price` (2 plekken)
+- [x] Gepusht: commit 04110e9
