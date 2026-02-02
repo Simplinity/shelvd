@@ -253,6 +253,9 @@ status, action_needed
 **8. Market Prices & Comparison**
 **9. Collation & Bibliographic Tools**
 **10. Reference Library**
+**11. Sales Platform Integration**
+- Export to WooCommerce, Catawiki, AbeBooks, etc.
+- Sync inventory with external shops
 
 ---
 
