@@ -284,7 +284,7 @@ export async function POST() {
       return NextResponse.json({ error: upsertError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, calculated_at: new Date().toISOString() })
+    return NextResponse.json({ success: true, calculated_at: new Date().toISOString(), debug: { userId: user.id, totalBooks, booksWithValue } })
   } catch (error) {
     console.error('Stats calculation error:', error)
     return NextResponse.json({ error: 'Failed to calculate stats' }, { status: 500 })

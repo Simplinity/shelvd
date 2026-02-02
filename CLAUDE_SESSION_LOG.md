@@ -1,0 +1,21 @@
+# Claude Session Log - Stats Fix
+
+## Probleem
+Stats pagina toont allemaal 0 waarden.
+
+## Diagnose
+- [x] user_stats tabel was leeg → RLS INSERT policy toegevoegd
+- [x] API route /api/stats/calculate gemaakt
+- [x] Stats pagina aangepast om uit user_stats te lezen
+- [x] TypeScript bypass (as any) voor user_stats toegevoegd
+- [x] Vercel build geslaagd
+
+## Huidige status
+- books tabel: 5054 boeken voor user `10d55057-46c6-40bc-927f-4266178be025`
+- user_stats: totalBooks = 0 (PROBLEEM!)
+
+## Root cause
+De API route vindt geen boeken. Vermoedelijk RLS/auth probleem in server-side API route.
+
+## Volgende stap
+Check of de supabase client in de API route correct auth doorgeeft.
