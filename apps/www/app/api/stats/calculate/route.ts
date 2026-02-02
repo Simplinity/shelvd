@@ -3,11 +3,18 @@ import { NextResponse } from 'next/server'
 
 export async function POST() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError) {
+    console.error('Auth error:', authError)
+    return NextResponse.json({ error: 'Auth failed', details: authError }, { status: 401 })
+  }
 
   if (!user) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 })
   }
+
+  console.log('Stats API - user.id:', user.id)
 
   try {
     // ============================================
@@ -16,11 +23,16 @@ export async function POST() {
     let allBooks: any[] = []
     let bookOffset = 0
     while (true) {
-      const { data: booksPage } = await supabase
+      const { data: booksPage, error: booksError } = await supabase
         .from('books')
         .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, sold_price, action_needed, publication_year, acquired_date, sold_date, isbn')
         .eq('user_id', user.id)
         .range(bookOffset, bookOffset + 999)
+      
+      if (booksError) {
+        console.error('Books query error:', booksError)
+        return NextResponse.json({ error: 'Books query failed', details: booksError }, { status: 500 })
+      }
       
       if (!booksPage || booksPage.length === 0) break
       allBooks = [...allBooks, ...booksPage]
@@ -30,6 +42,8 @@ export async function POST() {
 
     const totalBooks = allBooks.length
     const bookIds = allBooks.map(b => b.id)
+    
+    console.log('Stats API - totalBooks found:', totalBooks)
 
     // ============================================
     // STEP 2: Fetch lookups
