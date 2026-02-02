@@ -212,7 +212,7 @@ export default function Home() {
             <span className="text-sm font-bold tracking-tight uppercase">Shelvd</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Built with precision for book collectors.
+            © 2026 Bruno van Branden / Simplinity
           </p>
         </div>
       </footer>
