@@ -1,60 +1,99 @@
-# Claude Session Log - Stats Fix
+# Claude Session Log
 
-## Probleem
-Stats pagina toont allemaal 0 waarden.
+## 2025-02-03 - Session 2: Admin Dashboard Commit & Test
 
-## Diagnose
-- [x] user_stats tabel was leeg → RLS INSERT policy toegevoegd
-- [x] API route /api/stats/calculate gemaakt
-- [x] Stats pagina aangepast om uit user_stats te lezen
-- [x] TypeScript bypass (as any) voor user_stats toegevoegd
-- [x] Vercel build geslaagd
+### Previous session recap
+Session 1 built the full admin dashboard but stopped BEFORE committing. Everything was left as untracked/modified files.
 
-## Huidige status
-- books tabel: 5054 boeken voor user `10d55057-46c6-40bc-927f-4266178be025`
-- user_stats: totalBooks = 0 (PROBLEEM!)
+---
 
-## Root cause
-De API route vindt geen boeken. Vermoedelijk RLS/auth probleem in server-side API route.
+## DATABASE STATUS ✅ DONE (live on Supabase)
 
-## Volgende stap
-Check of de supabase client in de API route correct auth doorgeeft.
+### user_profiles table
+- EXISTS and has all columns
+- Columns: id, display_name, avatar_url, default_currency, default_size_unit, membership_tier, is_lifetime_free, status, status_reason, is_admin, admin_role, signup_source, notes, created_at, updated_at
+- Indexes: status, membership_tier, is_admin
+- RLS policies configured for users and admins
+- Trigger `on_auth_user_created` exists
 
-## Acties uitgevoerd
-- [x] Debug logging toegevoegd aan API route (retourneert userId, totalBooks, booksWithValue)
-- [x] Console.log in pagina om API response te zien
-- [x] Gepusht: commit c8ca9bd
+### RPC function get_users_for_admin
+- EXISTS
+- Returns: id, email, email_confirmed_at, last_sign_in_at, created_at
+- Security: checks is_admin before returning data
+- NOTE: function takes NO parameters (code tries to pass user_ids but it's ignored - works anyway)
 
-## Wacht op
-Vercel build, dan browser console checken bij Refresh click
+### Users in database
+| Email | is_admin | status | created_at |
+|-------|----------|--------|------------|
+| bruno@vanbranden.be | false | active | 2026-01-29 |
+| bruno@simplinity.co | true | active | 2026-02-02 |
 
-## Update - Extra debug logging
-- [x] Auth error handling toegevoegd
-- [x] Books query error handling toegevoegd
-- [x] Console.log voor user.id en totalBooks
-- [x] Gepusht: commit 13f66cf
+---
 
-Na Vercel build: check browser console OF Vercel Function logs
+## ADMIN PAGES STATUS ✅ ALL FILES EXIST
 
-## Fix - Kolom naam fout
-- [x] Error gevonden: `column books.sold_price does not exist`
-- [x] Fix: `sold_price` → `sales_price` (2 plekken)
-- [x] Gepusht: commit 04110e9
+### /admin/layout.tsx ✅ DONE
+- Checks if user logged in
+- Checks if user is_admin via user_profiles
+- Redirects non-admins to /books
 
-## Fix - sold_date bestaat niet
-- [x] Error: `column books.sold_date does not exist`
-- [x] Fix: sold_date verwijderd uit query en code
-- [x] Gepusht: commit 6e186ee
+### /admin/page.tsx ✅ DONE
+- Dashboard with stats: Total Users, Active Users, Total Books, Signups (7d)
+- Links to User Management
+- Analytics coming soon placeholder
 
-## Fix - isbn bestaat niet
-- [x] Error: `column books.isbn does not exist`
-- [x] Fix: isbn -> isbn_13
-- [x] Gepusht: commit 5586ef0
+### /admin/users/page.tsx ✅ DONE
+- User list with search (email/name)
+- Filter by status (All/Active/Suspended/Banned)
+- Table columns: User, Status, Membership, Books, Joined, Actions
+- Shows admin badge, lifetime free badge
+- Imports UserActions component
 
-## ✅ OPGELOST
-Stats pagina werkt nu correct. Alle kolom fouten gefixed.
+### /admin/users/user-actions.tsx ✅ DONE
+- Dropdown menu (custom, no shadcn dependency)
+- Actions: Suspend (with reason prompt), Ban (with confirm + reason), Reactivate, Delete (type DELETE to confirm)
+- Admin users show "Protected" instead of actions
+- Delete calls /api/admin/users/delete route
 
-## Lessen geleerd
-1. ALTIJD database schema checken VOORDAT je queries schrijft
-2. NOOIT kolom namen aannemen/verzinnen
-3. Instructies toegevoegd aan project-context.md voor toekomstige sessies
+### /api/admin/users/delete/route.ts ✅ DONE
+- POST endpoint
+- Checks auth + admin status
+- Prevents self-deletion
+- Prevents deleting other admins
+- Cascade delete: books → user_stats → user_profiles → auth.users
+- Uses supabase.auth.admin.deleteUser() — NOTE: may need service_role key
+
+### /components/ui/dropdown-menu.tsx ✅ DONE
+- shadcn dropdown-menu component added
+
+---
+
+## COMMIT STATUS
+
+### Session 1: NOT committed
+All admin files were created but never git add/commit/push.
+
+### Session 2: Committing now
+- [ ] Update session log ← DOING NOW
+- [ ] git add -A && git commit && git push
+- [ ] Wait for Vercel build
+- [ ] Test admin pages on live site
+- [ ] Fix any build errors
+
+---
+
+## KNOWN RISKS / TODO
+
+1. **Delete route uses auth.admin.deleteUser()** — this requires service_role key, not the anon key. May fail at runtime. Need to check if Supabase client in server context has admin privileges.
+2. **No navigation to /admin** — there's no link in the app UI to reach admin pages. Need to add admin link in sidebar/header for admin users.
+3. **User detail page /admin/users/[id]** — not yet built.
+
+---
+
+## NEXT STEPS (after commit + build)
+
+1. [ ] Test /admin as bruno@simplinity.co (admin)
+2. [ ] Test /admin as bruno@vanbranden.be (should redirect)
+3. [ ] Add admin link in app navigation for admin users
+4. [ ] Build /admin/users/[id] detail page
+5. [ ] Fix delete route if service_role needed
