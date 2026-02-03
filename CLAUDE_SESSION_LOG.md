@@ -96,6 +96,10 @@ All admin files were created but never git add/commit/push.
 - [ ] ❌ BUILD FAILED: `profile.status` is `string | null`, StatusBadge expects `string`
 - [x] Fix: `profile.status || 'unknown'`
 - [ ] Commit + push → build #6
+- [x] Proactief: `npx tsc --noEmit` lokaal gedraaid → 1 extra error gevonden
+- [x] Fix: `user_stats` tabel toegevoegd aan database.types.ts
+- [x] Lokale tsc check: **0 errors** ✅
+- [ ] Commit + push → build #7 (of #6 als die nog loopt)
 - [ ] Test admin pages on live site
 
 ---

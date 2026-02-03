@@ -174,13 +174,13 @@ export default async function AdminUsersPage({
                     {bookCount.toLocaleString()}
                   </td>
                   <td className="p-3 text-muted-foreground">
-                    {new Date(profile.created_at).toLocaleDateString()}
+                    {profile.created_at ? new Date(profile.created_at).toLocaleDateString() : "-"}
                   </td>
                   <td className="p-3 text-right">
                     <UserActions 
                       userId={profile.id}
-                      currentStatus={profile.status}
-                      isAdmin={profile.is_admin}
+                      currentStatus={profile.status || "unknown"}
+                      isAdmin={profile.is_admin ?? false}
                     />
                   </td>
                 </tr>

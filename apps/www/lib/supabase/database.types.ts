@@ -893,6 +893,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_stats: {
+        Row: {
+          id: string
+          user_id: string
+          stats: Json
+          calculated_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stats?: Json
+          calculated_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stats?: Json
+          calculated_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           admin_role: string | null
