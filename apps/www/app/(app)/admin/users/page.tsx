@@ -149,7 +149,7 @@ export default async function AdminUsersPage({
                       <div className="font-medium flex items-center gap-2">
                         {auth?.email || profile.display_name || 'Unknown'}
                         {profile.is_admin && (
-                          <Shield className="w-4 h-4 text-primary" title="Admin" />
+                          <span title="Admin"><Shield className="w-4 h-4 text-primary" /></span>
                         )}
                       </div>
                       {profile.display_name && auth?.email && (

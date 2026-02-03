@@ -90,6 +90,9 @@ All admin files were created but never git add/commit/push.
 - [x] Fix: replaced `.catch()` with try/catch wrapper around rpc call
 - [ ] Commit fix + push
 - [ ] Wait for Vercel build #4
+- [ ] ❌ BUILD FAILED: `title` prop not valid on Lucide Shield icon
+- [x] Fix: wrap Shield in `<span title="Admin">` instead
+- [ ] Commit + push → build #5
 - [ ] Test admin pages on live site
 
 ---
