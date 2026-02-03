@@ -40,9 +40,14 @@ export default async function AdminUsersPage({
   // We need to join this in the app since we can't directly join auth.users
   const userIds = profiles?.map(p => p.id) || []
   
-  // Get emails and auth data via RPC or direct query
-  const { data: authUsers } = await supabase.rpc('get_users_for_admin')
-    .catch(() => ({ data: null }))
+  // Get emails and auth data via RPC
+  let authUsers: any[] | null = null
+  try {
+    const { data } = await supabase.rpc('get_users_for_admin')
+    authUsers = data
+  } catch {
+    // RPC might not exist yet
+  }
   
   // If RPC doesn't exist, we'll show limited data
   // Build a map of auth data

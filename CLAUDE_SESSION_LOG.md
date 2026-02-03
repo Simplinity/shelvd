@@ -86,6 +86,10 @@ All admin files were created but never git add/commit/push.
 - [x] Fix: removed fake `user_ids` param from rpc() call (function takes no args)
 - [ ] Commit fix + push
 - [ ] Wait for Vercel build #3
+- [ ] ❌ BUILD FAILED: `.catch()` does not exist on Supabase query builder
+- [x] Fix: replaced `.catch()` with try/catch wrapper around rpc call
+- [ ] Commit fix + push
+- [ ] Wait for Vercel build #4
 - [ ] Test admin pages on live site
 
 ---
