@@ -92,7 +92,10 @@ All admin files were created but never git add/commit/push.
 - [ ] Wait for Vercel build #4
 - [ ] ❌ BUILD FAILED: `title` prop not valid on Lucide Shield icon
 - [x] Fix: wrap Shield in `<span title="Admin">` instead
-- [ ] Commit + push → build #5
+- [x] Commit + push → build #5 ✅ ba6be24
+- [ ] ❌ BUILD FAILED: `profile.status` is `string | null`, StatusBadge expects `string`
+- [x] Fix: `profile.status || 'unknown'`
+- [ ] Commit + push → build #6
 - [ ] Test admin pages on live site
 
 ---

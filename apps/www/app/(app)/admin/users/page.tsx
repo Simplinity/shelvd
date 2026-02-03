@@ -158,7 +158,7 @@ export default async function AdminUsersPage({
                     </div>
                   </td>
                   <td className="p-3">
-                    <StatusBadge status={profile.status} />
+                    <StatusBadge status={profile.status || 'unknown'} />
                   </td>
                   <td className="p-3">
                     <div className="flex items-center gap-2">
