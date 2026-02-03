@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Lock, Globe, MapPin, CreditCard, Trash2, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import {
   updateProfile,
   updatePassword,
@@ -30,9 +30,12 @@ const CURRENCIES = [
   { value: 'AUD', label: 'AUD ($)' },
 ]
 
+const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
+const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
+
 export function SettingsForm({ email, lastSignIn, profile }: Props) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <ProfileSection profile={profile} email={email} />
       <SecuritySection lastSignIn={lastSignIn} />
       <PreferencesSection profile={profile} />
@@ -43,46 +46,25 @@ export function SettingsForm({ email, lastSignIn, profile }: Props) {
   )
 }
 
-// --- Reusable feedback ---
+// --- Feedback ---
 function Feedback({ result }: { result: SettingsResult | null }) {
   if (!result) return null
-  if (result.error) return <p className="text-sm text-red-600 mt-2">{result.error}</p>
-  if (result.success) return <p className="text-sm text-green-600 mt-2 flex items-center gap-1"><Check className="w-3 h-3" /> {result.message}</p>
+  if (result.error) return <p className="text-sm text-red-600">{result.error}</p>
+  if (result.success) return <p className="text-sm text-green-600 flex items-center gap-1"><Check className="w-3 h-3" />{result.message}</p>
   return null
 }
 
-function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
-  return (
-    <div className="flex items-center gap-2 mb-4 pb-2 border-b">
-      {icon}
-      <h2 className="text-sm font-bold uppercase tracking-wider">{title}</h2>
-    </div>
-  )
-}
-
-function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
+function SaveButton({ loading, label = 'Save' }: { loading: boolean; label?: string }) {
   return (
     <button
       type="submit"
       disabled={loading}
-      className="px-4 py-2 bg-foreground text-background text-sm font-medium disabled:opacity-50"
+      className="h-10 px-6 bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
     >
       {loading ? 'Saving...' : label}
     </button>
   )
 }
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-muted-foreground mb-1">{label}</label>
-      {children}
-    </div>
-  )
-}
-
-const inputClass = "w-full h-10 px-3 py-2 border text-sm bg-background"
-const selectClass = "w-full h-10 px-3 py-2 border text-sm bg-background appearance-none"
 
 // --- 1. PROFILE ---
 function ProfileSection({ profile, email }: { profile: any; email: string }) {
@@ -99,19 +81,24 @@ function ProfileSection({ profile, email }: { profile: any; email: string }) {
 
   return (
     <section>
-      <SectionHeader icon={<User className="w-4 h-4" />} title="Profile" />
-      <form action={handleSubmit} className="space-y-4">
-        <Field label="Email">
-          <input type="text" value={email} disabled className={`${inputClass} bg-muted text-muted-foreground`} />
-        </Field>
-        <Field label="Display Name">
-          <input type="text" name="display_name" defaultValue={profile?.display_name || ''} className={inputClass} />
-        </Field>
-        <Field label="Full Name">
-          <input type="text" name="full_name" defaultValue={profile?.full_name || ''} className={inputClass} placeholder="For invoices and correspondence" />
-        </Field>
-        <div className="flex items-center gap-3">
-          <SubmitButton loading={loading} label="Save Profile" />
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Profile</h2>
+      <form action={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <label className={labelClass}>Email</label>
+            <input type="text" value={email} disabled className={`${inputClass} bg-muted text-muted-foreground cursor-not-allowed`} />
+          </div>
+          <div>
+            <label className={labelClass}>Display Name</label>
+            <input type="text" name="display_name" defaultValue={profile?.display_name || ''} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Full Name</label>
+            <input type="text" name="full_name" defaultValue={profile?.full_name || ''} className={inputClass} placeholder="For invoices and correspondence" />
+          </div>
+        </div>
+        <div className="flex items-center gap-4 mt-6">
+          <SaveButton loading={loading} />
           <Feedback result={result} />
         </div>
       </form>
@@ -131,7 +118,6 @@ function SecuritySection({ lastSignIn }: { lastSignIn: string | null }) {
     setResult(res)
     setLoading(false)
     if (res.success) {
-      // Clear form
       const form = document.querySelector('#password-form') as HTMLFormElement
       form?.reset()
     }
@@ -139,21 +125,25 @@ function SecuritySection({ lastSignIn }: { lastSignIn: string | null }) {
 
   return (
     <section>
-      <SectionHeader icon={<Lock className="w-4 h-4" />} title="Security" />
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Security</h2>
       {lastSignIn && (
         <p className="text-xs text-muted-foreground mb-4">
           Last sign in: {new Date(lastSignIn).toLocaleString()}
         </p>
       )}
-      <form id="password-form" action={handleSubmit} className="space-y-4">
-        <Field label="New Password">
-          <input type="password" name="password" className={inputClass} placeholder="Minimum 8 characters" autoComplete="new-password" />
-        </Field>
-        <Field label="Confirm Password">
-          <input type="password" name="confirm_password" className={inputClass} placeholder="Repeat password" autoComplete="new-password" />
-        </Field>
-        <div className="flex items-center gap-3">
-          <SubmitButton loading={loading} label="Update Password" />
+      <form id="password-form" action={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>New Password</label>
+            <input type="password" name="password" className={inputClass} placeholder="Minimum 8 characters" autoComplete="new-password" />
+          </div>
+          <div>
+            <label className={labelClass}>Confirm Password</label>
+            <input type="password" name="confirm_password" className={inputClass} placeholder="Repeat password" autoComplete="new-password" />
+          </div>
+        </div>
+        <div className="flex items-center gap-4 mt-6">
+          <SaveButton loading={loading} label="Update Password" />
           <Feedback result={result} />
         </div>
       </form>
@@ -176,17 +166,20 @@ function PreferencesSection({ profile }: { profile: any }) {
 
   return (
     <section>
-      <SectionHeader icon={<Globe className="w-4 h-4" />} title="Preferences" />
-      <form action={handleSubmit} className="space-y-4">
-        <Field label="Default Currency">
-          <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={selectClass}>
-            {CURRENCIES.map(c => (
-              <option key={c.value} value={c.value}>{c.label}</option>
-            ))}
-          </select>
-        </Field>
-        <div className="flex items-center gap-3">
-          <SubmitButton loading={loading} label="Save Preferences" />
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Preferences</h2>
+      <form action={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Default Currency</label>
+            <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={inputClass}>
+              {CURRENCIES.map(c => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 mt-6">
+          <SaveButton loading={loading} />
           <Feedback result={result} />
         </div>
       </form>
@@ -209,27 +202,32 @@ function AddressSection({ profile }: { profile: any }) {
 
   return (
     <section>
-      <SectionHeader icon={<MapPin className="w-4 h-4" />} title="Address" />
-      <form action={handleSubmit} className="space-y-4">
-        <Field label="Street &amp; Number">
-          <input type="text" name="street_address" defaultValue={profile?.street_address || ''} className={inputClass} />
-        </Field>
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Postal Code">
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Address</h2>
+      <form action={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <label className={labelClass}>Street &amp; Number</label>
+            <input type="text" name="street_address" defaultValue={profile?.street_address || ''} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Postal Code</label>
             <input type="text" name="postal_code" defaultValue={profile?.postal_code || ''} className={inputClass} />
-          </Field>
-          <Field label="City">
+          </div>
+          <div>
+            <label className={labelClass}>City</label>
             <input type="text" name="city" defaultValue={profile?.city || ''} className={inputClass} />
-          </Field>
+          </div>
+          <div>
+            <label className={labelClass}>Country</label>
+            <input type="text" name="country" defaultValue={profile?.country || ''} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>VAT Number</label>
+            <input type="text" name="vat_number" defaultValue={profile?.vat_number || ''} className={inputClass} placeholder="Optional, for EU businesses" />
+          </div>
         </div>
-        <Field label="Country">
-          <input type="text" name="country" defaultValue={profile?.country || ''} className={inputClass} />
-        </Field>
-        <Field label="VAT Number">
-          <input type="text" name="vat_number" defaultValue={profile?.vat_number || ''} className={inputClass} placeholder="Optional, for EU businesses" />
-        </Field>
-        <div className="flex items-center gap-3">
-          <SubmitButton loading={loading} label="Save Address" />
+        <div className="flex items-center gap-4 mt-6">
+          <SaveButton loading={loading} />
           <Feedback result={result} />
         </div>
       </form>
@@ -244,18 +242,18 @@ function SubscriptionSection({ profile }: { profile: any }) {
 
   return (
     <section>
-      <SectionHeader icon={<CreditCard className="w-4 h-4" />} title="Subscription" />
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Subscription</h2>
       <div className="flex items-center gap-3">
-        <span className="px-3 py-1 bg-foreground text-background text-sm font-medium capitalize">
+        <span className="h-10 px-4 bg-foreground text-background text-sm font-medium inline-flex items-center capitalize">
           {tier}
         </span>
         {isLifetime && (
-          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium">
+          <span className="h-10 px-3 bg-green-50 text-green-700 text-sm font-medium border border-green-200 inline-flex items-center">
             Lifetime Free
           </span>
         )}
       </div>
-      <p className="text-sm text-muted-foreground mt-3">
+      <p className="text-xs text-muted-foreground mt-4">
         Subscription management coming soon.
       </p>
     </section>
@@ -285,15 +283,15 @@ function DangerSection() {
 
   return (
     <section>
-      <SectionHeader icon={<Trash2 className="w-4 h-4 text-red-600" />} title="Danger Zone" />
-      <div className="border border-red-200 p-4">
-        <p className="text-sm mb-3">
-          Permanently delete your account and all data. This action cannot be undone.
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b text-red-600">Danger Zone</h2>
+      <div className="border border-red-200 p-6">
+        <p className="text-sm text-muted-foreground mb-4">
+          Permanently delete your account and all associated data including your entire book collection. This action cannot be undone.
         </p>
         <button
           onClick={handleDelete}
           disabled={loading}
-          className="px-4 py-2 bg-red-600 text-white text-sm font-medium disabled:opacity-50"
+          className="h-10 px-6 bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
         >
           {loading ? 'Deleting...' : 'Delete My Account'}
         </button>
