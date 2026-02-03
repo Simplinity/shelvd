@@ -895,28 +895,55 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          admin_role: string | null
           avatar_url: string | null
           created_at: string | null
           default_currency: string | null
           default_size_unit: string | null
           display_name: string | null
           id: string
+          is_admin: boolean | null
+          is_lifetime_free: boolean | null
+          membership_tier: string | null
+          notes: string | null
+          signup_source: string | null
+          status: string | null
+          status_reason: string | null
+          updated_at: string | null
         }
         Insert: {
+          admin_role?: string | null
           avatar_url?: string | null
           created_at?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
           id: string
+          is_admin?: boolean | null
+          is_lifetime_free?: boolean | null
+          membership_tier?: string | null
+          notes?: string | null
+          signup_source?: string | null
+          status?: string | null
+          status_reason?: string | null
+          updated_at?: string | null
         }
         Update: {
+          admin_role?: string | null
           avatar_url?: string | null
           created_at?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
           id?: string
+          is_admin?: boolean | null
+          is_lifetime_free?: boolean | null
+          membership_tier?: string | null
+          notes?: string | null
+          signup_source?: string | null
+          status?: string | null
+          status_reason?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
