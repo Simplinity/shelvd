@@ -12,6 +12,7 @@ import {
 import type { SettingsResult } from '@/lib/actions/settings'
 
 interface Props {
+  tab: string
   email: string
   lastSignIn: string | null
   profile: any
@@ -33,12 +34,19 @@ const CURRENCIES = [
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
 
-export function SettingsForm({ email, lastSignIn, profile }: Props) {
+export function SettingsForm({ tab, email, lastSignIn, profile }: Props) {
+  if (tab === 'configuration') {
+    return (
+      <div className="space-y-10">
+        <CurrencySection profile={profile} />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-10">
       <ProfileSection profile={profile} email={email} />
       <SecuritySection lastSignIn={lastSignIn} />
-      <PreferencesSection profile={profile} />
       <AddressSection profile={profile} />
       <SubscriptionSection profile={profile} />
       <DangerSection />
@@ -65,6 +73,10 @@ function SaveButton({ loading, label = 'Save' }: { loading: boolean; label?: str
     </button>
   )
 }
+
+// ============================================
+// ACCOUNT TAB
+// ============================================
 
 // --- 1. PROFILE ---
 function ProfileSection({ profile, email }: { profile: any; email: string }) {
@@ -151,43 +163,7 @@ function SecuritySection({ lastSignIn }: { lastSignIn: string | null }) {
   )
 }
 
-// --- 3. PREFERENCES ---
-function PreferencesSection({ profile }: { profile: any }) {
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<SettingsResult | null>(null)
-
-  const handleSubmit = async (formData: FormData) => {
-    setLoading(true)
-    setResult(null)
-    const res = await updatePreferences(formData)
-    setResult(res)
-    setLoading(false)
-  }
-
-  return (
-    <section>
-      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Preferences</h2>
-      <form action={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Default Currency</label>
-            <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={inputClass}>
-              {CURRENCIES.map(c => (
-                <option key={c.value} value={c.value}>{c.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 mt-6">
-          <SaveButton loading={loading} />
-          <Feedback result={result} />
-        </div>
-      </form>
-    </section>
-  )
-}
-
-// --- 4. ADDRESS ---
+// --- 3. ADDRESS ---
 function AddressSection({ profile }: { profile: any }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<SettingsResult | null>(null)
@@ -235,7 +211,7 @@ function AddressSection({ profile }: { profile: any }) {
   )
 }
 
-// --- 5. SUBSCRIPTION ---
+// --- 4. SUBSCRIPTION ---
 function SubscriptionSection({ profile }: { profile: any }) {
   const tier = profile?.membership_tier || 'free'
   const isLifetime = profile?.is_lifetime_free
@@ -260,7 +236,7 @@ function SubscriptionSection({ profile }: { profile: any }) {
   )
 }
 
-// --- 6. DANGER ZONE ---
+// --- 5. DANGER ZONE ---
 function DangerSection() {
   const [loading, setLoading] = useState(false)
 
@@ -296,6 +272,48 @@ function DangerSection() {
           {loading ? 'Deleting...' : 'Delete My Account'}
         </button>
       </div>
+    </section>
+  )
+}
+
+// ============================================
+// CONFIGURATION TAB
+// ============================================
+
+function CurrencySection({ profile }: { profile: any }) {
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<SettingsResult | null>(null)
+
+  const handleSubmit = async (formData: FormData) => {
+    setLoading(true)
+    setResult(null)
+    const res = await updatePreferences(formData)
+    setResult(res)
+    setLoading(false)
+  }
+
+  return (
+    <section>
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Currency</h2>
+      <form action={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Default Currency</label>
+            <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={inputClass}>
+              {CURRENCIES.map(c => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Used as default when adding book values and for statistics.
+        </p>
+        <div className="flex items-center gap-4 mt-6">
+          <SaveButton loading={loading} />
+          <Feedback result={result} />
+        </div>
+      </form>
     </section>
   )
 }

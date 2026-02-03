@@ -2,7 +2,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SettingsForm } from './settings-form'
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>
+}) {
+  const params = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -14,10 +19,38 @@ export default async function SettingsPage() {
     .eq('id', user.id)
     .single()
 
+  const tab = params.tab || 'account'
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-2xl font-bold mb-8">Settings</h1>
+
+      {/* Tab navigation */}
+      <div className="flex gap-0 border-b mb-10">
+        <a
+          href="/settings?tab=account"
+          className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            tab === 'account'
+              ? 'border-foreground text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Account
+        </a>
+        <a
+          href="/settings?tab=configuration"
+          className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            tab === 'configuration'
+              ? 'border-foreground text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Configuration
+        </a>
+      </div>
+
       <SettingsForm
+        tab={tab}
         email={user.email || ''}
         lastSignIn={user.last_sign_in_at || null}
         profile={profile}
