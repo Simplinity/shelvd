@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3 } from 'lucide-react'
+import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
 
@@ -65,6 +65,13 @@ export default async function AppLayout({
               >
                 <BarChart3 className="w-3.5 h-3.5" />
                 Stats
+              </Link>
+              <Link 
+                href="/settings" 
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors flex items-center gap-1.5"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                Settings
               </Link>
             </nav>
 

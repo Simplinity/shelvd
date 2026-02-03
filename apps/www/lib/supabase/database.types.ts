@@ -921,53 +921,71 @@ export type Database = {
         Row: {
           admin_role: string | null
           avatar_url: string | null
+          city: string | null
+          country: string | null
           created_at: string | null
           default_currency: string | null
           default_size_unit: string | null
           display_name: string | null
+          full_name: string | null
           id: string
           is_admin: boolean | null
           is_lifetime_free: boolean | null
           membership_tier: string | null
           notes: string | null
+          postal_code: string | null
           signup_source: string | null
           status: string | null
           status_reason: string | null
+          street_address: string | null
           updated_at: string | null
+          vat_number: string | null
         }
         Insert: {
           admin_role?: string | null
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
+          full_name?: string | null
           id: string
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
           membership_tier?: string | null
           notes?: string | null
+          postal_code?: string | null
           signup_source?: string | null
           status?: string | null
           status_reason?: string | null
+          street_address?: string | null
           updated_at?: string | null
+          vat_number?: string | null
         }
         Update: {
           admin_role?: string | null
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
+          full_name?: string | null
           id?: string
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
           membership_tier?: string | null
           notes?: string | null
+          postal_code?: string | null
           signup_source?: string | null
           status?: string | null
           status_reason?: string | null
+          street_address?: string | null
           updated_at?: string | null
+          vat_number?: string | null
         }
         Relationships: []
       }
