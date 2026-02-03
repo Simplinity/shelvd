@@ -101,6 +101,10 @@ All admin files were created but never git add/commit/push.
 - [x] Lokale tsc check: **0 errors** ✅
 - [ ] Commit + push → build #7 (of #6 als die nog loopt)
 - [ ] Test admin pages on live site
+- [ ] ❌ Admin page redirects to /books for bruno@simplinity.co
+- [x] Server client looks correct (uses anon key + cookies)
+- [x] Added console.log to admin layout to debug query result
+- [ ] Deploy debug version to see Vercel logs
 
 ---
 

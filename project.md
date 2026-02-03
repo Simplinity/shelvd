@@ -83,7 +83,9 @@ Shelvd is a SaaS webapp for serious book collectors.
 ### URLs
 | Service | URL |
 |---------|-----|
-| Live site | https://shelvd-www.vercel.app |
+| Live site | https://shelvd.org |
+| Live site (www) | https://www.shelvd.org |
+| Vercel preview | https://shelvd-www.vercel.app |
 | GitHub | https://github.com/Simplinity/shelvd |
 | Supabase | https://supabase.com/dashboard/project/euieagntkbhzkyzvnllx |
 
