@@ -81,8 +81,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-const inputClass = "w-full px-3 py-2 border text-sm bg-background"
-const selectClass = "w-full px-3 py-2 border text-sm bg-background"
+const inputClass = "w-full h-10 px-3 py-2 border text-sm bg-background"
+const selectClass = "w-full h-10 px-3 py-2 border text-sm bg-background appearance-none"
 
 // --- 1. PROFILE ---
 function ProfileSection({ profile, email }: { profile: any; email: string }) {
