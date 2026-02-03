@@ -42,29 +42,27 @@ CREATE POLICY "Users can read own profile" ON user_profiles
 CREATE POLICY "Users can update own profile" ON user_profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- Admins can read all profiles
+-- Helper function to check admin status (SECURITY DEFINER bypasses RLS)
+-- Without this, admin policies on user_profiles cause infinite recursion
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS boolean AS $
+  SELECT COALESCE(
+    (SELECT is_admin FROM public.user_profiles WHERE id = auth.uid()),
+    false
+  )
+$ LANGUAGE sql SECURITY DEFINER;
+
+-- Admins can read all profiles (uses is_admin() to avoid recursion)
 CREATE POLICY "Admins can read all profiles" ON user_profiles
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true
-    )
-  );
+  FOR SELECT USING (is_admin());
 
 -- Admins can update all profiles
 CREATE POLICY "Admins can update all profiles" ON user_profiles
-  FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true
-    )
-  );
+  FOR UPDATE USING (is_admin());
 
 -- Admins can insert profiles
 CREATE POLICY "Admins can insert profiles" ON user_profiles
-  FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true
-    )
-  );
+  FOR INSERT WITH CHECK (is_admin());
 
 -- Function to create profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()

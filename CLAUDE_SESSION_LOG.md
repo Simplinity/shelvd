@@ -104,7 +104,18 @@ All admin files were created but never git add/commit/push.
 - [ ] ❌ Admin page redirects to /books for bruno@simplinity.co
 - [x] Server client looks correct (uses anon key + cookies)
 - [x] Added console.log to admin layout to debug query result
-- [ ] Deploy debug version to see Vercel logs
+- [x] Deploy debug version
+- [x] ROOT CAUSE FOUND: RLS infinite recursion!
+  - Policy "Admins can read all profiles" does subquery on user_profiles
+  - That subquery triggers same RLS policies → infinite loop
+  - Confirmed with: `SET role = 'authenticated'; SELECT is_admin FROM user_profiles` → ERROR
+- [x] Created `is_admin()` SECURITY DEFINER function
+- [x] Dropped 3 recursive admin policies
+- [x] Created 3 new policies using `is_admin()` function
+- [x] TESTED: `SELECT is_admin FROM user_profiles` → returns `t` ✅ No more recursion!
+- [ ] Remove debug console.log from admin layout
+- [ ] Commit + push
+- [ ] Test /admin on live site
 
 ---
 
