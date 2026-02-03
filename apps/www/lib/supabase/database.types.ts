@@ -932,7 +932,8 @@ export type Database = {
           id: string
           is_admin: boolean | null
           is_lifetime_free: boolean | null
-          items_per_page: number | null
+          items_per_page_grid: number | null
+          items_per_page_list: number | null
           membership_tier: string | null
           notes: string | null
           postal_code: string | null
@@ -957,7 +958,8 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
-          items_per_page?: number | null
+          items_per_page_grid?: number | null
+          items_per_page_list?: number | null
           membership_tier?: string | null
           notes?: string | null
           postal_code?: string | null
@@ -982,7 +984,8 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
-          items_per_page?: number | null
+          items_per_page_grid?: number | null
+          items_per_page_list?: number | null
           membership_tier?: string | null
           notes?: string | null
           postal_code?: string | null

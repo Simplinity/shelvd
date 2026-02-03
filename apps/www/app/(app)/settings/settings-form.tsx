@@ -287,11 +287,19 @@ const DATE_FORMATS = [
   { value: 'DD.MM.YYYY', label: 'DD.MM.YYYY (31.01.2026)' },
 ]
 
-const ITEMS_PER_PAGE_OPTIONS = [
+const LIST_VIEW_OPTIONS = [
   { value: '25', label: '25' },
   { value: '50', label: '50' },
   { value: '100', label: '100' },
   { value: '200', label: '200' },
+  { value: '500', label: '500' },
+]
+
+const GRID_VIEW_OPTIONS = [
+  { value: '12', label: '12' },
+  { value: '25', label: '25' },
+  { value: '50', label: '50' },
+  { value: '100', label: '100' },
 ]
 
 function ConfigurationSection({ profile }: { profile: any }) {
@@ -328,9 +336,17 @@ function ConfigurationSection({ profile }: { profile: any }) {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Items Per Page</label>
-            <select name="items_per_page" defaultValue={String(profile?.items_per_page || 50)} className={inputClass}>
-              {ITEMS_PER_PAGE_OPTIONS.map(o => (
+            <label className={labelClass}>Items Per Page (List View)</label>
+            <select name="items_per_page_list" defaultValue={String(profile?.items_per_page_list || 50)} className={inputClass}>
+              {LIST_VIEW_OPTIONS.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Items Per Page (Grid View)</label>
+            <select name="items_per_page_grid" defaultValue={String(profile?.items_per_page_grid || 25)} className={inputClass}>
+              {GRID_VIEW_OPTIONS.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>

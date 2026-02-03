@@ -62,14 +62,16 @@ export async function updatePreferences(formData: FormData): Promise<SettingsRes
 
   const default_currency = formData.get('default_currency') as string
   const date_format = formData.get('date_format') as string
-  const items_per_page = parseInt(formData.get('items_per_page') as string) || 50
+  const items_per_page_list = parseInt(formData.get('items_per_page_list') as string) || 50
+  const items_per_page_grid = parseInt(formData.get('items_per_page_grid') as string) || 25
 
   const { error } = await supabase
     .from('user_profiles')
     .update({
       default_currency: default_currency || 'EUR',
       date_format: date_format || 'DD/MM/YYYY',
-      items_per_page,
+      items_per_page_list,
+      items_per_page_grid,
       updated_at: new Date().toISOString(),
     })
     .eq('id', user.id)
