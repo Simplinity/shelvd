@@ -924,6 +924,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string | null
+          date_format: string | null
           default_currency: string | null
           default_size_unit: string | null
           display_name: string | null
@@ -931,6 +932,7 @@ export type Database = {
           id: string
           is_admin: boolean | null
           is_lifetime_free: boolean | null
+          items_per_page: number | null
           membership_tier: string | null
           notes: string | null
           postal_code: string | null
@@ -947,6 +949,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
+          date_format?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
@@ -954,6 +957,7 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
+          items_per_page?: number | null
           membership_tier?: string | null
           notes?: string | null
           postal_code?: string | null
@@ -970,6 +974,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
+          date_format?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
@@ -977,6 +982,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
+          items_per_page?: number | null
           membership_tier?: string | null
           notes?: string | null
           postal_code?: string | null

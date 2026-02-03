@@ -61,13 +61,15 @@ export async function updatePreferences(formData: FormData): Promise<SettingsRes
   if (!user) return { error: 'Not authenticated' }
 
   const default_currency = formData.get('default_currency') as string
-  const default_size_unit = formData.get('default_size_unit') as string
+  const date_format = formData.get('date_format') as string
+  const items_per_page = parseInt(formData.get('items_per_page') as string) || 50
 
   const { error } = await supabase
     .from('user_profiles')
     .update({
       default_currency: default_currency || 'EUR',
-      default_size_unit: default_size_unit || 'cm',
+      date_format: date_format || 'DD/MM/YYYY',
+      items_per_page,
       updated_at: new Date().toISOString(),
     })
     .eq('id', user.id)

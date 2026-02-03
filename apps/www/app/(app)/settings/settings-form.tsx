@@ -38,7 +38,7 @@ export function SettingsForm({ tab, email, lastSignIn, profile }: Props) {
   if (tab === 'configuration') {
     return (
       <div className="space-y-10">
-        <CurrencySection profile={profile} />
+        <ConfigurationSection profile={profile} />
       </div>
     )
   }
@@ -280,7 +280,21 @@ function DangerSection() {
 // CONFIGURATION TAB
 // ============================================
 
-function CurrencySection({ profile }: { profile: any }) {
+const DATE_FORMATS = [
+  { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY (31/01/2026)' },
+  { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY (01/31/2026)' },
+  { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (2026-01-31)' },
+  { value: 'DD.MM.YYYY', label: 'DD.MM.YYYY (31.01.2026)' },
+]
+
+const ITEMS_PER_PAGE_OPTIONS = [
+  { value: '25', label: '25' },
+  { value: '50', label: '50' },
+  { value: '100', label: '100' },
+  { value: '200', label: '200' },
+]
+
+function ConfigurationSection({ profile }: { profile: any }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<SettingsResult | null>(null)
 
@@ -294,7 +308,7 @@ function CurrencySection({ profile }: { profile: any }) {
 
   return (
     <section>
-      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Currency</h2>
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Application Settings</h2>
       <form action={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -305,10 +319,23 @@ function CurrencySection({ profile }: { profile: any }) {
               ))}
             </select>
           </div>
+          <div>
+            <label className={labelClass}>Date Format</label>
+            <select name="date_format" defaultValue={profile?.date_format || 'DD/MM/YYYY'} className={inputClass}>
+              {DATE_FORMATS.map(f => (
+                <option key={f.value} value={f.value}>{f.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Items Per Page</label>
+            <select name="items_per_page" defaultValue={String(profile?.items_per_page || 50)} className={inputClass}>
+              {ITEMS_PER_PAGE_OPTIONS.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Used as default when adding book values and for statistics.
-        </p>
         <div className="flex items-center gap-4 mt-6">
           <SaveButton loading={loading} />
           <Feedback result={result} />
