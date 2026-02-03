@@ -976,6 +976,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_book_counts_for_admin: {
+        Args: Record<string, never>
+        Returns: {
+          user_id: string
+          book_count: number
+        }[]
+      }
+      get_total_books_for_admin: {
+        Args: Record<string, never>
+        Returns: number
+      }
       get_users_for_admin: {
         Args: Record<string, never>
         Returns: {

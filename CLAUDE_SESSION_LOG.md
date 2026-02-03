@@ -115,7 +115,19 @@ All admin files were created but never git add/commit/push.
 - [x] TESTED: `SELECT is_admin FROM user_profiles` → returns `t` ✅ No more recursion!
 - [ ] Remove debug console.log from admin layout
 - [ ] Commit + push
-- [ ] Test /admin on live site
+- [x] Test /admin on live site - ADMIN WORKS! Twee issues:
+
+### Issue A: Book count = 0 for all users
+- OORZAAK: `books` tabel heeft RLS, admin kan alleen eigen boeken zien (= 0)
+- FIX: RPC functie `get_book_counts_for_admin()` SECURITY DEFINER
+- [x] Created RPC `get_book_counts_for_admin()` SECURITY DEFINER
+- [x] Created RPC `get_total_books_for_admin()` SECURITY DEFINER
+- [x] Added both RPCs to database.types.ts
+- [x] Rewrote admin/page.tsx: stats bar + user table on ONE page
+- [x] Book counts via `get_book_counts_for_admin()` RPC
+- [x] Total books via `get_total_books_for_admin()` RPC
+- [x] TypeScript check: 0 errors ✅
+- [ ] Commit + push
 
 ---
 
