@@ -79,8 +79,13 @@ All admin files were created but never git add/commit/push.
 - [ ] Wait for Vercel build
 - [ ] ❌ BUILD FAILED: `is_admin` not in database.types.ts
 - [x] Fix: updated user_profiles in database.types.ts with all 15 columns (was 6)
-- [ ] Commit fix + push
+- [x] Commit fix + push ✅ 552816b
 - [ ] Wait for Vercel build #2
+- [ ] ❌ BUILD FAILED: `get_users_for_admin` RPC not in Functions types (was `never`)
+- [x] Fix: added function to Functions in database.types.ts
+- [x] Fix: removed fake `user_ids` param from rpc() call (function takes no args)
+- [ ] Commit fix + push
+- [ ] Wait for Vercel build #3
 - [ ] Test admin pages on live site
 
 ---

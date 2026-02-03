@@ -952,7 +952,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_users_for_admin: {
+        Args: Record<string, never>
+        Returns: {
+          id: string
+          email: string
+          email_confirmed_at: string | null
+          last_sign_in_at: string | null
+          created_at: string
+        }[]
+      }
     }
     Enums: {
       book_status:

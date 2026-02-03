@@ -41,9 +41,8 @@ export default async function AdminUsersPage({
   const userIds = profiles?.map(p => p.id) || []
   
   // Get emails and auth data via RPC or direct query
-  const { data: authUsers } = await supabase.rpc('get_users_for_admin', {
-    user_ids: userIds
-  }).catch(() => ({ data: null }))
+  const { data: authUsers } = await supabase.rpc('get_users_for_admin')
+    .catch(() => ({ data: null }))
   
   // If RPC doesn't exist, we'll show limited data
   // Build a map of auth data
