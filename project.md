@@ -285,6 +285,8 @@ These features work and must not break:
 
 **Contributors:** Shared table, privacy via RLS
 
+**Form elements:** All inputs, selects/dropdowns, and textareas must have the same height. Use consistent padding (`px-3 py-2 text-sm`) across all form elements.
+
 ---
 
 ## Marketing
