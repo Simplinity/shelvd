@@ -178,21 +178,13 @@ function PreferencesSection({ profile }: { profile: any }) {
     <section>
       <SectionHeader icon={<Globe className="w-4 h-4" />} title="Preferences" />
       <form action={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Default Currency">
-            <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={selectClass}>
-              {CURRENCIES.map(c => (
-                <option key={c.value} value={c.value}>{c.label}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Size Unit">
-            <select name="default_size_unit" defaultValue={profile?.default_size_unit || 'cm'} className={selectClass}>
-              <option value="cm">Centimeters (cm)</option>
-              <option value="inches">Inches (in)</option>
-            </select>
-          </Field>
-        </div>
+        <Field label="Default Currency">
+          <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={selectClass}>
+            {CURRENCIES.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </Field>
         <div className="flex items-center gap-3">
           <SubmitButton loading={loading} label="Save Preferences" />
           <Feedback result={result} />
