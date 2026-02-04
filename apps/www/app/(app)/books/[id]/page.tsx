@@ -25,6 +25,14 @@ export default async function BookDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  // Fetch user profile for date format preference
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = user ? await supabase
+    .from('user_profiles')
+    .select('date_format')
+    .eq('id', user.id)
+    .single() : { data: null }
+
   // Cast to any to avoid TypeScript issues with dynamic data
   const bookRecord = book as any
 
@@ -118,6 +126,24 @@ export default async function BookDetailPage({ params }: PageProps) {
         <dd className="text-sm">{value}</dd>
       </div>
     )
+  }
+
+  // Format date based on user preference
+  const dateFormat = profile?.date_format || 'DD/MM/YYYY'
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return null
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return dateStr
+    const dd = String(d.getDate()).padStart(2, '0')
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const yyyy = d.getFullYear()
+    switch (dateFormat) {
+      case 'MM/DD/YYYY': return `${mm}/${dd}/${yyyy}`
+      case 'YYYY-MM-DD': return `${yyyy}-${mm}-${dd}`
+      case 'DD.MM.YYYY': return `${dd}.${mm}.${yyyy}`
+      case 'DD/MM/YYYY':
+      default: return `${dd}/${mm}/${yyyy}`
+    }
   }
 
   // Format currency
@@ -521,7 +547,7 @@ export default async function BookDetailPage({ params }: PageProps) {
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Field label="Acquired From" value={bookData.acquired_from || bookData.purchase_source} />
-              <Field label="Date" value={bookData.acquired_date} />
+              <Field label="Date" value={formatDate(bookData.acquired_date)} />
               <Field label="Price Paid" value={formatPrice(bookData.acquired_price || bookData.purchase_price, bookData.acquired_currency || bookData.purchase_currency)} />
               <Field label="Notes" value={bookData.acquired_notes} />
             </dl>
@@ -537,7 +563,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="Highest Price" value={formatPrice(bookData.highest_price || bookData.price_highest, bookData.price_currency)} />
               <Field label="Estimated Value" value={formatPrice(bookData.estimated_value || bookData.price_estimated, bookData.price_currency)} />
               <Field label="Sales Price" value={formatPrice(bookData.sales_price || bookData.price_sales, bookData.price_currency)} />
-              <Field label="Valuation Date" value={bookData.valuation_date} />
+              <Field label="Valuation Date" value={formatDate(bookData.valuation_date)} />
             </dl>
           </section>
         )}
@@ -569,9 +595,9 @@ export default async function BookDetailPage({ params }: PageProps) {
 
         {/* Metadata */}
         <section className="text-xs text-muted-foreground pt-4 border-t">
-          {bookData.created_at && <p>Created: {new Date(bookData.created_at).toLocaleDateString()}</p>}
+          {bookData.created_at && <p>Created: {formatDate(bookData.created_at)}</p>}
           {bookData.updated_at && bookData.updated_at !== bookData.created_at && (
-            <p>Last updated: {new Date(bookData.updated_at).toLocaleDateString()}</p>
+            <p>Last updated: {formatDate(bookData.updated_at)}</p>
           )}
         </section>
 
