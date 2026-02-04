@@ -1050,7 +1050,8 @@ export default function BookAddForm({ referenceData }: Props) {
                   onChange={e => {
                     const updated = [...externalLinks]
                     const selected = referenceData.linkTypes.find(lt => lt.id === e.target.value)
-                    updated[index] = { ...updated[index], linkTypeId: e.target.value, label: selected?.label || '' }
+                    const prefill = selected?.domain && !updated[index].url ? `https://${selected.domain}/` : updated[index].url
+                    updated[index] = { ...updated[index], linkTypeId: e.target.value, label: selected?.label || '', url: prefill }
                     setExternalLinks(updated)
                     setIsDirty(true)
                   }}
