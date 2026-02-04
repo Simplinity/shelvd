@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -1133,6 +1133,12 @@ export default function BooksPage() {
               </div>
             )}
           </div>
+          <Button variant="outline" asChild>
+            <Link href="/books/duplicates" className="gap-2">
+              <Copy className="w-4 h-4" />
+              Duplicates
+            </Link>
+          </Button>
           <Button asChild>
             <Link href="/books/add" className="gap-2">
               <Plus className="w-4 h-4" />
