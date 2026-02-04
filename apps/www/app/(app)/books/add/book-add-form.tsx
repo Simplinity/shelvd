@@ -1082,6 +1082,15 @@ export default function BookAddForm({ referenceData }: Props) {
               </div>
               <button
                 type="button"
+                onClick={() => link.url && window.open(link.url, '_blank')}
+                disabled={!link.url}
+                className="h-10 px-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
+                title="Open in new tab"
+              >
+                <ExternalLinkIcon className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
                 onClick={() => {
                   setExternalLinks(externalLinks.filter((_, i) => i !== index))
                   setIsDirty(true)
