@@ -27,53 +27,42 @@
 
 ---
 
-## EXTERNAL LINKS FEATURE — IN PROGRESS
+## EXTERNAL LINKS FEATURE — ✅ COMPLETE
 
-### What's Done (uncommitted, local only)
-- [x] Migration file: `supabase/migrations/006_external_links.sql`
-  - `external_link_types` table (system defaults + user custom types)
-  - `book_external_links` table (actual links per book)
-  - RLS policies for both tables
-  - 55 system link types seeded across 8 categories
-- [x] TypeScript types updated in `database.types.ts`
-- [x] Server actions: `lib/actions/external-links.ts`
-  - `addCustomLinkType()` — add user custom link type
-  - `deleteCustomLinkType()` — delete user custom link type
-- [x] Settings > Configuration: `ExternalLinkTypesSection` component
-  - Collapsible categories showing all 55 system types with favicons
-  - "Add Custom Link Type" form (label + domain)
-  - Delete custom types (system types are read-only)
-  - Google Favicon API for automatic icons
+### Database (migrations 006-008)
+- `external_link_types` — 55 system types + user custom types
+- `user_active_link_types` — which types each user has activated
+- `book_external_links` — actual links per book
+- `update_updated_at_column()` trigger on books table
 
-### What's NOT Done Yet
-- [ ] **Run migration** `006_external_links.sql` in Supabase SQL Editor
-- [ ] **Commit + push** all external links code
-- [ ] **Book detail page:** display external links with favicons, grouped by category
-- [ ] **Book edit page:** add/edit/delete links with type dropdown + URL input
+### Settings > External Links Tab
+- Collapsible categories with activate/deactivate toggles per type
+- "Activate all" / "Deactivate all" per category
+- All types active by default for new users (lazy initialization)
+- Add custom link types (auto-activated)
+- Delete custom types
+- Google Favicon API for icons
 
-### 55 Default Link Types (8 categories)
+### Book Add/Edit Pages
+- External Links section with unlimited links
+- Dropdown shows only user's active link types
+- Auto-fill URL with `https://{domain}/` when selecting type
+- URL updates when changing type (if no path added yet)
+- Open-in-new-tab button to search external site
 
-**BIBLIOGRAPHIC & AUTHORITY (7):** WorldCat, VIAF, Wikidata, Wikipedia, ISNI, Open Library, KVK
+### Book Detail Page
+- Display links with favicons
+- Links open in new tab
+- Dates formatted per user preference
 
-**SHORT TITLE CATALOGS (9):** ISTC, GW, USTC, ESTC, STCN, STCV (🇧🇪), VD16, VD17, EDIT16
+### 55 Built-in Link Types (8 categories)
+Bibliographic & Authority (7), Short Title Catalogs (9), National & Regional (12), Digital Libraries (8), Provenance & Specialized (4), Antiquarian Markets (6), Auction Houses & Pricing (5), Community (2), Free-form (2)
 
-**NATIONAL & REGIONAL (12):** KBR (🇧🇪), KB (NL), BnF, SUDOC, CCFr, British Library, Jisc, DNB, BSB, SBN/ICCU, BNE, Library of Congress
-
-**DIGITAL LIBRARIES (8):** Gallica, Europeana, Google Books, HathiTrust, Internet Archive, MDZ, CERL HPB, BHL
-
-**PROVENANCE & SPECIALIZED (4):** CERL Thesaurus, MEI, data.bnf.fr, GND
-
-**ANTIQUARIAN MARKETS (6):** AbeBooks, ZVAB, Biblio.com, viaLibri, Bookfinder, Catawiki
-
-**AUCTION HOUSES & PRICING (5):** Rare Book Hub, Christie's, Sotheby's, Bonhams, Drouot
-
-**COMMUNITY (2):** Goodreads, LibraryThing
-
-**FREE-FORM (2):** Publisher Website, Other
-
-### Architecture Notes
-- Link types in database (not hardcoded) → configurable via Settings > Configuration
-- System types: `is_system = true`, `user_id = NULL` — read-only for users
-- User custom types: `is_system = false`, `user_id = auth.uid()` — per-user, deletable
-- Favicons via Google API: `https://www.google.com/s2/favicons?domain=worldcat.org&sz=16`
-- Fallback to generic link icon for custom URLs without domain
+### Key Commits
+- `65e9772` — external links as third settings tab, migration 006
+- `10eb6c7` — activate/deactivate toggles, migration 007
+- `3db11d5` — all active by default for new users
+- `9daaad5` — books updated_at trigger, migration 008
+- `2f6bafa` — date formatting per user preference
+- `fc2cc98` — auto-fill URL with domain
+- `4eed856` — open-in-new-tab button

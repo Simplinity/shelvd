@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2026-02-04  
+> **Last updated:** 2026-02-05  
 > **Author:** Bruno (owner) + Claude (AI assistant)
 
 ---
@@ -145,7 +145,8 @@ git push         # Auto-deploy via Vercel
 | contributors | 4,097 | Shared between users |
 | user_stats | 1 | Cached statistics |
 | external_link_types | 55+ | System defaults + user custom link types |
-| book_external_links | — | External links per book (pending migration) |
+| user_active_link_types | — | Which link types each user has activated |
+| book_external_links | — | External links per book |
 
 ### Books - Key Fields
 ```
@@ -206,7 +207,15 @@ status, action_needed
 **User Settings**
 - Account tab: Profile, Security, Address, Subscription, Danger Zone
 - Configuration tab: Currency, Date Format, Items Per Page (list/grid)
-- External Link Types management (view system types, add/delete custom types)
+- External Links tab: Activate/deactivate link types, add custom types
+
+**External Links**
+- 55 built-in link types across 8 categories (bibliographic, catalogs, digital libraries, etc.)
+- Per-user activation (all active by default for new users)
+- Add/edit/delete links on book add/edit pages
+- Auto-fill URL with `https://{domain}/` when selecting type
+- Open-in-new-tab button to search on external site
+- Display on book detail page with favicons
 
 ---
 
@@ -217,7 +226,7 @@ status, action_needed
 | Prio | Feature | Status |
 |------|---------|--------|
 | 4 | Duplicate Detection | 🔴 Todo |
-| 5 | External Links | 🟡 In Progress (Settings UI done, migration pending, book UI todo) |
+| 5 | External Links | 🟢 Done |
 | 6 | User Settings | 🟢 Done |
 | 7 | Sharing & Public Catalog | 🔴 Todo |
 | 8 | Currency & Valuation | 🔴 Todo |
@@ -336,7 +345,7 @@ shelvd/
 │   └── lib/
 │       ├── supabase/             # DB client + types
 │       └── actions/              # Server actions (settings, external-links)
-├── supabase/migrations/          # 006_external_links.sql pending
+├── supabase/migrations/          # 006-008 external links + updated_at trigger
 └── project.md                    # This file
 ```
 
