@@ -10,7 +10,7 @@ import {
   deleteAccount,
 } from '@/lib/actions/settings'
 import type { SettingsResult } from '@/lib/actions/settings'
-import { addCustomLinkType, deleteCustomLinkType } from '@/lib/actions/external-links'
+import { addCustomLinkType, deleteCustomLinkType, activateLinkType, deactivateLinkType } from '@/lib/actions/external-links'
 
 interface LinkType {
   id: string
@@ -29,6 +29,7 @@ interface Props {
   lastSignIn: string | null
   profile: any
   linkTypes: LinkType[]
+  activeIds: string[]
 }
 
 const CURRENCIES = [
@@ -47,7 +48,7 @@ const CURRENCIES = [
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
 
-export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes }: Props) {
+export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes, activeIds }: Props) {
   if (tab === 'configuration') {
     return (
       <div className="space-y-10">
@@ -59,7 +60,7 @@ export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes }: Pro
   if (tab === 'external-links') {
     return (
       <div className="space-y-10">
-        <ExternalLinkTypesSection linkTypes={linkTypes} />
+        <ExternalLinkTypesSection linkTypes={linkTypes} activeIds={activeIds} />
       </div>
     )
   }
@@ -363,13 +364,14 @@ function FaviconImg({ domain }: { domain: string | null }) {
 
 type LinkTypeResult = { error?: string; success?: boolean; message?: string }
 
-function ExternalLinkTypesSection({ linkTypes }: { linkTypes: LinkType[] }) {
+function ExternalLinkTypesSection({ linkTypes, activeIds }: { linkTypes: LinkType[]; activeIds: string[] }) {
+  const [active, setActive] = useState<Set<string>>(new Set(activeIds))
+  const [togglingId, setTogglingId] = useState<string | null>(null)
   const [showAdd, setShowAdd] = useState(false)
   const [addLoading, setAddLoading] = useState(false)
   const [addResult, setAddResult] = useState<LinkTypeResult | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
-    // Start all categories collapsed
     const init: Record<string, boolean> = {}
     CATEGORY_ORDER.forEach(c => { init[c] = true })
     return init
@@ -384,7 +386,35 @@ function ExternalLinkTypesSection({ linkTypes }: { linkTypes: LinkType[] }) {
   }, {})
 
   const customTypes = linkTypes.filter(lt => !lt.is_system)
-  const systemCount = linkTypes.filter(lt => lt.is_system).length
+  const totalActive = active.size
+
+  const handleToggle = async (id: string) => {
+    const isActive = active.has(id)
+    setTogglingId(id)
+    // Optimistic update
+    setActive(prev => {
+      const next = new Set(prev)
+      if (isActive) next.delete(id)
+      else next.add(id)
+      return next
+    })
+    try {
+      if (isActive) {
+        await deactivateLinkType(id)
+      } else {
+        await activateLinkType(id)
+      }
+    } catch {
+      // Revert on error
+      setActive(prev => {
+        const next = new Set(prev)
+        if (isActive) next.add(id)
+        else next.delete(id)
+        return next
+      })
+    }
+    setTogglingId(null)
+  }
 
   const handleAdd = async (formData: FormData) => {
     setAddLoading(true)
@@ -402,11 +432,46 @@ function ExternalLinkTypesSection({ linkTypes }: { linkTypes: LinkType[] }) {
     if (!confirm('Delete this custom link type?')) return
     setDeletingId(id)
     await deleteCustomLinkType(id)
+    setActive(prev => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
     setDeletingId(null)
   }
 
   const toggleCategory = (cat: string) => {
     setCollapsed(prev => ({ ...prev, [cat]: !prev[cat] }))
+  }
+
+  const activateAll = async (cat: string) => {
+    const types = grouped[cat] || []
+    const inactiveTypes = types.filter(lt => !active.has(lt.id))
+    if (inactiveTypes.length === 0) return
+    // Optimistic update
+    setActive(prev => {
+      const next = new Set(prev)
+      inactiveTypes.forEach(lt => next.add(lt.id))
+      return next
+    })
+    for (const lt of inactiveTypes) {
+      await activateLinkType(lt.id)
+    }
+  }
+
+  const deactivateAll = async (cat: string) => {
+    const types = grouped[cat] || []
+    const activeTypes = types.filter(lt => active.has(lt.id))
+    if (activeTypes.length === 0) return
+    // Optimistic update
+    setActive(prev => {
+      const next = new Set(prev)
+      activeTypes.forEach(lt => next.delete(lt.id))
+      return next
+    })
+    for (const lt of activeTypes) {
+      await deactivateLinkType(lt.id)
+    }
   }
 
   return (
@@ -416,76 +481,105 @@ function ExternalLinkTypesSection({ linkTypes }: { linkTypes: LinkType[] }) {
         External Link Types
       </h2>
       <p className="text-xs text-muted-foreground mb-6">
-        {systemCount} built-in types available. Add custom types for resources not in the default list.
+        Activate the link types you use. Only active types appear when adding links to a book.
+        <span className="font-medium text-foreground ml-1">{totalActive} active</span>
       </p>
 
-      {/* System types grouped by category */}
+      {/* Types grouped by category */}
       <div className="space-y-2 mb-8">
-        {CATEGORY_ORDER.filter(cat => cat !== 'custom' && grouped[cat]?.length).map(cat => (
-          <div key={cat} className="border border-border">
-            <button
-              type="button"
-              onClick={() => toggleCategory(cat)}
-              className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
-            >
-              <span className="text-sm font-medium">
-                {CATEGORY_LABELS[cat] || cat}
-                <span className="text-xs text-muted-foreground ml-2">({grouped[cat].length})</span>
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {collapsed[cat] ? '▸' : '▾'}
-              </span>
-            </button>
-            {!collapsed[cat] && (
-              <div className="border-t border-border px-4 py-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-                  {grouped[cat].map(lt => (
-                    <div key={lt.id} className="flex items-center gap-2 py-1 text-sm text-muted-foreground">
-                      <FaviconImg domain={lt.domain} />
-                      <span className="truncate">{lt.label}</span>
-                      {lt.domain && (
-                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
-                          {lt.domain}
-                        </span>
-                      )}
+        {CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => {
+          const types = grouped[cat]
+          const activeCount = types.filter(lt => active.has(lt.id)).length
+          return (
+            <div key={cat} className="border border-border">
+              <button
+                type="button"
+                onClick={() => toggleCategory(cat)}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
+              >
+                <span className="text-sm font-medium">
+                  {CATEGORY_LABELS[cat] || cat}
+                  <span className="text-xs text-muted-foreground ml-2">
+                    {activeCount}/{types.length} active
+                  </span>
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {collapsed[cat] ? '▸' : '▾'}
+                </span>
+              </button>
+              {!collapsed[cat] && (
+                <div className="border-t border-border">
+                  {/* Activate/deactivate all */}
+                  <div className="flex gap-3 px-4 py-2 border-b border-border bg-muted/30">
+                    <button
+                      type="button"
+                      onClick={() => activateAll(cat)}
+                      className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Activate all
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deactivateAll(cat)}
+                      className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Deactivate all
+                    </button>
+                  </div>
+                  <div className="px-4 py-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0.5">
+                      {types.map(lt => {
+                        const isActive = active.has(lt.id)
+                        const isCustom = !lt.is_system
+                        return (
+                          <div
+                            key={lt.id}
+                            className="flex items-center gap-2.5 py-1.5 group"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleToggle(lt.id)}
+                              disabled={togglingId === lt.id}
+                              className={`w-4 h-4 border flex-shrink-0 flex items-center justify-center transition-colors ${
+                                isActive
+                                  ? 'bg-foreground border-foreground'
+                                  : 'border-border hover:border-foreground'
+                              }`}
+                            >
+                              {isActive && <Check className="w-3 h-3 text-background" />}
+                            </button>
+                            <FaviconImg domain={lt.domain} />
+                            <span className={`text-sm truncate flex-1 transition-colors ${
+                              isActive ? 'text-foreground' : 'text-muted-foreground'
+                            }`}>
+                              {lt.label}
+                            </span>
+                            {isCustom && (
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(lt.id)}
+                                disabled={deletingId === lt.id}
+                                className="text-muted-foreground hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                                title="Delete custom type"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          )
+        })}
       </div>
 
-      {/* Custom types */}
+      {/* Add custom type */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium mb-3">Your Custom Types</h3>
-        {customTypes.length === 0 ? (
-          <p className="text-xs text-muted-foreground italic mb-4">No custom link types yet.</p>
-        ) : (
-          <div className="space-y-1 mb-4">
-            {customTypes.map(lt => (
-              <div key={lt.id} className="flex items-center gap-3 py-2 px-3 border border-border group">
-                <FaviconImg domain={lt.domain} />
-                <span className="text-sm flex-1 truncate">{lt.label}</span>
-                {lt.domain && (
-                  <span className="text-xs text-muted-foreground hidden sm:inline">{lt.domain}</span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleDelete(lt.id)}
-                  disabled={deletingId === lt.id}
-                  className="text-muted-foreground hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                  title="Delete"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Add form */}
+        <h3 className="text-sm font-medium mb-3">Add Custom Type</h3>
         {showAdd ? (
           <form action={handleAdd} className="border border-border p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

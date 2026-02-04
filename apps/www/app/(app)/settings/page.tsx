@@ -19,11 +19,18 @@ export default async function SettingsPage({
     .eq('id', user.id)
     .single()
 
-  // Load external link types for configuration tab
+  // Load external link types + user's active selections
   const { data: linkTypes } = await supabase
     .from('external_link_types')
     .select('*')
     .order('sort_order', { ascending: true })
+
+  const { data: activeTypes } = await supabase
+    .from('user_active_link_types')
+    .select('link_type_id')
+    .eq('user_id', user.id)
+
+  const activeIds = new Set((activeTypes || []).map(a => a.link_type_id))
 
   const tab = params.tab || 'account'
 
@@ -71,6 +78,7 @@ export default async function SettingsPage({
         lastSignIn={user.last_sign_in_at || null}
         profile={profile}
         linkTypes={linkTypes || []}
+        activeIds={Array.from(activeIds)}
       />
     </div>
   )

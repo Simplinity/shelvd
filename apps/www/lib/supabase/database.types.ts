@@ -956,6 +956,39 @@ export type Database = {
           },
         ]
       }
+      user_active_link_types: {
+        Row: {
+          user_id: string
+          link_type_id: string
+          created_at: string | null
+        }
+        Insert: {
+          user_id: string
+          link_type_id: string
+          created_at?: string | null
+        }
+        Update: {
+          user_id?: string
+          link_type_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_active_link_types_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_active_link_types_link_type_id_fkey"
+            columns: ["link_type_id"]
+            isOneToOne: false
+            referencedRelation: "external_link_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_locations: {
         Row: {
           created_at: string | null
