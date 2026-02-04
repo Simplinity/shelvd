@@ -88,11 +88,31 @@ export async function activateLinkType(linkTypeId: string): Promise<LinkTypeResu
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  const { error } = await supabase
+  // Check if user has any configuration yet
+  const { data: existing } = await supabase
     .from('user_active_link_types')
-    .insert({ user_id: user.id, link_type_id: linkTypeId })
+    .select('link_type_id')
+    .eq('user_id', user.id)
+    .limit(1)
 
-  if (error && error.code !== '23505') return { error: 'Failed to activate' }
+  if (!existing || existing.length === 0) {
+    // First time configuring: insert ALL types (including this one)
+    const { data: allTypes } = await supabase
+      .from('external_link_types')
+      .select('id')
+
+    if (allTypes && allTypes.length > 0) {
+      const rows = allTypes.map(t => ({ user_id: user.id, link_type_id: t.id }))
+      await supabase.from('user_active_link_types').insert(rows)
+    }
+  } else {
+    // Already configured: just add this one
+    const { error } = await supabase
+      .from('user_active_link_types')
+      .insert({ user_id: user.id, link_type_id: linkTypeId })
+
+    if (error && error.code !== '23505') return { error: 'Failed to activate' }
+  }
 
   revalidatePath('/settings')
   return { success: true }
@@ -103,13 +123,38 @@ export async function deactivateLinkType(linkTypeId: string): Promise<LinkTypeRe
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  const { error } = await supabase
+  // Check if user has any configuration yet
+  const { data: existing } = await supabase
     .from('user_active_link_types')
-    .delete()
+    .select('link_type_id')
     .eq('user_id', user.id)
-    .eq('link_type_id', linkTypeId)
+    .limit(1)
 
-  if (error) return { error: 'Failed to deactivate' }
+  if (!existing || existing.length === 0) {
+    // First time configuring: insert ALL types, then remove the deactivated one
+    const { data: allTypes } = await supabase
+      .from('external_link_types')
+      .select('id')
+
+    if (allTypes && allTypes.length > 0) {
+      const rows = allTypes
+        .filter(t => t.id !== linkTypeId)
+        .map(t => ({ user_id: user.id, link_type_id: t.id }))
+
+      if (rows.length > 0) {
+        await supabase.from('user_active_link_types').insert(rows)
+      }
+    }
+  } else {
+    // Already configured: just remove this one
+    const { error } = await supabase
+      .from('user_active_link_types')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('link_type_id', linkTypeId)
+
+    if (error) return { error: 'Failed to deactivate' }
+  }
 
   revalidatePath('/settings')
   return { success: true }

@@ -30,7 +30,11 @@ export default async function SettingsPage({
     .select('link_type_id')
     .eq('user_id', user.id)
 
-  const activeIds = new Set((activeTypes || []).map(a => a.link_type_id))
+  // If user has no configuration yet, all types are active by default
+  const hasConfigured = (activeTypes || []).length > 0
+  const activeIds = hasConfigured
+    ? new Set((activeTypes || []).map(a => a.link_type_id))
+    : new Set((linkTypes || []).map(lt => lt.id))
 
   const tab = params.tab || 'account'
 
