@@ -206,7 +206,7 @@ status, action_needed
 |------|---------|--------|
 | 4 | Duplicate Detection | 🔴 Todo |
 | 5 | External Links | 🔴 Todo |
-| 6 | User Settings | 🔴 Todo |
+| 6 | User Settings | 🟢 Done |
 | 7 | Sharing & Public Catalog | 🔴 Todo |
 | 8 | Currency & Valuation | 🔴 Todo |
 

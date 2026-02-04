@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings } from 'lucide-react'
+import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
 
@@ -15,6 +15,14 @@ export default async function AppLayout({
   if (!user) {
     redirect('/login')
   }
+
+  // Check admin status for nav link
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single()
+  const isAdmin = profile?.is_admin === true
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,6 +81,15 @@ export default async function AppLayout({
                 <Settings className="w-3.5 h-3.5" />
                 Settings
               </Link>
+              {isAdmin && (
+                <Link 
+                  href="/admin" 
+                  className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition-colors flex items-center gap-1.5"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  Admin
+                </Link>
+              )}
             </nav>
 
             {/* User menu */}
