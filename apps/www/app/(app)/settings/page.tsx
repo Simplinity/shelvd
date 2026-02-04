@@ -19,6 +19,12 @@ export default async function SettingsPage({
     .eq('id', user.id)
     .single()
 
+  // Load external link types for configuration tab
+  const { data: linkTypes } = await supabase
+    .from('external_link_types')
+    .select('*')
+    .order('sort_order', { ascending: true })
+
   const tab = params.tab || 'account'
 
   return (
@@ -54,6 +60,7 @@ export default async function SettingsPage({
         email={user.email || ''}
         lastSignIn={user.last_sign_in_at || null}
         profile={profile}
+        linkTypes={linkTypes || []}
       />
     </div>
   )

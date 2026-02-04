@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, X, ExternalLink, Plus } from 'lucide-react'
 import {
   updateProfile,
   updatePassword,
@@ -10,12 +10,25 @@ import {
   deleteAccount,
 } from '@/lib/actions/settings'
 import type { SettingsResult } from '@/lib/actions/settings'
+import { addCustomLinkType, deleteCustomLinkType } from '@/lib/actions/external-links'
+
+interface LinkType {
+  id: string
+  slug: string
+  label: string
+  domain: string | null
+  category: string
+  sort_order: number
+  is_system: boolean
+  user_id: string | null
+}
 
 interface Props {
   tab: string
   email: string
   lastSignIn: string | null
   profile: any
+  linkTypes: LinkType[]
 }
 
 const CURRENCIES = [
@@ -34,11 +47,12 @@ const CURRENCIES = [
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
 
-export function SettingsForm({ tab, email, lastSignIn, profile }: Props) {
+export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes }: Props) {
   if (tab === 'configuration') {
     return (
       <div className="space-y-10">
         <ConfigurationSection profile={profile} />
+        <ExternalLinkTypesSection linkTypes={linkTypes} />
       </div>
     )
   }
@@ -301,6 +315,225 @@ const GRID_VIEW_OPTIONS = [
   { value: '50', label: '50' },
   { value: '100', label: '100' },
 ]
+
+// ============================================
+// EXTERNAL LINK TYPES
+// ============================================
+
+const CATEGORY_LABELS: Record<string, string> = {
+  'bibliographic': 'Bibliographic & Authority',
+  'short-title-catalog': 'Short Title Catalogs',
+  'national-catalog': 'National & Regional Catalogs',
+  'digital-library': 'Digital Libraries',
+  'provenance': 'Provenance & Specialist',
+  'marketplace': 'Antiquarian & Marketplaces',
+  'auction': 'Auction Houses & Prices',
+  'community': 'Community',
+  'other': 'Other',
+  'custom': 'Custom',
+}
+
+const CATEGORY_ORDER = [
+  'bibliographic', 'short-title-catalog', 'national-catalog',
+  'digital-library', 'provenance', 'marketplace', 'auction',
+  'community', 'other', 'custom',
+]
+
+function FaviconImg({ domain }: { domain: string | null }) {
+  if (!domain) return <ExternalLink className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=16`}
+      alt=""
+      width={16}
+      height={16}
+      className="flex-shrink-0"
+      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+    />
+  )
+}
+
+type LinkTypeResult = { error?: string; success?: boolean; message?: string }
+
+function ExternalLinkTypesSection({ linkTypes }: { linkTypes: LinkType[] }) {
+  const [showAdd, setShowAdd] = useState(false)
+  const [addLoading, setAddLoading] = useState(false)
+  const [addResult, setAddResult] = useState<LinkTypeResult | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    // Start all categories collapsed
+    const init: Record<string, boolean> = {}
+    CATEGORY_ORDER.forEach(c => { init[c] = true })
+    return init
+  })
+
+  // Group by category
+  const grouped = linkTypes.reduce<Record<string, LinkType[]>>((acc, lt) => {
+    const cat = lt.is_system ? lt.category : 'custom'
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(lt)
+    return acc
+  }, {})
+
+  const customTypes = linkTypes.filter(lt => !lt.is_system)
+  const systemCount = linkTypes.filter(lt => lt.is_system).length
+
+  const handleAdd = async (formData: FormData) => {
+    setAddLoading(true)
+    setAddResult(null)
+    const res = await addCustomLinkType(formData)
+    setAddResult(res)
+    setAddLoading(false)
+    if (res.success) {
+      setShowAdd(false)
+      setAddResult(null)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this custom link type?')) return
+    setDeletingId(id)
+    await deleteCustomLinkType(id)
+    setDeletingId(null)
+  }
+
+  const toggleCategory = (cat: string) => {
+    setCollapsed(prev => ({ ...prev, [cat]: !prev[cat] }))
+  }
+
+  return (
+    <section>
+      <h2 className="text-lg font-semibold mb-1 pb-2 border-b flex items-center gap-2">
+        <ExternalLink className="w-5 h-5" />
+        External Link Types
+      </h2>
+      <p className="text-xs text-muted-foreground mb-6">
+        {systemCount} built-in types available. Add custom types for resources not in the default list.
+      </p>
+
+      {/* System types grouped by category */}
+      <div className="space-y-2 mb-8">
+        {CATEGORY_ORDER.filter(cat => cat !== 'custom' && grouped[cat]?.length).map(cat => (
+          <div key={cat} className="border border-border">
+            <button
+              type="button"
+              onClick={() => toggleCategory(cat)}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
+            >
+              <span className="text-sm font-medium">
+                {CATEGORY_LABELS[cat] || cat}
+                <span className="text-xs text-muted-foreground ml-2">({grouped[cat].length})</span>
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {collapsed[cat] ? '▸' : '▾'}
+              </span>
+            </button>
+            {!collapsed[cat] && (
+              <div className="border-t border-border px-4 py-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+                  {grouped[cat].map(lt => (
+                    <div key={lt.id} className="flex items-center gap-2 py-1 text-sm text-muted-foreground">
+                      <FaviconImg domain={lt.domain} />
+                      <span className="truncate">{lt.label}</span>
+                      {lt.domain && (
+                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
+                          {lt.domain}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Custom types */}
+      <div className="mb-6">
+        <h3 className="text-sm font-medium mb-3">Your Custom Types</h3>
+        {customTypes.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic mb-4">No custom link types yet.</p>
+        ) : (
+          <div className="space-y-1 mb-4">
+            {customTypes.map(lt => (
+              <div key={lt.id} className="flex items-center gap-3 py-2 px-3 border border-border group">
+                <FaviconImg domain={lt.domain} />
+                <span className="text-sm flex-1 truncate">{lt.label}</span>
+                {lt.domain && (
+                  <span className="text-xs text-muted-foreground hidden sm:inline">{lt.domain}</span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleDelete(lt.id)}
+                  disabled={deletingId === lt.id}
+                  className="text-muted-foreground hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                  title="Delete"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add form */}
+        {showAdd ? (
+          <form action={handleAdd} className="border border-border p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Label *</label>
+                <input
+                  type="text"
+                  name="label"
+                  required
+                  placeholder="e.g. Bibliopolis"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Domain (for favicon)</label>
+                <input
+                  type="text"
+                  name="domain"
+                  placeholder="e.g. bibliopolis.nl"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={addLoading}
+                className="h-9 px-5 bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {addLoading ? 'Adding...' : 'Add Type'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowAdd(false); setAddResult(null) }}
+                className="h-9 px-4 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+              {addResult?.error && <p className="text-sm text-red-600">{addResult.error}</p>}
+            </div>
+          </form>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-2 h-9 px-4 text-sm border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Custom Link Type
+          </button>
+        )}
+      </div>
+    </section>
+  )
+}
 
 function ConfigurationSection({ profile }: { profile: any }) {
   const [loading, setLoading] = useState(false)

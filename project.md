@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2025-02-02  
+> **Last updated:** 2026-02-04  
 > **Author:** Bruno (owner) + Claude (AI assistant)
 
 ---
@@ -144,6 +144,8 @@ git push         # Auto-deploy via Vercel
 | book_contributors | 5,152 | M:N relation books ↔ contributors |
 | contributors | 4,097 | Shared between users |
 | user_stats | 1 | Cached statistics |
+| external_link_types | 55+ | System defaults + user custom link types |
+| book_external_links | — | External links per book (pending migration) |
 
 ### Books - Key Fields
 ```
@@ -196,6 +198,16 @@ status, action_needed
 - 69 contributor roles
 - BISAC codes (3,887)
 
+**Admin Dashboard**
+- Stats bar (users, books, signups)
+- User management (search, filter, suspend/ban/delete)
+- Admin nav link (red Shield, admin-only)
+
+**User Settings**
+- Account tab: Profile, Security, Address, Subscription, Danger Zone
+- Configuration tab: Currency, Date Format, Items Per Page (list/grid)
+- External Link Types management (view system types, add/delete custom types)
+
 ---
 
 ## Roadmap
@@ -205,7 +217,7 @@ status, action_needed
 | Prio | Feature | Status |
 |------|---------|--------|
 | 4 | Duplicate Detection | 🔴 Todo |
-| 5 | External Links | 🔴 Todo |
+| 5 | External Links | 🟡 In Progress (Settings UI done, migration pending, book UI todo) |
 | 6 | User Settings | 🟢 Done |
 | 7 | Sharing & Public Catalog | 🔴 Todo |
 | 8 | Currency & Valuation | 🔴 Todo |
@@ -321,8 +333,10 @@ shelvd/
 │   │   ├── (auth)/               # Login/register
 │   │   └── api/                  # API routes
 │   ├── components/
-│   └── lib/supabase/
-├── supabase/migrations/
+│   └── lib/
+│       ├── supabase/             # DB client + types
+│       └── actions/              # Server actions (settings, external-links)
+├── supabase/migrations/          # 006_external_links.sql pending
 └── project.md                    # This file
 ```
 

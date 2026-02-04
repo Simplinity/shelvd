@@ -869,6 +869,93 @@ export type Database = {
         }
         Relationships: []
       }
+      external_link_types: {
+        Row: {
+          id: string
+          slug: string
+          label: string
+          domain: string | null
+          category: string
+          sort_order: number
+          is_system: boolean
+          user_id: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          slug: string
+          label: string
+          domain?: string | null
+          category?: string
+          sort_order?: number
+          is_system?: boolean
+          user_id?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          slug?: string
+          label?: string
+          domain?: string | null
+          category?: string
+          sort_order?: number
+          is_system?: boolean
+          user_id?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      book_external_links: {
+        Row: {
+          id: string
+          book_id: string
+          user_id: string
+          link_type_id: string | null
+          label: string | null
+          url: string
+          notes: string | null
+          sort_order: number
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          book_id: string
+          user_id: string
+          link_type_id?: string | null
+          label?: string | null
+          url: string
+          notes?: string | null
+          sort_order?: number
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          book_id?: string
+          user_id?: string
+          link_type_id?: string | null
+          label?: string | null
+          url?: string
+          notes?: string | null
+          sort_order?: number
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_external_links_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_external_links_link_type_id_fkey"
+            columns: ["link_type_id"]
+            isOneToOne: false
+            referencedRelation: "external_link_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_locations: {
         Row: {
           created_at: string | null
