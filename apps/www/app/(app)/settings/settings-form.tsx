@@ -52,6 +52,13 @@ export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes }: Pro
     return (
       <div className="space-y-10">
         <ConfigurationSection profile={profile} />
+      </div>
+    )
+  }
+
+  if (tab === 'external-links') {
+    return (
+      <div className="space-y-10">
         <ExternalLinkTypesSection linkTypes={linkTypes} />
       </div>
     )

@@ -53,6 +53,16 @@ export default async function SettingsPage({
         >
           Configuration
         </a>
+        <a
+          href="/settings?tab=external-links"
+          className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            tab === 'external-links'
+              ? 'border-foreground text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          External Links
+        </a>
       </div>
 
       <SettingsForm
