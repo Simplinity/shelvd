@@ -903,7 +903,10 @@ export default function BookEditForm({ book, referenceData }: Props) {
                   onChange={e => {
                     const updated = [...externalLinks]
                     const selected = referenceData.linkTypes.find(lt => lt.id === e.target.value)
-                    const prefill = selected?.domain && !updated[index].url ? `https://${selected.domain}/` : updated[index].url
+                    const currentUrl = updated[index].url
+                    // Replace URL if empty or just a domain prefix (no path added yet)
+                    const isJustPrefix = !currentUrl || /^https?:\/\/[^/]+\/?$/.test(currentUrl)
+                    const prefill = selected?.domain && isJustPrefix ? `https://${selected.domain}/` : currentUrl
                     updated[index] = { ...updated[index], linkTypeId: e.target.value, label: selected?.label || '', url: prefill }
                     setExternalLinks(updated)
                     setIsDirty(true)
