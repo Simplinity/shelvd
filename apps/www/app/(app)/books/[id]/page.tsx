@@ -569,8 +569,10 @@ export default async function BookDetailPage({ params }: PageProps) {
 
         {/* Metadata */}
         <section className="text-xs text-muted-foreground pt-4 border-t">
-          <p>Created: {new Date(bookData.created_at).toLocaleDateString()}</p>
-          <p>Last updated: {new Date(bookData.updated_at).toLocaleDateString()}</p>
+          {bookData.created_at && <p>Created: {new Date(bookData.created_at).toLocaleDateString()}</p>}
+          {bookData.updated_at && bookData.updated_at !== bookData.created_at && (
+            <p>Last updated: {new Date(bookData.updated_at).toLocaleDateString()}</p>
+          )}
         </section>
 
       </div>
