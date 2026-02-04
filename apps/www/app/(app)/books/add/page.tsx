@@ -5,6 +5,7 @@ import BookAddForm from './book-add-form'
 
 export default async function BookAddPage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   // Fetch BISAC codes in batches (Supabase has 1000 row default limit)
   const fetchAllBisacCodes = async () => {
@@ -45,7 +46,9 @@ export default async function BookAddPage() {
     { data: shelfData },
     { data: shelfSectionData },
     { data: publicationPlaceData },
-    { data: printingPlaceData }
+    { data: printingPlaceData },
+    { data: allLinkTypes },
+    { data: activeTypeRows },
   ] = await Promise.all([
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
@@ -62,7 +65,9 @@ export default async function BookAddPage() {
     supabase.from('books').select('shelf').not('shelf', 'is', null).order('shelf'),
     supabase.from('books').select('shelf_section').not('shelf_section', 'is', null).order('shelf_section'),
     supabase.from('books').select('publication_place').not('publication_place', 'is', null).order('publication_place'),
-    supabase.from('books').select('printing_place').not('printing_place', 'is', null).order('printing_place')
+    supabase.from('books').select('printing_place').not('printing_place', 'is', null).order('printing_place'),
+    supabase.from('external_link_types').select('id, label, domain, category, sort_order, is_system').order('sort_order'),
+    user ? supabase.from('user_active_link_types').select('link_type_id').eq('user_id', user.id) : Promise.resolve({ data: null }),
   ])
 
   // Get unique bindings (there are duplicates in the table)
@@ -116,7 +121,15 @@ export default async function BookAddPage() {
     shelfList: getUniqueValues(shelfData, 'shelf'),
     shelfSectionList: getUniqueValues(shelfSectionData, 'shelf_section'),
     publicationPlaceList: getUniqueValues(publicationPlaceData, 'publication_place'),
-    printingPlaceList: getUniqueValues(printingPlaceData, 'printing_place')
+    printingPlaceList: getUniqueValues(printingPlaceData, 'printing_place'),
+    linkTypes: (() => {
+      const all = allLinkTypes || []
+      const activeRows = activeTypeRows || []
+      // No rows = new user = all active
+      if (activeRows.length === 0) return all
+      const activeSet = new Set(activeRows.map((r: any) => r.link_type_id))
+      return all.filter((lt: any) => activeSet.has(lt.id))
+    })(),
   }
 
   return <BookAddForm referenceData={referenceData} />

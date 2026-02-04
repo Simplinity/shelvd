@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -19,6 +19,8 @@ type BisacCode = { code: string; subject: string }
 type Contributor = { name: string; role: string }
 type ContributorRole = { id: string; name: string }
 type ExistingContributor = { id: string; name: string }
+type LinkType = { id: string; label: string; domain: string | null; category: string; sort_order: number; is_system: boolean }
+type ExternalLinkData = { id?: string; linkTypeId: string; url: string; label: string }
 type BookContributor = {
   id: string
   contributorId: string
@@ -45,6 +47,8 @@ type ReferenceData = {
   shelfSectionList: string[]
   publicationPlaceList: string[]
   printingPlaceList: string[]
+  linkTypes: LinkType[]
+  bookExternalLinks: ExternalLinkData[]
 }
 
 type Props = {
@@ -205,6 +209,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
   )
   const [newContributorName, setNewContributorName] = useState('')
   const [newContributorRoleId, setNewContributorRoleId] = useState('')
+
+  // External links state
+  const [externalLinks, setExternalLinks] = useState<ExternalLinkData[]>(referenceData.bookExternalLinks || [])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -373,6 +380,23 @@ export default function BookEditForm({ book, referenceData }: Props) {
           contributor_id: contributorId,
           role_id: nc.roleId
         })
+      }
+
+      // Save external links: delete all existing, re-insert
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      await supabase.from('book_external_links').delete().eq('book_id', book.id)
+      const validLinks = externalLinks.filter(l => l.url.trim())
+      if (validLinks.length > 0) {
+        await supabase.from('book_external_links').insert(
+          validLinks.map((l, i) => ({
+            book_id: book.id,
+            user_id: currentUser!.id,
+            link_type_id: l.linkTypeId || null,
+            label: l.label || null,
+            url: l.url.trim(),
+            sort_order: i,
+          }))
+        )
       }
 
       setIsDirty(false)
@@ -867,7 +891,70 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 14. Catalog Entry */}
+        {/* 14. External Links */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">External Links</h2>
+          
+          {externalLinks.map((link, index) => (
+            <div key={index} className="flex gap-2 mb-2 items-start">
+              <div className="w-1/3">
+                <select
+                  value={link.linkTypeId}
+                  onChange={e => {
+                    const updated = [...externalLinks]
+                    const selected = referenceData.linkTypes.find(lt => lt.id === e.target.value)
+                    updated[index] = { ...updated[index], linkTypeId: e.target.value, label: selected?.label || '' }
+                    setExternalLinks(updated)
+                    setIsDirty(true)
+                  }}
+                  className={inputClass}
+                >
+                  <option value="">Select type...</option>
+                  {referenceData.linkTypes.map(lt => (
+                    <option key={lt.id} value={lt.id}>{lt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1">
+                <input
+                  type="url"
+                  value={link.url}
+                  onChange={e => {
+                    const updated = [...externalLinks]
+                    updated[index] = { ...updated[index], url: e.target.value }
+                    setExternalLinks(updated)
+                    setIsDirty(true)
+                  }}
+                  placeholder="https://..."
+                  className={inputClass}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setExternalLinks(externalLinks.filter((_, i) => i !== index))
+                  setIsDirty(true)
+                }}
+                className="h-10 px-2 text-muted-foreground hover:text-red-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => {
+              setExternalLinks([...externalLinks, { linkTypeId: '', url: '', label: '' }])
+            }}
+            className="flex items-center gap-2 h-9 px-4 text-sm border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Link
+          </button>
+        </section>
+
+        {/* 15. Catalog Entry */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
           <div className="mb-4">

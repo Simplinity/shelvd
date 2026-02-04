@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
 
@@ -93,6 +93,13 @@ export default async function BookDetailPage({ params }: PageProps) {
   const { data: bisacData } = bisacCodes.length > 0
     ? await supabase.from('bisac_codes').select('code, subject').in('code', bisacCodes)
     : { data: [] }
+
+  // Fetch external links with their type info
+  const { data: externalLinks } = await supabase
+    .from('book_external_links')
+    .select('id, url, label, sort_order, link_type_id, link_type:external_link_types ( label, domain, category )')
+    .eq('book_id', id)
+    .order('sort_order')
 
   // Combine all data
   const bookData = {
@@ -590,6 +597,41 @@ export default async function BookDetailPage({ params }: PageProps) {
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
             <p className="text-sm whitespace-pre-wrap bg-muted p-4">{bookData.catalog_entry}</p>
+          </section>
+        )}
+
+        {/* 14. External Links */}
+        {externalLinks && externalLinks.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">External Links</h2>
+            <div className="space-y-1.5">
+              {externalLinks.map((link: any) => {
+                const domain = link.link_type?.domain || (() => { try { return new URL(link.url).hostname } catch { return null } })()
+                const typeLabel = link.link_type?.label || link.label || domain || 'Link'
+                return (
+                  <div key={link.id} className="flex items-center gap-2.5">
+                    {domain && (
+                      <img
+                        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=16`}
+                        alt=""
+                        width={16}
+                        height={16}
+                        className="flex-shrink-0"
+                      />
+                    )}
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm hover:underline flex items-center gap-1.5"
+                    >
+                      {typeLabel}
+                      <ExternalLinkIcon className="w-3 h-3 text-muted-foreground" />
+                    </a>
+                  </div>
+                )
+              })}
+            </div>
           </section>
         )}
 
