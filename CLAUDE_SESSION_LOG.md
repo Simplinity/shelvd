@@ -138,8 +138,19 @@ Bibliographic & Authority (7), Short Title Catalogs (9), National & Regional (12
 - "ISBN Lookup" button added between Duplicates and Add Book
 - Uses ScanBarcode icon from lucide-react
 
+### Multi-Field Search (commit d49bec6) ✅
+- Lookup page redesigned: provider dropdown + 5 search fields (title, author, publisher, year range, ISBN)
+- Open Library: `searchByFields()` via Search API (`/search.json`) — returns list of results
+- Open Library: `getDetails()` via Edition API (`/books/{key}.json`) — full data for selected result
+- Results list view with cover thumbnails, click to view full details
+- ISBN-only search still uses fast direct ISBN lookup path
+- New types: `SearchParams`, `SearchResultItem`, `SearchResults`
+- New server actions: `lookupByFields()`, `lookupDetails()`
+- Provider interface extended with optional `searchByFields()` and `getDetails()` methods
+
 ### TODO:
-- [ ] Implement more providers as needed
+- [ ] Implement more providers (AbeBooks, SRU libraries, etc.)
+- [ ] "Enrich" mode on book edit page (merge-scherm for second search)
 
 ---
 
