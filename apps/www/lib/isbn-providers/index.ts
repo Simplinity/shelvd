@@ -3,12 +3,13 @@
 import type { IsbnProvider, ProviderResult, ActiveProvider } from './types'
 import { openLibrary } from './open-library'
 import { bolNl } from './bol-nl'
+import { googleBooks } from './google-books'
 
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
   'open_library': openLibrary,
   'bol_nl': bolNl,
-  // Add more providers here as they are implemented
+  'google_books': googleBooks,
 }
 
 /**
