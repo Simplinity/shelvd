@@ -6,6 +6,7 @@ export interface BookData {
   authors?: string[]  // Array of author names
   publisher?: string
   publication_year?: string
+  publication_place?: string
   pages?: number
   language?: string  // ISO code or full name
   isbn_13?: string
@@ -17,6 +18,16 @@ export interface BookData {
   series?: string
   series_number?: string
   format?: string  // e.g. "Paperback", "Hardcover"
+  // Classification & identifiers
+  lccn?: string  // Library of Congress Control Number
+  oclc_number?: string  // OCLC/WorldCat number
+  ddc?: string  // Dewey Decimal Classification
+  lcc?: string  // Library of Congress Classification
+  // Subject/topic
+  subjects?: string[]  // Subject headings
+  // Notes
+  notes?: string  // Bibliography, index info, etc.
+  pagination_description?: string  // e.g. "x, 643 p."
 }
 
 export interface ProviderResult {

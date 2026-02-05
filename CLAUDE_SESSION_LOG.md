@@ -139,5 +139,44 @@ Bibliographic & Authority (7), Short Title Catalogs (9), National & Regional (12
 - Uses ScanBarcode icon from lucide-react
 
 ### TODO:
-- [ ] Test with real ISBNs
 - [ ] Implement more providers as needed
+
+---
+
+## BUG FIX SESSION — IN PROGRESS
+
+### Issue: ISBN Lookup missing data (2024-02-05)
+Tested with ISBN `9780297790914` (A History of the Jews)
+
+**Open Library returns (confirmed via curl):**
+- `number_of_pages`: 643 ✅
+- `isbn_10`: ["0297790919"] ✅
+- `publish_date`: "1987" ✅
+- `publishers`: ["Weidenfeld and Nicolson", ...] ✅
+- `publish_places`: ["London"] ✅
+- `pagination`: "x, 643 p. ;" ✅
+- `lccn`: "87203317" ✅
+- `oclc_numbers`: ["17620426"] ✅
+- `dewey_decimal_class`: ["909/.04924"] ✅
+- `lc_classifications`: ["DS117 .J54 1987b", "DS117"] ✅
+- `subjects`: ["Jews -- History."] ✅
+- `notes`: bibliography info ✅
+- `languages`: [{"key": "/languages/eng"}] ✅
+- `covers`: [9362335] ✅
+
+**Problems found:**
+1. `number_of_pages` not being saved to form
+2. ISBN-13 (the one used for lookup) not being saved
+3. Many extra fields available but not mapped:
+   - publication_place
+   - lccn
+   - oclc_number
+   - ddc (dewey)
+   - lcc (library of congress classification)
+   - subjects/topic
+   - notes/bibliography
+
+### Fixes needed:
+- [ ] Fix pages mapping in open-library.ts
+- [ ] Add ISBN-13 from lookup input to result
+- [ ] Map additional fields from Open Library response

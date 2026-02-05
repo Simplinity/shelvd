@@ -69,6 +69,12 @@ export const openLibrary: IsbnProvider = {
         }
       }
       
+      // Publication place
+      let publication_place: string | undefined
+      if (data.publish_places && Array.isArray(data.publish_places) && data.publish_places.length > 0) {
+        publication_place = data.publish_places[0]
+      }
+      
       // Build cover URL
       let cover_url: string | undefined
       if (data.covers && data.covers.length > 0) {
@@ -84,11 +90,70 @@ export const openLibrary: IsbnProvider = {
       if (data.isbn_10 && data.isbn_10.length > 0) {
         isbn_10 = data.isbn_10[0].replace(/-/g, '')
       }
+      // Fallback: if the lookup ISBN was 13 digits and no isbn_13 in response, use it
+      if (!isbn_13 && cleanIsbn.length === 13) {
+        isbn_13 = cleanIsbn
+      }
+      // Fallback: if the lookup ISBN was 10 digits and no isbn_10 in response, use it
+      if (!isbn_10 && cleanIsbn.length === 10) {
+        isbn_10 = cleanIsbn
+      }
       
       // Pages
       let pages: number | undefined
       if (data.number_of_pages) {
-        pages = parseInt(data.number_of_pages, 10)
+        pages = typeof data.number_of_pages === 'number' 
+          ? data.number_of_pages 
+          : parseInt(String(data.number_of_pages), 10)
+      }
+      
+      // Pagination description (e.g. "x, 643 p. ;")
+      let pagination_description: string | undefined
+      if (data.pagination) {
+        pagination_description = data.pagination.replace(/\s*;\s*$/, '').trim()
+      }
+      
+      // Classification identifiers
+      let lccn: string | undefined
+      if (data.lccn && Array.isArray(data.lccn) && data.lccn.length > 0) {
+        lccn = data.lccn[0]
+      }
+      
+      let oclc_number: string | undefined
+      if (data.oclc_numbers && Array.isArray(data.oclc_numbers) && data.oclc_numbers.length > 0) {
+        oclc_number = data.oclc_numbers[0]
+      }
+      
+      let ddc: string | undefined
+      if (data.dewey_decimal_class && Array.isArray(data.dewey_decimal_class) && data.dewey_decimal_class.length > 0) {
+        ddc = data.dewey_decimal_class[0]
+      }
+      
+      let lcc: string | undefined
+      if (data.lc_classifications && Array.isArray(data.lc_classifications) && data.lc_classifications.length > 0) {
+        lcc = data.lc_classifications[0]
+      }
+      
+      // Subjects
+      let subjects: string[] | undefined
+      if (data.subjects && Array.isArray(data.subjects) && data.subjects.length > 0) {
+        subjects = data.subjects.map((s: any) => typeof s === 'string' ? s : s.name || s.value || '').filter(Boolean)
+        if (subjects.length === 0) subjects = undefined
+      }
+      
+      // Notes (bibliography, index info)
+      let notes: string | undefined
+      if (data.notes) {
+        notes = typeof data.notes === 'string' ? data.notes : data.notes?.value
+      }
+      
+      // Language (resolve "/languages/eng" → "eng")
+      let language: string | undefined
+      if (data.languages && Array.isArray(data.languages) && data.languages.length > 0) {
+        const langKey = data.languages[0]?.key
+        if (langKey) {
+          language = langKey.replace('/languages/', '')
+        }
       }
       
       // Series info from works
@@ -116,7 +181,9 @@ export const openLibrary: IsbnProvider = {
           authors: authors.length > 0 ? authors : undefined,
           publisher: data.publishers?.[0],
           publication_year,
+          publication_place,
           pages,
+          language,
           isbn_13,
           isbn_10,
           cover_url,
@@ -127,6 +194,13 @@ export const openLibrary: IsbnProvider = {
           description: typeof data.description === 'string' 
             ? data.description 
             : data.description?.value,
+          lccn,
+          oclc_number,
+          ddc,
+          lcc,
+          subjects,
+          notes,
+          pagination_description,
         },
         provider: 'open_library',
         source_url: `https://openlibrary.org/isbn/${cleanIsbn}`,

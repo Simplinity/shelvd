@@ -367,13 +367,21 @@ export default function BookAddForm({ referenceData }: Props) {
         if (data.subtitle) updates.subtitle = data.subtitle
         if (data.publisher) updates.publisher_name = data.publisher
         if (data.publication_year) updates.publication_year = data.publication_year
+        if (data.publication_place) updates.publication_place = data.publication_place
         if (data.pages) updates.page_count = String(data.pages)
+        if (data.pagination_description) updates.pagination_description = data.pagination_description
         if (data.isbn_13) updates.isbn_13 = data.isbn_13
         if (data.isbn_10) updates.isbn_10 = data.isbn_10
+        if (data.lccn) updates.lccn = data.lccn
+        if (data.oclc_number) updates.oclc_number = data.oclc_number
+        if (data.ddc) updates.ddc = data.ddc
+        if (data.lcc) updates.lcc = data.lcc
         if (data.series) updates.series = data.series
         if (data.series_number) updates.series_number = data.series_number
         if (data.edition) updates.edition = data.edition
         if (data.description) updates.summary = data.description
+        if (data.subjects && data.subjects.length > 0) updates.topic = data.subjects.join(', ')
+        if (data.notes) updates.bibliography = data.notes
         
         setFormData(prev => ({ ...prev, ...updates }))
         

@@ -283,15 +283,50 @@ export function LookupForm({ activeProviders }: Props) {
                       <span className="text-muted-foreground">ISBN-10:</span> {result.isbn_10}
                     </div>
                   )}
+                  {result.publication_place && (
+                    <div>
+                      <span className="text-muted-foreground">Place:</span> {result.publication_place}
+                    </div>
+                  )}
                   {result.format && (
                     <div>
                       <span className="text-muted-foreground">Format:</span> {result.format}
+                    </div>
+                  )}
+                  {result.pagination_description && (
+                    <div>
+                      <span className="text-muted-foreground">Pagination:</span> {result.pagination_description}
+                    </div>
+                  )}
+                  {result.lccn && (
+                    <div>
+                      <span className="text-muted-foreground">LCCN:</span> {result.lccn}
+                    </div>
+                  )}
+                  {result.oclc_number && (
+                    <div>
+                      <span className="text-muted-foreground">OCLC:</span> {result.oclc_number}
+                    </div>
+                  )}
+                  {result.ddc && (
+                    <div>
+                      <span className="text-muted-foreground">DDC:</span> {result.ddc}
+                    </div>
+                  )}
+                  {result.lcc && (
+                    <div>
+                      <span className="text-muted-foreground">LCC:</span> {result.lcc}
                     </div>
                   )}
                   {result.series && (
                     <div className="col-span-2">
                       <span className="text-muted-foreground">Series:</span> {result.series}
                       {result.series_number && ` #${result.series_number}`}
+                    </div>
+                  )}
+                  {result.subjects && result.subjects.length > 0 && (
+                    <div className="col-span-2">
+                      <span className="text-muted-foreground">Subjects:</span> {result.subjects.join(', ')}
                     </div>
                   )}
                 </div>
