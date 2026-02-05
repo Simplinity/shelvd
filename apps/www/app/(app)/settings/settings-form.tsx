@@ -11,6 +11,7 @@ import {
 } from '@/lib/actions/settings'
 import type { SettingsResult } from '@/lib/actions/settings'
 import { addCustomLinkType, deleteCustomLinkType, activateLinkType, deactivateLinkType } from '@/lib/actions/external-links'
+import { toggleIsbnProvider } from '@/lib/actions/isbn-providers'
 
 interface LinkType {
   id: string
@@ -23,6 +24,17 @@ interface LinkType {
   user_id: string | null
 }
 
+interface IsbnProvider {
+  provider_id: string
+  code: string
+  name: string
+  country: string | null
+  provider_type: 'api' | 'sru' | 'html'
+  base_url: string
+  is_active: boolean
+  priority: number
+}
+
 interface Props {
   tab: string
   email: string
@@ -30,6 +42,7 @@ interface Props {
   profile: any
   linkTypes: LinkType[]
   activeIds: string[]
+  isbnProviders: IsbnProvider[]
 }
 
 const CURRENCIES = [
@@ -48,7 +61,7 @@ const CURRENCIES = [
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
 
-export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes, activeIds }: Props) {
+export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes, activeIds, isbnProviders }: Props) {
   if (tab === 'configuration') {
     return (
       <div className="space-y-10">
@@ -61,6 +74,14 @@ export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes, activ
     return (
       <div className="space-y-10">
         <ExternalLinkTypesSection linkTypes={linkTypes} activeIds={activeIds} />
+      </div>
+    )
+  }
+
+  if (tab === 'isbn-lookup') {
+    return (
+      <div className="space-y-10">
+        <IsbnProvidersSection providers={isbnProviders} />
       </div>
     )
   }
@@ -692,5 +713,170 @@ function ConfigurationSection({ profile }: { profile: any }) {
         </div>
       </form>
     </section>
+  )
+}
+
+// ============================================
+// ISBN LOOKUP TAB
+// ============================================
+
+const COUNTRY_FLAGS: Record<string, string> = {
+  'US': '🇺🇸',
+  'DE': '🇩🇪',
+  'FR': '🇫🇷',
+  'GB': '🇬🇧',
+  'NL': '🇳🇱',
+  'BE': '🇧🇪',
+  'ES': '🇪🇸',
+  'IT': '🇮🇹',
+}
+
+const PROVIDER_TYPE_LABELS: Record<string, string> = {
+  'api': 'API',
+  'sru': 'Library',
+  'html': 'Web',
+}
+
+function IsbnProvidersSection({ providers }: { providers: IsbnProvider[] }) {
+  const [localProviders, setLocalProviders] = useState(providers)
+  const [loading, setLoading] = useState<string | null>(null)
+
+  const handleToggle = async (providerId: string, currentActive: boolean) => {
+    setLoading(providerId)
+    
+    // Optimistic update
+    setLocalProviders(prev => 
+      prev.map(p => 
+        p.provider_id === providerId 
+          ? { ...p, is_active: !currentActive }
+          : p
+      )
+    )
+    
+    const result = await toggleIsbnProvider(providerId, !currentActive)
+    
+    if (result.error) {
+      // Revert on error
+      setLocalProviders(prev => 
+        prev.map(p => 
+          p.provider_id === providerId 
+            ? { ...p, is_active: currentActive }
+            : p
+        )
+      )
+    }
+    
+    setLoading(null)
+  }
+
+  // Group by type
+  const apiProviders = localProviders.filter(p => p.provider_type === 'api')
+  const sruProviders = localProviders.filter(p => p.provider_type === 'sru')
+  const htmlProviders = localProviders.filter(p => p.provider_type === 'html')
+
+  return (
+    <section>
+      <h2 className="text-lg font-semibold mb-2">ISBN Lookup Providers</h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Select which sources to use when looking up books by ISBN. Providers are tried in order until a match is found.
+      </p>
+
+      <div className="space-y-8">
+        {/* API Providers */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">Open APIs</h3>
+          <div className="space-y-1">
+            {apiProviders.map(provider => (
+              <ProviderRow 
+                key={provider.provider_id} 
+                provider={provider} 
+                loading={loading === provider.provider_id}
+                onToggle={() => handleToggle(provider.provider_id, provider.is_active)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* SRU/Library Providers */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">Library Catalogs</h3>
+          <div className="space-y-1">
+            {sruProviders.map(provider => (
+              <ProviderRow 
+                key={provider.provider_id} 
+                provider={provider} 
+                loading={loading === provider.provider_id}
+                onToggle={() => handleToggle(provider.provider_id, provider.is_active)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* HTML Parsers */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">Bookstores (Web Lookup)</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            These sources are searched by fetching their public web pages. May be slower or occasionally unavailable.
+          </p>
+          <div className="space-y-1">
+            {htmlProviders.map(provider => (
+              <ProviderRow 
+                key={provider.provider_id} 
+                provider={provider} 
+                loading={loading === provider.provider_id}
+                onToggle={() => handleToggle(provider.provider_id, provider.is_active)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ProviderRow({ 
+  provider, 
+  loading, 
+  onToggle 
+}: { 
+  provider: IsbnProvider
+  loading: boolean
+  onToggle: () => void 
+}) {
+  return (
+    <div className="flex items-center justify-between py-2 px-3 hover:bg-muted/50 -mx-3">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onToggle}
+          disabled={loading}
+          className={`w-5 h-5 border flex items-center justify-center transition-colors ${
+            provider.is_active
+              ? 'bg-foreground border-foreground text-background'
+              : 'border-border hover:border-foreground'
+          } ${loading ? 'opacity-50' : ''}`}
+        >
+          {provider.is_active && <Check className="w-3 h-3" />}
+        </button>
+        <div>
+          <div className="flex items-center gap-2">
+            {provider.country && (
+              <span className="text-sm">{COUNTRY_FLAGS[provider.country] || provider.country}</span>
+            )}
+            {!provider.country && (
+              <span className="text-sm">🌐</span>
+            )}
+            <span className={provider.is_active ? '' : 'text-muted-foreground'}>{provider.name}</span>
+          </div>
+        </div>
+      </div>
+      <a 
+        href={provider.base_url} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-muted-foreground hover:text-foreground"
+      >
+        <ExternalLink className="w-4 h-4" />
+      </a>
+    </div>
   )
 }
