@@ -342,6 +342,65 @@ export default function BookAddForm({ referenceData }: Props) {
   // External links state
   type ExternalLink = { linkTypeId: string; url: string; label: string }
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
+  
+  // Track if data came from ISBN lookup
+  const [fromLookup, setFromLookup] = useState(false)
+  const [lookupProvider, setLookupProvider] = useState<string | null>(null)
+
+  // Load ISBN lookup data from sessionStorage
+  useEffect(() => {
+    const stored = sessionStorage.getItem('isbn_lookup_result')
+    if (stored) {
+      try {
+        const data = JSON.parse(stored)
+        sessionStorage.removeItem('isbn_lookup_result')
+        
+        setFromLookup(true)
+        setLookupProvider(data.lookup_provider || null)
+        
+        // Map lookup data to form fields
+        const updates: Partial<FormData> = {
+          status: 'draft', // Always set to draft for lookup results
+        }
+        
+        if (data.title) updates.title = data.title
+        if (data.subtitle) updates.subtitle = data.subtitle
+        if (data.publisher) updates.publisher_name = data.publisher
+        if (data.publication_year) updates.publication_year = data.publication_year
+        if (data.pages) updates.page_count = String(data.pages)
+        if (data.isbn_13) updates.isbn_13 = data.isbn_13
+        if (data.isbn_10) updates.isbn_10 = data.isbn_10
+        if (data.series) updates.series = data.series
+        if (data.series_number) updates.series_number = data.series_number
+        if (data.edition) updates.edition = data.edition
+        if (data.description) updates.summary = data.description
+        
+        setFormData(prev => ({ ...prev, ...updates }))
+        
+        // Add authors as contributors
+        if (data.authors && Array.isArray(data.authors) && data.authors.length > 0) {
+          // Find "Author" role
+          const authorRole = referenceData.contributorRoles.find(
+            r => r.name.toLowerCase() === 'author'
+          )
+          if (authorRole) {
+            const newContributors: LocalContributor[] = data.authors.map((name: string, i: number) => ({
+              tempId: `lookup-${i}-${Date.now()}`,
+              contributorName: name,
+              roleId: authorRole.id,
+              roleName: authorRole.name,
+            }))
+            setContributors(newContributors)
+          }
+        }
+        
+        // Don't mark as dirty yet - user hasn't made changes
+        setIsDirty(false)
+      } catch (e) {
+        console.error('Failed to parse lookup data:', e)
+      }
+    }
+  }, [referenceData.contributorRoles])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -587,6 +646,14 @@ export default function BookAddForm({ referenceData }: Props) {
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">
           {error}
+        </div>
+      )}
+
+      {fromLookup && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+          <span className="font-medium">Pre-filled from ISBN lookup</span>
+          {lookupProvider && <span className="text-amber-600"> via {lookupProvider}</span>}
+          <span className="text-amber-600 ml-1">— Please verify and complete the details. Status set to Draft.</span>
         </div>
       )}
 

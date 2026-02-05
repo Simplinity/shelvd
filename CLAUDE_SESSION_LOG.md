@@ -90,3 +90,54 @@ Bibliographic & Authority (7), Short Title Catalogs (9), National & Regional (12
 ### Key Commits
 - `da069f4` — initial duplicate detection page
 - `ef01ca1` — server-side SQL functions for instant scan
+
+---
+
+## ISBN LOOKUP — IN PROGRESS
+
+### Database (migration 010) ✅
+- `isbn_providers` — system providers (api/sru/html)
+- `user_isbn_providers` — user activation + priority
+- `get_user_isbn_providers()` — function to get user's active providers
+- 20 providers seeded: Open Library, WorldCat, DNB, BnF, LoC, BL, KB, KBR, bol.com, Amazon variants, etc.
+
+### Settings > ISBN Lookup Tab ✅
+- Provider list grouped by type (API, Library, Bookstores)
+- Toggle activation per provider
+- Country flags and external links
+
+### Status Value ✅
+- `draft` status already exists in book-add-form.tsx
+
+### Provider Architecture ✅
+- `/lib/isbn-providers/types.ts` — BookData, ProviderResult, IsbnProvider interfaces
+- `/lib/isbn-providers/index.ts` — Registry + orchestrator (searchIsbn, searchProvider)
+- `/lib/isbn-providers/open-library.ts` — Open Library API provider
+- `/lib/isbn-providers/bol-nl.ts` — Bol.com HTML parser
+
+### Server Actions ✅
+- `/lib/actions/isbn-lookup.ts` — lookupIsbn(), lookupIsbnWithProvider(), getActiveProviders()
+
+### Lookup Page ✅
+- `/books/lookup/page.tsx` — loads user's active providers
+- `/books/lookup/lookup-form.tsx` — ISBN input, search progress, result preview, add to collection
+
+### Book Add Form Integration ✅
+- Loads lookup data from sessionStorage
+- Sets status to 'draft' for lookup results
+- Maps title, subtitle, publisher, year, pages, ISBN, series, edition, description
+- Adds authors as contributors with 'Author' role
+- Shows amber banner: "Pre-filled from ISBN lookup via {provider}"
+
+### Implemented Providers
+- ✅ Open Library (API)
+- ✅ Bol.com (HTML parser)
+- ⏳ 18 more providers in database, not yet implemented
+
+### Books Toolbar ✅
+- "ISBN Lookup" button added between Duplicates and Add Book
+- Uses ScanBarcode icon from lucide-react
+
+### TODO:
+- [ ] Test with real ISBNs
+- [ ] Implement more providers as needed
