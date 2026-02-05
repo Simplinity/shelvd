@@ -246,28 +246,20 @@ status, action_needed
 | Provider | Type | Status |
 |----------|------|--------|
 | Open Library | API | ✅ Full (ISBN + field search + details) |
+| Google Books | API | ✅ Full (ISBN + field search + details) |
 | Bol.com (NL) | HTML | ✅ ISBN only |
+| Library of Congress | SRU/MARC21 | ✅ Full |
+| BnF | SRU/UNIMARC | ✅ Full |
+| DNB | SRU/MARC21 | ✅ Full |
+| KBR | SRU/MARC21 | ✅ Full |
+| KB | SRU/MARC21 | ✅ Full |
+| British Library | SRU/MARC21 | ✅ Full |
 
-**Priority 1 — API providers (easy, reliable):**
+**Remaining:**
 | Provider | Type | Notes |
 |----------|------|-------|
-| Google Books | API | Enormous coverage, free API |
 | WorldCat | API | Broad, OCLC-based |
-
-**Priority 2 — SRU/national libraries (one shared SRU parser, configure per library):**
-| Provider | Country | Notes |
-|----------|---------|-------|
-| Library of Congress | US | Richest bibliographic data |
-| BnF | FR | Strong for French-language |
-| DNB | DE | Strong for German-language |
-| KBR | BE | Belgian national library |
-| KB | NL | Dutch national library |
-| British Library | GB | Strong for English-language |
-
-**Priority 3 — HTML scrapers (fragile but valuable):**
-| Provider | Notes |
-|----------|-------|
-| AbeBooks | Antiquarian market data, relevant for collectors |
+| AbeBooks | HTML | Antiquarian market data |
 
 **Skipped (unreliable/low value):**
 - Amazon (4 variants) — aggressive anti-scraping, CAPTCHAs

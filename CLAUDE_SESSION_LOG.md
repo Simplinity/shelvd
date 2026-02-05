@@ -28,10 +28,22 @@
 - Removed `bol_be` from `isbn_providers` (same as NL)
 - Added `google_books` to `isbn_providers` (API, googleapis.com)
 
+### Google Books Provider ✅
+- ISBN lookup, field search (`intitle:`, `inauthor:`, `inpublisher:`, `isbn:`), detail fetch by volume ID
+- Auto external link via `books.google.com` domain match
+- Commit: `3e95ee5`
+
+### SRU Providers ✅
+- Shared SRU/MARCXML parser (`sru-provider.ts`) with factory pattern
+- MARC21 parser: title (245), authors (100/700), publisher (260/264), ISBN (020), pages (300), LCCN (010), OCLC (035), DDC (082), LCC (050), subjects (650), notes (500), description (520), language (041/008), edition (250), series (490)
+- UNIMARC parser (BnF): title (200), authors (700/701), publisher (210), ISBN (010), pages (215), language (101), edition (205), series (225), description (330), subjects (606), notes (300)
+- Per-library CQL index configuration
+- Record caching for detail retrieval from search results
+- Libraries: LoC, BnF, DNB, KBR, KB, British Library
+- Commit: `b1ea7aa`
+
 ### TODO — Provider Implementation
-- [ ] Google Books (API) — Priority 1
 - [ ] WorldCat (API) — Priority 1
-- [ ] SRU parser (shared) + LoC, BnF, DNB, KBR, KB, BL — Priority 2
 - [ ] AbeBooks (HTML scraper) — Priority 3
 - [ ] Enrich mode on book edit page (merge-scherm)
 
