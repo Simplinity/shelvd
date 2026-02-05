@@ -39,8 +39,18 @@
 - UNIMARC parser (BnF): title (200), authors (700/701), publisher (210), ISBN (010), pages (215), language (101), edition (205), series (225), description (330), subjects (606), notes (300)
 - Per-library CQL index configuration
 - Record caching for detail retrieval from search results
-- Libraries: LoC, BnF, DNB, KBR, KB, British Library
+- Libraries: LoC, BnF, DNB
 - Commit: `b1ea7aa`
+
+### Provider Expansion ✅
+- Added K10plus (GBV/SWB): `sru.k10plus.de`, MARC21, pica-indexes, ~200M holdings
+- Added SUDOC (France): `sudoc.abes.fr/cbs/sru/`, UNIMARC, 15M records from 3000+ academic libraries
+- Added LIBRIS (Sweden): Xsearch API (`libris.kb.se/xsearch`), MARC21, 7M records
+- Replaced dead British Library (`explore.bl.uk`) with Library Hub Discover (JISC): `discover.libraryhub.jisc.ac.uk/sru-api`, covers 100+ UK libraries incl. BL
+- Removed non-functional KBR (Z39.50 only, no SRU) and KB NL (Dublin Core, ISBN unreliable)
+- Added `xsearch` provider type to DB constraint and TypeScript types
+- Renamed settings tab "ISBN Lookup" → "Book Lookup" (`isbn-lookup` → `book-lookup`)
+- Updated all references (settings page, settings form, lookup form link)
 
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
@@ -60,5 +70,4 @@
 - ✅ User Settings (account, config, external links, ISBN lookup providers)
 - ✅ External Links (55 types, per-user activation)
 - ✅ Duplicate Detection (server-side SQL, grouped results, bulk delete)
-- ✅ Book Lookup — Open Library full (ISBN + field search + details)
-- ✅ Book Lookup — Bol.com NL (ISBN only)
+- ✅ Book Lookup — 10 providers: Open Library, Google Books, Bol.com, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, Library Hub (UK)

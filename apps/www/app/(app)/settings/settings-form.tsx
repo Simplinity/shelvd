@@ -29,7 +29,7 @@ interface IsbnProvider {
   code: string
   name: string
   country: string | null
-  provider_type: 'api' | 'sru' | 'html'
+  provider_type: 'api' | 'sru' | 'html' | 'xsearch'
   base_url: string
   is_active: boolean
   priority: number
@@ -78,7 +78,7 @@ export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes, activ
     )
   }
 
-  if (tab === 'isbn-lookup') {
+  if (tab === 'book-lookup') {
     return (
       <div className="space-y-10">
         <IsbnProvidersSection providers={isbnProviders} />
@@ -771,12 +771,12 @@ function IsbnProvidersSection({ providers }: { providers: IsbnProvider[] }) {
 
   // Group by type
   const apiProviders = localProviders.filter(p => p.provider_type === 'api')
-  const sruProviders = localProviders.filter(p => p.provider_type === 'sru')
+  const sruProviders = localProviders.filter(p => p.provider_type === 'sru' || p.provider_type === 'xsearch')
   const htmlProviders = localProviders.filter(p => p.provider_type === 'html')
 
   return (
     <section>
-      <h2 className="text-lg font-semibold mb-2">ISBN Lookup Providers</h2>
+      <h2 className="text-lg font-semibold mb-2">Book Lookup Providers</h2>
       <p className="text-sm text-muted-foreground mb-6">
         Select which sources to use when looking up books by ISBN. Providers are tried in order until a match is found.
       </p>

@@ -236,7 +236,7 @@ status, action_needed
 | 4 | Duplicate Detection | 🟢 Done |
 | 5 | External Links | 🟢 Done |
 | 6 | User Settings | 🟢 Done |
-| 7 | Book Lookup (multi-field search) | 🟡 In Progress |
+| 7 | Book Lookup (10 providers) | 🟡 In Progress |
 | 8 | Sharing & Public Catalog | 🔴 Todo |
 | 9 | Currency & Valuation | 🔴 Todo |
 
@@ -251,19 +251,24 @@ status, action_needed
 | Library of Congress | SRU/MARC21 | ✅ Full |
 | BnF | SRU/UNIMARC | ✅ Full |
 | DNB | SRU/MARC21 | ✅ Full |
-| KBR | SRU/MARC21 | ✅ Full |
-| KB | SRU/MARC21 | ✅ Full |
-| British Library | SRU/MARC21 | ✅ Full |
+| K10plus (GBV/SWB) | SRU/MARC21 | ✅ Full |
+| SUDOC (France) | SRU/UNIMARC | ✅ Full |
+| LIBRIS (Sweden) | Xsearch/MARC21 | ✅ Full |
+| Library Hub Discover (UK) | SRU/MARC21 | ✅ Full |
 
 **Remaining:**
 | Provider | Type | Notes |
 |----------|------|-------|
 | WorldCat | API | Broad, OCLC-based |
 | AbeBooks | HTML | Antiquarian market data |
+| KBR (Belgium) | Z39.50 | No SRU endpoint, Z39.50 only |
+| KB NL | SRU/DC | Dublin Core format, ISBN unreliable |
 
 **Skipped (unreliable/low value):**
 - Amazon (4 variants) — aggressive anti-scraping, CAPTCHAs
 - Fnac, Casa del Libro, IBS.it, Mondadori, Standaard — limited data, hard to scrape
+- KBR — only Z39.50 (catalog.kbr.be:9001), no SRU
+- KB NL — SRU returns Dublin Core not MARCXML, ISBN search unreliable
 
 **Future:**
 - Enrich mode on book edit page (merge-scherm for cherry-picking fields from second search)

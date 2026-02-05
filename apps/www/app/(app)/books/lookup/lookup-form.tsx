@@ -224,7 +224,7 @@ export function LookupForm({ activeProviders }: Props) {
               </option>
             ))}
           </select>
-          <Link href="/settings?tab=isbn-lookup" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+          <Link href="/settings?tab=book-lookup" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
             <Settings className="w-3 h-3" />
           </Link>
         </div>

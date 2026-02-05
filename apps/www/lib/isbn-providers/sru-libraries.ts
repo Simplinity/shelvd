@@ -58,48 +58,61 @@ const dnbConfig: SruConfig = {
   sourceUrlPattern: 'https://d-nb.info/{isbn}',
 }
 
-// ===================== KBR (BELGIUM) =====================
-const kbrConfig: SruConfig = {
-  code: 'kbr',
-  name: 'KBR (Belgium)',
-  country: 'BE',
-  baseUrl: 'https://opac.kbr.be/sru',
+// ===================== K10PLUS (GERMANY - GBV/SWB UNION CATALOG) =====================
+// K10plus is the merged union catalog of GBV and SWB library consortia
+// ~200M holdings across German academic and research libraries
+// Used by Zotero as primary source for German-language books
+// Docs: https://wiki.k10plus.de/display/K10PLUS/SRU
+const k10plusConfig: SruConfig = {
+  code: 'k10plus',
+  name: 'K10plus (GBV/SWB)',
+  country: 'DE',
+  baseUrl: 'https://sru.k10plus.de/opac-de-627',
   recordSchema: 'marcxml',
   version: '1.1',
   indexes: {
-    isbn: 'bath.isbn',
-    title: 'dc.title',
-    author: 'dc.creator',
-    publisher: 'dc.publisher',
-    year: 'dc.date',
+    isbn: 'pica.isb',
+    title: 'pica.tit',
+    author: 'pica.per',
+    publisher: 'pica.vlg',
+    year: 'pica.jah',
   },
-  sourceUrlPattern: 'https://opac.kbr.be/LIBRARY/doc/SYRACUSE/{isbn}',
+  sourceUrlPattern: 'https://kxp.k10plus.de/DB=2.1/CMD?ACT=SRCHA&IKT=1007&TRM={isbn}',
 }
 
-// ===================== KONINKLIJKE BIBLIOTHEEK (NETHERLANDS) =====================
-const kbConfig: SruConfig = {
-  code: 'kb',
-  name: 'Koninklijke Bibliotheek',
-  country: 'NL',
-  baseUrl: 'https://jsru.kb.nl/sru/sru',
-  recordSchema: 'marcxml',
+// ===================== SUDOC (FRANCE - UNIVERSITY UNION CATALOG) =====================
+// SUDOC is the French university union catalog managed by ABES
+// ~15M bibliographic records from 3000+ French academic libraries
+// Uses UNIMARC format. SRU service launched May 2023.
+// Docs: https://abes.fr/guide-utilisation-service-sru-catalogue-sudoc/
+const sudocConfig: SruConfig = {
+  code: 'sudoc',
+  name: 'SUDOC (France)',
+  country: 'FR',
+  baseUrl: 'https://www.sudoc.abes.fr/cbs/sru/',
+  recordSchema: 'unimarc',
   version: '1.1',
+  isUnimarc: true,
   indexes: {
-    isbn: 'bath.isbn',
-    title: 'dc.title',
-    author: 'dc.creator',
-    publisher: 'dc.publisher',
-    year: 'dc.date',
+    isbn: 'isb',
+    title: 'mti',
+    author: 'aut',
+    publisher: 'edi',
+    year: 'apu',
   },
-  sourceUrlPattern: 'https://www.kb.nl/zoeken?isbn={isbn}',
+  sourceUrlPattern: 'https://www.sudoc.abes.fr/cbs/DB=2.1/CMD?ACT=SRCHA&IKT=7&TRM={isbn}',
 }
 
-// ===================== BRITISH LIBRARY =====================
-const blConfig: SruConfig = {
+// ===================== LIBRARY HUB DISCOVER (UK) =====================
+// Library Hub Discover (JISC) is the UK academic union catalog covering 100+ libraries
+// including the British Library. Replaces the defunct explore.bl.uk SRU endpoint.
+// The BL's own SRU died after the Oct 2023 cyber-attack; new catalogue.bl.uk has no SRU.
+// Docs: https://discover.libraryhub.jisc.ac.uk/support/api/
+const libraryhubConfig: SruConfig = {
   code: 'bl',
-  name: 'British Library',
+  name: 'Library Hub Discover (UK)',
   country: 'GB',
-  baseUrl: 'https://explore.bl.uk/sru',
+  baseUrl: 'https://discover.libraryhub.jisc.ac.uk/sru-api',
   recordSchema: 'marcxml',
   version: '1.1',
   indexes: {
@@ -109,7 +122,7 @@ const blConfig: SruConfig = {
     publisher: 'dc.publisher',
     year: 'dc.date',
   },
-  sourceUrlPattern: 'https://explore.bl.uk/primo_library/libweb/action/search.do?fn=search&vl(freeText0)={isbn}',
+  sourceUrlPattern: 'https://discover.libraryhub.jisc.ac.uk/search?isbn={isbn}',
 }
 
 // ===================== EXPORTS =====================
@@ -117,6 +130,10 @@ const blConfig: SruConfig = {
 export const loc = createSruProvider(locConfig)
 export const bnf = createSruProvider(bnfConfig)
 export const dnb = createSruProvider(dnbConfig)
-export const kbr = createSruProvider(kbrConfig)
-export const kb = createSruProvider(kbConfig)
-export const bl = createSruProvider(blConfig)
+export const k10plus = createSruProvider(k10plusConfig)
+export const sudoc = createSruProvider(sudocConfig)
+export const bl = createSruProvider(libraryhubConfig)
+
+// NOT IMPLEMENTED — no usable SRU endpoint:
+// KBR (Belgium): Z39.50 only at catalog.kbr.be:9001, no SRU
+// KB NL: jsru.kb.nl returns Dublin Core (not MARCXML), ISBN search unreliable

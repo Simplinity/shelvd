@@ -27,6 +27,8 @@ export interface SruConfig {
   sourceUrlPattern?: string
   // Set to true for UNIMARC-based libraries (BnF, etc.)
   isUnimarc?: boolean
+  // Extra query parameters to append to the SRU URL (e.g. '&x-collection=GGC')
+  extraParams?: string
 }
 
 // ===================== MARCXML PARSER =====================
@@ -369,7 +371,7 @@ function parseUnimarcRecord(recordXml: string): BookData {
 }
 
 // Detect format and parse accordingly
-function parseRecord(recordXml: string, isUnimarc: boolean): BookData {
+export function parseRecord(recordXml: string, isUnimarc: boolean): BookData {
   return isUnimarc ? parseUnimarcRecord(recordXml) : parseMarcXmlRecord(recordXml)
 }
 
@@ -414,7 +416,7 @@ function buildCqlQuery(params: SearchParams, indexes: SruConfig['indexes']): str
   return parts.join(' and ')
 }
 
-function extractRecords(xml: string): string[] {
+export function extractRecords(xml: string): string[] {
   const records: string[] = []
   // Match both namespaced and non-namespaced record elements
   const regex = /<(?:marc:)?record[\s>][\s\S]*?<\/(?:marc:)?record>/g
@@ -432,7 +434,8 @@ function extractTotalResults(xml: string): number {
 
 async function sruFetch(config: SruConfig, query: string, maxRecords: number = 20): Promise<{ xml: string; ok: boolean; error?: string }> {
   const version = config.version || '1.1'
-  const url = `${config.baseUrl}?version=${version}&operation=searchRetrieve&query=${encodeURIComponent(query)}&recordSchema=${config.recordSchema}&maximumRecords=${maxRecords}`
+  const extra = config.extraParams || ''
+  const url = `${config.baseUrl}?version=${version}&operation=searchRetrieve&query=${encodeURIComponent(query)}&recordSchema=${config.recordSchema}&maximumRecords=${maxRecords}${extra}`
 
   try {
     const response = await fetch(url, {

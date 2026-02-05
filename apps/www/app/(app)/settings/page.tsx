@@ -78,14 +78,14 @@ export default async function SettingsPage({
           External Links
         </a>
         <a
-          href="/settings?tab=isbn-lookup"
+          href="/settings?tab=book-lookup"
           className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
-            tab === 'isbn-lookup'
+            tab === 'book-lookup'
               ? 'border-foreground text-foreground'
               : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
-          ISBN Lookup
+          Book Lookup
         </a>
       </div>
 
