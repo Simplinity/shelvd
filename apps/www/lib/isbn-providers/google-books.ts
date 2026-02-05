@@ -169,7 +169,9 @@ export const googleBooks: IsbnProvider = {
       }
 
       const q = encodeURIComponent(queryParts.join('+'))
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=20&printType=books&orderBy=relevance`
+      const limit = Math.min(params.limit || 40, 40) // Google Books max is 40
+      const offset = params.offset || 0
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=${limit}&startIndex=${offset}&printType=books&orderBy=relevance`
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' },
@@ -202,10 +204,14 @@ export const googleBooks: IsbnProvider = {
 
       const items = volumes.map(parseVolumeToListItem)
 
+      const total = data.totalItems || items.length
+      const hasMore = (offset + data.items.length) < total
+
       return {
         items,
-        total: data.totalItems || items.length,
+        total,
         provider: 'google_books',
+        hasMore,
       }
     } catch (err) {
       return {

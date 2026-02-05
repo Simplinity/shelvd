@@ -444,10 +444,11 @@ function extractTotalResults(xml: string): number {
   return match ? parseInt(match[1]) : 0
 }
 
-async function sruFetch(config: SruConfig, query: string, maxRecords: number = 20): Promise<{ xml: string; ok: boolean; error?: string }> {
+async function sruFetch(config: SruConfig, query: string, maxRecords: number = 50, startRecord: number = 1): Promise<{ xml: string; ok: boolean; error?: string }> {
   const version = config.version || '1.1'
   const extra = config.extraParams || ''
-  const url = `${config.baseUrl}?version=${version}&operation=searchRetrieve&query=${encodeURIComponent(query)}&recordSchema=${config.recordSchema}&maximumRecords=${maxRecords}${extra}`
+  const startParam = startRecord > 1 ? `&startRecord=${startRecord}` : ''
+  const url = `${config.baseUrl}?version=${version}&operation=searchRetrieve&query=${encodeURIComponent(query)}&recordSchema=${config.recordSchema}&maximumRecords=${maxRecords}${startParam}${extra}`
 
   try {
     const response = await fetch(url, {
@@ -534,7 +535,11 @@ export function createSruProvider(config: SruConfig): IsbnProvider {
         return { items: [], total: 0, provider: config.code, error: 'No search parameters' }
       }
 
-      const { xml, ok, error } = await sruFetch(config, query, 20)
+      const limit = params.limit || 50
+      const offset = params.offset || 0
+      const startRecord = offset + 1 // SRU is 1-based
+
+      const { xml, ok, error } = await sruFetch(config, query, limit, startRecord)
 
       if (!ok) {
         return { items: [], total: 0, provider: config.code, error: error || 'Search failed' }
@@ -547,14 +552,15 @@ export function createSruProvider(config: SruConfig): IsbnProvider {
         return { items: [], total: 0, provider: config.code }
       }
 
-      // Cache records for detail fetch
+      // Cache records for detail fetch (use offset-based keys)
       records.forEach((rec, i) => {
-        recordCache.set(`${config.code}:record-${i}`, rec)
+        recordCache.set(`${config.code}:record-${offset + i}`, rec)
       })
 
-      const items = records.map((rec, i) => parseMarcToListItem(rec, i, !!config.isUnimarc))
+      const items = records.map((rec, i) => parseMarcToListItem(rec, offset + i, !!config.isUnimarc))
+      const hasMore = (offset + records.length) < total
 
-      return { items, total, provider: config.code }
+      return { items, total, provider: config.code, hasMore }
     },
 
     async getDetails(editionKey: string): Promise<ProviderResult> {

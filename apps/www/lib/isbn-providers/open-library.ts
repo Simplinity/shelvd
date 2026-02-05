@@ -256,7 +256,9 @@ export const openLibrary: IsbnProvider = {
 
       // Request fields we need for the list + detail fetch
       const fields = 'key,title,subtitle,author_name,publisher,first_publish_year,isbn,cover_i,edition_key,number_of_pages_median,language'
-      const url = `https://openlibrary.org/search.json?${queryParts.join('&')}&fields=${fields}&limit=20`
+      const limit = params.limit || 50
+      const offset = params.offset || 0
+      const url = `https://openlibrary.org/search.json?${queryParts.join('&')}&fields=${fields}&limit=${limit}&offset=${offset}`
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' },
@@ -321,10 +323,14 @@ export const openLibrary: IsbnProvider = {
         } as SearchResultItem
       })
 
+      const total = data.numFound || items.length
+      const hasMore = (offset + docs.length) < total
+
       return {
         items,
-        total: data.numFound || items.length,
+        total,
         provider: 'open_library',
+        hasMore,
       }
     } catch (err) {
       return {

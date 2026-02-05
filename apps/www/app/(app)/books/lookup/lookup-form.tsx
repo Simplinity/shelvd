@@ -46,8 +46,10 @@ export function LookupForm({ activeProviders }: Props) {
   
   // State
   const [searching, setSearching] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [results, setResults] = useState<SearchResultItem[]>([])
   const [totalResults, setTotalResults] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   
   // Detail view
@@ -68,6 +70,7 @@ export function LookupForm({ activeProviders }: Props) {
     setSearching(true)
     setSearchError(null)
     setResults([])
+    setHasMore(false)
     setDetail(null)
     
     try {
@@ -112,6 +115,7 @@ export function LookupForm({ activeProviders }: Props) {
         
         setResults(response.items)
         setTotalResults(response.total)
+        setHasMore(!!response.hasMore)
         setView('results')
       }
     } catch (err) {
@@ -119,6 +123,34 @@ export function LookupForm({ activeProviders }: Props) {
       setView('results')
     } finally {
       setSearching(false)
+    }
+  }
+  
+  const handleLoadMore = async () => {
+    if (!hasMore || loadingMore) return
+    
+    setLoadingMore(true)
+    try {
+      const response = await lookupByFields(
+        {
+          title: searchFields.title?.trim() || undefined,
+          author: searchFields.author?.trim() || undefined,
+          publisher: searchFields.publisher?.trim() || undefined,
+          isbn: searchFields.isbn?.trim() || undefined,
+          yearFrom: searchFields.yearFrom?.trim() || undefined,
+          yearTo: searchFields.yearTo?.trim() || undefined,
+          offset: results.length,
+        },
+        selectedProvider
+      )
+      
+      setResults(prev => [...prev, ...response.items])
+      setTotalResults(response.total)
+      setHasMore(!!response.hasMore)
+    } catch (err) {
+      // silently fail, user can try again
+    } finally {
+      setLoadingMore(false)
     }
   }
   
@@ -194,6 +226,7 @@ export function LookupForm({ activeProviders }: Props) {
     setResults([])
     setDetail(null)
     setSearchError(null)
+    setHasMore(false)
     setView('search')
   }
   
@@ -397,6 +430,21 @@ export function LookupForm({ activeProviders }: Props) {
                   </button>
                 ))}
               </div>
+              
+              {/* Load More */}
+              {hasMore && (
+                <button
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="w-full mt-3 h-10 border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loadingMore ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Loading more...</>
+                  ) : (
+                    <>Load more ({totalResults - results.length} remaining)</>  
+                  )}
+                </button>
+              )}
             </div>
           )}
         </div>

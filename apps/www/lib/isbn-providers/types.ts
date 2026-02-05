@@ -46,6 +46,9 @@ export interface SearchParams {
   isbn?: string
   yearFrom?: string
   yearTo?: string
+  // Pagination
+  limit?: number   // default 50
+  offset?: number  // default 0 (startRecord for SRU is 1-based, converted internally)
 }
 
 // Lightweight result for search lists
@@ -69,6 +72,7 @@ export interface SearchResults {
   total: number
   provider: string
   error?: string
+  hasMore?: boolean
 }
 
 export interface IsbnProvider {

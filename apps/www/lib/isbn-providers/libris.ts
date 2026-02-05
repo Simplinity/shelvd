@@ -71,7 +71,9 @@ export const libris: IsbnProvider = {
     }
 
     const query = parts.join(' AND ')
-    const url = `${XSEARCH_BASE}?query=${encodeURIComponent(query)}&format=marcxml&n=20`
+    const limit = params.limit || 50
+    const offset = params.offset || 0
+    const url = `${XSEARCH_BASE}?query=${encodeURIComponent(query)}&format=marcxml&n=${limit}&start=${offset + 1}`
 
     try {
       const response = await fetch(url, {
@@ -103,7 +105,8 @@ export const libris: IsbnProvider = {
         }
       })
 
-      return { items, total, provider: 'libris' }
+      const hasMore = (offset + records.length) < total
+      return { items, total, provider: 'libris', hasMore }
     } catch (err) {
       return {
         items: [],
