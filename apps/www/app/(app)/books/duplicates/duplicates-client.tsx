@@ -373,6 +373,13 @@ export default function DuplicatesClient({ books }: Props) {
             <strong>{totalDuplicateBooks}</strong> possible duplicate books
           </p>
         )}
+        
+        {/* Debug info */}
+        <p className="text-xs text-muted-foreground">
+          Books with ISBN-13: {books.filter(b => b.isbn_13).length} | 
+          Books with ISBN-10: {books.filter(b => b.isbn_10).length} | 
+          Books with OCLC: {books.filter(b => b.oclc_number).length}
+        </p>
       </div>
 
       {/* Results */}
