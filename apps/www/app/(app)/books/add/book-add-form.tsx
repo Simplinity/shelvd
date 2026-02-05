@@ -402,6 +402,29 @@ export default function BookAddForm({ referenceData }: Props) {
           }
         }
         
+        // Auto-add external link from lookup source
+        if (data.lookup_source_url) {
+          const sourceUrl = data.lookup_source_url as string
+          // Find matching link type by domain
+          const matchingType = referenceData.linkTypes.find(lt => 
+            lt.domain && sourceUrl.includes(lt.domain)
+          )
+          if (matchingType) {
+            setExternalLinks([{
+              linkTypeId: matchingType.id,
+              url: sourceUrl,
+              label: '',
+            }])
+          } else {
+            // No matching type found, add as free-form link
+            setExternalLinks([{
+              linkTypeId: '',
+              url: sourceUrl,
+              label: data.lookup_provider || 'Lookup source',
+            }])
+          }
+        }
+        
         // Don't mark as dirty yet - user hasn't made changes
         setIsDirty(false)
       } catch (e) {

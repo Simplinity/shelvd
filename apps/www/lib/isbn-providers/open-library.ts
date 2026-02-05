@@ -163,6 +163,27 @@ export const openLibrary: IsbnProvider = {
         series = data.series[0]
       }
       
+      // If no description on edition, try fetching from Works
+      let description: string | undefined = typeof data.description === 'string' 
+        ? data.description 
+        : data.description?.value
+      
+      if (!description && data.works && Array.isArray(data.works) && data.works.length > 0) {
+        try {
+          const worksResponse = await fetch(`https://openlibrary.org${data.works[0].key}.json`)
+          if (worksResponse.ok) {
+            const worksData = await worksResponse.json()
+            if (worksData.description) {
+              description = typeof worksData.description === 'string'
+                ? worksData.description
+                : worksData.description?.value
+            }
+          }
+        } catch {
+          // Skip if works fetch fails
+        }
+      }
+      
       const title = data.title || data.full_title
       
       if (!title) {
@@ -191,9 +212,7 @@ export const openLibrary: IsbnProvider = {
           series_number,
           edition: data.edition_name,
           format: data.physical_format,
-          description: typeof data.description === 'string' 
-            ? data.description 
-            : data.description?.value,
+          description,
           lccn,
           oclc_number,
           ddc,
