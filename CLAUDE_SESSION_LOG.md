@@ -91,6 +91,12 @@
 - Links to `/books/lookup`
 - Commit: `b23037f`
 
+### TODO — Publisher Search Bugs
+- [ ] Library of Congress — publisher="Gallimard" fails
+- [ ] Library Hub Discover (UK) — publisher="Gallimard" fails
+- [ ] Google Books — publisher="Gallimard" fails
+- [ ] Bol.com — publisher="Gallimard" fails
+
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
 - [ ] AbeBooks (HTML scraper) — Priority 3

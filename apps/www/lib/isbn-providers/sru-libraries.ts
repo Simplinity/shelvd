@@ -15,8 +15,9 @@ const locConfig: SruConfig = {
     isbn: 'bath.isbn',
     title: 'dc.title',
     author: 'dc.creator',
-    publisher: 'dc.publisher',
+    // dc.publisher is not supported by LoC SRU — falls back to keyword
     year: 'dc.date',
+    keyword: 'cql.anywhere',
   },
   sourceUrlPattern: 'https://lccn.loc.gov/{isbn}',
 }

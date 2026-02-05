@@ -20,6 +20,7 @@ export interface SruConfig {
     author?: string
     publisher?: string
     year?: string
+    keyword?: string  // fallback for unsupported fields (e.g. cql.anywhere)
   }
   // Some libraries use different SRU versions
   version?: string
@@ -420,8 +421,12 @@ function buildCqlQuery(params: SearchParams, config: SruConfig): string {
   if (params.author && indexes.author) {
     parts.push(`${indexes.author} ${textRel} "${params.author}"`);
   }
-  if (params.publisher && indexes.publisher) {
-    parts.push(`${indexes.publisher} ${textRel} "${params.publisher}"`);
+  if (params.publisher) {
+    if (indexes.publisher) {
+      parts.push(`${indexes.publisher} ${textRel} "${params.publisher}"`);
+    } else if (indexes.keyword) {
+      parts.push(`${indexes.keyword} ${textRel} "${params.publisher}"`);
+    }
   }
   if (params.yearFrom && indexes.year) {
     parts.push(`${indexes.year}>="${params.yearFrom}"`);
