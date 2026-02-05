@@ -278,16 +278,19 @@ function parseUnimarcRecord(recordXml: string): BookData {
     if (resp) authors.push(resp)
   }
 
-  // 210 — Publication info (place $a, publisher $c, year $d)
+  // 210/214 — Publication info (place $a, publisher $c, year $d)
+  // Field 214 is the newer UNIMARC standard (used by SUDOC), 210 is legacy (used by BnF)
   let publisher: string | undefined
   let publication_place: string | undefined
   let publication_year: string | undefined
 
   const field210 = getDatafields(recordXml, '210')[0]
-  if (field210) {
-    publication_place = cleanMarc(getSubfield(field210, 'a'))
-    publisher = cleanMarc(getSubfield(field210, 'c'))
-    const dateStr = getSubfield(field210, 'd')
+  const field214 = getDatafields(recordXml, '214')[0]
+  const pubField = field210 || field214
+  if (pubField) {
+    publication_place = cleanMarc(getSubfield(pubField, 'a'))
+    publisher = cleanMarc(getSubfield(pubField, 'c'))
+    const dateStr = getSubfield(pubField, 'd')
     if (dateStr) {
       const yearMatch = dateStr.match(/(\d{4})/)
       if (yearMatch) publication_year = yearMatch[1]
