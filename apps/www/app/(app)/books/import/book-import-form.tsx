@@ -229,7 +229,7 @@ export default function BookImportForm({ referenceData, userId }: Props) {
     }
 
     // Validate status
-    const validStatuses = ['in_collection', 'lent', 'borrowed', 'double', 'to_sell', 'on_sale', 'reserved', 'sold', 'ordered', 'lost', 'donated', 'destroyed', 'unknown']
+    const validStatuses = ['draft', 'in_collection', 'lent', 'borrowed', 'double', 'to_sell', 'on_sale', 'reserved', 'sold', 'ordered', 'lost', 'donated', 'destroyed', 'unknown']
     if (data.status && !validStatuses.includes(data.status.toLowerCase())) {
       warnings.push(`Unknown status "${data.status}", will default to "in_collection"`)
     }

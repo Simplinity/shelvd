@@ -187,6 +187,7 @@ export default function BookSearchForm({
 
   // Status options
   const statusOptions = [
+    { value: 'draft', label: 'Draft' },
     { value: 'in_collection', label: 'In Collection' },
     { value: 'lent', label: 'Lent' },
     { value: 'borrowed', label: 'Borrowed' },

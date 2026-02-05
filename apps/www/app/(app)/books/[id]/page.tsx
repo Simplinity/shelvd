@@ -300,6 +300,7 @@ export default async function BookDetailPage({ params }: PageProps) {
   // Status display helper
   const getStatusDisplay = (status: string) => {
     const statusMap: Record<string, { label: string; className: string }> = {
+      'draft': { label: 'Draft', className: 'bg-red-100 text-red-700' },
       'in_collection': { label: 'In Collection', className: 'bg-gray-100 text-gray-600' },
       'on_sale': { label: 'On Sale', className: 'bg-red-600 text-white' },
       'to_sell': { label: 'To Sell', className: 'bg-red-100 text-red-700' },

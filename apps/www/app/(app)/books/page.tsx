@@ -1499,6 +1499,7 @@ export default function BooksPage() {
                 </div>
                 <div className="col-span-1">
                   <span className={`text-xs px-2 py-0.5 ${
+                    book.status === 'draft' ? 'bg-red-100 text-red-700' :
                     book.status === 'on_sale' ? 'bg-red-600 text-white' :
                     book.status === 'to_sell' ? 'bg-red-100 text-red-700' :
                     book.status === 'reserved' ? 'border border-red-600 text-red-600' :
@@ -1513,7 +1514,8 @@ export default function BooksPage() {
                     book.status === 'unknown' ? 'bg-gray-200 text-gray-600' :
                     'bg-gray-100 text-gray-600'
                   }`}>
-                    {book.status === 'in_collection' ? 'In Col.' : 
+                    {book.status === 'draft' ? 'Draft' :
+                     book.status === 'in_collection' ? 'In Col.' : 
                      book.status === 'on_sale' ? 'On Sale' :
                      book.status === 'to_sell' ? 'To Sell' :
                      book.status === 'reserved' ? 'Reserved' :
