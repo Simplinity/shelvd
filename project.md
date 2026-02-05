@@ -217,6 +217,14 @@ status, action_needed
 - Open-in-new-tab button to search on external site
 - Display on book detail page with favicons
 
+**Duplicate Detection**
+- Server-side SQL detection (instant scan of 5000+ books)
+- ISBN-13, ISBN-10, and exact title matching
+- Grouped results with collapse/expand
+- Select all/deselect all per group
+- Bulk delete selected duplicates
+- View book in new tab
+
 ---
 
 ## Roadmap
@@ -225,7 +233,7 @@ status, action_needed
 
 | Prio | Feature | Status |
 |------|---------|--------|
-| 4 | Duplicate Detection | 🔴 Todo |
+| 4 | Duplicate Detection | 🟢 Done |
 | 5 | External Links | 🟢 Done |
 | 6 | User Settings | 🟢 Done |
 | 7 | Sharing & Public Catalog | 🔴 Todo |
@@ -345,7 +353,7 @@ shelvd/
 │   └── lib/
 │       ├── supabase/             # DB client + types
 │       └── actions/              # Server actions (settings, external-links)
-├── supabase/migrations/          # 006-008 external links + updated_at trigger
+├── supabase/migrations/          # 006-009 external links, triggers, duplicate detection
 └── project.md                    # This file
 ```
 

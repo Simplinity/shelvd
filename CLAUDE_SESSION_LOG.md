@@ -66,3 +66,27 @@ Bibliographic & Authority (7), Short Title Catalogs (9), National & Regional (12
 - `2f6bafa` — date formatting per user preference
 - `fc2cc98` — auto-fill URL with domain
 - `4eed856` — open-in-new-tab button
+
+---
+
+## DUPLICATE DETECTION — ✅ COMPLETE
+
+### Database (migration 009)
+- `find_isbn13_duplicates()` — groups books by ISBN-13
+- `find_isbn10_duplicates()` — groups books by ISBN-10
+- `find_title_duplicates()` — groups books by exact title (normalized)
+- `find_fuzzy_title_duplicates()` — placeholder for pg_trgm
+
+### UI: `/books/duplicates`
+- Instant server-side scan (SQL functions)
+- Grouped results: ISBN-13 > ISBN-10 > Exact Title
+- Collapse/expand groups
+- Select all/deselect all per group
+- Checkbox per book
+- Bulk delete selected
+- View book in new tab
+- Access via "Duplicates" button in books toolbar
+
+### Key Commits
+- `da069f4` — initial duplicate detection page
+- `ef01ca1` — server-side SQL functions for instant scan
