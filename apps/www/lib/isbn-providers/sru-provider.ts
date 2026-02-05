@@ -85,7 +85,12 @@ function decodeXmlEntities(text: string): string {
 // Clean trailing punctuation from MARC fields (e.g. "London :" → "London")
 function cleanMarc(value: string | undefined): string | undefined {
   if (!value) return undefined
-  return value.replace(/[\s,:;/]+$/, '').trim() || undefined
+  return value
+    // Strip UNIMARC NSB/NSE non-sorting markers (U+0088/U+0089, U+0098/U+009C)
+    .replace(/[\u0088\u0089\u0098\u009C]/g, '')
+    // Strip trailing punctuation common in MARC
+    .replace(/[\s,:;/]+$/, '')
+    .trim() || undefined
 }
 
 function parseMarcXmlRecord(recordXml: string): BookData {
