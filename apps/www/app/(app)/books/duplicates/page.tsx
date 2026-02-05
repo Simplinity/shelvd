@@ -30,15 +30,18 @@ export default async function DuplicatesPage() {
         condition:conditions ( name ),
         created_at
       `)
-      .eq('user_id', user.id)
       .order('title')
       .range(offset, offset + batchSize - 1)
 
+    console.log('Batch', offset, '- fetched:', data?.length, 'error:', error?.message)
+    
     if (error || !data || data.length === 0) break
     allBooks.push(...data)
     if (data.length < batchSize) break
     offset += batchSize
   }
+  
+  console.log('Total books fetched:', allBooks.length)
 
   // Fetch first contributor (author) for each book
   const bookIds = allBooks.map(b => b.id)
@@ -77,5 +80,7 @@ export default async function DuplicatesPage() {
     created_at: book.created_at || '',
   }))
 
+  console.log('Duplicates page - user:', user?.id, 'books fetched:', enrichedBooks.length)
+  
   return <DuplicatesClient books={enrichedBooks} />
 }
