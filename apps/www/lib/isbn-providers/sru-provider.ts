@@ -458,6 +458,7 @@ async function sruFetch(config: SruConfig, query: string, maxRecords: number = 5
   try {
     const response = await fetch(url, {
       headers: { 'Accept': 'application/xml, text/xml' },
+      signal: AbortSignal.timeout(15000), // 15s timeout
     })
 
     if (!response.ok) {
@@ -540,7 +541,7 @@ export function createSruProvider(config: SruConfig): IsbnProvider {
         return { items: [], total: 0, provider: config.code, error: 'No search parameters' }
       }
 
-      const limit = params.limit || 50
+      const limit = params.limit || 20
       const offset = params.offset || 0
       const startRecord = offset + 1 // SRU is 1-based
 

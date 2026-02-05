@@ -71,7 +71,7 @@ export const libris: IsbnProvider = {
     }
 
     const query = parts.join(' AND ')
-    const limit = params.limit || 50
+    const limit = params.limit || 20
     const offset = params.offset || 0
     const url = `${XSEARCH_BASE}?query=${encodeURIComponent(query)}&format=marcxml&n=${limit}&start=${offset + 1}`
 
