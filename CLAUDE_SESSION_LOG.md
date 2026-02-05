@@ -91,11 +91,17 @@
 - Links to `/books/lookup`
 - Commit: `b23037f`
 
-### TODO — Publisher Search Bugs
-- [ ] Library of Congress — publisher="Gallimard" fails
+### LoC Publisher Search Fix ✔️
+- `dc.publisher` index not supported by LoC SRU (returns "Unsupported Use attribute")
+- Added `keyword` index type to SruConfig; `buildCqlQuery()` falls back to keyword when publisher index missing
+- LoC config: removed `dc.publisher`, added `keyword: 'cql.anywhere'`
+- Commit: `6530c40`
+
+### Publisher Search Bugs
+- [x] Library of Congress — fixed: keyword fallback (commit `6530c40`)
 - [ ] Library Hub Discover (UK) — publisher="Gallimard" fails
 - [ ] Google Books — publisher="Gallimard" fails
-- [ ] Bol.com — publisher="Gallimard" fails
+- [ ] Bol.com NL — publisher="Gallimard" fails
 
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
