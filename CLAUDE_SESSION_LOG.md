@@ -176,7 +176,14 @@ Tested with ISBN `9780297790914` (A History of the Jews)
    - subjects/topic
    - notes/bibliography
 
-### Fixes needed:
-- [ ] Fix pages mapping in open-library.ts
-- [ ] Add ISBN-13 from lookup input to result
-- [ ] Map additional fields from Open Library response
+### Fixes applied (commit 63ec942):
+- [x] Fix pages mapping — handle both number and string types
+- [x] ISBN fallback — if lookup ISBN is 13/10 digits and not in response, use it
+- [x] Map publication_place from `publish_places[0]`
+- [x] Map pagination_description from `pagination`
+- [x] Map lccn, oclc_number, ddc, lcc from classification fields
+- [x] Map subjects array
+- [x] Map notes (bibliography/index info)
+- [x] Map language from `/languages/eng` → `eng`
+- [x] book-add-form.tsx: forward all new fields to form (publication_place, pagination_description, lccn, oclc_number, ddc, lcc, subjects→topic, notes→bibliography)
+- [x] lookup-form.tsx: preview shows all new fields (place, pagination, LCCN, OCLC, DDC, LCC, subjects)
