@@ -101,4 +101,52 @@ export function isProviderImplemented(code: string): boolean {
   return code in providers
 }
 
-export type { IsbnProvider, ProviderResult, BookData, ActiveProvider } from './types'
+/**
+ * Check if a provider supports multi-field search
+ */
+export function supportsFieldSearch(code: string): boolean {
+  const provider = providers[code]
+  return !!provider?.searchByFields
+}
+
+/**
+ * Search by multiple fields using a specific provider
+ */
+export async function searchByFields(
+  params: import('./types').SearchParams,
+  providerCode: string
+): Promise<import('./types').SearchResults> {
+  const provider = providers[providerCode]
+  
+  if (!provider) {
+    return { items: [], total: 0, provider: providerCode, error: 'Provider not implemented' }
+  }
+  
+  if (!provider.searchByFields) {
+    return { items: [], total: 0, provider: providerCode, error: 'Provider does not support field search' }
+  }
+  
+  return provider.searchByFields(params)
+}
+
+/**
+ * Get full details for a search result item
+ */
+export async function getProviderDetails(
+  editionKey: string,
+  providerCode: string
+): Promise<import('./types').ProviderResult> {
+  const provider = providers[providerCode]
+  
+  if (!provider) {
+    return { success: false, error: 'Provider not implemented', provider: providerCode }
+  }
+  
+  if (!provider.getDetails) {
+    return { success: false, error: 'Provider does not support detail fetch', provider: providerCode }
+  }
+  
+  return provider.getDetails(editionKey)
+}
+
+export type { IsbnProvider, ProviderResult, BookData, ActiveProvider, SearchParams, SearchResults, SearchResultItem } from './types'

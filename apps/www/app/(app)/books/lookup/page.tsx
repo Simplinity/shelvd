@@ -16,10 +16,10 @@ export default async function LookupPage() {
     .sort((a: { priority: number }, b: { priority: number }) => a.priority - b.priority)
   
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-2xl font-bold mb-2">ISBN Lookup</h1>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-2xl font-bold mb-2">Book Lookup</h1>
       <p className="text-muted-foreground mb-8">
-        Search for a book by ISBN to auto-fill details
+        Search external sources to auto-fill book details
       </p>
       
       <LookupForm activeProviders={activeProviders} />

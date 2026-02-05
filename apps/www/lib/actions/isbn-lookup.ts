@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { searchIsbn, searchProvider, type ProviderResult, type ActiveProvider } from '@/lib/isbn-providers'
+import { searchIsbn, searchProvider, searchByFields, getProviderDetails, type ProviderResult, type ActiveProvider, type SearchParams, type SearchResults } from '@/lib/isbn-providers'
 
 export async function lookupIsbn(isbn: string): Promise<{
   result: ProviderResult | null
@@ -49,6 +49,34 @@ export async function lookupIsbnWithProvider(
   }
   
   return searchProvider(isbn, providerCode)
+}
+
+export async function lookupByFields(
+  params: SearchParams,
+  providerCode: string
+): Promise<SearchResults> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    return { items: [], total: 0, provider: providerCode, error: 'Not authenticated' }
+  }
+  
+  return searchByFields(params, providerCode)
+}
+
+export async function lookupDetails(
+  editionKey: string,
+  providerCode: string
+): Promise<ProviderResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    return { success: false, error: 'Not authenticated', provider: providerCode }
+  }
+  
+  return getProviderDetails(editionKey, providerCode)
 }
 
 export async function getActiveProviders(): Promise<ActiveProvider[]> {

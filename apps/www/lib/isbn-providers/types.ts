@@ -38,13 +38,53 @@ export interface ProviderResult {
   source_url?: string  // URL where data was found
 }
 
+// Search parameters for multi-field search
+export interface SearchParams {
+  title?: string
+  author?: string
+  publisher?: string
+  isbn?: string
+  yearFrom?: string
+  yearTo?: string
+}
+
+// Lightweight result for search lists
+export interface SearchResultItem {
+  title: string
+  subtitle?: string
+  authors?: string[]
+  publisher?: string
+  publication_year?: string
+  isbn_13?: string
+  isbn_10?: string
+  cover_url?: string
+  format?: string
+  // Provider-specific key to fetch full details
+  edition_key?: string
+}
+
+// Multi-result search response
+export interface SearchResults {
+  items: SearchResultItem[]
+  total: number
+  provider: string
+  error?: string
+}
+
 export interface IsbnProvider {
   code: string
   name: string
   country?: string  // ISO country code
   type: 'api' | 'sru' | 'html'
   
+  // ISBN lookup (single result, full data)
   search(isbn: string): Promise<ProviderResult>
+  
+  // Multi-field search (multiple results, basic data)
+  searchByFields?(params: SearchParams): Promise<SearchResults>
+  
+  // Get full details for a specific edition (from search result)
+  getDetails?(editionKey: string): Promise<ProviderResult>
 }
 
 export interface ActiveProvider {

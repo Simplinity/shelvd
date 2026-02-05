@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Search, Loader2, Check, X, ExternalLink, Plus, ArrowLeft, Settings } from 'lucide-react'
-import { lookupIsbn } from '@/lib/actions/isbn-lookup'
-import { isProviderImplemented } from '@/lib/isbn-providers'
-import type { BookData, ActiveProvider } from '@/lib/isbn-providers'
+import { Search, Loader2, Check, X, ExternalLink, Plus, Settings, ChevronLeft, BookOpen } from 'lucide-react'
+import { lookupByFields, lookupDetails, lookupIsbn } from '@/lib/actions/isbn-lookup'
+import { isProviderImplemented, supportsFieldSearch } from '@/lib/isbn-providers'
+import type { BookData, ActiveProvider, SearchResultItem, SearchParams } from '@/lib/isbn-providers'
 
 interface Props {
   activeProviders: ActiveProvider[]
@@ -23,73 +23,182 @@ const COUNTRY_FLAGS: Record<string, string> = {
   'IT': '🇮🇹',
 }
 
+type ViewState = 'search' | 'results' | 'detail'
+
 export function LookupForm({ activeProviders }: Props) {
   const router = useRouter()
-  const [isbn, setIsbn] = useState('')
-  const [searching, setSearching] = useState(false)
-  const [result, setResult] = useState<BookData | null>(null)
-  const [foundProvider, setFoundProvider] = useState<string | null>(null)
-  const [sourceUrl, setSourceUrl] = useState<string | null>(null)
-  const [attempted, setAttempted] = useState<string[]>([])
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [noResult, setNoResult] = useState(false)
   
-  // Filter to only show implemented and active providers
+  // View state
+  const [view, setView] = useState<ViewState>('search')
+  
+  // Search form
+  const [selectedProvider, setSelectedProvider] = useState<string>(
+    activeProviders.find(p => isProviderImplemented(p.code))?.code || ''
+  )
+  const [searchFields, setSearchFields] = useState<SearchParams>({
+    title: '',
+    author: '',
+    publisher: '',
+    isbn: '',
+    yearFrom: '',
+    yearTo: '',
+  })
+  
+  // State
+  const [searching, setSearching] = useState(false)
+  const [results, setResults] = useState<SearchResultItem[]>([])
+  const [totalResults, setTotalResults] = useState(0)
+  const [searchError, setSearchError] = useState<string | null>(null)
+  
+  // Detail view
+  const [loadingDetail, setLoadingDetail] = useState(false)
+  const [detail, setDetail] = useState<BookData | null>(null)
+  const [detailProvider, setDetailProvider] = useState<string | null>(null)
+  const [detailSourceUrl, setDetailSourceUrl] = useState<string | null>(null)
+  
+  // Available providers (implemented only)
   const implementedProviders = activeProviders.filter(p => isProviderImplemented(p.code))
-  const notImplementedCount = activeProviders.filter(p => p.is_active && !isProviderImplemented(p.code)).length
+  
+  const hasSearchInput = Object.values(searchFields).some(v => v && v.trim())
   
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    const cleanIsbn = isbn.trim().replace(/[-\s]/g, '')
-    if (!cleanIsbn) return
-    
-    // Validate ISBN format
-    if (cleanIsbn.length !== 10 && cleanIsbn.length !== 13) {
-      setErrors({ validation: 'ISBN must be 10 or 13 digits' })
-      return
-    }
+    if (!hasSearchInput || !selectedProvider) return
     
     setSearching(true)
-    setResult(null)
-    setFoundProvider(null)
-    setSourceUrl(null)
-    setAttempted([])
-    setErrors({})
-    setNoResult(false)
+    setSearchError(null)
+    setResults([])
+    setDetail(null)
     
     try {
-      const response = await lookupIsbn(cleanIsbn)
+      // If only ISBN is filled, use the fast ISBN lookup
+      const isIsbnOnly = searchFields.isbn?.trim() && 
+        !searchFields.title?.trim() && 
+        !searchFields.author?.trim() && 
+        !searchFields.publisher?.trim() &&
+        !searchFields.yearFrom?.trim() && 
+        !searchFields.yearTo?.trim()
       
-      setAttempted(response.attempted)
-      setErrors(response.errors)
-      
-      if (response.result?.success && response.result.data) {
-        setResult(response.result.data)
-        setFoundProvider(response.result.provider)
-        setSourceUrl(response.result.source_url || null)
+      if (isIsbnOnly) {
+        // Direct ISBN lookup — returns single full result
+        const response = await lookupIsbn(searchFields.isbn!.trim())
+        if (response.result?.success && response.result.data) {
+          // Go straight to detail view
+          setDetail(response.result.data)
+          setDetailProvider(response.result.provider)
+          setDetailSourceUrl(response.result.source_url || null)
+          setView('detail')
+        } else {
+          setSearchError('No results found for this ISBN')
+          setView('results')
+        }
       } else {
-        setNoResult(true)
+        // Multi-field search
+        const response = await lookupByFields(
+          {
+            title: searchFields.title?.trim() || undefined,
+            author: searchFields.author?.trim() || undefined,
+            publisher: searchFields.publisher?.trim() || undefined,
+            isbn: searchFields.isbn?.trim() || undefined,
+            yearFrom: searchFields.yearFrom?.trim() || undefined,
+            yearTo: searchFields.yearTo?.trim() || undefined,
+          },
+          selectedProvider
+        )
+        
+        if (response.error) {
+          setSearchError(response.error)
+        }
+        
+        setResults(response.items)
+        setTotalResults(response.total)
+        setView('results')
       }
     } catch (err) {
-      setErrors({ search: err instanceof Error ? err.message : 'Search failed' })
-      setNoResult(true)
+      setSearchError(err instanceof Error ? err.message : 'Search failed')
+      setView('results')
     } finally {
       setSearching(false)
     }
   }
   
-  const handleAddToCollection = () => {
-    if (!result) return
+  const handleSelectResult = async (item: SearchResultItem) => {
+    setLoadingDetail(true)
     
-    // Store the result in sessionStorage for the add page to pick up
+    try {
+      // Try to get full details
+      if (item.edition_key) {
+        const result = await lookupDetails(item.edition_key, selectedProvider)
+        if (result.success && result.data) {
+          setDetail(result.data)
+          setDetailProvider(result.provider)
+          setDetailSourceUrl(result.source_url || null)
+          setView('detail')
+          return
+        }
+      }
+      
+      // Fallback: if we have an ISBN, use ISBN lookup
+      const isbn = item.isbn_13 || item.isbn_10
+      if (isbn) {
+        const response = await lookupIsbn(isbn)
+        if (response.result?.success && response.result.data) {
+          setDetail(response.result.data)
+          setDetailProvider(response.result.provider)
+          setDetailSourceUrl(response.result.source_url || null)
+          setView('detail')
+          return
+        }
+      }
+      
+      // Last resort: use the list item data as-is
+      setDetail({
+        title: item.title,
+        subtitle: item.subtitle,
+        authors: item.authors,
+        publisher: item.publisher,
+        publication_year: item.publication_year,
+        isbn_13: item.isbn_13,
+        isbn_10: item.isbn_10,
+        cover_url: item.cover_url,
+        format: item.format,
+      })
+      setDetailProvider(selectedProvider)
+      setDetailSourceUrl(null)
+      setView('detail')
+    } catch (err) {
+      setSearchError('Failed to load details')
+    } finally {
+      setLoadingDetail(false)
+    }
+  }
+  
+  const handleAddToCollection = () => {
+    if (!detail) return
+    
     sessionStorage.setItem('isbn_lookup_result', JSON.stringify({
-      ...result,
-      lookup_provider: foundProvider,
-      lookup_source_url: sourceUrl,
+      ...detail,
+      lookup_provider: detailProvider,
+      lookup_source_url: detailSourceUrl,
     }))
     
     router.push('/books/add?from=lookup')
+  }
+  
+  const handleBackToResults = () => {
+    setDetail(null)
+    setView('results')
+  }
+  
+  const handleBackToSearch = () => {
+    setResults([])
+    setDetail(null)
+    setSearchError(null)
+    setView('search')
+  }
+  
+  const handleFieldChange = (field: keyof SearchParams, value: string) => {
+    setSearchFields(prev => ({ ...prev, [field]: value }))
   }
   
   const getProviderName = (code: string): string => {
@@ -98,126 +207,225 @@ export function LookupForm({ activeProviders }: Props) {
   }
   
   return (
-    <div className="space-y-8">
-      {/* Search form */}
-      <form onSubmit={handleSearch} className="space-y-4">
-        <div className="flex gap-2">
-          <div className="flex-1">
+    <div className="space-y-6">
+      {/* Search Form — always visible */}
+      <form onSubmit={handleSearch} className="border border-border">
+        {/* Provider selector */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-muted/30">
+          <label className="text-sm font-medium whitespace-nowrap">Search in:</label>
+          <select
+            value={selectedProvider}
+            onChange={e => setSelectedProvider(e.target.value)}
+            className="flex-1 h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+          >
+            {implementedProviders.map(p => (
+              <option key={p.code} value={p.code}>
+                {p.country ? `${COUNTRY_FLAGS[p.country] || '🌐'} ` : '🌐 '}{p.name}
+              </option>
+            ))}
+          </select>
+          <Link href="/settings?tab=isbn-lookup" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+            <Settings className="w-3 h-3" />
+          </Link>
+        </div>
+        
+        {/* Search fields */}
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Title</label>
             <input
               type="text"
-              value={isbn}
-              onChange={e => setIsbn(e.target.value)}
-              placeholder="Enter ISBN (10 or 13 digits)"
-              className="w-full h-12 px-4 text-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+              value={searchFields.title}
+              onChange={e => handleFieldChange('title', e.target.value)}
+              placeholder="Book title"
+              className="w-full h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
               disabled={searching}
             />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Author</label>
+            <input
+              type="text"
+              value={searchFields.author}
+              onChange={e => handleFieldChange('author', e.target.value)}
+              placeholder="Author name"
+              className="w-full h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+              disabled={searching}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Publisher</label>
+            <input
+              type="text"
+              value={searchFields.publisher}
+              onChange={e => handleFieldChange('publisher', e.target.value)}
+              placeholder="Publisher name"
+              className="w-full h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+              disabled={searching}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">ISBN</label>
+            <input
+              type="text"
+              value={searchFields.isbn}
+              onChange={e => handleFieldChange('isbn', e.target.value)}
+              placeholder="ISBN-10 or ISBN-13"
+              className="w-full h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+              disabled={searching}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Publication Year</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={searchFields.yearFrom}
+                onChange={e => handleFieldChange('yearFrom', e.target.value)}
+                placeholder="From"
+                className="w-24 h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+                disabled={searching}
+                maxLength={4}
+              />
+              <span className="text-sm text-muted-foreground">to</span>
+              <input
+                type="text"
+                value={searchFields.yearTo}
+                onChange={e => handleFieldChange('yearTo', e.target.value)}
+                placeholder="To"
+                className="w-24 h-9 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-foreground"
+                disabled={searching}
+                maxLength={4}
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Search button */}
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30">
+          <p className="text-xs text-muted-foreground">
+            Fill in at least one field
+          </p>
           <button
             type="submit"
-            disabled={searching || !isbn.trim()}
-            className="h-12 px-6 bg-foreground text-background font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+            disabled={searching || !hasSearchInput || !selectedProvider}
+            className="h-9 px-5 bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
           >
             {searching ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Searching...</>
+              <><Loader2 className="w-4 h-4 animate-spin" /> Searching...</>
             ) : (
-              <><Search className="w-5 h-5" /> Search</>
+              <><Search className="w-4 h-4" /> Search</>
             )}
           </button>
         </div>
-        
-        {/* Active providers indicator */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Searching:</span>
-          <div className="flex gap-1">
-            {implementedProviders.slice(0, 5).map(p => (
-              <span key={p.code} title={p.name} className="inline-block">
-                {p.country ? COUNTRY_FLAGS[p.country] || '🌐' : '🌐'}
-              </span>
-            ))}
-            {implementedProviders.length > 5 && (
-              <span>+{implementedProviders.length - 5}</span>
-            )}
-          </div>
-          {notImplementedCount > 0 && (
-            <span className="text-xs">({notImplementedCount} providers not yet available)</span>
-          )}
-          <Link href="/settings?tab=isbn-lookup" className="ml-auto text-xs hover:underline flex items-center gap-1">
-            <Settings className="w-3 h-3" /> Configure
-          </Link>
-        </div>
       </form>
       
-      {/* Search progress */}
-      {searching && (
-        <div className="border border-border p-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Searching providers...
-          </div>
+      {/* Results List */}
+      {view === 'results' && (
+        <div>
+          {searchError && results.length === 0 && (
+            <div className="border border-border p-6 text-center">
+              <X className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="font-medium">No results found</p>
+              <p className="text-sm text-muted-foreground mt-1">{searchError}</p>
+              <div className="mt-4">
+                <Link
+                  href="/books/add"
+                  className="h-9 px-4 text-sm border border-border hover:bg-muted transition-colors inline-flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" /> Add Manually
+                </Link>
+              </div>
+            </div>
+          )}
+          
+          {results.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm text-muted-foreground">
+                  {totalResults > results.length 
+                    ? `Showing ${results.length} of ${totalResults} results`
+                    : `${results.length} result${results.length !== 1 ? 's' : ''}`
+                  } via {getProviderName(selectedProvider)}
+                </p>
+              </div>
+              
+              <div className="border border-border divide-y divide-border">
+                {results.map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSelectResult(item)}
+                    disabled={loadingDetail}
+                    className="w-full text-left px-4 py-3 hover:bg-muted/50 transition-colors flex gap-3 disabled:opacity-50"
+                  >
+                    {/* Cover thumbnail */}
+                    <div className="flex-shrink-0 w-10 h-14 bg-muted border border-border flex items-center justify-center overflow-hidden">
+                      {item.cover_url ? (
+                        <img
+                          src={item.cover_url}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        />
+                      ) : (
+                        <BookOpen className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{item.title}</p>
+                      {item.authors && item.authors.length > 0 && (
+                        <p className="text-sm text-muted-foreground truncate">
+                          {item.authors.join(', ')}
+                        </p>
+                      )}
+                      <div className="flex gap-3 text-xs text-muted-foreground mt-0.5">
+                        {item.publisher && <span>{item.publisher}</span>}
+                        {item.publication_year && <span>{item.publication_year}</span>}
+                        {(item.isbn_13 || item.isbn_10) && (
+                          <span>ISBN: {item.isbn_13 || item.isbn_10}</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {loadingDetail ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-muted-foreground flex-shrink-0 mt-1" />
+                    ) : (
+                      <ChevronLeft className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1 rotate-180" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
       
-      {/* Attempted providers */}
-      {!searching && attempted.length > 0 && (
-        <div className="text-sm text-muted-foreground">
-          <span>Searched: </span>
-          {attempted.map((code, i) => (
-            <span key={code}>
-              {i > 0 && ' → '}
-              <span className={errors[code] ? 'text-red-500' : foundProvider === code ? 'text-green-600 font-medium' : ''}>
-                {getProviderName(code)}
-                {errors[code] && !result && ` (${errors[code]})`}
-                {foundProvider === code && ' ✓'}
-              </span>
-            </span>
-          ))}
-        </div>
-      )}
-      
-      {/* Validation error */}
-      {errors.validation && (
-        <div className="border border-red-200 bg-red-50 p-4 text-red-700 text-sm">
-          {errors.validation}
-        </div>
-      )}
-      
-      {/* No result */}
-      {noResult && !errors.validation && (
-        <div className="border border-border p-6 text-center">
-          <X className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-          <p className="font-medium">No results found</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            This ISBN was not found in any of the active providers.
-          </p>
-          <div className="mt-4 flex justify-center gap-2">
-            <Link
-              href="/books/add"
-              className="h-9 px-4 text-sm border border-border hover:bg-muted transition-colors inline-flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" /> Add Manually
-            </Link>
-            <Link
-              href="/settings?tab=isbn-lookup"
-              className="h-9 px-4 text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
-            >
-              <Settings className="w-4 h-4" /> Enable more providers
-            </Link>
-          </div>
-        </div>
-      )}
-      
-      {/* Result preview */}
-      {result && (
+      {/* Detail View */}
+      {view === 'detail' && detail && (
         <div className="border border-border">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
             <div className="flex items-center gap-2">
-              <Check className="w-5 h-5 text-green-600" />
-              <span className="font-medium">Found via {getProviderName(foundProvider || '')}</span>
+              {results.length > 0 && (
+                <button
+                  onClick={handleBackToResults}
+                  className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back
+                </button>
+              )}
+              <div className="flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-600" />
+                <span className="font-medium">
+                  {detailProvider ? `Found via ${getProviderName(detailProvider)}` : 'Book details'}
+                </span>
+              </div>
             </div>
-            {sourceUrl && (
+            {detailSourceUrl && (
               <a
-                href={sourceUrl}
+                href={detailSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
@@ -227,116 +435,118 @@ export function LookupForm({ activeProviders }: Props) {
             )}
           </div>
           
-          {/* Book data preview */}
+          {/* Book data */}
           <div className="p-4 space-y-4">
             <div className="flex gap-4">
-              {/* Cover */}
-              {result.cover_url && (
+              {detail.cover_url && (
                 <div className="flex-shrink-0">
                   <img
-                    src={result.cover_url}
-                    alt={result.title}
+                    src={detail.cover_url}
+                    alt={detail.title}
                     className="w-24 h-auto border border-border"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                   />
                 </div>
               )}
               
-              {/* Details */}
               <div className="flex-1 min-w-0">
-                <h2 className="text-xl font-bold">{result.title}</h2>
-                {result.subtitle && (
-                  <p className="text-muted-foreground">{result.subtitle}</p>
+                <h2 className="text-xl font-bold">{detail.title}</h2>
+                {detail.subtitle && (
+                  <p className="text-muted-foreground">{detail.subtitle}</p>
                 )}
-                {result.authors && result.authors.length > 0 && (
-                  <p className="mt-1">by {result.authors.join(', ')}</p>
+                {detail.authors && detail.authors.length > 0 && (
+                  <p className="mt-1">by {detail.authors.join(', ')}</p>
                 )}
                 
                 <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                  {result.publisher && (
+                  {detail.publisher && (
                     <div>
-                      <span className="text-muted-foreground">Publisher:</span> {result.publisher}
+                      <span className="text-muted-foreground">Publisher:</span> {detail.publisher}
                     </div>
                   )}
-                  {result.publication_year && (
+                  {detail.publication_year && (
                     <div>
-                      <span className="text-muted-foreground">Year:</span> {result.publication_year}
+                      <span className="text-muted-foreground">Year:</span> {detail.publication_year}
                     </div>
                   )}
-                  {result.pages && (
+                  {detail.publication_place && (
                     <div>
-                      <span className="text-muted-foreground">Pages:</span> {result.pages}
+                      <span className="text-muted-foreground">Place:</span> {detail.publication_place}
                     </div>
                   )}
-                  {result.language && (
+                  {detail.pages && (
                     <div>
-                      <span className="text-muted-foreground">Language:</span> {result.language}
+                      <span className="text-muted-foreground">Pages:</span> {detail.pages}
                     </div>
                   )}
-                  {result.isbn_13 && (
+                  {detail.language && (
                     <div>
-                      <span className="text-muted-foreground">ISBN-13:</span> {result.isbn_13}
+                      <span className="text-muted-foreground">Language:</span> {detail.language}
                     </div>
                   )}
-                  {result.isbn_10 && (
+                  {detail.isbn_13 && (
                     <div>
-                      <span className="text-muted-foreground">ISBN-10:</span> {result.isbn_10}
+                      <span className="text-muted-foreground">ISBN-13:</span> {detail.isbn_13}
                     </div>
                   )}
-                  {result.publication_place && (
+                  {detail.isbn_10 && (
                     <div>
-                      <span className="text-muted-foreground">Place:</span> {result.publication_place}
+                      <span className="text-muted-foreground">ISBN-10:</span> {detail.isbn_10}
                     </div>
                   )}
-                  {result.format && (
+                  {detail.format && (
                     <div>
-                      <span className="text-muted-foreground">Format:</span> {result.format}
+                      <span className="text-muted-foreground">Format:</span> {detail.format}
                     </div>
                   )}
-                  {result.pagination_description && (
+                  {detail.pagination_description && (
                     <div>
-                      <span className="text-muted-foreground">Pagination:</span> {result.pagination_description}
+                      <span className="text-muted-foreground">Pagination:</span> {detail.pagination_description}
                     </div>
                   )}
-                  {result.lccn && (
+                  {detail.lccn && (
                     <div>
-                      <span className="text-muted-foreground">LCCN:</span> {result.lccn}
+                      <span className="text-muted-foreground">LCCN:</span> {detail.lccn}
                     </div>
                   )}
-                  {result.oclc_number && (
+                  {detail.oclc_number && (
                     <div>
-                      <span className="text-muted-foreground">OCLC:</span> {result.oclc_number}
+                      <span className="text-muted-foreground">OCLC:</span> {detail.oclc_number}
                     </div>
                   )}
-                  {result.ddc && (
+                  {detail.ddc && (
                     <div>
-                      <span className="text-muted-foreground">DDC:</span> {result.ddc}
+                      <span className="text-muted-foreground">DDC:</span> {detail.ddc}
                     </div>
                   )}
-                  {result.lcc && (
+                  {detail.lcc && (
                     <div>
-                      <span className="text-muted-foreground">LCC:</span> {result.lcc}
+                      <span className="text-muted-foreground">LCC:</span> {detail.lcc}
                     </div>
                   )}
-                  {result.series && (
+                  {detail.edition && (
+                    <div>
+                      <span className="text-muted-foreground">Edition:</span> {detail.edition}
+                    </div>
+                  )}
+                  {detail.series && (
                     <div className="col-span-2">
-                      <span className="text-muted-foreground">Series:</span> {result.series}
-                      {result.series_number && ` #${result.series_number}`}
+                      <span className="text-muted-foreground">Series:</span> {detail.series}
+                      {detail.series_number && ` #${detail.series_number}`}
                     </div>
                   )}
-                  {result.subjects && result.subjects.length > 0 && (
+                  {detail.subjects && detail.subjects.length > 0 && (
                     <div className="col-span-2">
-                      <span className="text-muted-foreground">Subjects:</span> {result.subjects.join(', ')}
+                      <span className="text-muted-foreground">Subjects:</span> {detail.subjects.join(', ')}
                     </div>
                   )}
                 </div>
               </div>
             </div>
             
-            {/* Description */}
-            {result.description && (
+            {detail.description && (
               <div className="text-sm text-muted-foreground border-t border-border pt-3">
-                <p className="line-clamp-3">{result.description}</p>
+                <p className="line-clamp-3">{detail.description}</p>
               </div>
             )}
           </div>
@@ -356,11 +566,11 @@ export function LookupForm({ activeProviders }: Props) {
         </div>
       )}
       
-      {/* Manual add link */}
-      {!result && !searching && !noResult && (
-        <div className="text-center pt-8 border-t border-border">
+      {/* Manual add — show when on search view and not searching */}
+      {view === 'search' && !searching && (
+        <div className="text-center pt-4 border-t border-border">
           <p className="text-sm text-muted-foreground mb-3">
-            Don't have an ISBN or prefer to enter details manually?
+            Can't find it? Enter details manually.
           </p>
           <Link
             href="/books/add"
