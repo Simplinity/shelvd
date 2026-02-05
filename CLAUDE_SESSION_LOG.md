@@ -52,6 +52,27 @@
 - Renamed settings tab "ISBN Lookup" → "Book Lookup" (`isbn-lookup` → `book-lookup`)
 - Updated all references (settings page, settings form, lookup form link)
 
+### BnF Fix ✔️
+- BnF SRU requires `adj` (adjacency) for ISBN and `all` for text fields, not `=`
+- Added `cqlRelations` config to SruConfig interface (`isbn`, `text` per-field relations)
+- Added `mxc:` namespace support in all MARC XML regex (MarcXchange)
+- Commit: `2b30c6d`
+
+### SUDOC Fix ✔️
+- SUDOC uses UNIMARC field 214 (newer standard) for publication info instead of 210
+- UNIMARC parser now checks both 210 and 214 for publisher/year/place
+- Commit: `0dbe437`
+
+### Pagination — Load More ✔️
+- Increased default search results from 20 → 50 across all providers
+- Added `limit`/`offset` to `SearchParams`, `hasMore` to `SearchResults`
+- SRU: `maximumRecords` + `startRecord` pagination
+- Open Library: `limit` + `offset` pagination
+- Google Books: `maxResults` (max 40) + `startIndex` pagination
+- LIBRIS: `n` + `start` pagination
+- UI: "Load more (N remaining)" button appends next batch to results list
+- Commit: `6163c93`
+
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
 - [ ] AbeBooks (HTML scraper) — Priority 3

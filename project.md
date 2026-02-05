@@ -249,10 +249,10 @@ status, action_needed
 | Google Books | API | ✅ Full (ISBN + field search + details) |
 | Bol.com (NL) | HTML | ✅ ISBN only |
 | Library of Congress | SRU/MARC21 | ✅ Full |
-| BnF | SRU/UNIMARC | ✅ Full |
+| BnF | SRU/UNIMARC | ✅ Full (adj/all CQL, mxc: namespace) |
 | DNB | SRU/MARC21 | ✅ Full |
 | K10plus (GBV/SWB) | SRU/MARC21 | ✅ Full |
-| SUDOC (France) | SRU/UNIMARC | ✅ Full |
+| SUDOC (France) | SRU/UNIMARC | ✅ Full (field 214 for pub info) |
 | LIBRIS (Sweden) | Xsearch/MARC21 | ✅ Full |
 | Library Hub Discover (UK) | SRU/MARC21 | ✅ Full |
 
@@ -269,6 +269,10 @@ status, action_needed
 - Fnac, Casa del Libro, IBS.it, Mondadori, Standaard — limited data, hard to scrape
 - KBR — only Z39.50 (catalog.kbr.be:9001), no SRU
 - KB NL — SRU returns Dublin Core not MARCXML, ISBN search unreliable
+
+**Search UX:**
+- Default 50 results per batch (was 20), with "Load more" pagination button
+- All providers support offset/limit: SRU (`startRecord`), Open Library (`offset`), Google Books (`startIndex`), LIBRIS (`start`)
 
 **Future:**
 - Enrich mode on book edit page (merge-scherm for cherry-picking fields from second search)
