@@ -102,12 +102,11 @@ export default function DuplicatesClient({ books }: Props) {
     // 1. ISBN-13 matches
     const isbn13Map = new Map<string, Book[]>()
     for (const book of books) {
-      if (book.isbn_13) {
-        const key = book.isbn_13.replace(/[^0-9X]/gi, '')
-        if (key.length >= 10) {
-          if (!isbn13Map.has(key)) isbn13Map.set(key, [])
-          isbn13Map.get(key)!.push(book)
-        }
+      if (book.isbn_13 && book.isbn_13.trim()) {
+        // Use original ISBN as key (most duplicates have identical strings)
+        const key = book.isbn_13.trim()
+        if (!isbn13Map.has(key)) isbn13Map.set(key, [])
+        isbn13Map.get(key)!.push(book)
       }
     }
     for (const [key, groupBooks] of isbn13Map) {
@@ -125,12 +124,10 @@ export default function DuplicatesClient({ books }: Props) {
     // 2. ISBN-10 matches (skip if already in ISBN-13 group)
     const isbn10Map = new Map<string, Book[]>()
     for (const book of books) {
-      if (book.isbn_10 && !usedInGroup.has(book.id)) {
-        const key = book.isbn_10.replace(/[^0-9X]/gi, '')
-        if (key.length >= 10) {
-          if (!isbn10Map.has(key)) isbn10Map.set(key, [])
-          isbn10Map.get(key)!.push(book)
-        }
+      if (book.isbn_10 && book.isbn_10.trim() && !usedInGroup.has(book.id)) {
+        const key = book.isbn_10.trim()
+        if (!isbn10Map.has(key)) isbn10Map.set(key, [])
+        isbn10Map.get(key)!.push(book)
       }
     }
     for (const [key, groupBooks] of isbn10Map) {
@@ -376,9 +373,15 @@ export default function DuplicatesClient({ books }: Props) {
         
         {/* Debug info */}
         <p className="text-xs text-muted-foreground">
-          Books with ISBN-13: {books.filter(b => b.isbn_13).length} | 
-          Books with ISBN-10: {books.filter(b => b.isbn_10).length} | 
-          Books with OCLC: {books.filter(b => b.oclc_number).length}
+          Total: {books.length} | 
+          ISBN-13: {books.filter(b => b.isbn_13).length} | 
+          ISBN-10: {books.filter(b => b.isbn_10).length} | 
+          OCLC: {books.filter(b => b.oclc_number).length} | 
+          Scanned: {scanned ? 'yes' : 'no'} | 
+          Groups: {duplicateGroups.length}
+        </p>
+        <p className="text-xs text-muted-foreground font-mono">
+          Sample ISBN: {books.find(b => b.isbn_13)?.isbn_13 || 'none'}
         </p>
       </div>
 
