@@ -252,7 +252,7 @@ status, action_needed
 | BnF | SRU/UNIMARC | ✅ Full (adj/all CQL, mxc: namespace) |
 | DNB | SRU/MARC21 | ✅ Full |
 | K10plus (GBV/SWB) | SRU/MARC21 | ✅ Full |
-| SUDOC (France) | SRU/UNIMARC | ✅ Full (field 214 for pub info) |
+| SUDOC (France) | SRU/UNIMARC | ✅ Full (field 214 for pub info, NSB/NSE cleanup) |
 | LIBRIS (Sweden) | Xsearch/MARC21 | ✅ Full |
 | Library Hub Discover (UK) | SRU/MARC21 | ✅ Full |
 
@@ -271,8 +271,10 @@ status, action_needed
 - KB NL — SRU returns Dublin Core not MARCXML, ISBN search unreliable
 
 **Search UX:**
-- Default 50 results per batch (was 20), with "Load more" pagination button
+- SRU/LIBRIS: 20 results per batch (XML size limits on Vercel), Open Library: 50, Google Books: 40
+- "Load more" pagination button for additional batches
 - All providers support offset/limit: SRU (`startRecord`), Open Library (`offset`), Google Books (`startIndex`), LIBRIS (`start`)
+- 15s `AbortSignal.timeout()` on all SRU fetch requests
 
 **Future:**
 - Enrich mode on book edit page (merge-scherm for cherry-picking fields from second search)

@@ -445,7 +445,7 @@ export function extractRecords(xml: string): string[] {
 }
 
 function extractTotalResults(xml: string): number {
-  const match = xml.match(/<(?:srw:)?numberOfRecords>(\d+)<\/(?:srw:)?numberOfRecords>/i)
+  const match = xml.match(/<(?:srw:|zs:)?numberOfRecords>(\d+)<\/(?:srw:|zs:)?numberOfRecords>/i)
   return match ? parseInt(match[1]) : 0
 }
 
@@ -468,8 +468,8 @@ async function sruFetch(config: SruConfig, query: string, maxRecords: number = 5
     const xml = await response.text()
     
     // Check for SRU diagnostics/errors
-    if (xml.includes('<diagnostic>') || xml.includes('<srw:diagnostic>')) {
-      const diagMatch = xml.match(/<(?:srw:)?message>([^<]+)<\/(?:srw:)?message>/)
+    if (xml.includes('<diagnostic>') || xml.includes('<srw:diagnostic>') || xml.includes('<zs:diagnostic>')) {
+      const diagMatch = xml.match(/<(?:srw:|zs:)?message>([^<]+)<\/(?:srw:|zs:)?message>/) || xml.match(/<diag:message>([^<]+)<\/diag:message>/)
       if (diagMatch) {
         return { xml, ok: false, error: diagMatch[1] }
       }

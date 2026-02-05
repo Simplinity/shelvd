@@ -73,6 +73,24 @@
 - UI: "Load more (N remaining)" button appends next batch to results list
 - Commit: `6163c93`
 
+### UNIMARC NSB/NSE Cleanup ✔️
+- SUDOC/BnF titles contained invisible UNIMARC sorting markers (U+0098/U+009C) rendering as visible glyphs
+- Added `.replace(/[\u0088\u0089\u0098\u009C]/g, '')` to `cleanMarc()` function
+- Commit: `d92c489`
+
+### SUDOC Timeout Fix ✔️
+- SUDOC broad queries (e.g. publisher="Gallimard" → 70K results) caused "fetch failed" on Vercel
+- Root cause: pagination commit increased default from 20→50 records, generating ~300KB XML responses
+- Fix: Reduced SRU and LIBRIS default back to 20 results (Open Library/Google Books stay at 50/40)
+- Added 15s `AbortSignal.timeout()` to all SRU fetch requests
+- Load More pagination still works for fetching additional batches
+- Commit: `3f428e0`
+
+### Lookup Button on Add Page ✔️
+- Added "Lookup" button with Search icon to book add form header (next to Cancel/Save)
+- Links to `/books/lookup`
+- Commit: `b23037f`
+
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
 - [ ] AbeBooks (HTML scraper) — Priority 3
