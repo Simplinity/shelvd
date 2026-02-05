@@ -137,8 +137,8 @@ export const openLibrary: IsbnProvider = {
       // Subjects
       let subjects: string[] | undefined
       if (data.subjects && Array.isArray(data.subjects) && data.subjects.length > 0) {
-        subjects = data.subjects.map((s: any) => typeof s === 'string' ? s : s.name || s.value || '').filter(Boolean)
-        if (subjects.length === 0) subjects = undefined
+        const mapped = data.subjects.map((s: any) => typeof s === 'string' ? s : s.name || s.value || '').filter(Boolean)
+        if (mapped.length > 0) subjects = mapped
       }
       
       // Notes (bibliography, index info)
