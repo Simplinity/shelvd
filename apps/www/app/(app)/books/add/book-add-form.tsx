@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -661,6 +661,9 @@ export default function BookAddForm({ referenceData }: Props) {
           <h1 className="text-2xl font-bold">Add Book</h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button type="button" variant="outline" asChild>
+            <Link href="/books/lookup"><Search className="w-4 h-4 mr-2" />Lookup</Link>
+          </Button>
           <Button type="button" variant="outline" asChild>
             <Link href="/books" onClick={handleCancel}>Cancel</Link>
           </Button>
