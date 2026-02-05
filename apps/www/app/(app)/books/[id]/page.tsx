@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon } from 'lucide-react'
+import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, ScanBarcode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
 
@@ -390,6 +390,12 @@ export default async function BookDetailPage({ params }: PageProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/books/lookup" className="gap-2">
+              <ScanBarcode className="w-4 h-4" />
+              Lookup
+            </Link>
+          </Button>
           <Button variant="outline" asChild>
             <Link href={`/books/${id}/edit`} className="gap-2">
               <Edit className="w-4 h-4" />

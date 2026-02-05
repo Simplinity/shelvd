@@ -1142,7 +1142,7 @@ export default function BooksPage() {
           <Button variant="outline" asChild>
             <Link href="/books/lookup" className="gap-2">
               <ScanBarcode className="w-4 h-4" />
-              ISBN Lookup
+              Lookup
             </Link>
           </Button>
           <Button asChild>
