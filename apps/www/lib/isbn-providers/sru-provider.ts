@@ -27,6 +27,12 @@ export interface SruConfig {
   sourceUrlPattern?: string
   // Set to true for UNIMARC-based libraries (BnF, etc.)
   isUnimarc?: boolean
+  // CQL relations per field type (default: '=' for all)
+  // BnF uses 'adj' for ISBN, 'all' for text fields
+  cqlRelations?: {
+    isbn?: string   // default '='
+    text?: string   // default '='
+  }
   // Extra query parameters to append to the SRU URL (e.g. '&x-collection=GGC')
   extraParams?: string
 }
@@ -35,7 +41,7 @@ export interface SruConfig {
 
 function getDatafields(xml: string, tag: string): string[] {
   const results: string[] = []
-  const regex = new RegExp(`<(?:marc:)?datafield[^>]*tag="${tag}"[^>]*>([\\s\\S]*?)</(?:marc:)?datafield>`, 'g')
+  const regex = new RegExp(`<(?:marc:|mxc:)?datafield[^>]*tag="${tag}"[^>]*>([\\s\\S]*?)</(?:marc:|mxc:)?datafield>`, 'g')
   let match
   while ((match = regex.exec(xml)) !== null) {
     results.push(match[1])
@@ -44,14 +50,14 @@ function getDatafields(xml: string, tag: string): string[] {
 }
 
 function getSubfield(datafieldContent: string, code: string): string | undefined {
-  const regex = new RegExp(`<(?:marc:)?subfield[^>]*code="${code}"[^>]*>([^<]*)</(?:marc:)?subfield>`)
+  const regex = new RegExp(`<(?:marc:|mxc:)?subfield[^>]*code="${code}"[^>]*>([^<]*)</(?:marc:|mxc:)?subfield>`)
   const match = datafieldContent.match(regex)
   return match ? decodeXmlEntities(match[1].trim()) : undefined
 }
 
 function getAllSubfields(datafieldContent: string, code: string): string[] {
   const results: string[] = []
-  const regex = new RegExp(`<(?:marc:)?subfield[^>]*code="${code}"[^>]*>([^<]*)</(?:marc:)?subfield>`, 'g')
+  const regex = new RegExp(`<(?:marc:|mxc:)?subfield[^>]*code="${code}"[^>]*>([^<]*)</(?:marc:|mxc:)?subfield>`, 'g')
   let match
   while ((match = regex.exec(datafieldContent)) !== null) {
     const val = decodeXmlEntities(match[1].trim())
@@ -61,7 +67,7 @@ function getAllSubfields(datafieldContent: string, code: string): string[] {
 }
 
 function getControlfield(xml: string, tag: string): string | undefined {
-  const regex = new RegExp(`<(?:marc:)?controlfield[^>]*tag="${tag}"[^>]*>([^<]*)</(?:marc:)?controlfield>`)
+  const regex = new RegExp(`<(?:marc:|mxc:)?controlfield[^>]*tag="${tag}"[^>]*>([^<]*)</(?:marc:|mxc:)?controlfield>`)
   const match = xml.match(regex)
   return match ? decodeXmlEntities(match[1].trim()) : undefined
 }
@@ -391,26 +397,29 @@ function parseMarcToListItem(recordXml: string, index: number, isUnimarc: boolea
 
 // ===================== SRU SEARCH =====================
 
-function buildCqlQuery(params: SearchParams, indexes: SruConfig['indexes']): string {
+function buildCqlQuery(params: SearchParams, config: SruConfig): string {
+  const { indexes, cqlRelations } = config
+  const isbnRel = cqlRelations?.isbn || '='
+  const textRel = cqlRelations?.text || '='
   const parts: string[] = []
 
   if (params.isbn && indexes.isbn) {
-    parts.push(`${indexes.isbn}="${params.isbn.replace(/[-\s]/g, '')}"`)
+    parts.push(`${indexes.isbn} ${isbnRel} "${params.isbn.replace(/[-\s]/g, '')}"`);
   }
   if (params.title && indexes.title) {
-    parts.push(`${indexes.title}="${params.title}"`)
+    parts.push(`${indexes.title} ${textRel} "${params.title}"`);
   }
   if (params.author && indexes.author) {
-    parts.push(`${indexes.author}="${params.author}"`)
+    parts.push(`${indexes.author} ${textRel} "${params.author}"`);
   }
   if (params.publisher && indexes.publisher) {
-    parts.push(`${indexes.publisher}="${params.publisher}"`)
+    parts.push(`${indexes.publisher} ${textRel} "${params.publisher}"`);
   }
   if (params.yearFrom && indexes.year) {
-    parts.push(`${indexes.year}>="${params.yearFrom}"`)
+    parts.push(`${indexes.year}>="${params.yearFrom}"`);
   }
   if (params.yearTo && indexes.year) {
-    parts.push(`${indexes.year}<="${params.yearTo}"`)
+    parts.push(`${indexes.year}<="${params.yearTo}"`);
   }
 
   return parts.join(' and ')
@@ -418,8 +427,8 @@ function buildCqlQuery(params: SearchParams, indexes: SruConfig['indexes']): str
 
 export function extractRecords(xml: string): string[] {
   const records: string[] = []
-  // Match both namespaced and non-namespaced record elements
-  const regex = /<(?:marc:)?record[\s>][\s\S]*?<\/(?:marc:)?record>/g
+  // Match both namespaced and non-namespaced record elements (marc:, mxc: for MarcXchange)
+  const regex = /<(?:marc:|mxc:)?record[\s>][\s\S]*?<\/(?:marc:|mxc:)?record>/g
   let match
   while ((match = regex.exec(xml)) !== null) {
     records.push(match[0])
@@ -480,7 +489,8 @@ export function createSruProvider(config: SruConfig): IsbnProvider {
         return { success: false, error: 'ISBN search not supported', provider: config.code }
       }
 
-      const query = `${config.indexes.isbn}="${cleanIsbn}"`
+      const isbnRel = config.cqlRelations?.isbn || '='
+      const query = `${config.indexes.isbn} ${isbnRel} "${cleanIsbn}"`
       const { xml, ok, error } = await sruFetch(config, query, 1)
 
       if (!ok) {
@@ -516,7 +526,7 @@ export function createSruProvider(config: SruConfig): IsbnProvider {
     },
 
     async searchByFields(params: SearchParams): Promise<SearchResults> {
-      const query = buildCqlQuery(params, config.indexes)
+      const query = buildCqlQuery(params, config)
       if (!query) {
         return { items: [], total: 0, provider: config.code, error: 'No search parameters' }
       }

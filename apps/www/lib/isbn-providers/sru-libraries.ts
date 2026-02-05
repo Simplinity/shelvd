@@ -37,6 +37,10 @@ const bnfConfig: SruConfig = {
     publisher: 'bib.publisher',
     year: 'bib.publicationdate',
   },
+  cqlRelations: {
+    isbn: 'adj',
+    text: 'all',
+  },
   sourceUrlPattern: 'https://catalogue.bnf.fr/rechercher.do?critere1=ISBN&recherche1={isbn}',
 }
 
