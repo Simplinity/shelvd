@@ -236,15 +236,52 @@ status, action_needed
 | 4 | Duplicate Detection | 🟢 Done |
 | 5 | External Links | 🟢 Done |
 | 6 | User Settings | 🟢 Done |
-| 7 | Sharing & Public Catalog | 🔴 Todo |
-| 8 | Currency & Valuation | 🔴 Todo |
+| 7 | Book Lookup (multi-field search) | 🟡 In Progress |
+| 8 | Sharing & Public Catalog | 🔴 Todo |
+| 9 | Currency & Valuation | 🔴 Todo |
+
+### Book Lookup — Provider Implementation Plan
+
+**Implemented:**
+| Provider | Type | Status |
+|----------|------|--------|
+| Open Library | API | ✅ Full (ISBN + field search + details) |
+| Bol.com (NL) | HTML | ✅ ISBN only |
+
+**Priority 1 — API providers (easy, reliable):**
+| Provider | Type | Notes |
+|----------|------|-------|
+| Google Books | API | Enormous coverage, free API |
+| WorldCat | API | Broad, OCLC-based |
+
+**Priority 2 — SRU/national libraries (one shared SRU parser, configure per library):**
+| Provider | Country | Notes |
+|----------|---------|-------|
+| Library of Congress | US | Richest bibliographic data |
+| BnF | FR | Strong for French-language |
+| DNB | DE | Strong for German-language |
+| KBR | BE | Belgian national library |
+| KB | NL | Dutch national library |
+| British Library | GB | Strong for English-language |
+
+**Priority 3 — HTML scrapers (fragile but valuable):**
+| Provider | Notes |
+|----------|-------|
+| AbeBooks | Antiquarian market data, relevant for collectors |
+
+**Skipped (unreliable/low value):**
+- Amazon (4 variants) — aggressive anti-scraping, CAPTCHAs
+- Fnac, Casa del Libro, IBS.it, Mondadori, Standaard — limited data, hard to scrape
+
+**Future:**
+- Enrich mode on book edit page (merge-scherm for cherry-picking fields from second search)
 
 ### Parallel Track
 - Custom Tags
 - Landing page + Knowledge base
 - Templates system
 - PDF catalog export
-- Image upload
+- Image upload (Supabase Storage, webp, thumbnail + full)
 
 ---
 
