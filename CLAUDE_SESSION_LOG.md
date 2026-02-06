@@ -99,8 +99,8 @@
 
 ### Publisher Search Bugs
 - [x] Library of Congress — fixed: keyword fallback (commit `6530c40`)
-- [ ] Library Hub Discover (UK) — publisher="Gallimard" fails
-- [ ] Google Books — publisher="Gallimard" fails
+- [ ] Library Hub Discover (UK) — ALL queries 403 blocked by Cloudflare (not just publisher)
+- [ ] Google Books — 429 quota exceeded (no API key, free tier limit hit)
 - [ ] Bol.com NL — publisher="Gallimard" fails
 
 ### TODO — Provider Implementation
