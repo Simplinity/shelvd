@@ -264,7 +264,7 @@ status, action_needed
 | KB NL | SRU/DC | Dublin Core format, ISBN unreliable |
 
 **Skipped (unreliable/low value):**
-- Amazon (4 variants) — aggressive anti-scraping, CAPTCHAs
+- Amazon (4 variants) — PA-API deprecated April 2026, requires Associates account + 10 sales/month, affiliate-focused not bibliographic
 - Fnac, Casa del Libro, IBS.it, Mondadori, Standaard — limited data, hard to scrape
 - KBR — only Z39.50 (catalog.kbr.be:9001), no SRU
 - KB NL — SRU returns Dublin Core not MARCXML, ISBN search unreliable
