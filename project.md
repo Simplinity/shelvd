@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2026-02-05  
+> **Last updated:** 2026-02-06  
 > **Author:** Bruno (owner) + Claude (AI assistant)
 
 ---
@@ -257,18 +257,15 @@ status, action_needed
 | Library Hub Discover (UK) | SRU/MARC21 | ❌ Disabled (Cloudflare blocks server-side SRU) |
 | Standaard Boekhandel | HTML+JSON | ✅ Autocomplete API + JSON-LD (publisher=distributeur, max ~10 results) |
 
-**Remaining:**
-| Provider | Type | Notes |
-|----------|------|-------|
-| WorldCat | API | Broad, OCLC-based |
-| KBR (Belgium) | Z39.50 | No SRU endpoint, Z39.50 only |
-| KB NL | SRU/DC | Dublin Core format, ISBN unreliable |
+**Remaining:** None — all providers evaluated ✅
 
 **Skipped (unreliable/low value):**
 - Amazon (4 variants) — PA-API deprecated April 2026, requires Associates account + 10 sales/month, affiliate-focused not bibliographic
 - Fnac — Akamai WAF + Queue-it blocks all server-side requests, no public search API (Marketplace API is seller-only)
 - Casa del Libro — no public API, search is client-side rendered (SvelteKit), Spanish market only
-- IBS.it, Mondadori — not yet evaluated
+- IBS.it — no public API, product pages client-side rendered (Vue.js), no JSON-LD server-side, Italian market only
+- Mondadori Store — no public API, client-side rendered, products disappear from catalog, Italian market only
+- WorldCat — Classify API discontinued Jan 2024, Search API v1.0 ended Dec 2024, v2.0 requires paid OCLC Cataloging subscription
 - KBR — only Z39.50 (catalog.kbr.be:9001), no SRU
 - KB NL — SRU returns Dublin Core not MARCXML, ISBN search unreliable
 
