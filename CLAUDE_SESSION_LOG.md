@@ -117,7 +117,7 @@
 - Bol.com blocks all server-side requests with captcha/cookie wall (both ISBN and field search)
 - Removed from provider registry (code preserved in `bol-nl.ts` for future re-enable)
 - 8 working providers remain: Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS
-- Commit: see below
+- Commit: `816d1a8`
 
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
