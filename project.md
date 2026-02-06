@@ -260,7 +260,6 @@ status, action_needed
 | Provider | Type | Notes |
 |----------|------|-------|
 | WorldCat | API | Broad, OCLC-based |
-| AbeBooks | HTML | Antiquarian market data |
 | KBR (Belgium) | Z39.50 | No SRU endpoint, Z39.50 only |
 | KB NL | SRU/DC | Dublin Core format, ISBN unreliable |
 

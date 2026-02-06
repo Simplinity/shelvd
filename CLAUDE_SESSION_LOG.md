@@ -125,7 +125,6 @@
 
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
-- [ ] AbeBooks (HTML scraper) — Priority 3
 - [ ] Enrich mode on book edit page (merge-scherm)
 
 ---
