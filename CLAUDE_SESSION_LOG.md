@@ -103,6 +103,16 @@
 - [ ] Google Books — 429 quota exceeded (no API key, free tier limit hit)
 - [x] Bol.com NL — fixed: added searchByFields + getDetails (slug-based titles, detail via product page) (commit `4edb42f`)
 
+### Google Books API Key Support ✔️
+- Added `GOOGLE_BOOKS_API_KEY` env var support — appended to all 3 fetch URLs (search, searchByFields, getDetails)
+- Without key: ~100 requests/day per IP (429 errors on Vercel). With key: 1,000/day free
+- Commit: `dbcb0d2`
+
+### Library Hub Discover Disabled ✔️
+- Cloudflare blocks all server-side SRU requests (403 with JS challenge page)
+- Removed from provider registry (code preserved in `sru-libraries.ts` for future re-enable)
+- Commit: `dbcb0d2`
+
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
 - [ ] AbeBooks (HTML scraper) — Priority 3

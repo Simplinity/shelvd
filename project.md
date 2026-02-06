@@ -246,7 +246,7 @@ status, action_needed
 | Provider | Type | Status |
 |----------|------|--------|
 | Open Library | API | ✅ Full (ISBN + field search + details) |
-| Google Books | API | ✅ Full (ISBN + field search + details) |
+| Google Books | API | ✅ Full (needs `GOOGLE_BOOKS_API_KEY` env var for 1K/day quota) |
 | Bol.com (NL) | HTML | ✅ ISBN only |
 | Library of Congress | SRU/MARC21 | ✅ Full |
 | BnF | SRU/UNIMARC | ✅ Full (adj/all CQL, mxc: namespace) |
@@ -254,7 +254,7 @@ status, action_needed
 | K10plus (GBV/SWB) | SRU/MARC21 | ✅ Full |
 | SUDOC (France) | SRU/UNIMARC | ✅ Full (field 214 for pub info, NSB/NSE cleanup) |
 | LIBRIS (Sweden) | Xsearch/MARC21 | ✅ Full |
-| Library Hub Discover (UK) | SRU/MARC21 | ✅ Full |
+| Library Hub Discover (UK) | SRU/MARC21 | ❌ Disabled (Cloudflare blocks server-side SRU) |
 
 **Remaining:**
 | Provider | Type | Notes |
