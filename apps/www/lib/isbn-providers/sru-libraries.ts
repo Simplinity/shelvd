@@ -108,28 +108,6 @@ const sudocConfig: SruConfig = {
   sourceUrlPattern: 'https://www.sudoc.abes.fr/cbs/DB=2.1/CMD?ACT=SRCHA&IKT=7&TRM={isbn}',
 }
 
-// ===================== LIBRARY HUB DISCOVER (UK) =====================
-// Library Hub Discover (JISC) is the UK academic union catalog covering 100+ libraries
-// including the British Library. Replaces the defunct explore.bl.uk SRU endpoint.
-// The BL's own SRU died after the Oct 2023 cyber-attack; new catalogue.bl.uk has no SRU.
-// Docs: https://discover.libraryhub.jisc.ac.uk/support/api/
-const libraryhubConfig: SruConfig = {
-  code: 'bl',
-  name: 'Library Hub Discover (UK)',
-  country: 'GB',
-  baseUrl: 'https://discover.libraryhub.jisc.ac.uk/sru-api',
-  recordSchema: 'marcxml',
-  version: '1.1',
-  indexes: {
-    isbn: 'bath.isbn',
-    title: 'dc.title',
-    author: 'dc.creator',
-    publisher: 'dc.publisher',
-    year: 'dc.date',
-  },
-  sourceUrlPattern: 'https://discover.libraryhub.jisc.ac.uk/search?isbn={isbn}',
-}
-
 // ===================== EXPORTS =====================
 
 export const loc = createSruProvider(locConfig)
@@ -137,7 +115,6 @@ export const bnf = createSruProvider(bnfConfig)
 export const dnb = createSruProvider(dnbConfig)
 export const k10plus = createSruProvider(k10plusConfig)
 export const sudoc = createSruProvider(sudocConfig)
-export const bl = createSruProvider(libraryhubConfig)
 
 // NOT IMPLEMENTED — no usable SRU endpoint:
 // KBR (Belgium): Z39.50 only at catalog.kbr.be:9001, no SRU

@@ -2,7 +2,6 @@
 
 import type { IsbnProvider, ProviderResult, ActiveProvider } from './types'
 import { openLibrary } from './open-library'
-import { bolNl } from './bol-nl'
 import { googleBooks } from './google-books'
 import { loc, bnf, dnb, k10plus, sudoc } from './sru-libraries'
 import { libris } from './libris'
@@ -10,7 +9,6 @@ import { libris } from './libris'
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
   'open_library': openLibrary,
-  // 'bol_nl': bolNl, // Disabled — Bol.com blocks server-side requests with captcha/cookie wall
   'google_books': googleBooks,
   'loc': loc,
   'bnf': bnf,
@@ -18,7 +16,6 @@ const providers: Record<string, IsbnProvider> = {
   'k10plus': k10plus,
   'sudoc': sudoc,
   'libris': libris,
-  // 'bl': bl, // Disabled — Cloudflare blocks server-side SRU requests
 }
 
 /**
