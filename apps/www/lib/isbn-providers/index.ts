@@ -4,7 +4,7 @@ import type { IsbnProvider, ProviderResult, ActiveProvider } from './types'
 import { openLibrary } from './open-library'
 import { bolNl } from './bol-nl'
 import { googleBooks } from './google-books'
-import { loc, bnf, dnb, bl, k10plus, sudoc } from './sru-libraries'
+import { loc, bnf, dnb, k10plus, sudoc } from './sru-libraries'
 import { libris } from './libris'
 
 // Registry of all implemented providers
@@ -18,7 +18,7 @@ const providers: Record<string, IsbnProvider> = {
   'k10plus': k10plus,
   'sudoc': sudoc,
   'libris': libris,
-  'bl': bl,
+  // 'bl': bl, // Disabled — Cloudflare blocks server-side SRU requests
 }
 
 /**

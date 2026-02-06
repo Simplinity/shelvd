@@ -101,7 +101,7 @@
 - [x] Library of Congress — fixed: keyword fallback (commit `6530c40`)
 - [ ] Library Hub Discover (UK) — ALL queries 403 blocked by Cloudflare (not just publisher)
 - [ ] Google Books — 429 quota exceeded (no API key, free tier limit hit)
-- [ ] Bol.com NL — publisher="Gallimard" fails
+- [x] Bol.com NL — fixed: added searchByFields + getDetails (slug-based titles, detail via product page) (commit `4edb42f`)
 
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1

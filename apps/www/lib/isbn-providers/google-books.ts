@@ -1,7 +1,11 @@
 // Google Books ISBN Provider (API)
-// Uses Google Books API — free, no key required for basic usage
+// Uses Google Books API — free tier available, API key recommended for higher quota
 
 import type { IsbnProvider, ProviderResult, SearchParams, SearchResults, SearchResultItem, BookData } from './types'
+
+// API key from env — without it, requests are limited to ~100/day per IP
+const API_KEY = process.env.GOOGLE_BOOKS_API_KEY || ''
+const keyParam = API_KEY ? `&key=${API_KEY}` : ''
 
 function parseVolumeToBookData(volume: any): BookData {
   const info = volume.volumeInfo || {}
@@ -115,7 +119,7 @@ export const googleBooks: IsbnProvider = {
 
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${cleanIsbn}&maxResults=1`,
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${cleanIsbn}&maxResults=1${keyParam}`,
         { headers: { 'Accept': 'application/json' } }
       )
 
@@ -171,7 +175,7 @@ export const googleBooks: IsbnProvider = {
       const q = encodeURIComponent(queryParts.join('+'))
       const limit = Math.min(params.limit || 40, 40) // Google Books max is 40
       const offset = params.offset || 0
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=${limit}&startIndex=${offset}&printType=books&orderBy=relevance`
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=${limit}&startIndex=${offset}&printType=books&orderBy=relevance${keyParam}`
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' },
@@ -226,7 +230,7 @@ export const googleBooks: IsbnProvider = {
   async getDetails(volumeId: string): Promise<ProviderResult> {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes/${volumeId}`,
+        `https://www.googleapis.com/books/v1/volumes/${volumeId}${API_KEY ? `?key=${API_KEY}` : ''}`,
         { headers: { 'Accept': 'application/json' } }
       )
 
