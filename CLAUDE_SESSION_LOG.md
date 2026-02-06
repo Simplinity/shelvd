@@ -113,6 +113,12 @@
 - Removed from provider registry (code preserved in `sru-libraries.ts` for future re-enable)
 - Commit: `dbcb0d2`
 
+### Bol.com Disabled ✔️
+- Bol.com blocks all server-side requests with captcha/cookie wall (both ISBN and field search)
+- Removed from provider registry (code preserved in `bol-nl.ts` for future re-enable)
+- 8 working providers remain: Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS
+- Commit: see below
+
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
 - [ ] AbeBooks (HTML scraper) — Priority 3
@@ -131,4 +137,4 @@
 - ✅ User Settings (account, config, external links, ISBN lookup providers)
 - ✅ External Links (55 types, per-user activation)
 - ✅ Duplicate Detection (server-side SQL, grouped results, bulk delete)
-- ✅ Book Lookup — 10 providers: Open Library, Google Books, Bol.com, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, Library Hub (UK)
+- ✅ Book Lookup — 8 active providers: Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS (Bol.com + Library Hub disabled: captcha/Cloudflare)

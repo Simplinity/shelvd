@@ -247,7 +247,7 @@ status, action_needed
 |----------|------|--------|
 | Open Library | API | ✅ Full (ISBN + field search + details) |
 | Google Books | API | ✅ Full (`GOOGLE_BOOKS_API_KEY=AIzaSyBcxf0XwSI8DFg8MTpD1SZYN4Uj9oOwQBY`) |
-| Bol.com (NL) | HTML | ✅ ISBN only |
+| Bol.com (NL) | HTML | ❌ Disabled (captcha/cookie wall blocks server-side requests) |
 | Library of Congress | SRU/MARC21 | ✅ Full |
 | BnF | SRU/UNIMARC | ✅ Full (adj/all CQL, mxc: namespace) |
 | DNB | SRU/MARC21 | ✅ Full |

@@ -10,7 +10,7 @@ import { libris } from './libris'
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
   'open_library': openLibrary,
-  'bol_nl': bolNl,
+  // 'bol_nl': bolNl, // Disabled — Bol.com blocks server-side requests with captcha/cookie wall
   'google_books': googleBooks,
   'loc': loc,
   'bnf': bnf,
