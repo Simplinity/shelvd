@@ -113,11 +113,15 @@
 - Removed from provider registry (code preserved in `sru-libraries.ts` for future re-enable)
 - Commit: `dbcb0d2`
 
-### Bol.com Disabled ✔️
-- Bol.com blocks all server-side requests with captcha/cookie wall (both ISBN and field search)
-- Removed from provider registry (code preserved in `bol-nl.ts` for future re-enable)
+### Bol.com + Library Hub Removed ✔️
+- Bol.com: captcha/cookie wall blocks all server-side requests
+- Library Hub: Cloudflare blocks all server-side SRU requests (403)
+- Deleted `bol-nl.ts`, removed Library Hub config from `sru-libraries.ts`
+- Removed both from provider registry in `index.ts`
+- Deleted from `isbn_providers` DB table (+ user preferences via `user_isbn_providers`)
+- Migration: `011_remove_disabled_providers.sql`
 - 8 working providers remain: Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS
-- Commit: `816d1a8`
+- Commits: `816d1a8`, `1ea8608`
 
 ### TODO — Provider Implementation
 - [ ] WorldCat (API) — Priority 1
