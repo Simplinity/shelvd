@@ -5,6 +5,7 @@ import { openLibrary } from './open-library'
 import { googleBooks } from './google-books'
 import { loc, bnf, dnb, k10plus, sudoc } from './sru-libraries'
 import { libris } from './libris'
+import { standaardBoekhandel } from './standaard-boekhandel'
 
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
@@ -16,6 +17,7 @@ const providers: Record<string, IsbnProvider> = {
   'k10plus': k10plus,
   'sudoc': sudoc,
   'libris': libris,
+  'standaard': standaardBoekhandel,
 }
 
 /**

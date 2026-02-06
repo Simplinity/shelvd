@@ -255,12 +255,12 @@ status, action_needed
 | SUDOC (France) | SRU/UNIMARC | ✅ Full (field 214 for pub info, NSB/NSE cleanup) |
 | LIBRIS (Sweden) | Xsearch/MARC21 | ✅ Full |
 | Library Hub Discover (UK) | SRU/MARC21 | ❌ Disabled (Cloudflare blocks server-side SRU) |
+| Standaard Boekhandel | HTML+JSON | ✅ Autocomplete API + JSON-LD (publisher=distributeur, max ~10 results) |
 
 **Remaining:**
 | Provider | Type | Notes |
 |----------|------|-------|
 | WorldCat | API | Broad, OCLC-based |
-| Standaard Boekhandel | HTML+JSON | Autocomplete API + JSON-LD productpagina, geen blocking, beperkte metadata (publisher=distributeur) |
 | KBR (Belgium) | Z39.50 | No SRU endpoint, Z39.50 only |
 | KB NL | SRU/DC | Dublin Core format, ISBN unreliable |
 
