@@ -100,7 +100,7 @@
 ### Publisher Search Bugs
 - [x] Library of Congress — fixed: keyword fallback (commit `6530c40`)
 - [ ] Library Hub Discover (UK) — ALL queries 403 blocked by Cloudflare (not just publisher)
-- [ ] Google Books — 429 quota exceeded (no API key, free tier limit hit)
+- [x] Google Books — fixed: added API key support via `GOOGLE_BOOKS_API_KEY` env var (commit `dbcb0d2`)
 - [x] Bol.com NL — fixed: added searchByFields + getDetails (slug-based titles, detail via product page) (commit `4edb42f`)
 
 ### Google Books API Key Support ✔️
