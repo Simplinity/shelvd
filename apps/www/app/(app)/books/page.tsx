@@ -176,6 +176,10 @@ export default function BooksPage() {
 
   const supabase = createClient()
 
+  // Get collection filter from URL
+  const collectionId = searchParams.get('collection') || ''
+  const [collectionName, setCollectionName] = useState<string | null>(null)
+
   // Get global search query from URL
   const globalSearchQuery = searchParams.get('q') || ''
 
@@ -380,6 +384,41 @@ export default function BooksPage() {
     return [...new Set(bookContributors.map(bc => bc.book_id))]
   }
 
+  // Helper: Get book IDs for a collection
+  const getBookIdsForCollection = async (colId: string): Promise<string[]> => {
+    let allIds: string[] = []
+    let offset = 0
+    while (true) {
+      const { data, error } = await supabase
+        .from('book_collections')
+        .select('book_id')
+        .eq('collection_id', colId)
+        .range(offset, offset + 999)
+      if (error || !data || data.length === 0) break
+      allIds = [...allIds, ...data.map(r => r.book_id)]
+      if (data.length < 1000) break
+      offset += 1000
+    }
+    return allIds
+  }
+
+  // Fetch collection name when filter is active
+  useEffect(() => {
+    if (!collectionId) {
+      setCollectionName(null)
+      return
+    }
+    const fetchName = async () => {
+      const { data } = await supabase
+        .from('collections')
+        .select('name')
+        .eq('id', collectionId)
+        .single()
+      setCollectionName(data?.name || 'Collection')
+    }
+    fetchName()
+  }, [collectionId])
+
   // Helper: Get book IDs for global search (searches author names)
   const getBookIdsForGlobalAuthorSearch = async (searchTerms: string[]): Promise<string[]> => {
     // Build OR conditions for all search terms
@@ -437,10 +476,24 @@ export default function BooksPage() {
     // 3. ADVANCED FILTERS MODE - Individual field filters
     // ========================================================================
 
+    // Get collection filter
+    const colId = searchParams.get('collection') || ''
+    let collectionBookIds: string[] | null = null
+    if (colId) {
+      collectionBookIds = await getBookIdsForCollection(colId)
+      if (collectionBookIds.length === 0) {
+        // Collection is empty
+        if (!append) setBooks([])
+        setLoading(false)
+        setLoadingMore(false)
+        return
+      }
+    }
+
     // DEFAULT MODE - No search, no filters - show all books
     // IMPORTANT: This must come FIRST and return early!
     if (!isGlobalSearch && !hasFilters) {
-      const { data, error } = await supabase
+      let defaultQuery = supabase
         .from('books')
         .select(`
           id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
@@ -451,6 +504,12 @@ export default function BooksPage() {
             role:contributor_roles ( name )
           )
         `)
+
+      if (collectionBookIds) {
+        defaultQuery = defaultQuery.in('id', collectionBookIds)
+      }
+
+      const { data, error } = await defaultQuery
         .order('title', { ascending: true })
         .range(from, to)
 
@@ -538,6 +597,12 @@ export default function BooksPage() {
         if (batch.length < BATCH_SIZE) break
         
         fetchFrom += BATCH_SIZE
+      }
+
+      // Filter by collection if active
+      if (collectionBookIds) {
+        const colSet = new Set(collectionBookIds)
+        allBooks = allBooks.filter((b: any) => colSet.has(b.id))
       }
 
       const data = allBooks
@@ -672,6 +737,9 @@ export default function BooksPage() {
         }
         if (authorBookIds && authorBookIds.length > 0) {
           query = query.in('id', authorBookIds)
+        }
+        if (collectionBookIds) {
+          query = query.in('id', collectionBookIds)
         }
       } else {
         const orConditions: string[] = []
@@ -834,7 +902,22 @@ export default function BooksPage() {
       }
     }
 
+    // Collection filter for count
+    let collectionBookIdsForCount: string[] | null = null
+    if (collectionId) {
+      collectionBookIdsForCount = await getBookIdsForCollection(collectionId)
+      if (collectionBookIdsForCount.length === 0) {
+        setTotalCount(0)
+        return
+      }
+    }
+
     let query = supabase.from('books').select('*', { count: 'exact', head: true })
+
+    // Apply collection filter to count
+    if (collectionBookIdsForCount) {
+      query = query.in('id', collectionBookIdsForCount)
+    }
     
     if (hasAdvancedFilters && isAnd) {
       if (filters.title) query = query.ilike('title', isExact ? filters.title : `%${filters.title}%`)
@@ -1052,7 +1135,7 @@ export default function BooksPage() {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">
-            {hasAnySearch ? 'Search Results' : 'My Collection'}
+            {hasAnySearch ? 'Search Results' : collectionName ? collectionName : 'My Collection'}
           </h1>
           <p className="text-muted-foreground">
             {hasAnySearch 
@@ -1243,6 +1326,21 @@ export default function BooksPage() {
           </Button>
         </form>
       </div>
+
+      {/* Collection filter indicator */}
+      {collectionId && collectionName && (
+        <div className="mb-4 p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">
+              Viewing collection: <strong>{collectionName}</strong>
+            </span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => router.push('/books')}>
+            <X className="w-3 h-3 mr-1" />
+            Show All Books
+          </Button>
+        </div>
+      )}
 
       {/* Global Search indicator */}
       {hasGlobalSearch && !hasAdvancedFilters && (
