@@ -61,6 +61,17 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 | — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
 | — | Custom Tags | 🔴 Todo |
 | — | Image upload | 🔴 Todo |
+| — | Landing page + Knowledge base | 🔴 Todo |
+
+## Completed Cleanup (2026-02-07)
+
+| # | Item | Commit |
+|---|------|--------|
+| 1 | Remove "Wishlist" book status from UI (now a collection) | `eb84a94` |
+| 2 | Fix external links with no URL + reject domain-only on save | `833d64c` |
+| 3 | Optimize global search within collection (fetch only collection books) | `63d6f5e` |
+| 4 | Collection chips toggleable on book detail page | `a3a057d` |
+| 5 | Move to Library button — kept as one-click shortcut, chips cover general case | — |
 
 ---
 
@@ -99,6 +110,14 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 
 | Hash | Description |
 |------|-------------|
+| `a3a057d` | Collection chips toggleable on book detail |
+| `63d6f5e` | Optimize global search within collection |
+| `833d64c` | Fix external links with no URL |
+| `eb84a94` | Remove Wishlist status from UI |
+| `a87c525` | Show external link URLs on detail page |
+| `460fa08` | Fix SRU provider source_url in getDetails |
+| `4e82566` | Move to Library button on book detail |
+| `5c714de` | Fix collection filtering URL overflow |
 | `3443c66` | Make Wishlist non-deletable (is_default=true) |
 | `a3c5fc2` | Default Wishlist collection (migration 012 + trigger) |
 | `ebfda18` | Collections tab in settings nav, fix All Books count |
