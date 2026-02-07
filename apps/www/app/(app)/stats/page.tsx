@@ -10,6 +10,7 @@ export default function StatsPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [displayCurrency, setDisplayCurrency] = useState('EUR')
 
   const supabase = createClient()
 
@@ -21,6 +22,10 @@ export default function StatsPage() {
       setLoading(false)
       return
     }
+
+    // Fetch user's display currency
+    const { data: profile } = await supabase.from('user_profiles').select('default_currency').eq('id', user.id).single()
+    if (profile?.default_currency) setDisplayCurrency(profile.default_currency)
 
     const { data, error: fetchError } = await (supabase as any)
       .from('user_stats')
@@ -83,7 +88,7 @@ export default function StatsPage() {
 
   // Format helpers
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
+    return new Intl.NumberFormat('nl-BE', { style: 'currency', currency: displayCurrency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
   }
 
   const formatDate = (dateString: string) => {

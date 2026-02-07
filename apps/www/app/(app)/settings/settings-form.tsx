@@ -45,18 +45,7 @@ interface Props {
   isbnProviders: IsbnProvider[]
 }
 
-const CURRENCIES = [
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'GBP', label: 'GBP (£)' },
-  { value: 'CHF', label: 'CHF' },
-  { value: 'SEK', label: 'SEK (kr)' },
-  { value: 'NOK', label: 'NOK (kr)' },
-  { value: 'DKK', label: 'DKK (kr)' },
-  { value: 'JPY', label: 'JPY (¥)' },
-  { value: 'CAD', label: 'CAD ($)' },
-  { value: 'AUD', label: 'AUD ($)' },
-]
+import { CURRENCIES } from '@/lib/currencies'
 
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
@@ -678,7 +667,7 @@ function ConfigurationSection({ profile }: { profile: any }) {
             <label className={labelClass}>Default Currency</label>
             <select name="default_currency" defaultValue={profile?.default_currency || 'EUR'} className={inputClass}>
               {CURRENCIES.map(c => (
-                <option key={c.value} value={c.value}>{c.label}</option>
+                <option key={c.code} value={c.code}>{c.label}</option>
               ))}
             </select>
           </div>
