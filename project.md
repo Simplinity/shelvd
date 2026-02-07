@@ -213,7 +213,7 @@ status, action_needed, internal_notes
 | 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
 | — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
-| — | Custom Tags | 🔴 Todo |
+| — | Custom Tags | ✅ Done |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
 

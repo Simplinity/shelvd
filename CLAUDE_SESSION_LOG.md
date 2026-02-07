@@ -20,6 +20,7 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 - ✅ External Links (54 system types across 8 categories, per-user activation, custom types)
 - ✅ Duplicate Detection (server-side SQL, ISBN + title matching, grouped results, bulk delete)
 - ✅ Multiple Collections (Library + Wishlist default, nav dropdown, filtering, bulk add/remove, settings page, migrations 011–012)
+- ✅ Custom Tags (colored tags, create/search/autocomplete, filter by tag, clickable on detail page)
 
 ### Book Lookup (9 active providers)
 - ✅ Open Library — API (ISBN + field search + Works API fallback for descriptions)
@@ -59,7 +60,7 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 | 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge fields from lookup on edit page) | 🔴 Todo |
 | — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
-| — | Custom Tags | 🔴 Todo |
+| — | Custom Tags | ✅ Done |
 | — | Image upload | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
 
@@ -110,6 +111,9 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 
 | Hash | Description |
 |------|-------------|
+| `d31dbfe` | Custom Tags: RLS, colored input, clickable detail chips, filter indicator |
+| `5e289a7` | Complete BOOK_STATUSES (all 14 statuses) |
+| `e6841d6` | Toast feedback on collection chip toggle |
 | `a3a057d` | Collection chips toggleable on book detail |
 | `63d6f5e` | Optimize global search within collection |
 | `833d64c` | Fix external links with no URL |
