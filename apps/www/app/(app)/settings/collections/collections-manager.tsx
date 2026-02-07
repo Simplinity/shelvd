@@ -181,6 +181,7 @@ export function CollectionsManager() {
         <a href="/settings?tab=external-links" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">External Links</a>
         <a href="/settings?tab=book-lookup" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">Book Lookup</a>
         <a href="/settings/collections" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-foreground text-foreground">Collections</a>
+        <a href="/settings/tags" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">Tags</a>
       </div>
 
       <div className="flex justify-between items-start mb-6">

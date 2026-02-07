@@ -93,6 +93,12 @@ export default async function SettingsPage({
         >
           Collections
         </a>
+        <a
+          href="/settings/tags"
+          className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground"
+        >
+          Tags
+        </a>
       </div>
 
       <SettingsForm
