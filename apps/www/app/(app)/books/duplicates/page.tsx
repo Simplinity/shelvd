@@ -173,7 +173,7 @@ export default function DuplicatesPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <Link href="/books" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">

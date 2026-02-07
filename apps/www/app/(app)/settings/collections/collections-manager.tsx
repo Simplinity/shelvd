@@ -171,7 +171,7 @@ export function CollectionsManager() {
   const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-2xl font-bold mb-8">Settings</h1>
 
       {/* Tab navigation (mirrors /settings page) */}

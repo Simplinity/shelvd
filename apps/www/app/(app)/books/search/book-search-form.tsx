@@ -228,7 +228,7 @@ export default function BookSearchForm({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50/30 to-background dark:from-red-950/10">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link 

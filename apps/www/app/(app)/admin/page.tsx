@@ -80,7 +80,7 @@ export default async function AdminPage({
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <Shield className="w-5 h-5 text-primary" />

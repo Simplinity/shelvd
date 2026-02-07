@@ -526,7 +526,7 @@ export default function BookImportForm({ referenceData, userId }: Props) {
   const warningCount = parsedBooks.filter(b => b.warnings.length > 0).length
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-4">
