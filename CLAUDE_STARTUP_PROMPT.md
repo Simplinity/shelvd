@@ -1,86 +1,90 @@
-# Claude Session Startup Prompt for Shelvd
+# Claude Startup Prompt — Shelvd
 
-## CRITICAL RULES - READ THESE FIRST
+## Project
 
-1. **ALWAYS update CLAUDE_SESSION_LOG.md** after completing ANY task or making ANY change
-2. **ALWAYS check what already exists** before creating anything new
-3. **ALWAYS push to GitHub** after completing work
-4. **NEVER assume** - check the actual files and current state first
+**Shelvd** is a SaaS webapp for serious book collectors (first editions, signed copies, fine bindings, antiquarian). Built with Next.js 15 + Supabase + Tailwind + shadcn/ui, Swiss design. Live at https://shelvd.org.
 
-## Project Location
-- `/Users/bruno/Developer/shelvd`
+**Location:** `/Users/bruno/Developer/shelvd`
 
-## First Actions - DO THESE IMMEDIATELY
+## First Actions — DO THESE IMMEDIATELY
 
-1. Read the project overview:
-```
+```bash
 cat /Users/bruno/Developer/shelvd/project.md
-```
-
-2. Read the session log to see what's been done and what's in progress:
-```
 cat /Users/bruno/Developer/shelvd/CLAUDE_SESSION_LOG.md
+cd /Users/bruno/Developer/shelvd && git status && git log --oneline -10
 ```
 
-3. Check git status for any uncommitted work:
+After reading, summarize: what's complete, what's in progress, any uncommitted changes.
+
+## What's Built (all working)
+
+- **Collection:** CRUD, list/grid, bulk delete, 5000+ books
+- **Search:** Global (client-side batch) + Advanced (14 fields, AND/OR)
+- **Import/Export:** Excel template, CSV, JSON
+- **Stats Dashboard:** Metrics, charts, top 10s
+- **Cataloging:** ISBD (4 languages), 45+ cover types, 76 formats, 69 MARC roles, 3887 BISAC
+- **Admin:** User management, stats bar
+- **Settings:** Account, config, external links (54 system types), book lookup providers
+- **Duplicate Detection:** Server-side SQL, ISBN + title, grouped bulk delete
+- **Book Lookup:** 9 providers (Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, Standaard Boekhandel)
+
+## Tech
+
+| Layer | Stack |
+|-------|-------|
+| Frontend | Next.js 15 (App Router), Tailwind CSS 4, shadcn/ui |
+| DB | Supabase PostgreSQL (EU Frankfurt) |
+| Hosting | Vercel (auto-deploy on push) |
+| Design | Swiss Design (minimal, monochrome) |
+
+### Key Files
+- `project.md` — Full spec, schema, design decisions, pitfalls
+- `CLAUDE_SESSION_LOG.md` — Session history, completed work, next priorities
+- `apps/www/lib/isbn-providers/` — Book lookup provider code
+- `supabase/migrations/` — DB migrations (001–010)
+
+### Database
+```bash
+/opt/homebrew/opt/libpq/bin/psql "postgresql://postgres:LsY1yr4siVYlZhiN@db.euieagntkbhzkyzvnllx.supabase.co:5432/postgres"
 ```
-cd /Users/bruno/Developer/shelvd && git status
-```
 
-4. Check the latest commits to understand recent changes:
-```
-cd /Users/bruno/Developer/shelvd && git log --oneline -10
-```
+### Environment
+- `GOOGLE_BOOKS_API_KEY=AIzaSyBcxf0XwSI8DFg8MTpD1SZYN4Uj9oOwQBY`
 
-## 
+## Critical Rules
 
-## After Reading - Summarize
+1. **ALWAYS read project.md and session log** before starting work
+2. **ALWAYS check DB schema** before writing queries — NEVER guess column names
+3. **ALWAYS update CLAUDE_SESSION_LOG.md** after completing any task
+4. **ALWAYS push to GitHub** after completing work
+5. **Use `.range()` not `.limit()`** for Supabase pagination
+6. **Read files before editing** — use `str_replace` with exact old text
+7. **Explain plan and ask confirmation** BEFORE executing changes
+8. **One step at a time** if input is needed
+9. **Test on Vercel** (not locally) — wait for build result
+10. **Modify files directly** — don't show code blocks to copy/paste
 
-After reading both files, provide a brief summary:
-- What features are complete
-- What is currently in progress (check TODO sections)
-- Any uncommitted changes that need attention
+## Workflow
 
-## Key Project Files
+1. Read log + check git status
+2. Explain what you'll do → wait for OK
+3. Make incremental changes
+4. Update session log
+5. `cd /Users/bruno/Developer/shelvd && git add -A && git commit -m "message" && git push`
 
-- `project.md` - Full project specification and data model
-- `CLAUDE_SESSION_LOG.md` - Session history, completed features, current work
-- `apps/www/` - Next.js frontend application
-- `supabase/migrations/` - Database migrations
+## Next Priorities
 
-## Tech Stack
-- Next.js 15 (App Router)
-- Supabase (PostgreSQL + Auth)
-- TypeScript
-- Tailwind CSS
-- Swiss design system (minimal, monochrome)
-
-## Workflow Rules
-
-1. **Before starting work**: Read log file, check what exists
-2. **During work**: Make incremental changes, test as you go
-3. **After completing a task**: 
-   - Update CLAUDE_SESSION_LOG.md with what was done
-   - Git add, commit with descriptive message, push
-4. **If connection lost**: First action is ALWAYS to check log file and existing state
-5. Wacht op Vercel build resultaat
-6. Wijzig bestanden direct
-7. Test op Vercel (niet lokaal)
-8. Leg uit wat je gaat doen en vraag bevestiging VOORDAT je iets uitvoert. 
-9. Eén stap per keer als input nodig is.
-
-## Tools
-
-1. Mijn Mac filesystem via MCP tools (filesystem:read_file, write_file, edit_file, list_directory, etc.)
-2. Terminal via shell:run_command
-3. Commit/push via: cd /Users/bruno/Developer/shelvd && git add -A && git commit -m "message" && git push
+| Feature | Status |
+|---------|--------|
+| Sharing & Public Catalog | 🔴 Todo |
+| Currency & Valuation | 🔴 Todo |
+| Enrich mode (merge lookup fields on edit) | 🔴 Todo |
+| Custom Tags | 🔴 Todo |
+| Image upload | 🔴 Todo |
+| Wishlist | 🔴 Todo |
 
 ---
 
 ## Current Task
 
 [INSERT YOUR TASK HERE]
-
----
-
-Now read the project.md and CLAUDE_SESSION_LOG.md files to understand the current state before proceeding.

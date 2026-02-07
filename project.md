@@ -1,13 +1,10 @@
 # Shelvd
 
-> **Last updated:** 2026-02-06  
-> **Author:** Bruno (owner) + Claude (AI assistant)
+> **Last updated:** 2026-02-07
 
 ---
 
-## 🚨 Claude Instructions
-
-**READ THIS FIRST EVERY SESSION**
+## Claude Instructions
 
 ### Rule 1: Check database schema first
 BEFORE writing any query, ALWAYS check schema:
@@ -25,40 +22,25 @@ NEVER guess column names. ALWAYS verify.
 - `book_contributors.role_id` (NOT role)
 
 ### Rule 3: Supabase limits
-- `.limit()` is UNRELIABLE - ALWAYS use `.range()` with pagination
-- FK joins can fail silently - use separate queries + lookup Maps
-- `.in()` has limits - batch in groups of 500 IDs
+- `.limit()` is UNRELIABLE — ALWAYS use `.range()` with pagination
+- FK joins can fail silently — use separate queries + lookup Maps
+- `.in()` has limits — batch in groups of 500 IDs
 
 ### Rule 4: Code changes
 1. READ the file first
 2. Use `str_replace` with EXACT old text
-3. NEVER overwrite entire files
-4. When in doubt: ASK
+3. NEVER overwrite entire files without reading first
 
-### Rule 5: Shell & Filesystem
-- `rm` command WORKS - use `cd /path && rm file`
-- Use `filesystem:` (lowercase)
-
-### Rule 6: Session log
-For every task: write progress to `CLAUDE_SESSION_LOG.md`.
+### Rule 5: Session log
+Update `CLAUDE_SESSION_LOG.md` after every task.
 
 ---
 
 ## Project Overview
 
-Shelvd is a SaaS webapp for serious book collectors.
+Shelvd is a SaaS webapp for serious book collectors — people who see books as valuable objects, not just text.
 
-### Vision
-> Shelvd is the first modern webapp for serious book collectors - people who see their books as valuable objects, not just text. With bibliographic depth, professional cataloging, and the knowledge to do it right.
-
-### Target Audience
-- First edition collectors
-- Signed copies
-- Private press editions
-- Fine bindings
-- Antiquarian books
-
-**Not:** casual readers, libraries, booksellers
+**Target:** First edition collectors, signed copies, private press, fine bindings, antiquarian books.
 
 ### Competitive Position
 
@@ -68,39 +50,33 @@ Shelvd is a SaaS webapp for serious book collectors.
 | LibraryThing | Reader-focused | Focus on physical copy |
 | Libib | Too basic | Professional cataloging |
 
-**Unique features:** ISBD-compliant entries (4 languages), 69 MARC roles, historical formats, 45+ cover types, bibliographic pagination.
-
 ---
 
-## Tech Stack & Configuration
+## Tech Stack
 
-### Stack
-- **Frontend:** Next.js 15 (App Router) + Tailwind CSS 4 + shadcn/ui
-- **Database:** Supabase (PostgreSQL) - EU Frankfurt
-- **Hosting:** Vercel
-- **Design:** Swiss Design theme
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15 (App Router) + Tailwind CSS 4 + shadcn/ui |
+| Database | Supabase (PostgreSQL) — EU Frankfurt |
+| Hosting | Vercel |
+| Design | Swiss Design (minimal, monochrome) |
 
 ### URLs
+
 | Service | URL |
 |---------|-----|
-| Live site | https://shelvd.org |
-| Live site (www) | https://www.shelvd.org |
+| Live site | https://shelvd.org / https://www.shelvd.org |
 | Vercel preview | https://shelvd-www.vercel.app |
 | GitHub | https://github.com/Simplinity/shelvd |
 | Supabase | https://supabase.com/dashboard/project/euieagntkbhzkyzvnllx |
 
-### Supabase
-- **Project ID:** euieagntkbhzkyzvnllx
-- **Password:** LsY1yr4siVYlZhiN
-
+### Database Connection
 ```bash
-# Database connection
 /opt/homebrew/opt/libpq/bin/psql "postgresql://postgres:LsY1yr4siVYlZhiN@db.euieagntkbhzkyzvnllx.supabase.co:5432/postgres"
 ```
 
 ### Supabase Pagination Pattern
 ```typescript
-// .limit() DOES NOT WORK - use this:
 let allData: any[] = []
 let offset = 0
 while (true) {
@@ -108,7 +84,6 @@ while (true) {
     .from('table')
     .select('*')
     .range(offset, offset + 999)
-  
   if (!page || page.length === 0) break
   allData = [...allData, ...page]
   if (page.length < 1000) break
@@ -116,12 +91,8 @@ while (true) {
 }
 ```
 
-### Local Development
-```bash
-npm run dev      # Start dev server (localhost:3000)
-npm run build    # Test build
-git push         # Auto-deploy via Vercel
-```
+### Environment Variables
+- `GOOGLE_BOOKS_API_KEY=AIzaSyBcxf0XwSI8DFg8MTpD1SZYN4Uj9oOwQBY`
 
 ---
 
@@ -135,246 +106,134 @@ git push         # Auto-deploy via Vercel
 | book_formats | 76 | Folio, Quarto, Octavo, etc. |
 | languages | 85 | ISO 639 language codes |
 | contributor_roles | 69 | MARC relator codes |
-| bisac_codes | 3,887 | Categories |
+| bisac_codes | 3,887 | Subject categories |
 
 ### User Data Tables (RLS per user)
 | Table | Records | Description |
 |-------|---------|-------------|
-| books | 5,054 | Book collection |
-| book_contributors | 5,152 | M:N relation books ↔ contributors |
-| contributors | 4,097 | Shared between users |
+| books | ~5,054 | Book collection |
+| book_contributors | ~5,152 | M:N books ↔ contributors |
+| contributors | ~4,097 | Shared between users |
 | user_stats | 1 | Cached statistics |
-| external_link_types | 55+ | System defaults + user custom link types |
+| external_link_types | 54 | System defaults + user custom |
 | user_active_link_types | — | Which link types each user has activated |
 | book_external_links | — | External links per book |
+| isbn_providers | 9 | Book lookup providers |
+| user_isbn_providers | — | Per-user provider preferences |
 
-### Books - Key Fields
+### Books — Key Fields
 ```
 title, subtitle, original_title, series
-publisher_name, publication_place, publication_year
+publisher_name, publication_place, publication_year (VARCHAR for "MCMLXXIX [1979]")
 edition, impression, issue_state
 cover_type, binding_id, format_id, has_dust_jacket, is_signed
 condition_id, condition_notes
 paper_type, edge_treatment, endpapers_type, text_block_condition
-isbn_13, oclc_number, lccn, bisac_code
+isbn_13, isbn_10, oclc_number, lccn, bisac_code
 storage_location, shelf
 acquired_from, acquired_date, acquired_price
 estimated_value, sales_price
-status, action_needed
+status, action_needed, internal_notes
 ```
+
+### ISBN Providers (in DB)
+| code | name | type |
+|------|------|------|
+| open_library | Open Library | api |
+| google_books | Google Books | api |
+| loc | Library of Congress | sru |
+| bnf | BnF | sru |
+| dnb | DNB | sru |
+| k10plus | K10plus (GBV/SWB) | sru |
+| sudoc | SUDOC (France) | sru |
+| libris | LIBRIS (Sweden) | xsearch |
+| standaard | Standaard Boekhandel | html |
 
 ---
 
-## Current Features
+## Completed Features
 
-### ✅ Fully Working
+### Collection Management
+- Books list (list/grid views), add/edit/delete, bulk delete with selection
+- Contributors management (shared table, privacy via RLS)
 
-**Collection Management**
-- Books list (list/grid views)
-- Add/Edit/Delete book
-- Bulk delete with selection
-- Contributors management
+### Search
+- Global search (5000+ books, client-side batch fetch)
+- Advanced search (14 fields, AND/OR logic)
+- Recent searches (localStorage), sortable columns
 
-**Search**
-- Global search (5000+ books, client-side)
-- Advanced search (14 fields, AND/OR)
-- Recent searches (localStorage)
-- Sortable columns
+### Import/Export
+- Excel import with template, Excel/CSV/JSON export, selective export
 
-**Import/Export**
-- Excel import with template
-- Excel/CSV/JSON export
-- Selective export
-
-**Statistics Dashboard**
+### Statistics Dashboard
 - Key metrics (total, value, profit/loss)
-- Status & condition distribution
-- Top 10 lists (authors, publishers, etc.)
-- Acquisitions by year
+- Status & condition distribution, top 10 lists, acquisitions by year
 
-**Cataloging**
-- ISBD Catalog Entry Generator (4 languages)
-- 45+ cover types
-- 76 book formats
-- 69 contributor roles
-- BISAC codes (3,887)
+### Cataloging
+- ISBD Catalog Entry Generator (4 languages: EN, NL, FR, DE)
+- 45+ cover types, 76 book formats, 69 contributor roles (MARC), 3887 BISAC codes
 
-**Admin Dashboard**
-- Stats bar (users, books, signups)
-- User management (search, filter, suspend/ban/delete)
-- Admin nav link (red Shield, admin-only)
+### Admin Dashboard
+- Stats bar (users, books, signups), user management (search, filter, suspend/ban/delete)
 
-**User Settings**
-- Account tab: Profile, Security, Address, Subscription, Danger Zone
-- Configuration tab: Currency, Date Format, Items Per Page (list/grid)
-- External Links tab: Activate/deactivate link types, add custom types
+### User Settings
+- Account: profile, security, address, subscription, danger zone
+- Configuration: currency, date format, items per page
+- External Links: activate/deactivate types, add custom types
+- Book Lookup: enable/disable providers
 
-**External Links**
-- 55 built-in link types across 8 categories (bibliographic, catalogs, digital libraries, etc.)
-- Per-user activation (all active by default for new users)
-- Add/edit/delete links on book add/edit pages
-- Auto-fill URL with `https://{domain}/` when selecting type
-- Open-in-new-tab button to search on external site
-- Display on book detail page with favicons
+### External Links
+- 54 system link types across 8 categories (bibliographic, catalogs, digital libraries, etc.)
+- Per-user activation (all active by default), custom types
+- Add/edit/delete on book forms, auto-fill URL, open-in-new-tab, favicons on detail page
 
-**Duplicate Detection**
-- Server-side SQL detection (instant scan of 5000+ books)
-- ISBN-13, ISBN-10, and exact title matching
-- Grouped results with collapse/expand
-- Select all/deselect all per group
-- Bulk delete selected duplicates
-- View book in new tab
+### Duplicate Detection
+- Server-side SQL (ISBN-13, ISBN-10, exact title matching)
+- Grouped results with collapse/expand, select all per group, bulk delete
+
+### Book Lookup (9 providers)
+- Multi-field search: title, author, publisher, year range, ISBN
+- Results list with cover thumbnails, click for full details
+- Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
+- 15s timeout on all SRU fetch requests
+- Auto-creates external link from lookup source URL
+- Shared SRU/MARCXML parser with factory pattern (MARC21 + UNIMARC)
+- Provider-specific fixes: BnF CQL relations, SUDOC field 214, NSB/NSE cleanup, LoC keyword fallback
 
 ---
 
 ## Roadmap
 
-### Active Priorities
-
-| Prio | Feature | Status |
-|------|---------|--------|
-| 4 | Duplicate Detection | 🟢 Done |
-| 5 | External Links | 🟢 Done |
-| 6 | User Settings | 🟢 Done |
-| 7 | Book Lookup (10 providers) | 🟡 In Progress |
+### Next Priorities
+| # | Feature | Status |
+|---|---------|--------|
 | 8 | Sharing & Public Catalog | 🔴 Todo |
 | 9 | Currency & Valuation | 🔴 Todo |
+| — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
+| — | Custom Tags / Collections | 🔴 Todo |
+| — | Image upload (covers, spine, damage) | 🔴 Todo |
+| — | Wishlist / Desiderata | 🔴 Todo |
+| — | Landing page + Knowledge base | 🔴 Todo |
 
-### Book Lookup — Provider Implementation Plan
-
-**Implemented:**
-| Provider | Type | Status |
-|----------|------|--------|
-| Open Library | API | ✅ Full (ISBN + field search + details) |
-| Google Books | API | ✅ Full (`GOOGLE_BOOKS_API_KEY=AIzaSyBcxf0XwSI8DFg8MTpD1SZYN4Uj9oOwQBY`) |
-| Bol.com (NL) | HTML | ❌ Disabled (captcha/cookie wall blocks server-side requests) |
-| Library of Congress | SRU/MARC21 | ✅ Full |
-| BnF | SRU/UNIMARC | ✅ Full (adj/all CQL, mxc: namespace) |
-| DNB | SRU/MARC21 | ✅ Full |
-| K10plus (GBV/SWB) | SRU/MARC21 | ✅ Full |
-| SUDOC (France) | SRU/UNIMARC | ✅ Full (field 214 for pub info, NSB/NSE cleanup) |
-| LIBRIS (Sweden) | Xsearch/MARC21 | ✅ Full |
-| Library Hub Discover (UK) | SRU/MARC21 | ❌ Disabled (Cloudflare blocks server-side SRU) |
-| Standaard Boekhandel | HTML+JSON | ✅ Autocomplete API + JSON-LD (publisher=distributeur, max ~10 results) |
-
-**Remaining:** None — all providers evaluated ✅
-
-**Skipped (unreliable/low value):**
-- Amazon (4 variants) — PA-API deprecated April 2026, requires Associates account + 10 sales/month, affiliate-focused not bibliographic
-- Fnac — Akamai WAF + Queue-it blocks all server-side requests, no public search API (Marketplace API is seller-only)
-- Casa del Libro — no public API, search is client-side rendered (SvelteKit), Spanish market only
-- IBS.it — no public API, product pages client-side rendered (Vue.js), no JSON-LD server-side, Italian market only
-- Mondadori Store — no public API, client-side rendered, products disappear from catalog, Italian market only
-- WorldCat — Classify API discontinued Jan 2024, Search API v1.0 ended Dec 2024, v2.0 requires paid OCLC Cataloging subscription
-- KBR — only Z39.50 (catalog.kbr.be:9001), no SRU
-- KB NL — SRU returns Dublin Core not MARCXML, ISBN search unreliable
-
-**Search UX:**
-- SRU/LIBRIS: 20 results per batch (XML size limits on Vercel), Open Library: 50, Google Books: 40
-- "Load more" pagination button for additional batches
-- All providers support offset/limit: SRU (`startRecord`), Open Library (`offset`), Google Books (`startIndex`), LIBRIS (`start`)
-- 15s `AbortSignal.timeout()` on all SRU fetch requests
-
-**Future:**
-- Enrich mode on book edit page (merge-scherm for cherry-picking fields from second search)
-
-### Parallel Track
-- Custom Tags
-- Landing page + Knowledge base
-- Templates system
+### Under Consideration
+- Insurance & valuation PDF reports
+- Provenance tracking (previous owners, auction history)
+- Condition history (restorations, reports)
+- Dealer & contact management
+- Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
-- Image upload (Supabase Storage, webp, thumbnail + full)
+- Templates system
 
 ---
 
-## Features Under Consideration
+## Design Decisions
 
-> Identified 2025-02-02. Not yet prioritized.
-
-### 🔴 Possibly Essential
-
-**1. Images**
-- Cover, spine, title page, signatures, damage
-- *Impact:* No insurance/sales documentation without photos
-
-**2. Wishlist / Desiderata**
-- Want list with max price, priority
-- Printable for fairs
-- *Impact:* Every collector needs a want list
-
-**3. Custom Collections / Tags**
-- Group books by custom criteria
-- *Impact:* Collectors think in collections
-
-### 🟠 Possibly Important
-
-**4. Insurance & Valuation Reports**
-- PDF for insurer with photos + value
-
-**5. Provenance (extended)**
-- Previous owners, auction history, certificates
-
-**6. Condition History**
-- Document restorations, condition reports
-
-### 🟢 Possibly Advanced
-
-**7. Dealer & Contact Management**
-**8. Market Prices & Comparison**
-**9. Collation & Bibliographic Tools**
-**10. Reference Library**
-**11. Sales Platform Integration**
-- Export to WooCommerce, Catawiki, AbeBooks, etc.
-- Sync inventory with external shops
-
----
-
-## Development Guidelines
-
-### Protected Features - DO NOT TOUCH
-These features work and must not break:
-- Global Search (batch fetching)
-- Advanced Search (14 fields)
-- Excel Import/Export
-- BISAC Combobox
-- Contributors editing
-- Catalog Entry Generator
-
-### Design Decisions
-
-**Status colors (Swiss Design)**
-- `on_sale`: red solid
-- `to_sell`: red light
-- `reserved`: red outline
-- `lost/destroyed`: black solid
-- `in_collection`: gray
+**Status colors (Swiss Design):**
+`on_sale` red solid, `to_sell` red light, `reserved` red outline, `lost/destroyed` black solid, `in_collection` gray
 
 **Publication Year:** VARCHAR(100) for "MCMLXXIX [1979]", "(circa 1960)"
 
-**Contributors:** Shared table, privacy via RLS
-
-**Form elements:** All inputs, selects/dropdowns, and textareas must have the same height. Use consistent padding (`px-3 py-2 text-sm`) across all form elements.
-
----
-
-## Marketing
-
-### Website Strategy: Knowledge Platform
-Marketing site focuses on collector knowledge:
-- /knowledge/glossary
-- /knowledge/guides (condition-grading, book-formats, etc.)
-- /knowledge/reference
-
-**Why:** SEO + authority + onboarding
-
-### Pricing Model (proposal)
-
-| Tier | Price | Books | Features |
-|------|-------|-------|----------|
-| Free | €0 | 100 | Basic |
-| Collector | €7/month | 5,000 | + Templates, Export |
-| Scholar | €15/month | Unlimited | + ISBD, API |
-| Dealer | €29/month | Unlimited | + Multi-user |
+**Form elements:** All inputs/selects/textareas same height, consistent padding (`px-3 py-2 text-sm`)
 
 ---
 
@@ -384,28 +243,36 @@ Marketing site focuses on collector knowledge:
 shelvd/
 ├── apps/www/
 │   ├── app/
-│   │   ├── (app)/books/          # Collection pages
+│   │   ├── (app)/books/          # Collection pages + lookup
 │   │   ├── (app)/stats/          # Statistics
+│   │   ├── (app)/settings/       # User settings
+│   │   ├── (app)/admin/          # Admin dashboard
 │   │   ├── (auth)/               # Login/register
 │   │   └── api/                  # API routes
 │   ├── components/
 │   └── lib/
 │       ├── supabase/             # DB client + types
-│       └── actions/              # Server actions (settings, external-links)
-├── supabase/migrations/          # 006-009 external links, triggers, duplicate detection
-└── project.md                    # This file
+│       ├── actions/              # Server actions
+│       └── isbn-providers/       # Book lookup providers
+│           ├── index.ts          # Provider registry
+│           ├── types.ts          # Shared types
+│           ├── open-library.ts
+│           ├── google-books.ts
+│           ├── sru-provider.ts   # SRU factory (MARC21 + UNIMARC)
+│           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
+│           ├── libris.ts         # LIBRIS Xsearch
+│           └── standaard-boekhandel.ts
+├── supabase/migrations/          # 001-010
+└── project.md
 ```
 
 ---
 
-## Useful Commands
+## Pricing Model (proposal)
 
-```bash
-# Database status
-/opt/homebrew/opt/libpq/bin/psql "postgresql://postgres:LsY1yr4siVYlZhiN@db.euieagntkbhzkyzvnllx.supabase.co:5432/postgres" -c "
-SELECT 'books', count(*) from books
-UNION ALL SELECT 'contributors', count(*) from contributors;"
-
-# View table schema
-/opt/homebrew/opt/libpq/bin/psql "..." -c "\d books"
-```
+| Tier | Price | Books | Features |
+|------|-------|-------|----------|
+| Free | €0 | 100 | Basic |
+| Collector | €7/mo | 5,000 | + Templates, Export |
+| Scholar | €15/mo | Unlimited | + ISBD, API |
+| Dealer | €29/mo | Unlimited | + Multi-user |

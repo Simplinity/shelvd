@@ -1,143 +1,75 @@
 # Claude Session Log
 
-## SESSION 2025-02-05
+## Current State (2026-02-07)
 
-### Book Lookup — ISBN Bug Fixes ✅
-- Fixed `number_of_pages` mapping (handle both number and string types)
-- ISBN fallback: if lookup ISBN is 13/10 digits and not in API response, use it
-- Mapped all remaining Open Library fields to BookData + form:
-  - `publication_place`, `pagination_description`, `lccn`, `oclc_number`, `ddc`, `lcc`
-  - `subjects` → `topic`, `notes` → `bibliography`, `language`
-- Lookup preview now shows all extra fields
-- Works API fallback: fetches description from Works level when edition has none
-- Auto-creates external link from lookup source URL (matched by domain to link type)
-- Commits: `63ec942`, `a994626`, `8728680`
-
-### Book Lookup — Multi-Field Search ✅
-- Redesigned `/books/lookup` page: provider dropdown + 5 search fields (title, author, publisher, year range, ISBN)
-- Open Library: `searchByFields()` via Search API (`/search.json`) — returns list of results
-- Open Library: `getDetails()` via Edition API (`/books/{key}.json`) — full data for selected result
-- Results list view with cover thumbnails, click to view full details
-- ISBN-only search still uses fast direct ISBN lookup path
-- New types: `SearchParams`, `SearchResultItem`, `SearchResults`
-- New server actions: `lookupByFields()`, `lookupDetails()`
-- Provider interface extended with optional `searchByFields()` and `getDetails()` methods
-- Commit: `d49bec6`
-
-### Database Changes
-- Removed `bol_be` from `isbn_providers` (same as NL)
-- Added `google_books` to `isbn_providers` (API, googleapis.com)
-
-### Google Books Provider ✅
-- ISBN lookup, field search (`intitle:`, `inauthor:`, `inpublisher:`, `isbn:`), detail fetch by volume ID
-- Auto external link via `books.google.com` domain match
-- Commit: `3e95ee5`
-
-### SRU Providers ✅
-- Shared SRU/MARCXML parser (`sru-provider.ts`) with factory pattern
-- MARC21 parser: title (245), authors (100/700), publisher (260/264), ISBN (020), pages (300), LCCN (010), OCLC (035), DDC (082), LCC (050), subjects (650), notes (500), description (520), language (041/008), edition (250), series (490)
-- UNIMARC parser (BnF): title (200), authors (700/701), publisher (210), ISBN (010), pages (215), language (101), edition (205), series (225), description (330), subjects (606), notes (300)
-- Per-library CQL index configuration
-- Record caching for detail retrieval from search results
-- Libraries: LoC, BnF, DNB
-- Commit: `b1ea7aa`
-
-### Provider Expansion ✅
-- Added K10plus (GBV/SWB): `sru.k10plus.de`, MARC21, pica-indexes, ~200M holdings
-- Added SUDOC (France): `sudoc.abes.fr/cbs/sru/`, UNIMARC, 15M records from 3000+ academic libraries
-- Added LIBRIS (Sweden): Xsearch API (`libris.kb.se/xsearch`), MARC21, 7M records
-- Replaced dead British Library (`explore.bl.uk`) with Library Hub Discover (JISC): `discover.libraryhub.jisc.ac.uk/sru-api`, covers 100+ UK libraries incl. BL
-- Removed non-functional KBR (Z39.50 only, no SRU) and KB NL (Dublin Core, ISBN unreliable)
-- Added `xsearch` provider type to DB constraint and TypeScript types
-- Renamed settings tab "ISBN Lookup" → "Book Lookup" (`isbn-lookup` → `book-lookup`)
-- Updated all references (settings page, settings form, lookup form link)
-
-### BnF Fix ✔️
-- BnF SRU requires `adj` (adjacency) for ISBN and `all` for text fields, not `=`
-- Added `cqlRelations` config to SruConfig interface (`isbn`, `text` per-field relations)
-- Added `mxc:` namespace support in all MARC XML regex (MarcXchange)
-- Commit: `2b30c6d`
-
-### SUDOC Fix ✔️
-- SUDOC uses UNIMARC field 214 (newer standard) for publication info instead of 210
-- UNIMARC parser now checks both 210 and 214 for publisher/year/place
-- Commit: `0dbe437`
-
-### Pagination — Load More ✔️
-- Increased default search results from 20 → 50 across all providers
-- Added `limit`/`offset` to `SearchParams`, `hasMore` to `SearchResults`
-- SRU: `maximumRecords` + `startRecord` pagination
-- Open Library: `limit` + `offset` pagination
-- Google Books: `maxResults` (max 40) + `startIndex` pagination
-- LIBRIS: `n` + `start` pagination
-- UI: "Load more (N remaining)" button appends next batch to results list
-- Commit: `6163c93`
-
-### UNIMARC NSB/NSE Cleanup ✔️
-- SUDOC/BnF titles contained invisible UNIMARC sorting markers (U+0098/U+009C) rendering as visible glyphs
-- Added `.replace(/[\u0088\u0089\u0098\u009C]/g, '')` to `cleanMarc()` function
-- Commit: `d92c489`
-
-### SUDOC Timeout Fix ✔️
-- SUDOC broad queries (e.g. publisher="Gallimard" → 70K results) caused "fetch failed" on Vercel
-- Root cause: pagination commit increased default from 20→50 records, generating ~300KB XML responses
-- Fix: Reduced SRU and LIBRIS default back to 20 results (Open Library/Google Books stay at 50/40)
-- Added 15s `AbortSignal.timeout()` to all SRU fetch requests
-- Load More pagination still works for fetching additional batches
-- Commit: `3f428e0`
-
-### Lookup Button on Add Page ✔️
-- Added "Lookup" button with Search icon to book add form header (next to Cancel/Save)
-- Links to `/books/lookup`
-- Commit: `b23037f`
-
-### LoC Publisher Search Fix ✔️
-- `dc.publisher` index not supported by LoC SRU (returns "Unsupported Use attribute")
-- Added `keyword` index type to SruConfig; `buildCqlQuery()` falls back to keyword when publisher index missing
-- LoC config: removed `dc.publisher`, added `keyword: 'cql.anywhere'`
-- Commit: `6530c40`
-
-### Publisher Search Bugs
-- [x] Library of Congress — fixed: keyword fallback (commit `6530c40`)
-- [ ] Library Hub Discover (UK) — ALL queries 403 blocked by Cloudflare (not just publisher)
-- [x] Google Books — fixed: added API key support via `GOOGLE_BOOKS_API_KEY` env var (commit `dbcb0d2`)
-- [x] Bol.com NL — fixed: added searchByFields + getDetails (slug-based titles, detail via product page) (commit `4edb42f`)
-
-### Google Books API Key Support ✔️
-- Added `GOOGLE_BOOKS_API_KEY` env var support — appended to all 3 fetch URLs (search, searchByFields, getDetails)
-- Without key: ~100 requests/day per IP (429 errors on Vercel). With key: 1,000/day free
-- Commit: `dbcb0d2`
-
-### Library Hub Discover Disabled ✔️
-- Cloudflare blocks all server-side SRU requests (403 with JS challenge page)
-- Removed from provider registry (code preserved in `sru-libraries.ts` for future re-enable)
-- Commit: `dbcb0d2`
-
-### Bol.com + Library Hub Removed ✔️
-- Bol.com: captcha/cookie wall blocks all server-side requests
-- Library Hub: Cloudflare blocks all server-side SRU requests (403)
-- Deleted `bol-nl.ts`, removed Library Hub config from `sru-libraries.ts`
-- Removed both from provider registry in `index.ts`
-- Deleted from `isbn_providers` DB table (+ user preferences via `user_isbn_providers`)
-- Migration: `011_remove_disabled_providers.sql`
-- 8 working providers remain: Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS
-- Commits: `816d1a8`, `1ea8608`
-
-### TODO — Provider Implementation
-- [ ] WorldCat (API) — Priority 1
-- [ ] Enrich mode on book edit page (merge-scherm)
+All features up to and including Book Lookup are **complete**. 9 providers active, all 17 candidates evaluated.
 
 ---
 
-## COMPLETED FEATURES (prior sessions)
+## Completed Features
 
+### Core App
 - ✅ Collection Management (CRUD, bulk delete, list/grid views)
-- ✅ Search (global + advanced 14 fields)
-- ✅ Import/Export (Excel, CSV, JSON)
-- ✅ Statistics Dashboard
-- ✅ Cataloging (ISBD, 45+ cover types, 76 formats, 69 roles, BISAC)
-- ✅ Admin Dashboard (user management, stats)
-- ✅ User Settings (account, config, external links, ISBN lookup providers)
-- ✅ External Links (55 types, per-user activation)
-- ✅ Duplicate Detection (server-side SQL, grouped results, bulk delete)
-- ✅ Book Lookup — 8 active providers: Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS (Bol.com + Library Hub disabled: captcha/Cloudflare)
+- ✅ Global Search (5000+ books, client-side batch fetch)
+- ✅ Advanced Search (14 fields, AND/OR)
+- ✅ Import/Export (Excel template, CSV, JSON)
+- ✅ Statistics Dashboard (metrics, charts, top 10s)
+- ✅ Cataloging (ISBD 4 languages, 45+ cover types, 76 formats, 69 MARC roles, 3887 BISAC codes)
+- ✅ Admin Dashboard (user management, stats bar)
+- ✅ User Settings (account, config, external links, book lookup providers)
+- ✅ External Links (54 system types across 8 categories, per-user activation, custom types)
+- ✅ Duplicate Detection (server-side SQL, ISBN + title matching, grouped results, bulk delete)
+
+### Book Lookup (9 active providers)
+- ✅ Open Library — API (ISBN + field search + Works API fallback for descriptions)
+- ✅ Google Books — API (`GOOGLE_BOOKS_API_KEY` env var, 1000 req/day)
+- ✅ Library of Congress — SRU/MARC21 (keyword fallback for publisher search)
+- ✅ BnF — SRU/UNIMARC (adj/all CQL relations, mxc: namespace)
+- ✅ DNB — SRU/MARC21
+- ✅ K10plus (GBV/SWB) — SRU/MARC21 (~200M holdings)
+- ✅ SUDOC (France) — SRU/UNIMARC (field 214 for pub info, NSB/NSE cleanup)
+- ✅ LIBRIS (Sweden) — Xsearch/MARC21
+- ✅ Standaard Boekhandel — Autocomplete API + JSON-LD
+
+### Skipped Providers (8)
+- Amazon (4 variants) — PA-API deprecated April 2026, affiliate-only
+- Fnac — Akamai WAF blocks all server-side
+- Bol.com — Captcha/cookie wall blocks server-side
+- Library Hub Discover — Cloudflare blocks SRU
+- Casa del Libro — No API, client-side rendered
+- IBS.it — No API, client-side rendered
+- Mondadori Store — No API, client-side rendered
+- WorldCat — All APIs require paid OCLC subscription, CloudFlare protected
+
+### Lookup Features
+- Multi-field search (title, author, publisher, year range, ISBN)
+- Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
+- 15s timeout on all SRU requests
+- Auto-creates external link from lookup source URL
+- Lookup button on book add page
+
+---
+
+## Next Priorities
+
+| # | Feature | Status |
+|---|---------|--------|
+| 8 | Sharing & Public Catalog | 🔴 Todo |
+| 9 | Currency & Valuation | 🔴 Todo |
+| — | Enrich mode (merge fields from lookup on edit page) | 🔴 Todo |
+| — | Custom Tags | 🔴 Todo |
+| — | Image upload | 🔴 Todo |
+
+---
+
+## Key Commits (recent)
+
+| Hash | Description |
+|------|-------------|
+| `74383ff` | Complete provider evaluation (all 17 done) |
+| `70fc220` | Standaard Boekhandel provider |
+| `1ea8608` | Remove Bol.com + Library Hub |
+| `dbcb0d2` | Google Books API key, disable Library Hub |
+| `6163c93` | Load More pagination all providers |
+| `b1ea7aa` | SRU providers (LoC, BnF, DNB) |
+| `d49bec6` | Multi-field search |
