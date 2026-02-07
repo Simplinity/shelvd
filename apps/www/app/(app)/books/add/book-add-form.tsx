@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
+import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
 
 type Language = { id: string; name_en: string }
@@ -1161,9 +1162,12 @@ export default function BookAddForm({ referenceData }: Props) {
                 <label className={labelClass}>Price Paid</label>
                 <input type="number" step="0.01" value={formData.acquired_price} onChange={e => handleChange('acquired_price', e.target.value)} className={inputClass} />
               </div>
-              <div className="w-20">
+              <div className="w-28">
                 <label className={labelClass}>Currency</label>
-                <input type="text" value={formData.acquired_currency} onChange={e => handleChange('acquired_currency', e.target.value)} placeholder="EUR" className={inputClass} />
+                <select value={formData.acquired_currency} onChange={e => handleChange('acquired_currency', e.target.value)} className={inputClass}>
+                  <option value="">—</option>
+                  {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+                </select>
               </div>
             </div>
             <div className="lg:col-span-4">
@@ -1195,7 +1199,10 @@ export default function BookAddForm({ referenceData }: Props) {
             </div>
             <div>
               <label className={labelClass}>Currency</label>
-              <input type="text" value={formData.price_currency} onChange={e => handleChange('price_currency', e.target.value)} placeholder="EUR" className={inputClass} />
+              <select value={formData.price_currency} onChange={e => handleChange('price_currency', e.target.value)} className={inputClass}>
+                <option value="">—</option>
+                {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+              </select>
             </div>
           </div>
         </section>
