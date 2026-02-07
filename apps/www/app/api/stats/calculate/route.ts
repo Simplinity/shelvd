@@ -18,7 +18,7 @@ export async function POST() {
     while (true) {
       const { data: booksPage, error: booksError } = await supabase
         .from('books')
-        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, sales_price, action_needed, publication_year, acquired_date, isbn_13')
+        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, sales_price, acquired_currency, price_currency, action_needed, publication_year, acquired_date, isbn_13')
         .eq('user_id', user.id)
         .range(bookOffset, bookOffset + 999)
       
@@ -112,6 +112,36 @@ export async function POST() {
     const booksWithImageSet = new Set(allBookImages.map(bi => bi.book_id))
 
     // ============================================
+    // EXCHANGE RATES
+    // ============================================
+    const { data: profile } = await supabase.from('user_profiles').select('default_currency').eq('id', user.id).single()
+    const displayCurrency = profile?.default_currency || 'EUR'
+
+    // Fetch exchange rates from frankfurter.app (ECB rates, free, no key)
+    let exchangeRates: Record<string, number> = {}
+    let ratesDate = ''
+    try {
+      const ratesRes = await fetch('https://api.frankfurter.app/latest?from=EUR', { next: { revalidate: 86400 } })
+      if (ratesRes.ok) {
+        const ratesData = await ratesRes.json()
+        exchangeRates = ratesData.rates || {}
+        ratesDate = ratesData.date || ''
+      }
+    } catch {
+      // If rates unavailable, skip conversion (treat everything as display currency)
+    }
+    exchangeRates['EUR'] = 1 // Base
+
+    // Convert amount from sourceCurrency to displayCurrency
+    const convert = (amount: number, sourceCurrency: string | null): number => {
+      const src = sourceCurrency || displayCurrency
+      if (src === displayCurrency) return amount
+      const srcToEur = exchangeRates[src] ? 1 / exchangeRates[src] : 1
+      const eurToDisplay = exchangeRates[displayCurrency] || 1
+      return amount * srcToEur * eurToDisplay
+    }
+
+    // ============================================
     // CALCULATIONS
     // ============================================
     const currentYear = new Date().getFullYear().toString()
@@ -144,7 +174,7 @@ export async function POST() {
     allBooks.forEach(book => {
       // Values
       if (book.estimated_value) {
-        const value = Number(book.estimated_value)
+        const value = convert(Number(book.estimated_value), book.price_currency)
         totalEstimatedValue += value
         booksWithValue++
         if (!mostExpensiveBook || value > mostExpensiveBook.value) {
@@ -152,7 +182,7 @@ export async function POST() {
         }
       }
       if (book.acquired_price) {
-        totalAcquiredPrice += Number(book.acquired_price)
+        totalAcquiredPrice += convert(Number(book.acquired_price), book.acquired_currency)
         booksWithPrice++
       }
       if (book.action_needed && book.action_needed !== 'none') {
@@ -160,7 +190,7 @@ export async function POST() {
       }
       if (book.status === 'sold') {
         soldCount++
-        if (book.sales_price) totalSoldRevenue += Number(book.sales_price)
+        if (book.sales_price) totalSoldRevenue += convert(Number(book.sales_price), book.price_currency)
       }
       if (book.isbn_13) booksWithISBN++
       if (book.acquired_date?.startsWith(currentYear)) booksAddedThisYear++
@@ -267,6 +297,8 @@ export async function POST() {
       topCoverTypes,
       topShelves,
       topAcquisitionYears,
+      displayCurrency,
+      ratesDate,
     }
 
     // ============================================

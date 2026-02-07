@@ -174,6 +174,7 @@ export default function StatsPage() {
     topCoverTypes,
     topShelves,
     topAcquisitionYears,
+    ratesDate,
   } = stats
 
   const sortedConditions = Object.entries(conditionCounts || {}).sort((a, b) => (b[1] as number) - (a[1] as number))
@@ -189,7 +190,7 @@ export default function StatsPage() {
         <div className="flex items-center gap-4">
           {calculatedAt && (
             <span className="text-xs text-gray-400">
-              Updated: {formatDate(calculatedAt)}
+              Updated: {formatDate(calculatedAt)}{ratesDate ? ` · Rates: ${ratesDate}` : ''}
             </span>
           )}
           <button
