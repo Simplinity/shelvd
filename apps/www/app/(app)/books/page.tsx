@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, ScanBarcode } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, ScanBarcode, FolderPlus, FolderMinus } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -174,6 +174,13 @@ export default function BooksPage() {
   const [exporting, setExporting] = useState(false)
   const exportMenuRef = useRef<HTMLDivElement>(null)
 
+  // Bulk collection actions
+  type CollectionOption = { id: string; name: string; is_default: boolean }
+  const [bulkCollections, setBulkCollections] = useState<CollectionOption[]>([])
+  const [showAddToCollectionMenu, setShowAddToCollectionMenu] = useState(false)
+  const [bulkActionLoading, setBulkActionLoading] = useState(false)
+  const addToCollectionMenuRef = useRef<HTMLDivElement>(null)
+
   const supabase = createClient()
 
   // Get collection filter from URL
@@ -244,6 +251,20 @@ export default function BooksPage() {
     }
   }, [loading, books.length, totalCount])
 
+  // Fetch collections for bulk actions when selection mode activates
+  useEffect(() => {
+    if (selectionMode && bulkCollections.length === 0) {
+      const fetchCols = async () => {
+        const { data } = await supabase
+          .from('collections')
+          .select('id, name, is_default')
+          .order('sort_order', { ascending: true })
+        if (data) setBulkCollections(data as CollectionOption[])
+      }
+      fetchCols()
+    }
+  }, [selectionMode])
+
   // Click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -252,6 +273,9 @@ export default function BooksPage() {
       }
       if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
         setShowExportMenu(false)
+      }
+      if (addToCollectionMenuRef.current && !addToCollectionMenuRef.current.contains(event.target as Node)) {
+        setShowAddToCollectionMenu(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -1047,6 +1071,66 @@ export default function BooksPage() {
     }
   }
 
+  // Bulk add to collection
+  const handleBulkAddToCollection = async (targetCollectionId: string) => {
+    if (selectedIds.size === 0) return
+    setBulkActionLoading(true)
+    setShowAddToCollectionMenu(false)
+    try {
+      const bookIds = Array.from(selectedIds)
+      // Get existing memberships to avoid duplicates
+      const { data: existing } = await supabase
+        .from('book_collections')
+        .select('book_id')
+        .eq('collection_id', targetCollectionId)
+        .in('book_id', bookIds)
+      const existingSet = new Set((existing || []).map((r: any) => r.book_id))
+      const toInsert = bookIds.filter(id => !existingSet.has(id))
+      if (toInsert.length > 0) {
+        // Insert in batches of 500
+        for (let i = 0; i < toInsert.length; i += 500) {
+          const batch = toInsert.slice(i, i + 500).map(bookId => ({
+            book_id: bookId,
+            collection_id: targetCollectionId,
+          }))
+          await supabase.from('book_collections').insert(batch)
+        }
+      }
+      const colName = bulkCollections.find(c => c.id === targetCollectionId)?.name || 'collection'
+      alert(`Added ${toInsert.length} book(s) to "${colName}" (${existingSet.size} already there)`)
+    } catch (err) {
+      alert('Failed to add books to collection')
+    } finally {
+      setBulkActionLoading(false)
+    }
+  }
+
+  // Bulk remove from current collection
+  const handleBulkRemoveFromCollection = async () => {
+    if (selectedIds.size === 0 || !collectionId) return
+    setBulkActionLoading(true)
+    try {
+      const bookIds = Array.from(selectedIds)
+      for (let i = 0; i < bookIds.length; i += 500) {
+        const batch = bookIds.slice(i, i + 500)
+        await supabase
+          .from('book_collections')
+          .delete()
+          .eq('collection_id', collectionId)
+          .in('book_id', batch)
+      }
+      // Remove from local state
+      setBooks(prev => prev.filter(b => !selectedIds.has(b.id)))
+      setTotalCount(prev => prev - selectedIds.size)
+      setSelectedIds(new Set())
+      setSelectionMode(false)
+    } catch (err) {
+      alert('Failed to remove books from collection')
+    } finally {
+      setBulkActionLoading(false)
+    }
+  }
+
   // Export handler - downloads file via fetch to handle authentication
   const handleExport = async (format: 'xlsx' | 'csv' | 'json') => {
     setExporting(true)
@@ -1419,16 +1503,60 @@ export default function BooksPage() {
               </button>
             )}
           </div>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => setShowDeleteModal(true)}
-            disabled={selectedCount === 0}
-            className="gap-2"
-          >
-            <Trash2 className="w-4 h-4" />
-            Delete Selected
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Add to Collection dropdown */}
+            <div className="relative" ref={addToCollectionMenuRef}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddToCollectionMenu(!showAddToCollectionMenu)}
+                disabled={selectedCount === 0 || bulkActionLoading}
+                className="gap-2"
+              >
+                {bulkActionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FolderPlus className="w-4 h-4" />}
+                Add to Collection
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+              {showAddToCollectionMenu && bulkCollections.length > 0 && (
+                <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                  {bulkCollections.map(col => (
+                    <button
+                      key={col.id}
+                      onClick={() => handleBulkAddToCollection(col.id)}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {col.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Remove from Collection (only when viewing a specific collection) */}
+            {collectionId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBulkRemoveFromCollection}
+                disabled={selectedCount === 0 || bulkActionLoading}
+                className="gap-2"
+              >
+                <FolderMinus className="w-4 h-4" />
+                Remove from Collection
+              </Button>
+            )}
+
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowDeleteModal(true)}
+              disabled={selectedCount === 0}
+              className="gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Selected
+            </Button>
+          </div>
         </div>
       )}
 
