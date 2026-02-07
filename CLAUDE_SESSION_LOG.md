@@ -81,6 +81,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | # | Step | Status | Notes |
 |---|------|--------|-------|
 | 1 | Create migration 011_collections.sql | ✅ Done | Tables + RLS + seed + trigger. 2 users got Library, 5052 books assigned |
+| 2 | Create server actions for collections | ✅ Done | 10 actions: get, getWithCounts, create, update, delete, reorder, getBookCollections, setBookCollections, addBooksToCollection, removeBooksFromCollection |
 
 ---
 
