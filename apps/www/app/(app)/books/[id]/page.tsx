@@ -356,7 +356,7 @@ export default async function BookDetailPage({ params }: PageProps) {
   const statusDisplay = getStatusDisplay(bookData.status)
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Navigation bar */}
       <div className="flex justify-between items-center mb-8">
         <Link 
