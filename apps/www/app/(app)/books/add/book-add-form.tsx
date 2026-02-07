@@ -205,6 +205,7 @@ type LocalContributor = {
 const statusOptions = [
   { value: 'draft', label: 'Draft' },
   { value: 'in_collection', label: 'In Collection' },
+  { value: 'wishlist', label: 'Wishlist' },
   { value: 'lent', label: 'Lent' },
   { value: 'borrowed', label: 'Borrowed' },
   { value: 'double', label: 'Double' },
