@@ -63,6 +63,27 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 
 ---
 
+## In Progress: Multiple Collections per User
+
+### Plan
+1. Migration 011: create `collections` + `book_collections` tables with RLS
+2. Migration 011: auto-create "Library" for existing users, assign all books
+3. Migration 011: trigger to auto-create "Library" on new user signup
+4. Server actions: CRUD for collections, add/remove books
+5. Nav: collection switcher dropdown under "Collection"
+6. Books list: filter by collection via query param
+7. Book form: multi-select for collections on add/edit
+8. Bulk actions: add to / remove from collection
+9. Settings/manage page: rename, delete, reorder collections
+
+### Step Log
+
+| # | Step | Status | Notes |
+|---|------|--------|-------|
+| 1 | Create migration 011_collections.sql | ✅ Done | Tables + RLS + seed + trigger. 2 users got Library, 5052 books assigned |
+
+---
+
 ## Key Commits (recent)
 
 | Hash | Description |
