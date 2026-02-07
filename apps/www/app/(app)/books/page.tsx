@@ -623,49 +623,62 @@ export default function BooksPage() {
     if (isGlobalSearch && !hasFilters) {
       const searchTerms = qParam.toLowerCase().split(/\s+/).filter(t => t.length > 0)
       
-      // Fetch all books (no server-side filter for global search)
-      // IMPORTANT: Supabase has a default limit of 1000 rows, so we need to fetch in batches
       let allBooks: any[] = []
-      let fetchFrom = 0
       const BATCH_SIZE = 1000
-      
-      while (true) {
-        const { data: batch, error: batchError } = await supabase
-          .from('books')
-          .select(`
-            id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-            status, cover_type, condition_id, language_id, user_catalog_id, series,
-            storage_location, shelf, isbn_13, isbn_10,
-            book_contributors (
-              contributor:contributors ( canonical_name ),
-              role:contributor_roles ( name )
-            )
-          `)
-          .order('title', { ascending: true })
-          .range(fetchFrom, fetchFrom + BATCH_SIZE - 1)
+      const bookSelect = `
+        id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+        status, cover_type, condition_id, language_id, user_catalog_id, series,
+        storage_location, shelf, isbn_13, isbn_10,
+        book_contributors (
+          contributor:contributors ( canonical_name ),
+          role:contributor_roles ( name )
+        )
+      `
 
-        if (batchError) {
-          console.error('Error fetching books:', batchError)
+      if (colId) {
+        // Collection + search: fetch only collection books, then search client-side
+        const collectionBookIds = await getBookIdsForCollection(colId)
+        if (collectionBookIds.length === 0) {
+          if (!append) setBooks([])
           setLoading(false)
           setLoadingMore(false)
           return
         }
+        // Fetch in batches of 200 IDs to stay within URL limits
+        for (let i = 0; i < collectionBookIds.length; i += 200) {
+          const batch = collectionBookIds.slice(i, i + 200)
+          const { data, error } = await supabase
+            .from('books')
+            .select(bookSelect)
+            .in('id', batch)
+          if (error) {
+            console.error('Error fetching books:', error)
+            continue
+          }
+          if (data) allBooks = [...allBooks, ...data]
+        }
+      } else {
+        // No collection filter: fetch all books in batches
+        let fetchFrom = 0
+        while (true) {
+          const { data: batch, error: batchError } = await supabase
+            .from('books')
+            .select(bookSelect)
+            .order('title', { ascending: true })
+            .range(fetchFrom, fetchFrom + BATCH_SIZE - 1)
 
-        if (!batch || batch.length === 0) break
-        
-        allBooks = [...allBooks, ...batch]
-        
-        // If we got less than BATCH_SIZE, we've fetched all books
-        if (batch.length < BATCH_SIZE) break
-        
-        fetchFrom += BATCH_SIZE
-      }
+          if (batchError) {
+            console.error('Error fetching books:', batchError)
+            setLoading(false)
+            setLoadingMore(false)
+            return
+          }
 
-      // Filter by collection if active
-      if (colId) {
-        const collectionBookIds = await getBookIdsForCollection(colId)
-        const colSet = new Set(collectionBookIds)
-        allBooks = allBooks.filter((b: any) => colSet.has(b.id))
+          if (!batch || batch.length === 0) break
+          allBooks = [...allBooks, ...batch]
+          if (batch.length < BATCH_SIZE) break
+          fetchFrom += BATCH_SIZE
+        }
       }
 
       const data = allBooks
