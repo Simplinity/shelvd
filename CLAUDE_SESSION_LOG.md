@@ -57,6 +57,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 8 | Sharing & Public Catalog | 🔴 Todo |
 | 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge fields from lookup on edit page) | 🔴 Todo |
+| — | Multiple Collections per user (Wishlist = a collection) | 🔴 Todo |
 | — | Custom Tags | 🔴 Todo |
 | — | Image upload | 🔴 Todo |
 

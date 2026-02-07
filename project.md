@@ -210,9 +210,9 @@ status, action_needed, internal_notes
 | 8 | Sharing & Public Catalog | 🔴 Todo |
 | 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
-| — | Custom Tags / Collections | 🔴 Todo |
+| — | Multiple Collections per user (Wishlist = a collection) | 🔴 Todo |
+| — | Custom Tags | 🔴 Todo |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
-| — | Wishlist / Desiderata | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
 
 ### Under Consideration
