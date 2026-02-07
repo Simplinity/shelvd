@@ -660,7 +660,7 @@ export default function BookAddForm({ referenceData }: Props) {
       // Add external links
       if (externalLinks.length > 0) {
         const linkRows = externalLinks
-          .filter(l => l.url.trim())
+          .filter(l => l.url.trim() && !/^https?:\/\/[^/]+\/?$/.test(l.url.trim()))
           .map((l, i) => ({
             book_id: newBook.id,
             user_id: user.id,

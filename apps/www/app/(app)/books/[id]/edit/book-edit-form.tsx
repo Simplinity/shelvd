@@ -412,7 +412,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
       // Save external links: delete all existing, re-insert
       const { data: { user: currentUser } } = await supabase.auth.getUser()
       await supabase.from('book_external_links').delete().eq('book_id', book.id)
-      const validLinks = externalLinks.filter(l => l.url.trim())
+      const validLinks = externalLinks.filter(l => l.url.trim() && !/^https?:\/\/[^/]+\/?$/.test(l.url.trim()))
       if (validLinks.length > 0) {
         await supabase.from('book_external_links').insert(
           validLinks.map((l, i) => ({
