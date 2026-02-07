@@ -88,6 +88,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 4 | Filter books by collection | ✅ Done | Already implemented in page.tsx: reads ?collection= param, fetches book_collections IDs, filters all 3 modes |
 | 5 | Book form: collection multi-select | ✅ Done | Add form already had it; added to edit form: state, fetch, save (delete+re-insert), checkbox UI |
 | 6 | Bulk collection actions | ✅ Done | Add to Collection dropdown + Remove from Collection (when viewing collection) in selection bar |
+| 7 | Settings: manage collections page | ✅ Done | /settings/collections - create, rename, delete, reorder, book counts |
 
 ---
 
