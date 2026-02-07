@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Search, Loader2, Check, X, ExternalLink, Plus, Settings, ChevronLeft, BookOpen } from 'lucide-react'
+import { Search, Loader2, Check, X, ExternalLink, Plus, Settings, ChevronLeft, BookOpen, ChevronDown, FolderOpen } from 'lucide-react'
 import { lookupByFields, lookupDetails, lookupIsbn } from '@/lib/actions/isbn-lookup'
+import { createClient } from '@/lib/supabase/client'
 import { isProviderImplemented, supportsFieldSearch } from '@/lib/isbn-providers'
 import type { BookData, ActiveProvider, SearchResultItem, SearchParams } from '@/lib/isbn-providers'
 
@@ -61,6 +62,42 @@ export function LookupForm({ activeProviders }: Props) {
   // Available providers (implemented only)
   const implementedProviders = activeProviders.filter(p => isProviderImplemented(p.code))
   
+  // Collections for picker
+  const [collections, setCollections] = useState<{ id: string; name: string; is_default: boolean }[]>([])
+  const [selectedCollections, setSelectedCollections] = useState<Set<string>>(new Set())
+  const [showCollectionPicker, setShowCollectionPicker] = useState(false)
+  
+  const pickerRef = useRef<HTMLDivElement>(null)
+  const supabase = createClient()
+
+  // Fetch collections on mount
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('collections')
+        .select('id, name, is_default, sort_order')
+        .order('sort_order', { ascending: true })
+      if (data) {
+        setCollections(data as any)
+        // Pre-select the default "Library" collection
+        const defaultCol = data.find((c: any) => c.is_default)
+        if (defaultCol) setSelectedCollections(new Set([(defaultCol as any).id]))
+      }
+    }
+    load()
+  }, [])
+
+  // Click outside to close picker
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowCollectionPicker(false)
+      }
+    }
+    if (showCollectionPicker) document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [showCollectionPicker])
+
   const hasSearchInput = Object.values(searchFields).some(v => v && v.trim())
   
   const handleSearch = async (e: React.FormEvent) => {
@@ -212,10 +249,24 @@ export function LookupForm({ activeProviders }: Props) {
       ...detail,
       lookup_provider: detailProvider,
       lookup_source_url: detailSourceUrl,
+      selected_collection_ids: Array.from(selectedCollections),
     }))
     
     router.push('/books/add?from=lookup')
   }
+
+  const toggleCollection = (id: string) => {
+    setSelectedCollections(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const selectedCollectionNames = collections
+    .filter(c => selectedCollections.has(c.id))
+    .map(c => c.name)
   
   const handleBackToResults = () => {
     setDetail(null)
@@ -601,14 +652,44 @@ export function LookupForm({ activeProviders }: Props) {
           
           {/* Actions */}
           <div className="flex justify-between items-center px-4 py-3 border-t border-border bg-muted/30">
-            <p className="text-xs text-muted-foreground">
-              Book will be added with status <span className="font-medium text-foreground">Draft</span>
-            </p>
+            <div className="relative" ref={pickerRef}>
+              <button
+                type="button"
+                onClick={() => setShowCollectionPicker(!showCollectionPicker)}
+                className="h-9 px-3 text-sm border border-border bg-background hover:bg-muted transition-colors flex items-center gap-2"
+              >
+                <FolderOpen className="w-3.5 h-3.5 text-muted-foreground" />
+                {selectedCollectionNames.length === 0
+                  ? 'No collection'
+                  : selectedCollectionNames.join(', ')}
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+              {showCollectionPicker && (
+                <div className="absolute bottom-full mb-1 left-0 w-56 border border-border bg-background shadow-lg z-10">
+                  {collections.map(c => (
+                    <label
+                      key={c.id}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCollections.has(c.id)}
+                        onChange={() => toggleCollection(c.id)}
+                        className="rounded"
+                      />
+                      {c.name}
+                      {c.is_default && <span className="text-xs text-muted-foreground">(default)</span>}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
             <button
               onClick={handleAddToCollection}
-              className="h-10 px-6 bg-foreground text-background font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+              disabled={selectedCollections.size === 0}
+              className="h-10 px-6 bg-foreground text-background font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" /> Add to Collection
+              <Plus className="w-4 h-4" /> Add to {selectedCollectionNames.length === 1 ? selectedCollectionNames[0] : 'Collections'}
             </button>
           </div>
         </div>

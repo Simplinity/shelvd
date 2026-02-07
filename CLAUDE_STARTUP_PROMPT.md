@@ -79,7 +79,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 | Sharing & Public Catalog | 🔴 Todo |
 | Currency & Valuation | 🔴 Todo |
 | Enrich mode (merge lookup fields on edit) | 🔴 Todo |
-| Multiple Collections per user (Wishlist = a collection) | 🔴 Todo |
+| Multiple Collections per user (Wishlist = a collection) | ✅ Done |
 | Custom Tags | 🔴 Todo |
 | Image upload | 🔴 Todo |
 

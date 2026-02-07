@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Download, Upload, FileSpreadsheet, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'
@@ -128,6 +128,25 @@ export default function BookImportForm({ referenceData, userId }: Props) {
   const [importProgress, setImportProgress] = useState({ current: 0, total: 0 })
   const [importResults, setImportResults] = useState({ success: 0, failed: 0 })
   const [error, setError] = useState<string | null>(null)
+
+  // Collections
+  const [importCollections, setImportCollections] = useState<{ id: string; name: string; is_default: boolean }[]>([])
+  const [selectedImportCollections, setSelectedImportCollections] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    async function loadCollections() {
+      const { data } = await supabase
+        .from('collections')
+        .select('id, name, is_default, sort_order')
+        .order('sort_order', { ascending: true })
+      if (data) {
+        setImportCollections(data as any)
+        const defaultCol = data.find((c: any) => c.is_default)
+        if (defaultCol) setSelectedImportCollections(new Set([(defaultCol as any).id]))
+      }
+    }
+    loadCollections()
+  }, [])
 
   // Parse boolean values
   const parseBoolean = (value: string | undefined): boolean | null => {

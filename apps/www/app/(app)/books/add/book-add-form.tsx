@@ -352,6 +352,7 @@ export default function BookAddForm({ referenceData }: Props) {
   // Track if data came from ISBN lookup
   const [fromLookup, setFromLookup] = useState(false)
   const [lookupProvider, setLookupProvider] = useState<string | null>(null)
+  const [lookupCollectionIds, setLookupCollectionIds] = useState<string[] | null>(null)
 
   // Load ISBN lookup data from sessionStorage
   useEffect(() => {
@@ -363,6 +364,9 @@ export default function BookAddForm({ referenceData }: Props) {
         
         setFromLookup(true)
         setLookupProvider(data.lookup_provider || null)
+        if (data.selected_collection_ids && Array.isArray(data.selected_collection_ids)) {
+          setLookupCollectionIds(data.selected_collection_ids)
+        }
         
         // Map lookup data to form fields
         const updates: Partial<FormData> = {
@@ -448,15 +452,20 @@ export default function BookAddForm({ referenceData }: Props) {
         .order('sort_order', { ascending: true })
       if (data) {
         setAvailableCollections(data as CollectionOption[])
-        // Pre-select the default "Library" collection
-        const defaultCol = data.find((c: any) => c.is_default)
-        if (defaultCol) {
-          setSelectedCollectionIds(new Set([defaultCol.id]))
+        // If coming from lookup with pre-selected collections, use those
+        if (lookupCollectionIds && lookupCollectionIds.length > 0) {
+          setSelectedCollectionIds(new Set(lookupCollectionIds))
+        } else {
+          // Default: pre-select the "Library" collection
+          const defaultCol = data.find((c: any) => c.is_default)
+          if (defaultCol) {
+            setSelectedCollectionIds(new Set([defaultCol.id]))
+          }
         }
       }
     }
     fetchCollections()
-  }, [])
+  }, [lookupCollectionIds])
 
   // Warn about unsaved changes
   useEffect(() => {

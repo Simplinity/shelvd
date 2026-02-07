@@ -57,7 +57,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 8 | Sharing & Public Catalog | 🔴 Todo |
 | 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge fields from lookup on edit page) | 🔴 Todo |
-| — | Multiple Collections per user (Wishlist = a collection) | 🔴 Todo |
+| — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
 | — | Custom Tags | 🔴 Todo |
 | — | Image upload | 🔴 Todo |
 
@@ -89,6 +89,8 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 5 | Book form: collection multi-select | ✅ Done | Add form already had it; added to edit form: state, fetch, save (delete+re-insert), checkbox UI |
 | 6 | Bulk collection actions | ✅ Done | Add to Collection dropdown + Remove from Collection (when viewing collection) in selection bar |
 | 7 | Settings: manage collections page | ✅ Done | /settings/collections - create, rename, delete, reorder, book counts |
+| 7a | Collections tab in settings nav | ✅ Done | Tab link on both /settings and /settings/collections, fixed All Books count |
+| 7b | Default Wishlist collection | ✅ Done | Migration 012: auto-create Wishlist for existing + new users, trigger updated |
 
 ---
 
@@ -96,6 +98,16 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 
 | Hash | Description |
 |------|-------------|
+| `a3c5fc2` | Default Wishlist collection (migration 012 + trigger) |
+| `ebfda18` | Collections tab in settings nav, fix All Books count |
+| `ec8f3a0` | Settings/collections page: create, rename, delete, reorder |
+| `8e5e442` | Bulk collection actions in selection bar |
+| `555d289` | Collection multi-select on edit form |
+| `1c4008f` | Database types fix for collections |
+| `fe05060` | TypeScript type fix for collections |
+| `0a72286` | Navigation dropdown for collections |
+| `d414c8d` | Server actions for collections |
+| `78992dd` | Database migration 011: collections + book_collections |
 | `74383ff` | Complete provider evaluation (all 17 done) |
 | `70fc220` | Standaard Boekhandel provider |
 | `1ea8608` | Remove Bol.com + Library Hub |
