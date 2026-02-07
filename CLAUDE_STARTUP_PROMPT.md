@@ -46,7 +46,8 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - `apps/www/lib/isbn-providers/` — Book lookup provider code
 - `apps/www/lib/constants.ts` — BookStatus (14 values), conditions, roles, etc.
 - `apps/www/components/` — Reusable components (collection-chips, tag-input, collection-nav, move-to-library-button)
-- `supabase/migrations/` — DB migrations (001–014)
+- `apps/www/lib/currencies.ts` — 29 ISO 4217 currencies
+- `supabase/migrations/` — DB migrations (001–015)
 
 ### Database
 ```bash

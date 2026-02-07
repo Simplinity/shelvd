@@ -250,8 +250,8 @@ status, action_needed, internal_notes
 ### Currency & Valuation — Steps
 | # | Step | Description |
 |---|------|-------------|
-| 1 | Clean up duplicate DB columns | Drop 5 unused columns (purchase_currency, price_lowest, price_highest, price_sales, price_estimated) |
-| 2 | Currency dropdowns | Replace freetext inputs with select dropdowns (EUR, USD, GBP, CHF, SEK, etc.) |
+| 1 | ~~Clean up duplicate DB columns~~ | ~~Drop 5 unused columns~~ ✅ Done |
+| 2 | ~~Currency dropdowns~~ | ~~29 ISO 4217 currencies, select dropdowns on add/edit~~ ✅ Done |
 | 3 | Home currency in user settings | `display_currency` in user_profiles, dropdown in Settings > Configuration |
 | 4 | Exchange rate conversion on stats | Fetch rates (ECB/exchangerate.host), convert to display currency, show "rates as of" |
 | 5 | Per-book gain/loss on detail page | "Bought €45 → Estimated €120 (+167%)" with green/red styling |
@@ -303,6 +303,7 @@ shelvd/
 │       ├── supabase/             # DB client + types
 │       ├── actions/              # Server actions (collections, etc.)
 │       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
+│       ├── currencies.ts         # 29 ISO 4217 currencies for dropdowns
 │       └── isbn-providers/       # Book lookup providers
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
@@ -312,7 +313,7 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-014
+├── supabase/migrations/          # 001-015
 └── project.md
 ```
 

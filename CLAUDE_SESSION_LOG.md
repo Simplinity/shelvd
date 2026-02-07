@@ -102,8 +102,8 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 
 | # | Step | Description | Status |
 |---|------|-------------|--------|
-| 1 | Clean up duplicate DB columns | Migration 015: drop 5 unused columns (purchase_currency, price_lowest, price_highest, price_sales, price_estimated). Zero data loss. | 🔴 Todo |
-| 2 | Currency dropdowns | Replace freetext currency inputs with select dropdowns on add/edit forms. Predefined list: EUR, USD, GBP, CHF, SEK, DKK, NOK, JPY, CAD, AUD + more. Prevents typos, enables conversion. | 🔴 Todo |
+| 1 | Clean up duplicate DB columns | Migration 015: drop 5 unused columns (purchase_currency, price_lowest, price_highest, price_sales, price_estimated). Zero data loss. Detail page fallbacks cleaned up. | ✅ Done (`3068ed0`) |
+| 2 | Currency dropdowns | New `currencies.ts` with 29 ISO 4217 currencies. Freetext inputs replaced with select dropdowns on add + edit forms. | ✅ Done (`40e7d58`) |
 | 3 | Home currency in user settings | Add `display_currency` column to user_profiles (default EUR). Dropdown in Settings > Configuration tab. All totals/stats/summaries convert to this currency. | 🔴 Todo |
 | 4 | Exchange rate conversion on stats page | Fetch rates from ECB or exchangerate.host API. Convert all prices to user's display currency before summing. Show "rates as of" date. Cache rates (daily refresh). | 🔴 Todo |
 | 5 | Per-book gain/loss on detail page | Show on book detail: "Bought for €45 → Estimated €120 (+167%)". Green for gain, red for loss. Only when both acquired_price and estimated_value are set. | 🔴 Todo |
@@ -211,6 +211,7 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 | 012 | 012_default_wishlist.sql | Wishlist auto-create, is_default column, trigger update |
 | 013 | 013_remove_wishlist_status.sql | Convert wishlist status books to in_collection |
 | 014 | 014_tags.sql | RLS policies for tags + book_tags |
+| 015 | 015_drop_unused_price_columns.sql | Drop 5 unused price columns (zero data) |
 
 ---
 
@@ -230,6 +231,11 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 
 | Hash | Description |
 |------|-------------|
+| `40e7d58` | Currency step 2: currency select dropdowns on add/edit forms |
+| `3068ed0` | Currency step 1: drop 5 unused price columns, clean up detail page |
+| `605f14f` | Settings/tags page: create, rename, recolor, delete tags |
+| `8936d60` | Consistent max-w-7xl on all pages |
+| `607ed0e` | Full page width on book pages (add, edit, detail, lookup) |
 | `18c757d` | Update docs: Custom Tags complete |
 | `d31dbfe` | Custom Tags: RLS, colored input, clickable detail chips, filter indicator |
 | `5e289a7` | Complete BOOK_STATUSES (all 14 statuses) |
