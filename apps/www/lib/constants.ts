@@ -1,7 +1,6 @@
 // Book Status
 export type BookStatus = 
   | 'in_collection'
-  | 'wishlist'
   | 'sold'
   | 'lent'
   | 'ordered'
@@ -9,7 +8,6 @@ export type BookStatus =
 
 export const BOOK_STATUSES: Record<BookStatus, { label: string; color: string }> = {
   in_collection: { label: 'In Collection', color: 'bg-green-600' },
-  wishlist: { label: 'Wishlist', color: 'bg-blue-600' },
   sold: { label: 'Sold', color: 'bg-gray-600' },
   lent: { label: 'Lent', color: 'bg-yellow-600' },
   ordered: { label: 'Ordered', color: 'bg-purple-600' },
