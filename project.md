@@ -122,6 +122,8 @@ while (true) {
 | user_isbn_providers | — | Per-user provider preferences |
 | collections | — | User collections (Library + Wishlist default, custom) |
 | book_collections | — | M:N books ↔ collections |
+| tags | — | User tags (name + color, unique per user) |
+| book_tags | — | M:N books ↔ tags |
 
 ### Books — Key Fields
 ```
@@ -193,6 +195,34 @@ status, action_needed, internal_notes
 - Server-side SQL (ISBN-13, ISBN-10, exact title matching)
 - Grouped results with collapse/expand, select all per group, bulk delete
 
+### Multiple Collections
+- Library + Wishlist auto-created per user (non-deletable defaults)
+- Custom collections: create, rename, delete, reorder
+- Nav dropdown for switching collections
+- Books list filter by collection (`?collection=<id>`), optimized fetch (only collection books)
+- Add/edit forms: collection multi-select checkboxes
+- Bulk actions: add to / remove from collection
+- Settings: `/settings/collections` page with book counts
+- Detail page: toggleable collection chips with toast feedback
+- Move to Library button (one-click Wishlist → Library)
+- Migrations: 011 (tables + seed), 012 (Wishlist default), 013 (remove wishlist status)
+
+### Custom Tags
+- Free-form colored tags per user (`tags` + `book_tags` tables with RLS)
+- TagInput component: type to search existing, create new on Enter/comma, autocomplete dropdown
+- Colored tag chips on book detail page, clickable to filter books list
+- Books list: `?tag=<id>` filter with indicator + clear button
+- Works combined with collection filter (intersection)
+- Migration: 014 (RLS policies)
+
+### Book Detail Page
+- Full book info with all cataloging fields
+- External links with favicons and visible URLs
+- Toggleable collection chips (click to add/remove, toast feedback)
+- Colored tag chips (clickable to filter)
+- Move to Library button (Wishlist → Library one-click)
+- Previous/Next navigation
+
 ### Book Lookup (9 providers)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
@@ -209,13 +239,13 @@ status, action_needed, internal_notes
 ### Next Priorities
 | # | Feature | Status |
 |---|---------|--------|
-| 8 | Sharing & Public Catalog | 🔴 Todo |
-| 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
-| — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
-| — | Custom Tags | ✅ Done |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
+| — | Sharing & Public Catalog | 🔴 Todo |
+| — | Currency & Valuation | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
+| — | Multiple Collections per user | ✅ Done |
+| — | Custom Tags | ✅ Done |
 
 ### Under Consideration
 - Insurance & valuation PDF reports
@@ -247,14 +277,20 @@ shelvd/
 │   ├── app/
 │   │   ├── (app)/books/          # Collection pages + lookup
 │   │   ├── (app)/stats/          # Statistics
-│   │   ├── (app)/settings/       # User settings
+│   │   ├── (app)/settings/       # User settings + collections
 │   │   ├── (app)/admin/          # Admin dashboard
 │   │   ├── (auth)/               # Login/register
 │   │   └── api/                  # API routes
 │   ├── components/
+│   │   ├── collection-chips.tsx  # Toggleable collection chips (detail page)
+│   │   ├── collection-nav.tsx    # Nav dropdown for collections
+│   │   ├── move-to-library-button.tsx # One-click Wishlist → Library
+│   │   ├── tag-input.tsx         # Tag autocomplete/create input
+│   │   └── delete-book-button.tsx
 │   └── lib/
 │       ├── supabase/             # DB client + types
-│       ├── actions/              # Server actions
+│       ├── actions/              # Server actions (collections, etc.)
+│       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
 │       └── isbn-providers/       # Book lookup providers
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
@@ -264,7 +300,7 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-010
+├── supabase/migrations/          # 001-014
 └── project.md
 ```
 

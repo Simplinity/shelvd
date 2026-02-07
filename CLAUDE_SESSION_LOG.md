@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-07)
 
-All features up to and including **Multiple Collections** are **complete**. 9 lookup providers active, all 17 candidates evaluated. Collections feature: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page.
+All features up to and including **Custom Tags** are **complete**. 9 lookup providers active. Collections: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page. Tags: colored, autocomplete, filter by tag, clickable on detail page. Bug fixes: external link URLs, collection filtering, SRU provider source_url. Polish: toggleable collection chips, toast feedback, complete status definitions.
 
 ---
 
@@ -10,7 +10,7 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 
 ### Core App
 - ✅ Collection Management (CRUD, bulk delete, list/grid views)
-- ✅ Global Search (5000+ books, client-side batch fetch)
+- ✅ Global Search (5000+ books, client-side batch fetch, optimized for collection filtering)
 - ✅ Advanced Search (14 fields, AND/OR)
 - ✅ Import/Export (Excel template, CSV, JSON)
 - ✅ Statistics Dashboard (metrics, charts, top 10s)
@@ -20,7 +20,15 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 - ✅ External Links (54 system types across 8 categories, per-user activation, custom types)
 - ✅ Duplicate Detection (server-side SQL, ISBN + title matching, grouped results, bulk delete)
 - ✅ Multiple Collections (Library + Wishlist default, nav dropdown, filtering, bulk add/remove, settings page, migrations 011–012)
-- ✅ Custom Tags (colored tags, create/search/autocomplete, filter by tag, clickable on detail page)
+- ✅ Custom Tags (colored tags, create/search/autocomplete, filter by tag, clickable on detail page, migration 014)
+
+### Book Detail Page
+- ✅ Full book info display with all cataloging fields
+- ✅ External links with favicons, URLs shown, domain-only URLs rejected
+- ✅ Collection chips (toggleable — click to add/remove from any collection, with toast feedback)
+- ✅ Tags (colored chips, clickable to filter books list by tag)
+- ✅ Move to Library button (one-click Wishlist → Library shortcut)
+- ✅ Previous/Next navigation between books
 
 ### Book Lookup (9 active providers)
 - ✅ Open Library — API (ISBN + field search + Works API fallback for descriptions)
@@ -47,7 +55,7 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 - Multi-field search (title, author, publisher, year range, ISBN)
 - Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
 - 15s timeout on all SRU requests
-- Auto-creates external link from lookup source URL
+- Auto-creates external link from lookup source URL (all providers including SRU)
 - Lookup button on book add page
 
 ---
@@ -56,54 +64,129 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 
 | # | Feature | Status |
 |---|---------|--------|
-| 8 | Sharing & Public Catalog | 🔴 Todo |
-| 9 | Currency & Valuation | 🔴 Todo |
-| — | Enrich mode (merge fields from lookup on edit page) | 🔴 Todo |
-| — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
-| — | Custom Tags | ✅ Done |
-| — | Image upload | 🔴 Todo |
-| — | Landing page + Knowledge base | 🔴 Todo |
+| 1 | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
+| 2 | Image upload (covers, spine, damage) | 🔴 Todo |
+| 3 | Sharing & Public Catalog | 🔴 Todo |
+| 4 | Currency & Valuation | 🔴 Todo |
+| 5 | Landing page + Knowledge base | 🔴 Todo |
 
-## Completed Cleanup (2026-02-07)
-
-| # | Item | Commit |
-|---|------|--------|
-| 1 | Remove "Wishlist" book status from UI (now a collection) | `eb84a94` |
-| 2 | Fix external links with no URL + reject domain-only on save | `833d64c` |
-| 3 | Optimize global search within collection (fetch only collection books) | `63d6f5e` |
-| 4 | Collection chips toggleable on book detail page | `a3a057d` |
-| 5 | Move to Library button — kept as one-click shortcut, chips cover general case | — |
+### Under Consideration
+- Insurance & valuation PDF reports
+- Provenance tracking (previous owners, auction history)
 
 ---
 
-## Completed: Multiple Collections per User
+## Bug Fixes & Cleanup (2026-02-07)
 
-### Plan
-1. Migration 011: create `collections` + `book_collections` tables with RLS
-2. Migration 011: auto-create "Library" for existing users, assign all books
-3. Migration 011: trigger to auto-create "Library" on new user signup
-4. Server actions: CRUD for collections, add/remove books
-5. Nav: collection switcher dropdown under "Collection"
-6. Books list: filter by collection via query param
-7. Book form: multi-select for collections on add/edit
-8. Bulk actions: add to / remove from collection
-9. Settings/manage page: rename, delete, reorder collections
+### Bug: External link URL missing from lookup
+**Problem:** Books added via SRU-based lookup providers (KBR, BnF, DNB, etc.) saved the link type but not the URL.
+**Root cause:** SRU provider's `getDetails()` method returned `{ success, data, provider }` but omitted `source_url`. Other providers (Google, Open Library, Standaard) all returned it correctly.
+**Fix:** Added `source_url` construction in `sru-provider.ts` `getDetails()` using `config.sourceUrlPattern` + ISBN. (`460fa08`)
 
-### Step Log
+### Bug: External link URLs not visible on detail page
+**Problem:** Detail page rendered links as `<a href={link.url}>typeLabel</a>` — if URL existed it wasn't shown as text, and broken links (empty URL) were clickable dead links.
+**Fix:** Show URL text alongside type label. Links without URL show "(no URL)" as plain text instead of broken link. (`a87c525`)
 
-| # | Step | Status | Notes |
-|---|------|--------|-------|
-| 1 | Create migration 011_collections.sql | ✅ Done | Tables + RLS + seed + trigger. 2 users got Library, 5052 books assigned |
-| 2 | Create server actions for collections | ✅ Done | 10 actions: get, getWithCounts, create, update, delete, reorder, getBookCollections, setBookCollections, addBooksToCollection, removeBooksFromCollection |
-| 3 | Collection switcher dropdown in nav | ✅ Done | CollectionNav component + layout.tsx updated. Shows All Books + per-collection + Manage link |
-| 3a | Fix TypeScript build error | ✅ Done | Added CollectionRow + CollectionWithCount types, explicit select columns, cast responses. Pushed fe05060 |
-| 3b | Fix .from('collections') type error | ✅ Done | Added collections + book_collections to database.types.ts, cleaned up casts |
-| 4 | Filter books by collection | ✅ Done | Already implemented in page.tsx: reads ?collection= param, fetches book_collections IDs, filters all 3 modes |
-| 5 | Book form: collection multi-select | ✅ Done | Add form already had it; added to edit form: state, fetch, save (delete+re-insert), checkbox UI |
-| 6 | Bulk collection actions | ✅ Done | Add to Collection dropdown + Remove from Collection (when viewing collection) in selection bar |
-| 7 | Settings: manage collections page | ✅ Done | /settings/collections - create, rename, delete, reorder, book counts |
-| 7a | Collections tab in settings nav | ✅ Done | Tab link on both /settings and /settings/collections, fixed All Books count |
-| 7b | Default Wishlist collection | ✅ Done | Migration 012: auto-create Wishlist (is_default=true, non-deletable) for existing + new users, trigger updated |
+### Cleanup Summary
+
+| # | Item | Commit | Details |
+|---|------|--------|---------|
+| 1 | Remove "Wishlist" book status | `eb84a94` | Wishlist is now a collection, not a status. Removed from add/edit forms and constants.ts. Migration 013 converts any existing wishlist-status books to in_collection and adds them to Wishlist collection. |
+| 2 | Fix external links with no URL | `833d64c` | Deleted 1 orphan link (VIAF domain-only). Add/edit forms now reject domain-only URLs (`/^https?://[^/]+/?$/`). |
+| 3 | Optimize global search + collection | `63d6f5e` | When searching within a collection, fetch only that collection's book IDs first, then fetch those books (batched at 200). Previously fetched ALL 5000+ books then filtered client-side. |
+| 4 | Collection chips toggleable | `a3a057d` | Book detail page shows ALL user collections as chips. Filled = member, outline = not member. Click to toggle. Replaces static read-only chips. |
+| 5 | Toast feedback on chip toggle | `e6841d6` | Shows "Added to Library" / "Removed from Wishlist" etc. below chips for 2.5s after toggle. |
+| 6 | Complete BOOK_STATUSES | `5e289a7` | constants.ts now has all 14 statuses with labels and colors: draft, in_collection, lent, borrowed, double, to_sell, on_sale, reserved, sold, ordered, lost, donated, destroyed, unknown. |
+
+---
+
+## Feature: Custom Tags (2026-02-07)
+
+### What was done
+1. **Migration 014** (`014_tags.sql`): Added RLS policies to existing `tags` + `book_tags` tables
+2. **TagInput component** (`components/tag-input.tsx`): Type to search existing tags, create new ones on Enter/comma, colored chips with color dot, autocomplete dropdown with "Create new" option
+3. **Add form**: Tags section with TagInput — creates tags in DB on the fly, saves to book_tags on submit
+4. **Edit form**: Loads existing book tags, same TagInput, saves via delete-all + re-insert
+5. **Detail page**: Colored tag chips (using tag's `color` field) that link to `/books?tag=<id>`
+6. **Books list**: Tag filter indicator with tag name + Clear button. Page title shows "Tag: <name>" when filtering. Works combined with collection filter (intersection).
+
+### Database
+- `tags` table: id, user_id, name, color (default #6b7280), created_at. Unique on (user_id, name).
+- `book_tags` table: id, book_id, tag_id, created_at. Unique on (book_id, tag_id).
+- RLS: Users can only manage their own tags and book_tags.
+
+### Commit
+`d31dbfe` — Custom Tags: RLS, colored input, clickable detail chips, filter indicator
+
+---
+
+## Feature: Multiple Collections (completed earlier)
+
+### What was done
+1. Migration 011: `collections` + `book_collections` tables with RLS, auto-seed Library for existing users
+2. Migration 012: Auto-create Wishlist (is_default=true, non-deletable) for existing + new users
+3. Server actions: 10 actions (get, getWithCounts, create, update, delete, reorder, getBookCollections, setBookCollections, addBooksToCollection, removeBooksFromCollection)
+4. Nav: CollectionNav dropdown (All Books + per-collection + Manage link)
+5. Books list: `?collection=` filter, paginated fetch, count
+6. Add/edit forms: Collection multi-select checkboxes
+7. Bulk actions: Add to Collection dropdown + Remove from Collection
+8. Settings: `/settings/collections` — create, rename, delete, reorder, book counts
+9. Detail page: Toggleable collection chips + Move to Library button
+
+---
+
+## Feature: Move to Library Button (2026-02-07)
+
+### What was done
+- Client component `components/move-to-library-button.tsx`
+- Shows on book detail page when book is in Wishlist but NOT in Library
+- One-click: adds to Library + removes from Wishlist simultaneously
+- Green "Moved to Library" confirmation on success
+- Commit: `4e82566`
+
+---
+
+## Feature: Collection Filtering Fix (2026-02-07)
+
+### What was done
+- Fixed URL length limit crash with large collections (5000+ books) when using `.in()` with all IDs
+- Implemented paginated fetching for DEFAULT MODE (no search, no filters)
+- Added fast count query for collection filtering (avoids fetching all book data just to count)
+- Fixed undefined `collectionBookIds` references in global search and advanced filter modes
+- Commit: `5c714de`
+
+---
+
+## Database Migrations
+
+| # | File | Description |
+|---|------|-------------|
+| 001 | 001_reference_tables.sql | Conditions, bindings, formats, languages |
+| 002 | 002_contributor_roles.sql | 69 MARC relator codes |
+| 003 | 003_user_data.sql | Books, contributors, book_contributors, user_stats |
+| 004 | 004_bisac_codes.sql | 3887 BISAC subject codes |
+| 005 | 005_user_profiles_admin.sql | User profiles, admin role |
+| 006 | 006_external_links.sql | External link types, user activation, book links |
+| 007 | 007_isbn_providers.sql | ISBN providers table + seed |
+| 008 | 008_user_isbn_providers.sql | Per-user provider preferences |
+| 009 | 009_tags.sql | Tags + book_tags tables |
+| 010 | 010_publisher_to_name.sql | Publisher field rename |
+| 011 | 011_collections.sql | Collections + book_collections, Library seed, trigger |
+| 012 | 012_default_wishlist.sql | Wishlist auto-create, is_default column, trigger update |
+| 013 | 013_remove_wishlist_status.sql | Convert wishlist status books to in_collection |
+| 014 | 014_tags.sql | RLS policies for tags + book_tags |
+
+---
+
+## Key Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| CollectionChips | `components/collection-chips.tsx` | Toggleable collection membership on book detail page with toast |
+| CollectionNav | `components/collection-nav.tsx` | Nav dropdown for switching collections |
+| MoveToLibraryButton | `components/move-to-library-button.tsx` | One-click Wishlist → Library |
+| TagInput | `components/tag-input.tsx` | Tag autocomplete/create input for add/edit forms |
+| DeleteBookButton | `components/delete-book-button.tsx` | Book deletion with confirmation |
 
 ---
 
@@ -111,6 +194,7 @@ All features up to and including **Multiple Collections** are **complete**. 9 lo
 
 | Hash | Description |
 |------|-------------|
+| `18c757d` | Update docs: Custom Tags complete |
 | `d31dbfe` | Custom Tags: RLS, colored input, clickable detail chips, filter indicator |
 | `5e289a7` | Complete BOOK_STATUSES (all 14 statuses) |
 | `e6841d6` | Toast feedback on collection chip toggle |
