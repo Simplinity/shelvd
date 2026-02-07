@@ -252,7 +252,7 @@ status, action_needed, internal_notes
 |---|------|-------------|
 | 1 | ~~Clean up duplicate DB columns~~ | ~~Drop 5 unused columns~~ ✅ Done |
 | 2 | ~~Currency dropdowns~~ | ~~29 ISO 4217 currencies, select dropdowns on add/edit~~ ✅ Done |
-| 3 | Home currency in user settings | `display_currency` in user_profiles, dropdown in Settings > Configuration |
+| 3 | ~~Home currency in user settings~~ | ~~Stats reads user's default_currency~~ ✅ Done |
 | 4 | Exchange rate conversion on stats | Fetch rates (ECB/exchangerate.host), convert to display currency, show "rates as of" |
 | 5 | Per-book gain/loss on detail page | "Bought €45 → Estimated €120 (+167%)" with green/red styling |
 | 6 | Collection value summary on books list | Summary bar: total cost / total value / unrealized gain for current view |
