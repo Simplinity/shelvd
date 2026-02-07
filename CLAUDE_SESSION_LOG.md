@@ -84,6 +84,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 2 | Create server actions for collections | ✅ Done | 10 actions: get, getWithCounts, create, update, delete, reorder, getBookCollections, setBookCollections, addBooksToCollection, removeBooksFromCollection |
 | 3 | Collection switcher dropdown in nav | ✅ Done | CollectionNav component + layout.tsx updated. Shows All Books + per-collection + Manage link |
 | 3a | Fix TypeScript build error | ✅ Done | Added CollectionRow + CollectionWithCount types, explicit select columns, cast responses. Pushed fe05060 |
+| 3b | Fix .from('collections') type error | ✅ Done | Added collections + book_collections to database.types.ts, cleaned up casts |
 
 ---
 

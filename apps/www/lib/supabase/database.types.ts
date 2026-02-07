@@ -117,6 +117,39 @@ export type Database = {
           },
         ]
       }
+      book_collections: {
+        Row: {
+          book_id: string
+          collection_id: string
+          added_at: string
+        }
+        Insert: {
+          book_id: string
+          collection_id: string
+          added_at?: string
+        }
+        Update: {
+          book_id?: string
+          collection_id?: string
+          added_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_collections_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_collections_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       book_formats: {
         Row: {
           abbreviation: string | null
@@ -782,6 +815,45 @@ export type Database = {
           type?: string | null
           viaf_id?: string | null
           wikidata_id?: string | null
+        }
+        Relationships: []
+      }
+      collections: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          icon: string | null
+          color: string | null
+          sort_order: number
+          is_default: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          icon?: string | null
+          color?: string | null
+          sort_order?: number
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          icon?: string | null
+          color?: string | null
+          sort_order?: number
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

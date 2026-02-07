@@ -42,7 +42,7 @@ export async function getCollections(): Promise<{ error?: string; data: Collecti
     .order('created_at', { ascending: true })
 
   if (error) return { error: 'Failed to fetch collections', data: [] }
-  return { data: (data as unknown as CollectionRow[]) || [] }
+  return { data: (data || []) as CollectionRow[] }
 }
 
 // ─── Fetch collections with book counts ───
@@ -61,7 +61,7 @@ export async function getCollectionsWithCounts(): Promise<{ error?: string; data
 
   if (error) return { error: 'Failed to fetch collections', data: [] }
 
-  const typedCollections = (collections as unknown as CollectionRow[]) || []
+  const typedCollections = (collections || []) as CollectionRow[]
 
   // Get counts per collection
   const counts: Record<string, number> = {}
