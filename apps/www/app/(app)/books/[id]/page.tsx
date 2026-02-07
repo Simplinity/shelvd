@@ -625,21 +625,21 @@ export default async function BookDetailPage({ params }: PageProps) {
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Field label="Acquired From" value={bookData.acquired_from || bookData.purchase_source} />
               <Field label="Date" value={formatDate(bookData.acquired_date)} />
-              <Field label="Price Paid" value={formatPrice(bookData.acquired_price || bookData.purchase_price, bookData.acquired_currency || bookData.purchase_currency)} />
+              <Field label="Price Paid" value={formatPrice(bookData.acquired_price, bookData.acquired_currency)} />
               <Field label="Notes" value={bookData.acquired_notes} />
             </dl>
           </section>
         )}
 
         {/* 11. Valuation */}
-        {(bookData.lowest_price || bookData.price_lowest || bookData.highest_price || bookData.price_highest || bookData.estimated_value || bookData.price_estimated || bookData.sales_price || bookData.price_sales) && (
+        {(bookData.lowest_price || bookData.highest_price || bookData.estimated_value || bookData.sales_price) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Lowest Price" value={formatPrice(bookData.lowest_price || bookData.price_lowest, bookData.price_currency)} />
-              <Field label="Highest Price" value={formatPrice(bookData.highest_price || bookData.price_highest, bookData.price_currency)} />
-              <Field label="Estimated Value" value={formatPrice(bookData.estimated_value || bookData.price_estimated, bookData.price_currency)} />
-              <Field label="Sales Price" value={formatPrice(bookData.sales_price || bookData.price_sales, bookData.price_currency)} />
+              <Field label="Lowest Price" value={formatPrice(bookData.lowest_price, bookData.price_currency)} />
+              <Field label="Highest Price" value={formatPrice(bookData.highest_price, bookData.price_currency)} />
+              <Field label="Estimated Value" value={formatPrice(bookData.estimated_value, bookData.price_currency)} />
+              <Field label="Sales Price" value={formatPrice(bookData.sales_price, bookData.price_currency)} />
               <Field label="Valuation Date" value={formatDate(bookData.valuation_date)} />
             </dl>
           </section>
