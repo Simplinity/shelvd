@@ -87,6 +87,12 @@ export default async function SettingsPage({
         >
           Book Lookup
         </a>
+        <a
+          href="/settings/collections"
+          className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground"
+        >
+          Collections
+        </a>
       </div>
 
       <SettingsForm

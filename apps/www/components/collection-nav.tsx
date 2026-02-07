@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import type { CollectionWithCount } from '@/lib/actions/collections'
 
-export function CollectionNav({ collections }: { collections: CollectionWithCount[] }) {
+export function CollectionNav({ collections, totalBookCount }: { collections: CollectionWithCount[]; totalBookCount: number }) {
   const searchParams = useSearchParams()
   const activeCollectionId = searchParams.get('collection')
 
@@ -41,7 +41,7 @@ export function CollectionNav({ collections }: { collections: CollectionWithCoun
               All Books
             </span>
             <span className="text-xs text-muted-foreground">
-              {collections.reduce((sum, c) => sum + c.book_count, 0)}
+              {totalBookCount}
             </span>
           </Link>
         </DropdownMenuItem>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Pencil, Trash2, ChevronUp, ChevronDown, Library, FolderOpen, Loader2, X, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, Library, FolderOpen, Loader2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 
@@ -171,15 +171,16 @@ export function CollectionsManager() {
   const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/settings">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Settings
-          </Link>
-        </Button>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-2xl font-bold mb-8">Settings</h1>
+
+      {/* Tab navigation (mirrors /settings page) */}
+      <div className="flex gap-0 border-b mb-10">
+        <a href="/settings?tab=account" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">Account</a>
+        <a href="/settings?tab=configuration" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">Configuration</a>
+        <a href="/settings?tab=external-links" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">External Links</a>
+        <a href="/settings?tab=book-lookup" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-muted-foreground hover:text-foreground">Book Lookup</a>
+        <a href="/settings/collections" className="px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors border-foreground text-foreground">Collections</a>
       </div>
 
       <div className="flex justify-between items-start mb-6">

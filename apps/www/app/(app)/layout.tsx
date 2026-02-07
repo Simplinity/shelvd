@@ -29,6 +29,11 @@ export default async function AppLayout({
   // Fetch collections for nav dropdown
   const { data: collections } = await getCollectionsWithCounts()
 
+  // Get actual total book count (not sum of collection counts)
+  const { count: totalBookCount } = await supabase
+    .from('books')
+    .select('*', { count: 'exact', head: true })
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header - Swiss Design Optie B */}
@@ -45,7 +50,7 @@ export default async function AppLayout({
 
             {/* Navigation - alle opties */}
             <nav className="hidden md:flex items-center gap-1">
-              <CollectionNav collections={collections || []} />
+              <CollectionNav collections={collections || []} totalBookCount={totalBookCount || 0} />
               <Link 
                 href="/books/add" 
                 className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors flex items-center gap-1.5"
