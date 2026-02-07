@@ -85,7 +85,8 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 3 | Collection switcher dropdown in nav | ✅ Done | CollectionNav component + layout.tsx updated. Shows All Books + per-collection + Manage link |
 | 3a | Fix TypeScript build error | ✅ Done | Added CollectionRow + CollectionWithCount types, explicit select columns, cast responses. Pushed fe05060 |
 | 3b | Fix .from('collections') type error | ✅ Done | Added collections + book_collections to database.types.ts, cleaned up casts |
-| 4 | Filter books list by collection query param | ✅ Done | /books?collection=xxx filters via book_collections join, all 3 modes + count + UI indicator |
+| 4 | Filter books by collection | ✅ Done | Already implemented in page.tsx: reads ?collection= param, fetches book_collections IDs, filters all 3 modes |
+| 5 | Book form: collection multi-select | ✅ Done | Add form already had it; added to edit form: state, fetch, save (delete+re-insert), checkbox UI |
 
 ---
 

@@ -214,6 +214,31 @@ export default function BookEditForm({ book, referenceData }: Props) {
   // External links state
   const [externalLinks, setExternalLinks] = useState<ExternalLinkData[]>(referenceData.bookExternalLinks || [])
 
+  // Collections state
+  type CollectionOption = { id: string; name: string; is_default: boolean }
+  const [availableCollections, setAvailableCollections] = useState<CollectionOption[]>([])
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<Set<string>>(new Set())
+
+  // Fetch collections and book's current memberships
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const { data: cols } = await supabase
+        .from('collections')
+        .select('id, name, is_default')
+        .order('sort_order', { ascending: true })
+      if (cols) setAvailableCollections(cols as CollectionOption[])
+
+      const { data: memberships } = await supabase
+        .from('book_collections')
+        .select('collection_id')
+        .eq('book_id', book.id)
+      if (memberships) {
+        setSelectedCollectionIds(new Set(memberships.map((m: any) => m.collection_id)))
+      }
+    }
+    fetchCollections()
+  }, [book.id])
+
   // Warn about unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -396,6 +421,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
             label: l.label || null,
             url: l.url.trim(),
             sort_order: i,
+          }))
+        )
+      }
+
+      // Save collections: delete all existing, re-insert
+      await supabase.from('book_collections').delete().eq('book_id', book.id)
+      if (selectedCollectionIds.size > 0) {
+        await supabase.from('book_collections').insert(
+          Array.from(selectedCollectionIds).map(colId => ({
+            book_id: book.id,
+            collection_id: colId,
           }))
         )
       }
@@ -1019,6 +1055,36 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <textarea value={formData.catalog_entry || ''} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
           </div>
         </section>
+
+        {/* 16. Collections */}
+        {availableCollections.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Collections</h2>
+            <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
+            <div className="space-y-2">
+              {availableCollections.map(col => (
+                <label key={col.id} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCollectionIds.has(col.id)}
+                    onChange={() => {
+                      setSelectedCollectionIds(prev => {
+                        const next = new Set(prev)
+                        if (next.has(col.id)) next.delete(col.id)
+                        else next.add(col.id)
+                        return next
+                      })
+                      setIsDirty(true)
+                    }}
+                    className="w-4 h-4 rounded border-border"
+                  />
+                  <span className="text-sm">{col.name}</span>
+                  {col.is_default && <span className="text-xs text-muted-foreground">(default)</span>}
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Submit buttons */}
         <div className="flex justify-end gap-2 pt-4 border-t">

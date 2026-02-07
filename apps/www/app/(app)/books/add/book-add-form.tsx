@@ -339,6 +339,11 @@ export default function BookAddForm({ referenceData }: Props) {
   const [newContributorName, setNewContributorName] = useState('')
   const [newContributorRoleId, setNewContributorRoleId] = useState('')
 
+  // Collections state
+  type CollectionOption = { id: string; name: string; is_default: boolean }
+  const [availableCollections, setAvailableCollections] = useState<CollectionOption[]>([])
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<Set<string>>(new Set())
+
   // External links state
   type ExternalLink = { linkTypeId: string; url: string; label: string }
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
@@ -432,6 +437,25 @@ export default function BookAddForm({ referenceData }: Props) {
       }
     }
   }, [referenceData.contributorRoles])
+
+  // Fetch collections for multi-select
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const { data } = await supabase
+        .from('collections')
+        .select('id, name, is_default')
+        .order('sort_order', { ascending: true })
+      if (data) {
+        setAvailableCollections(data as CollectionOption[])
+        // Pre-select the default "Library" collection
+        const defaultCol = data.find((c: any) => c.is_default)
+        if (defaultCol) {
+          setSelectedCollectionIds(new Set([defaultCol.id]))
+        }
+      }
+    }
+    fetchCollections()
+  }, [])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -639,6 +663,16 @@ export default function BookAddForm({ referenceData }: Props) {
           const { error: linkErr } = await supabase.from('book_external_links').insert(linkRows)
           if (linkErr) console.error('Failed to save external links:', linkErr)
         }
+      }
+
+      // Add to selected collections
+      if (selectedCollectionIds.size > 0) {
+        const colRows = Array.from(selectedCollectionIds).map(colId => ({
+          book_id: newBook.id,
+          collection_id: colId,
+        }))
+        const { error: colErr } = await supabase.from('book_collections').insert(colRows)
+        if (colErr) console.error('Failed to add book to collections:', colErr)
       }
 
       router.push(`/books/${newBook.id}`)
@@ -969,7 +1003,37 @@ export default function BookAddForm({ referenceData }: Props) {
           </div>
         </section>
 
-        {/* 8. Identifiers */}
+        {/* 8. Collections */}
+        {availableCollections.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Collections</h2>
+            <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
+            <div className="space-y-2">
+              {availableCollections.map(col => (
+                <label key={col.id} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCollectionIds.has(col.id)}
+                    onChange={() => {
+                      setSelectedCollectionIds(prev => {
+                        const next = new Set(prev)
+                        if (next.has(col.id)) next.delete(col.id)
+                        else next.add(col.id)
+                        return next
+                      })
+                      setIsDirty(true)
+                    }}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">{col.name}</span>
+                  {col.is_default && <span className="text-xs text-muted-foreground">(default)</span>}
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 9. Identifiers */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Identifiers</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
