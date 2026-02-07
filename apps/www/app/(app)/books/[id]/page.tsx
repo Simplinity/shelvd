@@ -103,8 +103,8 @@ export default async function BookDetailPage({ params }: PageProps) {
     .eq('book_id', id)
     .order('sort_order')
 
-  // Fetch book's collection memberships and ALL user collections
-  const [{ data: bookCollections }, { data: allCollections }] = await Promise.all([
+  // Fetch book's collection memberships, ALL user collections, and tags
+  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }] = await Promise.all([
     supabase
       .from('book_collections')
       .select('collection_id')
@@ -112,7 +112,11 @@ export default async function BookDetailPage({ params }: PageProps) {
     supabase
       .from('collections')
       .select('id, name, is_default')
-      .order('sort_order', { ascending: true })
+      .order('sort_order', { ascending: true }),
+    supabase
+      .from('book_tags')
+      .select('tag_id, tags ( id, name, color )')
+      .eq('book_id', id)
   ])
 
   const bookCollectionIds = new Set((bookCollections || []).map((bc: any) => bc.collection_id))
@@ -128,6 +132,9 @@ export default async function BookDetailPage({ params }: PageProps) {
     name: c.name,
     isMember: bookCollectionIds.has(c.id),
   }))
+
+  // Tags for display
+  const tags = (bookTags || []).map((bt: any) => bt.tags).filter(Boolean) as { id: string; name: string; color: string }[]
 
   // Combine all data
   const bookData = {
@@ -419,6 +426,22 @@ export default async function BookDetailPage({ params }: PageProps) {
           {/* Collection membership chips (toggleable) */}
           {collectionsForChips.length > 0 && (
             <CollectionChips bookId={id} collections={collectionsForChips} />
+          )}
+
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div className="flex gap-1.5 mt-2 flex-wrap">
+              {tags.map(tag => (
+                <Link
+                  key={tag.id}
+                  href={`/books?tag=${tag.id}`}
+                  className="text-xs px-2 py-0.5 text-white hover:opacity-80 transition-opacity"
+                  style={{ backgroundColor: tag.color || '#6b7280' }}
+                >
+                  {tag.name}
+                </Link>
+              ))}
+            </div>
           )}
         </div>
 

@@ -186,6 +186,8 @@ export default function BooksPage() {
   // Get collection filter from URL
   const collectionId = searchParams.get('collection') || ''
   const [collectionName, setCollectionName] = useState<string | null>(null)
+  const tagId = searchParams.get('tag') || ''
+  const [tagName, setTagName] = useState<string | null>(null)
 
   // Get global search query from URL
   const globalSearchQuery = searchParams.get('q') || ''
@@ -426,6 +428,24 @@ export default function BooksPage() {
     return allIds
   }
 
+  // Helper: Get all book IDs for a tag
+  const getBookIdsForTag = async (tagId: string): Promise<string[]> => {
+    let allIds: string[] = []
+    let offset = 0
+    while (true) {
+      const { data, error } = await supabase
+        .from('book_tags')
+        .select('book_id')
+        .eq('tag_id', tagId)
+        .range(offset, offset + 999)
+      if (error || !data || data.length === 0) break
+      allIds = [...allIds, ...data.map(r => r.book_id)]
+      if (data.length < 1000) break
+      offset += 1000
+    }
+    return allIds
+  }
+
   // Helper: Get paginated book IDs for a collection (for default mode)
   const getCollectionBookIdsPaginated = async (colId: string, from: number, to: number): Promise<string[]> => {
     // Get book_ids sorted by added_at, then fetch those specific books
@@ -465,6 +485,23 @@ export default function BooksPage() {
     }
     fetchName()
   }, [collectionId])
+
+  // Fetch tag name when filter is active
+  useEffect(() => {
+    if (!tagId) {
+      setTagName(null)
+      return
+    }
+    const fetchName = async () => {
+      const { data } = await supabase
+        .from('tags')
+        .select('name')
+        .eq('id', tagId)
+        .single()
+      setTagName(data?.name || 'Tag')
+    }
+    fetchName()
+  }, [tagId])
 
   // Helper: Get book IDs for global search (searches author names)
   const getBookIdsForGlobalAuthorSearch = async (searchTerms: string[]): Promise<string[]> => {
@@ -523,8 +560,16 @@ export default function BooksPage() {
     // 3. ADVANCED FILTERS MODE - Individual field filters
     // ========================================================================
 
-    // Get collection filter
+    // Get collection and tag filters
     const colId = searchParams.get('collection') || ''
+    const tId = searchParams.get('tag') || ''
+
+    // Resolve tag filter to book IDs (if active)
+    let tagBookIdSet: Set<string> | null = null
+    if (tId) {
+      const tagBookIds = await getBookIdsForTag(tId)
+      tagBookIdSet = new Set(tagBookIds)
+    }
 
     // DEFAULT MODE - No search, no filters - show all books
     // IMPORTANT: This must come FIRST and return early!
@@ -532,43 +577,61 @@ export default function BooksPage() {
       let data: any[] | null = null
       let error: any = null
 
-      if (colId) {
-        // Collection filter: get paginated book IDs from book_collections,
-        // then fetch those books. Avoids .in() with thousands of IDs.
-        const pageBookIds = await getCollectionBookIdsPaginated(colId, from, to)
-        if (pageBookIds.length === 0) {
+      const bookSelect = `
+        id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+        status, cover_type, condition_id, language_id, user_catalog_id, series,
+        storage_location, shelf, isbn_13, isbn_10,
+        book_contributors (
+          contributor:contributors ( canonical_name ),
+          role:contributor_roles ( name )
+        )
+      `
+
+      if (colId || tagBookIdSet) {
+        // Filtered mode: resolve allowed book IDs, then paginate from that set
+        let allowedIds: string[]
+        if (colId && tagBookIdSet) {
+          // Intersect collection + tag
+          const colIds = await getBookIdsForCollection(colId)
+          allowedIds = colIds.filter(id => tagBookIdSet!.has(id))
+        } else if (colId) {
+          allowedIds = await getBookIdsForCollection(colId)
+        } else {
+          allowedIds = [...tagBookIdSet!]
+        }
+
+        if (allowedIds.length === 0) {
           if (!append) setBooks([])
           setLoading(false)
           setLoadingMore(false)
           return
         }
-        const result = await supabase
-          .from('books')
-          .select(`
-            id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-            status, cover_type, condition_id, language_id, user_catalog_id, series,
-            storage_location, shelf, isbn_13, isbn_10,
-            book_contributors (
-              contributor:contributors ( canonical_name ),
-              role:contributor_roles ( name )
-            )
-          `)
-          .in('id', pageBookIds)
-          .order('title', { ascending: true })
-        data = result.data
-        error = result.error
+
+        // Client-side pagination over the allowed IDs
+        const pageIds = allowedIds.slice(from, to + 1)
+        if (pageIds.length === 0) {
+          setLoading(false)
+          setLoadingMore(false)
+          return
+        }
+
+        // Fetch in batches of 200 to stay within URL limits
+        let allData: any[] = []
+        for (let i = 0; i < pageIds.length; i += 200) {
+          const batch = pageIds.slice(i, i + 200)
+          const { data: batchData, error: batchErr } = await supabase
+            .from('books')
+            .select(bookSelect)
+            .in('id', batch)
+          if (batchErr) { error = batchErr; break }
+          if (batchData) allData = [...allData, ...batchData]
+        }
+        data = allData
       } else {
+        // No filter: standard paginated fetch
         const result = await supabase
           .from('books')
-          .select(`
-            id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-            status, cover_type, condition_id, language_id, user_catalog_id, series,
-            storage_location, shelf, isbn_13, isbn_10,
-            book_contributors (
-              contributor:contributors ( canonical_name ),
-              role:contributor_roles ( name )
-            )
-          `)
+          .select(bookSelect)
           .order('title', { ascending: true })
           .range(from, to)
         data = result.data
@@ -635,18 +698,26 @@ export default function BooksPage() {
         )
       `
 
-      if (colId) {
-        // Collection + search: fetch only collection books, then search client-side
-        const collectionBookIds = await getBookIdsForCollection(colId)
-        if (collectionBookIds.length === 0) {
+      if (colId || tagBookIdSet) {
+        // Filtered search: resolve allowed book IDs, then search within them
+        let allowedIds: string[]
+        if (colId && tagBookIdSet) {
+          const colIds = await getBookIdsForCollection(colId)
+          allowedIds = colIds.filter(id => tagBookIdSet!.has(id))
+        } else if (colId) {
+          allowedIds = await getBookIdsForCollection(colId)
+        } else {
+          allowedIds = [...tagBookIdSet!]
+        }
+        if (allowedIds.length === 0) {
           if (!append) setBooks([])
           setLoading(false)
           setLoadingMore(false)
           return
         }
         // Fetch in batches of 200 IDs to stay within URL limits
-        for (let i = 0; i < collectionBookIds.length; i += 200) {
-          const batch = collectionBookIds.slice(i, i + 200)
+        for (let i = 0; i < allowedIds.length; i += 200) {
+          const batch = allowedIds.slice(i, i + 200)
           const { data, error } = await supabase
             .from('books')
             .select(bookSelect)
@@ -814,10 +885,18 @@ export default function BooksPage() {
         if (authorBookIds && authorBookIds.length > 0) {
           query = query.in('id', authorBookIds)
         }
-        if (colId) {
-          const collectionBookIds = await getBookIdsForCollection(colId)
-          if (collectionBookIds.length > 0) {
-            query = query.in('id', collectionBookIds)
+        if (colId || tagBookIdSet) {
+          let allowedIds: string[]
+          if (colId && tagBookIdSet) {
+            const colIds = await getBookIdsForCollection(colId)
+            allowedIds = colIds.filter(id => tagBookIdSet!.has(id))
+          } else if (colId) {
+            allowedIds = await getBookIdsForCollection(colId)
+          } else {
+            allowedIds = [...tagBookIdSet!]
+          }
+          if (allowedIds.length > 0) {
+            query = query.in('id', allowedIds)
           }
         }
       } else {
@@ -981,10 +1060,22 @@ export default function BooksPage() {
       }
     }
 
-    // Collection filter for count: use fast count from book_collections
-    if (collectionId && !hasAdvancedFilters) {
-      const colCount = await getCollectionBookCount(collectionId)
-      setTotalCount(colCount)
+    // Collection and/or tag filter for count
+    const activeTagId = searchParams.get('tag') || ''
+    if ((collectionId || activeTagId) && !hasAdvancedFilters) {
+      let count: number
+      if (collectionId && activeTagId) {
+        const colIds = await getBookIdsForCollection(collectionId)
+        const tagIds = await getBookIdsForTag(activeTagId)
+        const tagSet = new Set(tagIds)
+        count = colIds.filter(id => tagSet.has(id)).length
+      } else if (collectionId) {
+        count = await getCollectionBookCount(collectionId)
+      } else {
+        const tagIds = await getBookIdsForTag(activeTagId)
+        count = tagIds.length
+      }
+      setTotalCount(count)
       return
     }
 
@@ -1266,7 +1357,7 @@ export default function BooksPage() {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">
-            {hasAnySearch ? 'Search Results' : collectionName ? collectionName : 'My Collection'}
+            {hasAnySearch ? 'Search Results' : collectionName ? collectionName : tagName ? `Tag: ${tagName}` : 'My Collection'}
           </h1>
           <p className="text-muted-foreground">
             {hasAnySearch 
@@ -1469,6 +1560,21 @@ export default function BooksPage() {
           <Button variant="ghost" size="sm" onClick={() => router.push('/books')}>
             <X className="w-3 h-3 mr-1" />
             Show All Books
+          </Button>
+        </div>
+      )}
+
+      {/* Tag filter indicator */}
+      {tagId && tagName && (
+        <div className="mb-4 p-3 bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">
+              Filtering by tag: <strong>{tagName}</strong>
+            </span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => router.push('/books')}>
+            <X className="w-3 h-3 mr-1" />
+            Clear
           </Button>
         </div>
       )}

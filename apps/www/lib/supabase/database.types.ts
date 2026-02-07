@@ -150,6 +150,39 @@ export type Database = {
           },
         ]
       }
+      book_tags: {
+        Row: {
+          book_id: string
+          tag_id: string
+          added_at: string
+        }
+        Insert: {
+          book_id: string
+          tag_id: string
+          added_at?: string
+        }
+        Update: {
+          book_id?: string
+          tag_id?: string
+          added_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_tags_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       book_formats: {
         Row: {
           abbreviation: string | null
@@ -1187,6 +1220,30 @@ export type Database = {
           street_address?: string | null
           updated_at?: string | null
           vat_number?: string | null
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          color: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string
+          name: string
+          color?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          color?: string | null
+          created_at?: string
         }
         Relationships: []
       }

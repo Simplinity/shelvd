@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
+import TagInput from '@/components/tag-input'
 
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
@@ -344,6 +345,10 @@ export default function BookAddForm({ referenceData }: Props) {
   type CollectionOption = { id: string; name: string; is_default: boolean }
   const [availableCollections, setAvailableCollections] = useState<CollectionOption[]>([])
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<Set<string>>(new Set())
+
+  // Tags state
+  type TagItem = { id: string; name: string; color: string }
+  const [selectedTags, setSelectedTags] = useState<TagItem[]>([])
 
   // External links state
   type ExternalLink = { linkTypeId: string; url: string; label: string }
@@ -683,6 +688,16 @@ export default function BookAddForm({ referenceData }: Props) {
         }))
         const { error: colErr } = await supabase.from('book_collections').insert(colRows)
         if (colErr) console.error('Failed to add book to collections:', colErr)
+      }
+
+      // Add tags
+      if (selectedTags.length > 0) {
+        const tagRows = selectedTags.map(t => ({
+          book_id: newBook.id,
+          tag_id: t.id,
+        }))
+        const { error: tagErr } = await supabase.from('book_tags').insert(tagRows)
+        if (tagErr) console.error('Failed to save tags:', tagErr)
       }
 
       router.push(`/books/${newBook.id}`)
@@ -1042,6 +1057,16 @@ export default function BookAddForm({ referenceData }: Props) {
             </div>
           </section>
         )}
+
+        {/* 8b. Tags */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Tags</h2>
+          <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
+          <TagInput
+            selectedTags={selectedTags}
+            onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
+          />
+        </section>
 
         {/* 9. Identifiers */}
         <section>

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
+import TagInput from '@/components/tag-input'
 import type { Tables } from '@/lib/supabase/database.types'
 
 type Book = Tables<'books'>
@@ -220,7 +221,11 @@ export default function BookEditForm({ book, referenceData }: Props) {
   const [availableCollections, setAvailableCollections] = useState<CollectionOption[]>([])
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<Set<string>>(new Set())
 
-  // Fetch collections and book's current memberships
+  // Tags state
+  type TagItem = { id: string; name: string; color: string }
+  const [selectedTags, setSelectedTags] = useState<TagItem[]>([])
+
+  // Fetch collections, tags, and book's current memberships
   useEffect(() => {
     const fetchCollections = async () => {
       const { data: cols } = await supabase
@@ -237,7 +242,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
         setSelectedCollectionIds(new Set(memberships.map((m: any) => m.collection_id)))
       }
     }
+    const fetchTags = async () => {
+      const { data: bookTags } = await supabase
+        .from('book_tags')
+        .select('tag_id, tags ( id, name, color )')
+        .eq('book_id', book.id)
+      if (bookTags) {
+        setSelectedTags(bookTags.map((bt: any) => bt.tags).filter(Boolean) as TagItem[])
+      }
+    }
     fetchCollections()
+    fetchTags()
   }, [book.id])
 
   // Warn about unsaved changes
@@ -433,6 +448,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
           Array.from(selectedCollectionIds).map(colId => ({
             book_id: book.id,
             collection_id: colId,
+          }))
+        )
+      }
+
+      // Save tags: delete all existing, re-insert
+      await supabase.from('book_tags').delete().eq('book_id', book.id)
+      if (selectedTags.length > 0) {
+        await supabase.from('book_tags').insert(
+          selectedTags.map(t => ({
+            book_id: book.id,
+            tag_id: t.id,
           }))
         )
       }
@@ -1086,6 +1112,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
             </div>
           </section>
         )}
+
+        {/* Tags */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Tags</h2>
+          <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
+          <TagInput
+            bookId={book.id}
+            selectedTags={selectedTags}
+            onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
+          />
+        </section>
 
         {/* Submit buttons */}
         <div className="flex justify-end gap-2 pt-4 border-t">
