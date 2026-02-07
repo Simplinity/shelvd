@@ -656,6 +656,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               {externalLinks.map((link: any) => {
                 const domain = link.link_type?.domain || (() => { try { return new URL(link.url).hostname } catch { return null } })()
                 const typeLabel = link.link_type?.label || link.label || domain || 'Link'
+                const hasUrl = link.url && link.url.trim()
                 return (
                   <div key={link.id} className="flex items-center gap-2.5">
                     {domain && (
@@ -667,15 +668,20 @@ export default async function BookDetailPage({ params }: PageProps) {
                         className="flex-shrink-0"
                       />
                     )}
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm hover:underline flex items-center gap-1.5"
-                    >
-                      {typeLabel}
-                      <ExternalLinkIcon className="w-3 h-3 text-muted-foreground" />
-                    </a>
+                    {hasUrl ? (
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm hover:underline flex items-center gap-1.5 min-w-0"
+                      >
+                        <span className="flex-shrink-0">{typeLabel}</span>
+                        <span className="text-xs text-muted-foreground truncate">{link.url}</span>
+                        <ExternalLinkIcon className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                      </a>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">{typeLabel} <span className="text-xs italic">(no URL)</span></span>
+                    )}
                   </div>
                 )
               })}
