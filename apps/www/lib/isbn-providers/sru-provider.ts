@@ -587,10 +587,16 @@ export function createSruProvider(config: SruConfig): IsbnProvider {
         return { success: false, error: 'No title in record', provider: config.code }
       }
 
+      let source_url: string | undefined
+      if (config.sourceUrlPattern && (bookData.isbn_13 || bookData.isbn_10)) {
+        source_url = config.sourceUrlPattern.replace('{isbn}', bookData.isbn_13 || bookData.isbn_10 || '')
+      }
+
       return {
         success: true,
         data: bookData,
         provider: config.code,
+        source_url,
       }
     },
   }
