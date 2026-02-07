@@ -83,6 +83,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 1 | Create migration 011_collections.sql | ✅ Done | Tables + RLS + seed + trigger. 2 users got Library, 5052 books assigned |
 | 2 | Create server actions for collections | ✅ Done | 10 actions: get, getWithCounts, create, update, delete, reorder, getBookCollections, setBookCollections, addBooksToCollection, removeBooksFromCollection |
 | 3 | Collection switcher dropdown in nav | ✅ Done | CollectionNav component + layout.tsx updated. Shows All Books + per-collection + Manage link |
+| 3a | Fix TypeScript build error | ⏳ Starting | Supabase types don't know collections table, need explicit typing |
 
 ---
 

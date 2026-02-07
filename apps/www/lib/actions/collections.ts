@@ -3,6 +3,23 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+export type CollectionRow = {
+  id: string
+  user_id: string
+  name: string
+  description: string | null
+  icon: string | null
+  color: string | null
+  sort_order: number
+  is_default: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type CollectionWithCount = CollectionRow & {
+  book_count: number
+}
+
 export type CollectionResult = {
   error?: string
   success?: boolean
@@ -12,41 +29,43 @@ export type CollectionResult = {
 
 // ─── Fetch all collections for current user ───
 
-export async function getCollections() {
+export async function getCollections(): Promise<{ error?: string; data: CollectionRow[] }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated', data: [] }
 
   const { data, error } = await supabase
     .from('collections')
-    .select('*')
+    .select('id, user_id, name, description, icon, color, sort_order, is_default, created_at, updated_at')
     .eq('user_id', user.id)
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true })
 
   if (error) return { error: 'Failed to fetch collections', data: [] }
-  return { data: data || [] }
+  return { data: (data as unknown as CollectionRow[]) || [] }
 }
 
 // ─── Fetch collections with book counts ───
 
-export async function getCollectionsWithCounts() {
+export async function getCollectionsWithCounts(): Promise<{ error?: string; data: CollectionWithCount[] }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated', data: [] }
 
   const { data: collections, error } = await supabase
     .from('collections')
-    .select('*')
+    .select('id, user_id, name, description, icon, color, sort_order, is_default, created_at, updated_at')
     .eq('user_id', user.id)
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true })
 
   if (error) return { error: 'Failed to fetch collections', data: [] }
 
+  const typedCollections = (collections as unknown as CollectionRow[]) || []
+
   // Get counts per collection
   const counts: Record<string, number> = {}
-  for (const col of collections || []) {
+  for (const col of typedCollections) {
     const { count } = await supabase
       .from('book_collections')
       .select('*', { count: 'exact', head: true })
@@ -54,7 +73,7 @@ export async function getCollectionsWithCounts() {
     counts[col.id] = count || 0
   }
 
-  const result = (collections || []).map(c => ({
+  const result: CollectionWithCount[] = typedCollections.map(c => ({
     ...c,
     book_count: counts[c.id] || 0,
   }))

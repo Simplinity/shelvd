@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { ChevronDown, Library, Plus, FolderOpen } from 'lucide-react'
 import {
   DropdownMenu,
@@ -10,16 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { CollectionWithCount } from '@/lib/actions/collections'
 
-type Collection = {
-  id: string
-  name: string
-  is_default: boolean
-  book_count: number
-}
-
-export function CollectionNav({ collections }: { collections: Collection[] }) {
-  const pathname = usePathname()
+export function CollectionNav({ collections }: { collections: CollectionWithCount[] }) {
   const searchParams = useSearchParams()
   const activeCollectionId = searchParams.get('collection')
 
