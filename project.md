@@ -120,6 +120,8 @@ while (true) {
 | book_external_links | — | External links per book |
 | isbn_providers | 9 | Book lookup providers |
 | user_isbn_providers | — | Per-user provider preferences |
+| collections | — | User collections (Library + Wishlist default, custom) |
+| book_collections | — | M:N books ↔ collections |
 
 ### Books — Key Fields
 ```
@@ -210,7 +212,7 @@ status, action_needed, internal_notes
 | 8 | Sharing & Public Catalog | 🔴 Todo |
 | 9 | Currency & Valuation | 🔴 Todo |
 | — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
-| — | Multiple Collections per user (Wishlist = a collection) | 🔴 Todo |
+| — | Multiple Collections per user (Wishlist = a collection) | ✅ Done |
 | — | Custom Tags | 🔴 Todo |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |

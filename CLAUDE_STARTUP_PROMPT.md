@@ -27,6 +27,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - **Settings:** Account, config, external links (54 system types), book lookup providers
 - **Duplicate Detection:** Server-side SQL, ISBN + title, grouped bulk delete
 - **Book Lookup:** 9 providers (Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, Standaard Boekhandel)
+- **Multiple Collections:** Library + Wishlist (non-deletable), custom collections, nav dropdown, bulk actions, settings page
 
 ## Tech
 
@@ -41,7 +42,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - `project.md` — Full spec, schema, design decisions, pitfalls
 - `CLAUDE_SESSION_LOG.md` — Session history, completed work, next priorities
 - `apps/www/lib/isbn-providers/` — Book lookup provider code
-- `supabase/migrations/` — DB migrations (001–010)
+- `supabase/migrations/` — DB migrations (001–012)
 
 ### Database
 ```bash

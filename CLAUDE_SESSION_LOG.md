@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-07)
 
-All features up to and including Book Lookup are **complete**. 9 providers active, all 17 candidates evaluated.
+All features up to and including **Multiple Collections** are **complete**. 9 lookup providers active, all 17 candidates evaluated. Collections feature: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page.
 
 ---
 
@@ -19,6 +19,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 - ✅ User Settings (account, config, external links, book lookup providers)
 - ✅ External Links (54 system types across 8 categories, per-user activation, custom types)
 - ✅ Duplicate Detection (server-side SQL, ISBN + title matching, grouped results, bulk delete)
+- ✅ Multiple Collections (Library + Wishlist default, nav dropdown, filtering, bulk add/remove, settings page, migrations 011–012)
 
 ### Book Lookup (9 active providers)
 - ✅ Open Library — API (ISBN + field search + Works API fallback for descriptions)
@@ -63,7 +64,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 
 ---
 
-## In Progress: Multiple Collections per User
+## Completed: Multiple Collections per User
 
 ### Plan
 1. Migration 011: create `collections` + `book_collections` tables with RLS
@@ -90,7 +91,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 | 6 | Bulk collection actions | ✅ Done | Add to Collection dropdown + Remove from Collection (when viewing collection) in selection bar |
 | 7 | Settings: manage collections page | ✅ Done | /settings/collections - create, rename, delete, reorder, book counts |
 | 7a | Collections tab in settings nav | ✅ Done | Tab link on both /settings and /settings/collections, fixed All Books count |
-| 7b | Default Wishlist collection | ✅ Done | Migration 012: auto-create Wishlist for existing + new users, trigger updated |
+| 7b | Default Wishlist collection | ✅ Done | Migration 012: auto-create Wishlist (is_default=true, non-deletable) for existing + new users, trigger updated |
 
 ---
 
@@ -98,6 +99,7 @@ All features up to and including Book Lookup are **complete**. 9 providers activ
 
 | Hash | Description |
 |------|-------------|
+| `3443c66` | Make Wishlist non-deletable (is_default=true) |
 | `a3c5fc2` | Default Wishlist collection (migration 012 + trigger) |
 | `ebfda18` | Collections tab in settings nav, fix All Books count |
 | `ec8f3a0` | Settings/collections page: create, rename, delete, reorder |
