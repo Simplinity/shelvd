@@ -408,7 +408,7 @@ export default function BooksPage() {
     return [...new Set(bookContributors.map(bc => bc.book_id))]
   }
 
-  // Helper: Get book IDs for a collection
+  // Helper: Get book IDs for a collection (batched to stay within .in() URL limits)
   const getBookIdsForCollection = async (colId: string): Promise<string[]> => {
     let allIds: string[] = []
     let offset = 0
@@ -424,6 +424,29 @@ export default function BooksPage() {
       offset += 1000
     }
     return allIds
+  }
+
+  // Helper: Get paginated book IDs for a collection (for default mode)
+  const getCollectionBookIdsPaginated = async (colId: string, from: number, to: number): Promise<string[]> => {
+    // Get book_ids sorted by added_at, then fetch those specific books
+    // We need to get IDs in a stable order for pagination
+    const { data, error } = await supabase
+      .from('book_collections')
+      .select('book_id')
+      .eq('collection_id', colId)
+      .range(from, to)
+    if (error || !data) return []
+    return data.map(r => r.book_id)
+  }
+
+  // Helper: Get count of books in a collection (fast, no .in() needed)
+  const getCollectionBookCount = async (colId: string): Promise<number> => {
+    const { count, error } = await supabase
+      .from('book_collections')
+      .select('*', { count: 'exact', head: true })
+      .eq('collection_id', colId)
+    if (error) return 0
+    return count || 0
   }
 
   // Fetch collection name when filter is active
@@ -502,40 +525,55 @@ export default function BooksPage() {
 
     // Get collection filter
     const colId = searchParams.get('collection') || ''
-    let collectionBookIds: string[] | null = null
-    if (colId) {
-      collectionBookIds = await getBookIdsForCollection(colId)
-      if (collectionBookIds.length === 0) {
-        // Collection is empty
-        if (!append) setBooks([])
-        setLoading(false)
-        setLoadingMore(false)
-        return
-      }
-    }
 
     // DEFAULT MODE - No search, no filters - show all books
     // IMPORTANT: This must come FIRST and return early!
     if (!isGlobalSearch && !hasFilters) {
-      let defaultQuery = supabase
-        .from('books')
-        .select(`
-          id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-          status, cover_type, condition_id, language_id, user_catalog_id, series,
-          storage_location, shelf, isbn_13, isbn_10,
-          book_contributors (
-            contributor:contributors ( canonical_name ),
-            role:contributor_roles ( name )
-          )
-        `)
+      let data: any[] | null = null
+      let error: any = null
 
-      if (collectionBookIds) {
-        defaultQuery = defaultQuery.in('id', collectionBookIds)
+      if (colId) {
+        // Collection filter: get paginated book IDs from book_collections,
+        // then fetch those books. Avoids .in() with thousands of IDs.
+        const pageBookIds = await getCollectionBookIdsPaginated(colId, from, to)
+        if (pageBookIds.length === 0) {
+          if (!append) setBooks([])
+          setLoading(false)
+          setLoadingMore(false)
+          return
+        }
+        const result = await supabase
+          .from('books')
+          .select(`
+            id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+            status, cover_type, condition_id, language_id, user_catalog_id, series,
+            storage_location, shelf, isbn_13, isbn_10,
+            book_contributors (
+              contributor:contributors ( canonical_name ),
+              role:contributor_roles ( name )
+            )
+          `)
+          .in('id', pageBookIds)
+          .order('title', { ascending: true })
+        data = result.data
+        error = result.error
+      } else {
+        const result = await supabase
+          .from('books')
+          .select(`
+            id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
+            status, cover_type, condition_id, language_id, user_catalog_id, series,
+            storage_location, shelf, isbn_13, isbn_10,
+            book_contributors (
+              contributor:contributors ( canonical_name ),
+              role:contributor_roles ( name )
+            )
+          `)
+          .order('title', { ascending: true })
+          .range(from, to)
+        data = result.data
+        error = result.error
       }
-
-      const { data, error } = await defaultQuery
-        .order('title', { ascending: true })
-        .range(from, to)
 
       if (error) {
         console.error('Error fetching books:', error)
@@ -624,7 +662,8 @@ export default function BooksPage() {
       }
 
       // Filter by collection if active
-      if (collectionBookIds) {
+      if (colId) {
+        const collectionBookIds = await getBookIdsForCollection(colId)
         const colSet = new Set(collectionBookIds)
         allBooks = allBooks.filter((b: any) => colSet.has(b.id))
       }
@@ -762,8 +801,11 @@ export default function BooksPage() {
         if (authorBookIds && authorBookIds.length > 0) {
           query = query.in('id', authorBookIds)
         }
-        if (collectionBookIds) {
-          query = query.in('id', collectionBookIds)
+        if (colId) {
+          const collectionBookIds = await getBookIdsForCollection(colId)
+          if (collectionBookIds.length > 0) {
+            query = query.in('id', collectionBookIds)
+          }
         }
       } else {
         const orConditions: string[] = []
@@ -926,22 +968,14 @@ export default function BooksPage() {
       }
     }
 
-    // Collection filter for count
-    let collectionBookIdsForCount: string[] | null = null
-    if (collectionId) {
-      collectionBookIdsForCount = await getBookIdsForCollection(collectionId)
-      if (collectionBookIdsForCount.length === 0) {
-        setTotalCount(0)
-        return
-      }
+    // Collection filter for count: use fast count from book_collections
+    if (collectionId && !hasAdvancedFilters) {
+      const colCount = await getCollectionBookCount(collectionId)
+      setTotalCount(colCount)
+      return
     }
 
     let query = supabase.from('books').select('*', { count: 'exact', head: true })
-
-    // Apply collection filter to count
-    if (collectionBookIdsForCount) {
-      query = query.in('id', collectionBookIdsForCount)
-    }
     
     if (hasAdvancedFilters && isAnd) {
       if (filters.title) query = query.ilike('title', isExact ? filters.title : `%${filters.title}%`)
