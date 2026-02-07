@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, ScanBarcode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
+import MoveToLibraryButton from '@/components/move-to-library-button'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -100,6 +101,28 @@ export default async function BookDetailPage({ params }: PageProps) {
     .select('id, url, label, sort_order, link_type_id, link_type:external_link_types ( label, domain, category )')
     .eq('book_id', id)
     .order('sort_order')
+
+  // Fetch book's collection memberships and the default collections
+  const [{ data: bookCollections }, { data: defaultCollections }] = await Promise.all([
+    supabase
+      .from('book_collections')
+      .select('collection_id, collections ( id, name, is_default )')
+      .eq('book_id', id),
+    supabase
+      .from('collections')
+      .select('id, name, is_default')
+      .eq('is_default', true)
+  ])
+
+  const bookCollectionIds = new Set((bookCollections || []).map((bc: any) => bc.collection_id))
+  const libraryCollection = (defaultCollections || []).find((c: any) => c.name === 'Library')
+  const wishlistCollection = (defaultCollections || []).find((c: any) => c.name === 'Wishlist')
+  const isInWishlist = wishlistCollection ? bookCollectionIds.has(wishlistCollection.id) : false
+  const isInLibrary = libraryCollection ? bookCollectionIds.has(libraryCollection.id) : false
+  const showMoveToLibrary = isInWishlist && !isInLibrary && !!libraryCollection && !!wishlistCollection
+
+  // Collection names for display
+  const collectionNames = (bookCollections || []).map((bc: any) => bc.collections?.name).filter(Boolean) as string[]
 
   // Combine all data
   const bookData = {
@@ -387,9 +410,27 @@ export default async function BookDetailPage({ params }: PageProps) {
               ))}
             </div>
           )}
+
+          {/* Collection membership chips */}
+          {collectionNames.length > 0 && (
+            <div className="flex gap-1.5 mt-3">
+              {collectionNames.map(name => (
+                <span key={name} className="text-xs px-2 py-0.5 bg-muted text-muted-foreground border border-border">
+                  {name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
+          {showMoveToLibrary && (
+            <MoveToLibraryButton
+              bookId={id}
+              libraryCollectionId={libraryCollection!.id}
+              wishlistCollectionId={wishlistCollection!.id}
+            />
+          )}
           <Button variant="outline" asChild>
             <Link href="/books/lookup" className="gap-2">
               <ScanBarcode className="w-4 h-4" />
