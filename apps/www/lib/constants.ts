@@ -1,17 +1,35 @@
 // Book Status
 export type BookStatus = 
+  | 'draft'
   | 'in_collection'
-  | 'sold'
   | 'lent'
+  | 'borrowed'
+  | 'double'
+  | 'to_sell'
+  | 'on_sale'
+  | 'reserved'
+  | 'sold'
   | 'ordered'
-  | 'lost';
+  | 'lost'
+  | 'donated'
+  | 'destroyed'
+  | 'unknown';
 
 export const BOOK_STATUSES: Record<BookStatus, { label: string; color: string }> = {
+  draft: { label: 'Draft', color: 'bg-red-100 text-red-700' },
   in_collection: { label: 'In Collection', color: 'bg-green-600' },
-  sold: { label: 'Sold', color: 'bg-gray-600' },
   lent: { label: 'Lent', color: 'bg-yellow-600' },
+  borrowed: { label: 'Borrowed', color: 'bg-yellow-600' },
+  double: { label: 'Double', color: 'bg-gray-400' },
+  to_sell: { label: 'To Sell', color: 'bg-red-100 text-red-700' },
+  on_sale: { label: 'On Sale', color: 'bg-red-600' },
+  reserved: { label: 'Reserved', color: 'bg-orange-500' },
+  sold: { label: 'Sold', color: 'bg-gray-600' },
   ordered: { label: 'Ordered', color: 'bg-purple-600' },
   lost: { label: 'Lost', color: 'bg-red-600' },
+  donated: { label: 'Donated', color: 'bg-gray-400' },
+  destroyed: { label: 'Destroyed', color: 'bg-black' },
+  unknown: { label: 'Unknown', color: 'bg-gray-300' },
 };
 
 // Contributor Roles
