@@ -3,7 +3,7 @@
 
 -- 1. Seed: create "Wishlist" for all existing users who don't have one yet
 INSERT INTO collections (user_id, name, description, is_default, sort_order)
-SELECT id, 'Wishlist', 'Books you want to add to your collection', false, 1
+SELECT id, 'Wishlist', 'Books you want to add to your collection', true, 1
 FROM auth.users u
 WHERE NOT EXISTS (
   SELECT 1 FROM collections c WHERE c.user_id = u.id AND c.name = 'Wishlist'
@@ -16,7 +16,7 @@ BEGIN
   INSERT INTO collections (user_id, name, is_default, sort_order)
   VALUES (NEW.id, 'Library', true, 0);
   INSERT INTO collections (user_id, name, description, is_default, sort_order)
-  VALUES (NEW.id, 'Wishlist', 'Books you want to add to your collection', false, 1);
+  VALUES (NEW.id, 'Wishlist', 'Books you want to add to your collection', true, 1);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
