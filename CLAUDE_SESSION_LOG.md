@@ -64,15 +64,51 @@ All features up to and including **Custom Tags** are **complete**. 9 lookup prov
 
 | # | Feature | Status |
 |---|---------|--------|
-| 1 | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
-| 2 | Image upload (covers, spine, damage) | 🔴 Todo |
-| 3 | Sharing & Public Catalog | 🔴 Todo |
-| 4 | Currency & Valuation | 🔴 Todo |
+| 1 | Currency & Valuation (7 steps) | 🟡 In Progress |
+| 2 | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
+| 3 | Image upload (covers, spine, damage) | 🔴 Todo |
+| 4 | Sharing & Public Catalog | 🔴 Todo |
 | 5 | Landing page + Knowledge base | 🔴 Todo |
 
 ### Under Consideration
 - Insurance & valuation PDF reports
 - Provenance tracking (previous owners, auction history)
+- Price history field (auction results, dealer quotes, previous sale prices)
+
+---
+
+## Feature: Currency & Valuation
+
+### Context
+Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five duplicate unused columns exist. Stats page hardcodes EUR. Currency inputs are freetext. No conversion, no per-book gain/loss display.
+
+### Current DB columns (price-related)
+| Column | Type | Data Count | Notes |
+|--------|------|------------|-------|
+| acquired_price | numeric(10,2) | 4895 | What was paid |
+| acquired_currency | varchar(3) | 4896 | 99.98% EUR, 1 USD |
+| lowest_price | numeric(10,2) | 1636 | Market low |
+| highest_price | numeric(10,2) | 4687 | Market high |
+| estimated_value | numeric(10,2) | 2595 | Current estimated value |
+| sales_price | numeric(10,2) | 1338 | Selling price |
+| price_currency | varchar(3) | 5048 | Valuation currency |
+| purchase_currency | text | 0 | **UNUSED — drop** |
+| price_lowest | numeric(10,2) | 0 | **UNUSED — drop** |
+| price_highest | numeric(10,2) | 0 | **UNUSED — drop** |
+| price_sales | numeric(10,2) | 0 | **UNUSED — drop** |
+| price_estimated | numeric(10,2) | 0 | **UNUSED — drop** |
+
+### Plan (7 steps)
+
+| # | Step | Description | Status |
+|---|------|-------------|--------|
+| 1 | Clean up duplicate DB columns | Migration 015: drop 5 unused columns (purchase_currency, price_lowest, price_highest, price_sales, price_estimated). Zero data loss. | 🔴 Todo |
+| 2 | Currency dropdowns | Replace freetext currency inputs with select dropdowns on add/edit forms. Predefined list: EUR, USD, GBP, CHF, SEK, DKK, NOK, JPY, CAD, AUD + more. Prevents typos, enables conversion. | 🔴 Todo |
+| 3 | Home currency in user settings | Add `display_currency` column to user_profiles (default EUR). Dropdown in Settings > Configuration tab. All totals/stats/summaries convert to this currency. | 🔴 Todo |
+| 4 | Exchange rate conversion on stats page | Fetch rates from ECB or exchangerate.host API. Convert all prices to user's display currency before summing. Show "rates as of" date. Cache rates (daily refresh). | 🔴 Todo |
+| 5 | Per-book gain/loss on detail page | Show on book detail: "Bought for €45 → Estimated €120 (+167%)". Green for gain, red for loss. Only when both acquired_price and estimated_value are set. | 🔴 Todo |
+| 6 | Collection value summary on books list | Small summary bar above book list: total acquired cost / total estimated value / unrealized gain for current view (all books, collection, or tag filter). | 🔴 Todo |
+| 7 | Value distribution chart on stats | Histogram: number of books per value range (€0-50, €50-200, €200-500, €500-1000, €1000+). Shows portfolio composition at a glance. | 🔴 Todo |
 
 ---
 

@@ -239,17 +239,29 @@ status, action_needed, internal_notes
 ### Next Priorities
 | # | Feature | Status |
 |---|---------|--------|
+| — | Currency & Valuation (7 steps) | 🟡 In Progress |
 | — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Sharing & Public Catalog | 🔴 Todo |
-| — | Currency & Valuation | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
 | — | Multiple Collections per user | ✅ Done |
 | — | Custom Tags | ✅ Done |
 
+### Currency & Valuation — Steps
+| # | Step | Description |
+|---|------|-------------|
+| 1 | Clean up duplicate DB columns | Drop 5 unused columns (purchase_currency, price_lowest, price_highest, price_sales, price_estimated) |
+| 2 | Currency dropdowns | Replace freetext inputs with select dropdowns (EUR, USD, GBP, CHF, SEK, etc.) |
+| 3 | Home currency in user settings | `display_currency` in user_profiles, dropdown in Settings > Configuration |
+| 4 | Exchange rate conversion on stats | Fetch rates (ECB/exchangerate.host), convert to display currency, show "rates as of" |
+| 5 | Per-book gain/loss on detail page | "Bought €45 → Estimated €120 (+167%)" with green/red styling |
+| 6 | Collection value summary on books list | Summary bar: total cost / total value / unrealized gain for current view |
+| 7 | Value distribution chart on stats | Histogram by value range (€0-50, €50-200, €200-500, €500-1000, €1000+) |
+
 ### Under Consideration
 - Insurance & valuation PDF reports
 - Provenance tracking (previous owners, auction history)
+- Price history field (auction results, dealer quotes, previous sale prices)
 - Condition history (restorations, reports)
 - Dealer & contact management
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)

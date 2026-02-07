@@ -81,10 +81,10 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 
 | Feature | Status |
 |---------|--------|
+| Currency & Valuation (7 steps: cleanup, dropdowns, home currency, conversion, gain/loss, summary bar, chart) | 🟡 In Progress |
 | Enrich mode (merge lookup fields on edit) | 🔴 Todo |
 | Image upload (covers, spine, damage) | 🔴 Todo |
 | Sharing & Public Catalog | 🔴 Todo |
-| Currency & Valuation | 🔴 Todo |
 | Landing page + Knowledge base | 🔴 Todo |
 
 ---
