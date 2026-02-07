@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
+import { getCollectionsWithCounts } from '@/lib/actions/collections'
+import { CollectionNav } from '@/components/collection-nav'
 
 export default async function AppLayout({
   children,
@@ -24,6 +26,9 @@ export default async function AppLayout({
     .single()
   const isAdmin = profile?.is_admin === true
 
+  // Fetch collections for nav dropdown
+  const { data: collections } = await getCollectionsWithCounts()
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header - Swiss Design Optie B */}
@@ -40,12 +45,7 @@ export default async function AppLayout({
 
             {/* Navigation - alle opties */}
             <nav className="hidden md:flex items-center gap-1">
-              <Link 
-                href="/books" 
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors"
-              >
-                Collection
-              </Link>
+              <CollectionNav collections={collections || []} />
               <Link 
                 href="/books/add" 
                 className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors flex items-center gap-1.5"
