@@ -282,9 +282,58 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════
-          THE SHELVD DIFFERENCE
+          ADVANCED SEARCH SPOTLIGHT
       ═══════════════════════════════════════ */}
       <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 border bg-background">
+              <div className="border-b p-4 bg-muted/30">
+                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Advanced Search</p>
+              </div>
+              <div className="p-5 space-y-3">
+                <SearchFilter label="Signed" value="Yes" />
+                <SearchFilter label="Format" value="Octavo (8vo)" />
+                <SearchFilter label="Language" value="French" />
+                <SearchFilter label="Publication Year" value="Before 1850" />
+                <SearchFilter label="Binding" value="Full leather" />
+                <SearchFilter label="Collection" value="Library" />
+              </div>
+              <div className="border-t p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Search className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-semibold">3 books found</span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">across 4,712 books · 0.02s</span>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Advanced Search</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                Find the needle.
+                <br />
+                <span className="text-muted-foreground">In your very organized haystack.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Fourteen searchable fields. Combine any of them. Find every signed octavo in French 
+                with a leather binding published before 1850. Or that book you vaguely remember buying 
+                in Brussels sometime around 2019.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Your collection is only as useful as your ability to search it. 
+                We take that personally.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          THE SHELVD DIFFERENCE
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
@@ -329,7 +378,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           PROVENANCE SPOTLIGHT
       ═══════════════════════════════════════ */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-muted/20">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -393,7 +442,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           ENRICH MODE SPOTLIGHT
       ═══════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-muted/20">
+      <section className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="order-2 md:order-1 border bg-background">
@@ -441,7 +490,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           CONDITION DETAIL SPOTLIGHT
       ═══════════════════════════════════════ */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-muted/20">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -497,55 +546,6 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════
-          ADVANCED SEARCH SPOTLIGHT
-      ═══════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-muted/20">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="order-2 md:order-1 border bg-background">
-              <div className="border-b p-4 bg-muted/30">
-                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Advanced Search</p>
-              </div>
-              <div className="p-5 space-y-3">
-                <SearchFilter label="Signed" value="Yes" />
-                <SearchFilter label="Format" value="Octavo (8vo)" />
-                <SearchFilter label="Language" value="French" />
-                <SearchFilter label="Publication Year" value="Before 1850" />
-                <SearchFilter label="Binding" value="Full leather" />
-                <SearchFilter label="Collection" value="Library" />
-              </div>
-              <div className="border-t p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold">3 books found</span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">across 4,712 books · 0.02s</span>
-                </div>
-              </div>
-            </div>
-            <div className="order-1 md:order-2">
-              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Advanced Search</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
-                Find the needle.
-                <br />
-                <span className="text-muted-foreground">In your very organized haystack.</span>
-              </h2>
-              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                Fourteen searchable fields. Combine any of them. Find every signed octavo in French 
-                with a leather binding published before 1850. Or that book you vaguely remember buying 
-                in Brussels sometime around 2019.
-              </p>
-              <p className="text-sm text-muted-foreground italic">
-                Your collection is only as useful as your ability to search it. 
-                We take that personally.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════
           PRICING / EARLY ACCESS
       ═══════════════════════════════════════ */}
       <section className="py-24 px-6">
@@ -560,22 +560,22 @@ export default function Home() {
             We’re in early access. The first 100 users get lifetime free access — no credit card, no catch.
           </p>
 
-          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto items-stretch">
             {/* Free tier */}
-            <div className="border-2 border-primary bg-background p-8 text-left relative">
+            <div className="border-2 border-primary bg-background p-8 text-left relative flex flex-col">
               <div className="absolute -top-3 left-6 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1">
                 Now available
               </div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Early Access</p>
               <p className="text-4xl font-bold mb-1">Free</p>
               <p className="text-xs text-muted-foreground mb-6">Forever, for the first 100 users</p>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 flex-1">
                 <PricingItem>Unlimited books</PricingItem>
                 <PricingItem>All features included</PricingItem>
                 <PricingItem>Full export anytime</PricingItem>
                 <PricingItem>No credit card required</PricingItem>
               </ul>
-              <Button asChild className="w-full h-11 text-sm font-semibold uppercase tracking-wide">
+              <Button asChild className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8">
                 <Link href="/signup">
                   Claim Your Spot <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
@@ -583,35 +583,35 @@ export default function Home() {
             </div>
 
             {/* Collector Pro */}
-            <div className="border bg-background p-8 text-left opacity-70">
+            <div className="border bg-background p-8 text-left flex flex-col">
               <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Collector Pro</p>
               <p className="text-4xl font-bold mb-1">€9.99<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For serious collectors</p>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 flex-1">
                 <PricingItem muted>Everything in Free</PricingItem>
                 <PricingItem muted>1 GB image storage</PricingItem>
                 <PricingItem muted>High-quality photo uploads</PricingItem>
                 <PricingItem muted>Public catalog sharing</PricingItem>
                 <PricingItem muted>Priority support</PricingItem>
               </ul>
-              <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled>
+              <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon
               </Button>
             </div>
 
             {/* Dealer */}
-            <div className="border bg-background p-8 text-left opacity-70">
+            <div className="border bg-background p-8 text-left flex flex-col">
               <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Dealer</p>
               <p className="text-4xl font-bold mb-1">€49<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For professional dealers</p>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 flex-1">
                 <PricingItem muted>Everything in Pro</PricingItem>
                 <PricingItem muted>25 GB storage</PricingItem>
                 <PricingItem muted>Document storage (invoices, certificates)</PricingItem>
                 <PricingItem muted>Bulk operations</PricingItem>
                 <PricingItem muted>Dedicated support</PricingItem>
               </ul>
-              <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled>
+              <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon
               </Button>
             </div>
