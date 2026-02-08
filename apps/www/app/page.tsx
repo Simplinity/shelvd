@@ -391,9 +391,164 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════
-          PRICING / EARLY ACCESS
+          ENRICH MODE SPOTLIGHT
       ═══════════════════════════════════════ */}
       <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 border bg-background">
+              <div className="border-b p-4 bg-muted/30 flex items-center justify-between">
+                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Enrich Mode</p>
+                <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 font-medium">Source: Library of Congress</span>
+              </div>
+              <div className="p-5 space-y-3">
+                <EnrichField label="Title" current="The Great Gatsby" incoming={null} status="unchanged" />
+                <EnrichField label="Publisher" current="" incoming="Charles Scribner's Sons" status="new" />
+                <EnrichField label="Publication Year" current="1925" incoming="1925" status="unchanged" />
+                <EnrichField label="Pagination" current="" incoming="218 p." status="new" />
+                <EnrichField label="Language" current="English" incoming="English" status="unchanged" />
+                <EnrichField label="Publication Place" current="New York" incoming="New York, NY" status="different" />
+                <EnrichField label="Format" current="" incoming="8vo" status="new" />
+              </div>
+              <div className="border-t p-4 bg-muted/20 flex items-center justify-between">
+                <div className="flex gap-3 text-[10px]">
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> 3 new</span>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> 1 different</span>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300" /> 3 unchanged</span>
+                </div>
+                <span className="text-[10px] font-medium text-primary">Apply selected →</span>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Enrich Mode</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                Already cataloged?
+                <br />
+                <span className="text-muted-foreground">Make it better.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Search library databases and see exactly what’s new, what’s different, and what’s unchanged —
+                field by field. Green for new data. Amber for conflicts. You decide what stays.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Like a diff tool for bibliographers. Except nobody asked for one. Until now.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          CONDITION DETAIL SPOTLIGHT
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Condition Tracking</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                “Condition: Good”
+                <br />
+                <span className="text-muted-foreground">is not good enough.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Your book’s condition is more than a single word. Separate ratings for the text block 
+                and dust jacket. Detailed notes for everything that matters to a buyer, an insurer, or 
+                your future self wondering why you paid that much.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Because “Good” can mean anything from “read once” to “survived a flood and three house moves.”
+              </p>
+            </div>
+            <div className="border bg-background">
+              <div className="border-b p-4 bg-muted/30">
+                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Condition Report</p>
+              </div>
+              <div className="p-6">
+                {/* "Other apps" */}
+                <div className="mb-6 p-4 bg-muted/30 border border-dashed">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Other apps</p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm">Condition:</span>
+                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium">Good</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-2 italic">That’s it. That’s the whole report.</p>
+                </div>
+                {/* Shelvd */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-primary mb-3 font-semibold">Shelvd</p>
+                  <div className="space-y-3">
+                    <ConditionRow label="Book Condition" value="Very Good" color="text-green-700 bg-green-100" />
+                    <ConditionRow label="Dust Jacket" value="Good" color="text-amber-700 bg-amber-100" />
+                    <div className="pt-2 border-t">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1.5">Condition Notes</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Spine lightly sunned. Minor foxing to prelims (pp. i–iv). Dust jacket price-clipped, 
+                        with 2cm closed tear at head of spine panel, professionally repaired. Previous owner’s 
+                        bookplate to front pastedown (armorial, unidentified). Hinges firm. Text block clean and bright.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          ADVANCED SEARCH SPOTLIGHT
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 border bg-background">
+              <div className="border-b p-4 bg-muted/30">
+                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Advanced Search</p>
+              </div>
+              <div className="p-5 space-y-3">
+                <SearchFilter label="Signed" value="Yes" />
+                <SearchFilter label="Format" value="Octavo (8vo)" />
+                <SearchFilter label="Language" value="French" />
+                <SearchFilter label="Publication Year" value="Before 1850" />
+                <SearchFilter label="Binding" value="Full leather" />
+                <SearchFilter label="Collection" value="Library" />
+              </div>
+              <div className="border-t p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Search className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-semibold">3 books found</span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">across 4,712 books · 0.02s</span>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Advanced Search</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                Find the needle.
+                <br />
+                <span className="text-muted-foreground">In your very organized haystack.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Fourteen searchable fields. Combine any of them. Find every signed octavo in French 
+                with a leather binding published before 1850. Or that book you vaguely remember buying 
+                in Brussels sometime around 2019.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Your collection is only as useful as your ability to search it. 
+                We take that personally.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          PRICING / EARLY ACCESS
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             Simple pricing. No surprises.
@@ -625,5 +780,53 @@ function PricingItem({ children, muted }: { children: React.ReactNode; muted?: b
       <Check className={`w-4 h-4 flex-shrink-0 ${muted ? 'text-muted-foreground/50' : 'text-primary'}`} />
       <span className={`text-sm ${muted ? 'text-muted-foreground' : ''}`}>{children}</span>
     </li>
+  )
+}
+
+function EnrichField({ label, current, incoming, status }: {
+  label: string; current: string; incoming: string | null; status: 'new' | 'different' | 'unchanged'
+}) {
+  const statusStyles = {
+    new: 'border-l-2 border-l-green-500 bg-green-50/50',
+    different: 'border-l-2 border-l-amber-500 bg-amber-50/50',
+    unchanged: 'border-l-2 border-l-transparent',
+  }
+  return (
+    <div className={`px-3 py-2 ${statusStyles[status]}`}>
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">{label}</p>
+      <div className="flex items-center gap-2">
+        {status === 'unchanged' && (
+          <span className="text-sm">{current}</span>
+        )}
+        {status === 'new' && (
+          <span className="text-sm text-green-700 font-medium">{incoming}</span>
+        )}
+        {status === 'different' && (
+          <>
+            <span className="text-sm text-muted-foreground line-through">{current}</span>
+            <ChevronRight className="w-3 h-3 text-amber-500" />
+            <span className="text-sm text-amber-700 font-medium">{incoming}</span>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ConditionRow({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className={`px-2.5 py-0.5 text-xs font-medium ${color}`}>{value}</span>
+    </div>
+  )
+}
+
+function SearchFilter({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs font-medium bg-background px-2.5 py-1 border">{value}</span>
+    </div>
   )
 }
