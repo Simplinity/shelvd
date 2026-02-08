@@ -286,6 +286,36 @@ status, action_needed, internal_notes
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8 | Landing page + Knowledge base | Medium | Medium | Marketing landing page, getting started guide, FAQ, feature docs. |
+| 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
+
+#### #9 Mobile Responsiveness — Detail
+Currently the app is desktop-only in practice. Key issues:
+
+**Critical (app is unusable on mobile without these):**
+- **No mobile navigation**: entire `<nav>` is `hidden md:flex` — below 768px users see only logo + sign out. Need hamburger menu / slide-out drawer with all nav items.
+- **No touch-friendly interactions**: buttons, links, form elements not sized for touch targets (minimum 44x44px recommended).
+
+**Major (functional but poor UX):**
+- **Add/Edit forms**: 12+ sections with `lg:grid-cols-4` grids create extremely long scroll. Need single-column layouts, possibly step-by-step wizard on mobile.
+- **Provenance editor**: complex nested cards with source grids don't fit narrow screens. Needs stacked layout.
+- **Books list (list view)**: likely horizontal overflow with many columns. Need card-based mobile list or fewer visible columns.
+- **Advanced search**: 14-field grid needs single-column stacking.
+- **Admin page**: user management table will overflow. Needs card view or horizontal scroll container.
+- **Stats dashboard**: chart widths may not adapt. Need responsive chart containers.
+
+**Minor (polish):**
+- **Detail page**: `grid-cols-2 md:grid-cols-4` works OK but field labels/values get cramped on very small screens.
+- **Settings pages**: sidebar navigation may need tab-style mobile layout.
+- **Import form**: preview table needs horizontal scroll or card layout.
+- **Modals/dialogs**: may not be properly sized for mobile viewports.
+
+**Implementation approach:**
+1. Mobile nav (hamburger + drawer) — unblocks everything
+2. Touch target audit (buttons, links, inputs ≥ 44px)
+3. Forms: single-column stacking below `sm:` breakpoint
+4. Books list: mobile card view
+5. Tables: horizontal scroll wrappers or card alternatives
+6. Test on 375px (iPhone SE) and 390px (iPhone 14) widths |
 
 ### Todo — Admin Section Enhancements
 | # | Feature | Priority | Effort | Description |

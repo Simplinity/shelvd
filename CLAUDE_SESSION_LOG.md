@@ -85,6 +85,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Storage via Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8 | Landing page + Knowledge base | Medium | Medium | Marketing landing page, getting started guide, FAQ, feature documentation. |
+| 9 | Mobile responsiveness | High | High | Full mobile audit: hamburger nav (currently invisible <768px), touch targets, single-column forms, card-based lists, responsive charts. Desktop-only in practice today. |
 
 ### Todo — Admin Section Enhancements
 | # | Feature | Priority | Effort | Description |
