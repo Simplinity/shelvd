@@ -91,6 +91,8 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 8. **One step at a time** if input is needed
 9. **Test on Vercel** (not locally) — wait for build result
 10. **Modify files directly** — don't show code blocks to copy/paste
+11. **Roadmap changes → update `lib/roadmap.ts`** — the `/roadmap` page is data-driven from this file. Any feature added, moved between lanes, or removed in project.md MUST also be reflected in `lib/roadmap.ts` so the public website stays in sync.
+12. **Version bumps → update `lib/changelog.ts`** — the `/changelog` page and app header version badge are driven from `APP_VERSION` and the `CHANGELOG` array. Any new release MUST add an entry here and bump the version in both `lib/changelog.ts` and `package.json` files.
 
 ## Workflow
 
