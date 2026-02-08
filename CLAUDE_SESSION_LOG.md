@@ -141,6 +141,19 @@ Enrich mode lets users fill missing fields on existing books by searching ISBN l
 - Refactored into state machine: idle → search → results → compare
 - `authorName` prop passed from edit form (first Author contributor, or first any contributor)
 
+### Subtask 6: Contributor name handling ("Last, First" standard)
+
+Providers return "First Last" (e.g., "J.R.R. Tolkien") but the catalog standard is "Last, First" (e.g., "Tolkien, J.R.R."). This causes false "different" flags in enrich, and new contributors from lookup are saved in wrong format.
+
+| # | Subtask | Description | Status |
+|---|---------|-------------|--------|
+| 6a | Name parser utility | `lib/name-utils.ts` — parse "First Last" → `{ family, given, sort: "Last, First" }`, handle "Last, First" passthrough, detect organizations, normalize for comparison | 🔴 Todo |
+| 6b | Fix enrich: smart author comparison + auto-merge | Compare normalized names (so "Tolkien, J.R.R." = "J.R.R. Tolkien"). Only flag truly new authors. Checked authors get added as contributors on Apply. | 🔴 Todo |
+| 6c | Fix add form: parse lookup authors | When adding from lookup, parse author names through utility before saving to DB (family_name, given_names, canonical_name in "Last, First") | 🔴 Todo |
+| 6d | Fix edit form + manual entry | Parse on save. Placeholder text "Last, First" on contributor name input. | 🔴 Todo |
+| 6e | Backfill existing bad data | One-time script to fix contributors saved as "First Last" from past lookups | 🔴 Todo |
+| 6f | Docs | Update session log, project.md, startup prompt | 🔴 Todo |
+
 ### Subtask 5: Multi-provider search (`80ba28c`)
 - "Search other providers" link shown after comparison or empty results
 - Switches to field search form with title/author pre-filled, provider picker
