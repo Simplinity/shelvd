@@ -525,19 +525,12 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                         <select
                           value={src.sourceType}
                           onChange={e => updateSource(entry.tempId, src.id, { sourceType: e.target.value })}
-                          className={inputClass + ' !w-40 shrink-0'}
+                          className={inputClass + ' flex-1'}
                         >
                           {SOURCE_TYPES.map(st => (
                             <option key={st.value} value={st.value}>{st.label}</option>
                           ))}
                         </select>
-                        <input
-                          type="text"
-                          value={src.title}
-                          onChange={e => updateSource(entry.tempId, src.id, { title: e.target.value })}
-                          placeholder="Title or description"
-                          className={inputClass + ' flex-1'}
-                        />
                         <button
                           type="button"
                           onClick={() => removeSource(entry.tempId, src.id)}
@@ -546,6 +539,13 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                      <textarea
+                        value={src.title}
+                        onChange={e => updateSource(entry.tempId, src.id, { title: e.target.value })}
+                        placeholder="Title or description"
+                        rows={2}
+                        className={textareaClass}
+                      />
                       <div className="flex gap-2">
                         <input
                           type="text"
