@@ -510,13 +510,14 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={labelClass + ' mb-0'}>Supporting Sources</label>
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => addSource(entry.tempId)}
-                      className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                     >
-                      <Plus className="w-3 h-3" /> Add source
-                    </button>
+                      <Plus className="w-3.5 h-3.5 mr-1" /> Add source
+                    </Button>
                   </div>
                   {entry.sources.filter(s => !s.isDeleted).map(src => (
                     <div key={src.id} className="mb-3 border border-border/50 p-2 space-y-2">
