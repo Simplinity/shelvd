@@ -102,11 +102,6 @@ type FormData = {
   storage_location: string
   shelf: string
   shelf_section: string
-  acquired_from: string
-  acquired_date: string
-  acquired_price: string
-  acquired_currency: string
-  acquired_notes: string
   lowest_price: string
   highest_price: string
   estimated_value: string
@@ -177,11 +172,6 @@ const initialFormData: FormData = {
   storage_location: '',
   shelf: '',
   shelf_section: '',
-  acquired_from: '',
-  acquired_date: '',
-  acquired_price: '',
-  acquired_currency: '',
-  acquired_notes: '',
   lowest_price: '',
   highest_price: '',
   estimated_value: '',
@@ -606,11 +596,6 @@ export default function BookAddForm({ referenceData }: Props) {
           storage_location: formData.storage_location || null,
           shelf: formData.shelf || null,
           shelf_section: formData.shelf_section || null,
-          acquired_from: formData.acquired_from || null,
-          acquired_date: formData.acquired_date || null,
-          acquired_price: formData.acquired_price ? parseFloat(formData.acquired_price) : null,
-          acquired_currency: formData.acquired_currency || null,
-          acquired_notes: formData.acquired_notes || null,
           lowest_price: formData.lowest_price ? parseFloat(formData.lowest_price) : null,
           highest_price: formData.highest_price ? parseFloat(formData.highest_price) : null,
           estimated_value: formData.estimated_value ? parseFloat(formData.estimated_value) : null,
@@ -1195,40 +1180,7 @@ export default function BookAddForm({ referenceData }: Props) {
           </div>
         </section>
 
-        {/* 11. Acquisition */}
-        <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="lg:col-span-2">
-              <label className={labelClass}>Acquired From</label>
-              <input type="text" list="acquired-list" value={formData.acquired_from} onChange={e => handleChange('acquired_from', e.target.value)} className={inputClass} />
-              <datalist id="acquired-list">{referenceData.acquiredFromList.map(a => <option key={a} value={a} />)}</datalist>
-            </div>
-            <div>
-              <label className={labelClass}>Date</label>
-              <input type="text" value={formData.acquired_date} onChange={e => handleChange('acquired_date', e.target.value)} placeholder="YYYY-MM-DD" className={inputClass} />
-            </div>
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className={labelClass}>Price Paid</label>
-                <input type="number" step="0.01" value={formData.acquired_price} onChange={e => handleChange('acquired_price', e.target.value)} className={inputClass} />
-              </div>
-              <div className="w-28">
-                <label className={labelClass}>Currency</label>
-                <select value={formData.acquired_currency} onChange={e => handleChange('acquired_currency', e.target.value)} className={inputClass}>
-                  <option value="">—</option>
-                  {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="lg:col-span-4">
-              <label className={labelClass}>Acquisition Notes</label>
-              <textarea value={formData.acquired_notes} onChange={e => handleChange('acquired_notes', e.target.value)} rows={2} className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
-            </div>
-          </div>
-        </section>
-
-        {/* 12. Valuation */}
+        {/* 11. Valuation */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

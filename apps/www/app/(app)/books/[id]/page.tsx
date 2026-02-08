@@ -629,20 +629,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 10. Acquisition */}
-        {(bookData.acquired_from || bookData.purchase_source || bookData.acquired_date || bookData.acquired_price || bookData.purchase_price) && (
-          <section>
-            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Acquisition</h2>
-            <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Acquired From" value={bookData.acquired_from || bookData.purchase_source} />
-              <Field label="Date" value={formatDate(bookData.acquired_date)} />
-              <Field label="Price Paid" value={formatPrice(bookData.acquired_price, bookData.acquired_currency)} />
-              <Field label="Notes" value={bookData.acquired_notes} />
-            </dl>
-          </section>
-        )}
-
-        {/* 11. Valuation */}
+        {/* 10. Valuation */}
         {(bookData.lowest_price || bookData.highest_price || bookData.estimated_value || bookData.sales_price) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
@@ -653,13 +640,15 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="Sales Price" value={formatPrice(bookData.sales_price, bookData.price_currency)} />
               <Field label="Valuation Date" value={formatDate(bookData.valuation_date)} />
             </dl>
-            {bookData.acquired_price && bookData.estimated_value && (() => {
-              const paid = Number(bookData.acquired_price)
+            {(() => {
+              const selfEntry = (provenanceData || []).find((e: any) => e.owner_type === 'self' && e.price_paid)
+              if (!selfEntry || !bookData.estimated_value) return null
+              const paid = Number(selfEntry.price_paid)
               const est = Number(bookData.estimated_value)
               const diff = est - paid
               const pct = paid > 0 ? ((diff / paid) * 100).toFixed(0) : null
               const isGain = diff >= 0
-              const cur = bookData.price_currency || bookData.acquired_currency || 'EUR'
+              const cur = bookData.price_currency || selfEntry.price_currency || 'EUR'
               return (
                 <div className={`mt-4 p-3 border text-sm ${isGain ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800'}`}>
                   <span className="font-medium">
@@ -675,7 +664,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 12. Provenance */}
+        {/* 11. Provenance */}
         {provenanceData && provenanceData.length > 0 && (
           <ProvenanceTimeline entries={provenanceData as any} />
         )}
