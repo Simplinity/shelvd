@@ -37,7 +37,7 @@ export function MarketingFooter() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide mb-3">Resources</p>
             <div className="space-y-2">
-              <FooterLink href="/about" comingSoon>About</FooterLink>
+              <FooterLink href="/about">About</FooterLink>
               <FooterLink href="/changelog" comingSoon>Changelog</FooterLink>
               <FooterLink href="/roadmap" comingSoon>Roadmap</FooterLink>
               <FooterLink href="/blog" comingSoon>Blog</FooterLink>

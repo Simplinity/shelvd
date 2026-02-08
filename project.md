@@ -292,7 +292,7 @@ status, action_needed, internal_notes
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
 | 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant privacy policy with literary wit. 11 sections, third-party table, GDPR rights, contact. Accessible to visitors and logged-in users. |
 | 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, account termination, IP rights. Required before paid tiers. |
-| 8e | About / Story (`/about`) | High | Low | Who's behind Shelvd, the origin story, mission, Belgian bibliophile angle. Trust page with personality and humor. |
+| 8e | About / Story (`/about`) | ✅ Done | — | Origin story with literary wit: the problem, the solution (28k books + broken spreadsheet), what we care about, what we are/aren't, the name. Pull quotes, highlight boxes, care items with icons. |
 | 8f | Changelog (`/changelog`) | Medium | Low | Public-facing release log. Date, title, short description per entry. Shows product is alive and evolving. |
 | 8g | Roadmap (`/roadmap`) | Medium | Low | Public roadmap: Done / In Progress / Planned columns. Transparency for users. |
 | 8h | Blog (`/blog`) | Low | Medium | Articles on book collecting, condition grading, ISBD, provenance. Authority + SEO. |

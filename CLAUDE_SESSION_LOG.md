@@ -88,7 +88,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
 | 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant, literary wit, 11 sections. Public route. |
 | 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, IP rights. Required before paid tiers. |
-| 8e | About / Story (`/about`) | High | Low | Origin story, mission, trust page with personality. |
+| 8e | About / Story (`/about`) | ✅ Done | — | Origin story, 28k books, literary wit, pull quotes. |
 | 8f | Changelog (`/changelog`) | Medium | Low | Public release log. Date + title + description per entry. |
 | 8g | Roadmap (`/roadmap`) | Medium | Low | Done / In Progress / Planned columns. Public transparency. |
 | 8h | Blog (`/blog`) | Low | Medium | Authority + SEO articles on collecting, ISBD, provenance. |
