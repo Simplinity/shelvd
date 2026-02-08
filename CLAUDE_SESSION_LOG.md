@@ -24,6 +24,7 @@
 - ✅ Currency & Valuation (29 currencies, ECB exchange rates, per-book gain/loss, value summary bar, value distribution chart)
 - ✅ Enrich Mode (ISBN lookup + field search fallback, comparison panel, merge selected fields into edit form)
 - ✅ Provenance Tracking (ownership chain with evidence types, associations, transactions, sources; timeline display on detail page; editor on add/edit forms; DB: provenance_entries + provenance_sources tables)
+- ✅ Locale & Number Formatting (locale in user_profiles, shared `lib/format.ts` with formatInteger/formatDecimal/formatCurrency/formatDate, applied to all pages, legacy date_format dropped)
 
 ### Book Detail Page
 - ✅ Full book info display with all cataloging fields
@@ -89,7 +90,7 @@
 ### Todo — Core Product
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
-| 1 | Locale & number formatting | High | Medium | Single locale setting (en-US, nl-BE, de-DE, etc.) drives number format (1,234.56 vs 1.234,56) and date display (MM/DD vs DD/MM). Storage stays canonical. Extends existing date format setting. |
+| 1 | Locale & number formatting | ✅ Done | — | Locale in user_profiles, shared lib/format.ts, applied to all pages. Legacy date_format dropped (migration 024). |
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action (create/update/delete), entity_type (book/collection/tag), entity_id, details (JSON diff), timestamp. Admin gets filterable log viewer. Essential before multi-user beta. |

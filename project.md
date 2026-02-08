@@ -281,7 +281,7 @@ status, action_needed, internal_notes
 ### Todo — Core Product
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
-| 1 | Locale & number formatting | High | Medium | Single locale setting (en-US, nl-BE, de-DE) drives number format (1,234.56 vs 1.234,56) and date display. Storage stays canonical. Extends existing date format setting. |
+| 1 | Locale & number formatting | ✅ Done | — | Locale setting in user_profiles, shared `lib/format.ts` with formatInteger/formatDecimal/formatCurrency/formatDate, applied to all pages (detail, stats, books list, admin, duplicates, settings). Legacy date_format column dropped (migration 024). |
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
@@ -407,7 +407,7 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-022
+├── supabase/migrations/          # 001-024
 └── project.md
 ```
 

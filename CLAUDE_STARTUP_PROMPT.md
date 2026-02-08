@@ -34,6 +34,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - **Enrich Mode:** Enrich button in edit page header, ISBN lookup + field search fallback, comparison panel (new/different), merge selected fields, smart author comparison + auto-merge
 - **Contributor Name Handling:** "Last, First" standard via `lib/name-utils.ts`, auto-converts lookup names, populates all DB fields
 - **Provenance Tracking:** Visual timeline, 10 owner types, 14 association types, evidence sources, acquisition records migrated, integrated into ISBD generator and import/export
+- **Locale & Number Formatting:** Single locale setting (en-US, nl-BE, de-DE, fr-FR, etc.) drives number/date display across all pages via shared `lib/format.ts`
 - **Collapsible Form Sections:** Accordion on add/edit with field count badges, expand/collapse all
 - **Book Detail:** External links with URLs + favicons, toggleable collection chips with toast, colored tag chips, Move to Library button, prev/next navigation
 
@@ -65,11 +66,12 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 - `apps/www/lib/roadmap.ts` — Roadmap data (powers roadmap page)
 - `apps/www/lib/isbn-providers/` — Book lookup provider code
 - `apps/www/lib/constants.ts` — BookStatus (14 values), conditions, roles, etc.
+- `apps/www/lib/format.ts` — Locale-aware formatters (formatInteger, formatDecimal, formatCurrency, formatDate)
 - `apps/www/lib/currencies.ts` — 29 ISO 4217 currencies
 - `apps/www/lib/name-utils.ts` — Contributor name parser
 - `apps/www/components/marketing/` — MarketingHeader, MarketingFooter (shared across all public pages)
 - `apps/www/components/` — Reusable components (collection-chips, tag-input, collection-nav, announcement-banner, etc.)
-- `supabase/migrations/` — DB migrations (001–020)
+- `supabase/migrations/` — DB migrations (001–024)
 
 ### Database
 ```bash
@@ -111,7 +113,7 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 | Currency & Valuation | ✅ Done |
 | Enrich mode | ✅ Done |
 | Contributor name handling | ✅ Done |
-| Locale & number formatting | 🟡 Next |
+| Locale & number formatting | ✅ Done |
 | Image upload (covers, spine, damage) | 🔴 Todo |
 | Activity logging | 🔴 Todo |
 | Feedback & bug reporting | 🔴 Todo |

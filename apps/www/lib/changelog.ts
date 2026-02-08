@@ -37,7 +37,9 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Shared marketing header with Info dropdown, shared footer with 4-column layout' },
       { type: 'added', text: 'Announcement system — dismissible banners for system-wide and targeted messages' },
       { type: 'added', text: 'Collapsible form sections on add/edit pages — because nobody needs to see all 76 formats at once' },
+      { type: 'added', text: 'Locale & number formatting — single locale setting (en-US, nl-BE, de-DE, fr-FR, etc.) drives number and date display across all pages' },
       { type: 'added', text: 'App versioning system' },
+      { type: 'removed', text: 'Legacy date_format column (superseded by locale)' },
     ],
   },
   {

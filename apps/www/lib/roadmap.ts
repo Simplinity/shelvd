@@ -146,7 +146,8 @@ export const ROADMAP: RoadmapItem[] = [
     title: 'Locale & Number Formatting',
     description: 'Single locale setting drives number format (1,234.56 vs 1.234,56) and date display. Because Belgium alone has three official languages.',
     category: 'platform',
-    status: 'building',
+    status: 'shipped',
+    version: '0.9.0',
   },
 
   // ═══ PLANNED ═══
