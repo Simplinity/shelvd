@@ -1331,7 +1331,6 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string | null
-          date_format: string | null
           default_currency: string | null
           default_size_unit: string | null
           display_name: string | null
@@ -1358,7 +1357,6 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
-          date_format?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
@@ -1385,7 +1383,6 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
-          date_format?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
