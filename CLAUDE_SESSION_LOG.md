@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-08)
 
-All features up to and including **Provenance Tracking** are **complete**. 9 lookup providers active. Collections: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page. Tags: colored, autocomplete, filter by tag, clickable on detail page. Enrich mode: ISBN lookup + field search, smart author comparison, auto-merge. Contributor names: "Last, First" standard, name parser, format-independent matching. Provenance: full ownership chain tracking with evidence types, associations, transactions, sources, timeline display.
+**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. Collections, Tags, Enrich Mode, Contributor Names, Provenance, Currency & Valuation — all shipped. Marketing site: Landing page, Privacy Policy, Terms of Service, About, Changelog, Roadmap — all live with shared header/footer. App versioning system with `lib/changelog.ts` as single source of truth. Only Blog and Knowledge Base remain for content pages.
 
 ---
 
@@ -60,6 +60,18 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 - 15s timeout on all SRU requests
 - Auto-creates external link from lookup source URL (all providers including SRU)
 - Lookup button on book add page
+
+### Marketing Site (public, no auth)
+- ✅ Landing Page (`/`) — Hero, 12-feature showcase, 4 visual spotlights, comparison grid, 3-tier pricing, CTAs
+- ✅ Privacy Policy (`/privacy`) — GDPR-compliant, 11 sections, literary wit, third-party table, GDPR rights
+- ✅ Terms of Service (`/terms`) — 14 sections, data ownership, acceptable use, IP, liability, governing law
+- ✅ About (`/about`) — Origin story, 28k books, problem/solution, pull quotes, care items with icons
+- ✅ Changelog (`/changelog`) — 9 releases (0.1.0–0.9.0), timeline design, color-coded change types, data-driven from `lib/changelog.ts`
+- ✅ Roadmap (`/roadmap`) — 3-lane board (Shipped/Building/Planned), 26 items, 7 category badges, data-driven from `lib/roadmap.ts`
+- ✅ Shared MarketingHeader (Info dropdown, 5 live + 1 coming soon) + MarketingFooter (4-column grid)
+- ✅ App Versioning — `APP_VERSION` in `lib/changelog.ts`, version badge in app header, package.json v0.9.0, git tag v0.9.0
+- ✅ Announcement System — Colored banners (info/warning/success/maintenance), admin CRUD, dismissible, expiry
+- ✅ Collapsible Form Sections — Accordion on add/edit forms, field count badges, expand/collapse all
 
 ---
 
