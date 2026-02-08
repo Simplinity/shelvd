@@ -223,6 +223,15 @@ status, action_needed, internal_notes
 - Move to Library button (Wishlist → Library one-click)
 - Previous/Next navigation
 
+### Currency & Valuation
+- 29 ISO 4217 currencies in `lib/currencies.ts`, dropdown selects on add/edit forms
+- `default_currency` in user_profiles (default EUR), configurable in Settings > Configuration
+- Exchange rate conversion via frankfurter.app (ECB rates, daily cache), graceful fallback
+- Stats page: all totals converted to user's display currency, "rates as of" date shown
+- Per-book gain/loss on detail page: "Bought €X → Estimated €Y (+Z%)" with green/red styling
+- Collection value summary bar on books list: total acquired / estimated / unrealized gain
+- Value distribution histogram on stats dashboard by price range
+
 ### Book Lookup (9 providers)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
@@ -239,7 +248,7 @@ status, action_needed, internal_notes
 ### Next Priorities
 | # | Feature | Status |
 |---|---------|--------|
-| — | Currency & Valuation (7 steps) | 🟡 In Progress |
+| — | Currency & Valuation (7 steps) | ✅ Done |
 | — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Sharing & Public Catalog | 🔴 Todo |

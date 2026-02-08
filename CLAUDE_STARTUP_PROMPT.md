@@ -29,6 +29,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - **Book Lookup:** 9 providers (Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, Standaard Boekhandel)
 - **Multiple Collections:** Library + Wishlist (non-deletable defaults), custom collections, nav dropdown, bulk actions, settings page, toggleable chips on detail page
 - **Custom Tags:** Colored tags, autocomplete/create, filter by tag, clickable on detail page
+- **Currency & Valuation:** 29 currencies, ECB exchange rates (frankfurter.app), per-book gain/loss on detail, value summary bar on books list, value distribution chart on stats
 - **Book Detail:** External links with URLs + favicons, toggleable collection chips with toast, colored tag chips, Move to Library button, prev/next navigation
 
 ## Tech
@@ -82,7 +83,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 
 | Feature | Status |
 |---------|--------|
-| Currency & Valuation (7 steps: cleanup, dropdowns, home currency, conversion, gain/loss, summary bar, chart) | 🟡 In Progress |
+| Currency & Valuation | ✅ Done |
 | Enrich mode (merge lookup fields on edit) | 🔴 Todo |
 | Image upload (covers, spine, damage) | 🔴 Todo |
 | Sharing & Public Catalog | 🔴 Todo |

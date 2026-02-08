@@ -21,6 +21,7 @@ All features up to and including **Custom Tags** are **complete**. 9 lookup prov
 - ✅ Duplicate Detection (server-side SQL, ISBN + title matching, grouped results, bulk delete)
 - ✅ Multiple Collections (Library + Wishlist default, nav dropdown, filtering, bulk add/remove, settings page, migrations 011–012)
 - ✅ Custom Tags (colored tags, create/search/autocomplete, filter by tag, clickable on detail page, migration 014)
+- ✅ Currency & Valuation (29 currencies, ECB exchange rates, per-book gain/loss, value summary bar, value distribution chart)
 
 ### Book Detail Page
 - ✅ Full book info display with all cataloging fields
@@ -64,7 +65,7 @@ All features up to and including **Custom Tags** are **complete**. 9 lookup prov
 
 | # | Feature | Status |
 |---|---------|--------|
-| 1 | Currency & Valuation (7 steps) | 🟡 In Progress |
+| 1 | Currency & Valuation (7 steps) | ✅ Done |
 | 2 | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
 | 3 | Image upload (covers, spine, damage) | 🔴 Todo |
 | 4 | Sharing & Public Catalog | 🔴 Todo |
@@ -106,9 +107,9 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 | 2 | Currency dropdowns | New `currencies.ts` with 29 ISO 4217 currencies. Freetext inputs replaced with select dropdowns on add + edit forms. | ✅ Done (`40e7d58`) |
 | 3 | Home currency in user settings | `default_currency` already in user_profiles. Unified settings dropdown to shared 29-currency list. Stats page now reads user's currency instead of hardcoded EUR. | ✅ Done (`5f8b21e`) |
 | 4 | Exchange rate conversion on stats page | Stats API fetches ECB rates from frankfurter.app, converts all prices to display currency. Rates date shown on stats page. Graceful fallback if unavailable. | ✅ Done (`106b554`) |
-| 5 | Per-book gain/loss on detail page | Show on book detail: "Bought for €45 → Estimated €120 (+167%)". Green for gain, red for loss. Only when both acquired_price and estimated_value are set. | 🔴 Todo |
-| 6 | Collection value summary on books list | Small summary bar above book list: total acquired cost / total estimated value / unrealized gain for current view (all books, collection, or tag filter). | 🔴 Todo |
-| 7 | Value distribution chart on stats | Histogram: number of books per value range (€0-50, €50-200, €200-500, €500-1000, €1000+). Shows portfolio composition at a glance. | 🔴 Todo |
+| 5 | Per-book gain/loss on detail page | Detail page shows "Bought €X → Estimated €Y (+Z%)" with green/red styling when both acquired_price and estimated_value are set. | ✅ Already done |
+| 6 | Collection value summary on books list | Summary bar above book list: total acquired / total estimated / unrealized gain for current view (all, collection, or tag). | ✅ Already done |
+| 7 | Value distribution chart on stats | Histogram by value range in stats dashboard (calculated in stats API with convert()). | ✅ Already done |
 
 ---
 
