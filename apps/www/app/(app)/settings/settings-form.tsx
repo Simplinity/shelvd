@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Check, X, ExternalLink, Plus } from 'lucide-react'
-import { SUPPORTED_LOCALES } from '@/lib/format'
+import { SUPPORTED_LOCALES, formatDateTime } from '@/lib/format'
 import {
   updateProfile,
   updatePassword,
@@ -79,7 +79,7 @@ export function SettingsForm({ tab, email, lastSignIn, profile, linkTypes, activ
   return (
     <div className="space-y-10">
       <ProfileSection profile={profile} email={email} />
-      <SecuritySection lastSignIn={lastSignIn} />
+      <SecuritySection lastSignIn={lastSignIn} locale={profile?.locale} />
       <AddressSection profile={profile} />
       <SubscriptionSection profile={profile} />
       <DangerSection />
@@ -152,7 +152,7 @@ function ProfileSection({ profile, email }: { profile: any; email: string }) {
 }
 
 // --- 2. SECURITY ---
-function SecuritySection({ lastSignIn }: { lastSignIn: string | null }) {
+function SecuritySection({ lastSignIn, locale }: { lastSignIn: string | null; locale?: string | null }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<SettingsResult | null>(null)
 
@@ -173,7 +173,7 @@ function SecuritySection({ lastSignIn }: { lastSignIn: string | null }) {
       <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Security</h2>
       {lastSignIn && (
         <p className="text-xs text-muted-foreground mb-4">
-          Last sign in: {new Date(lastSignIn).toLocaleString()}
+          Last sign in: {formatDateTime(lastSignIn, locale)}
         </p>
       )}
       <form id="password-form" action={handleSubmit}>

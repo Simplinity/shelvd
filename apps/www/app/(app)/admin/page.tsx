@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock } from 'lucide-react'
+import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './users/user-actions'
 import { AnnouncementManager } from './announcements/announcement-manager'
 
@@ -180,10 +181,10 @@ export default async function AdminPage({
                     </div>
                   </td>
                   <td className="p-3 text-right font-mono">
-                    {bookCount.toLocaleString()}
+                    {formatInteger(bookCount)}
                   </td>
                   <td className="p-3 text-muted-foreground">
-                    {new Date(profile.created_at!).toLocaleDateString()}
+                    {formatDate(profile.created_at)}
                   </td>
                   <td className="p-3 text-right">
                     <UserActions
@@ -212,7 +213,7 @@ function StatCard({ label, value, icon }: { label: string; value: number; icon: 
         {icon}
         <span className="text-xs uppercase tracking-wide">{label}</span>
       </div>
-      <p className="text-2xl font-bold">{value.toLocaleString()}</p>
+      <p className="text-2xl font-bold">{formatInteger(value)}</p>
     </div>
   )
 }

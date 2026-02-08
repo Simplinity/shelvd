@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Trash2, ExternalLink, ChevronDown, ChevronRight, Search, Loader2 } from 'lucide-react'
+import { formatInteger } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 
@@ -182,7 +183,7 @@ export default function DuplicatesPage() {
         </Link>
         <h1 className="text-2xl font-bold">Duplicate Detection</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Find possible duplicates in your collection{bookCount !== null ? ` of ${bookCount.toLocaleString()} books` : ''}
+          Find possible duplicates in your collection{bookCount !== null ? ` of ${formatInteger(bookCount)} books` : ''}
         </p>
       </div>
 

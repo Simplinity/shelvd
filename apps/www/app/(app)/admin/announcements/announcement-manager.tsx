@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Eye, EyeOff, Megaphone } from 'lucide-react'
+import { formatDate } from '@/lib/format'
 
 interface Announcement {
   id: string
@@ -195,8 +196,8 @@ export function AnnouncementManager({ announcements: initial }: { announcements:
                     <p className="text-xs text-muted-foreground truncate">{a.message}</p>
                   )}
                   <div className="text-[10px] text-muted-foreground mt-1">
-                    Created {a.created_at ? new Date(a.created_at).toLocaleDateString() : '—'}
-                    {a.ends_at && ` · Expires ${new Date(a.ends_at).toLocaleDateString()}`}
+                    Created {formatDate(a.created_at) || '—'}
+                    {a.ends_at && ` · Expires ${formatDate(a.ends_at)}`}
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

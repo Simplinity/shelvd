@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { ArrowLeft, Search, Shield, Check, X, Clock } from 'lucide-react'
+import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './user-actions'
 
 export default async function AdminUsersPage({
@@ -171,10 +172,10 @@ export default async function AdminUsersPage({
                     </div>
                   </td>
                   <td className="p-3">
-                    {bookCount.toLocaleString()}
+                    {formatInteger(bookCount)}
                   </td>
                   <td className="p-3 text-muted-foreground">
-                    {profile.created_at ? new Date(profile.created_at).toLocaleDateString() : "-"}
+                    {formatDate(profile.created_at) || '—'}
                   </td>
                   <td className="p-3 text-right">
                     <UserActions 
