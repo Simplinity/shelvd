@@ -434,7 +434,7 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                   </div>
                 </div>
 
-                {/* Row 5: Price + Association */}
+                {/* Row 5: Price */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
                     <label className={labelClass}>Price Paid</label>
@@ -457,6 +457,10 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                       {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
                     </select>
                   </div>
+                </div>
+
+                {/* Row 6: Association */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
                     <label className={labelClass}>Association</label>
                     <select
@@ -470,7 +474,7 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                     </select>
                   </div>
                   {entry.associationType !== 'none' && (
-                    <div>
+                    <div className="md:col-span-3">
                       <label className={labelClass}>Association Note</label>
                       <input
                         type="text"
@@ -483,7 +487,7 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                   )}
                 </div>
 
-                {/* Row 6: Notes */}
+                {/* Row 7: Notes */}
                 <div>
                   <label className={labelClass}>Notes</label>
                   <textarea
@@ -494,7 +498,7 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                   />
                 </div>
 
-                {/* Row 7: Sources */}
+                {/* Row 8: Sources */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={labelClass + ' mb-0'}>Supporting Sources</label>
@@ -507,44 +511,48 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                     </button>
                   </div>
                   {entry.sources.filter(s => !s.isDeleted).map(src => (
-                    <div key={src.id} className="flex gap-2 mb-2 items-start">
-                      <select
-                        value={src.sourceType}
-                        onChange={e => updateSource(entry.tempId, src.id, { sourceType: e.target.value })}
-                        className={inputClass + ' !w-40 shrink-0'}
-                      >
-                        {SOURCE_TYPES.map(st => (
-                          <option key={st.value} value={st.value}>{st.label}</option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        value={src.title}
-                        onChange={e => updateSource(entry.tempId, src.id, { title: e.target.value })}
-                        placeholder="Title or description"
-                        className={inputClass + ' flex-1'}
-                      />
-                      <input
-                        type="text"
-                        value={src.url}
-                        onChange={e => updateSource(entry.tempId, src.id, { url: e.target.value })}
-                        placeholder="URL (optional)"
-                        className={inputClass + ' !w-48'}
-                      />
-                      <input
-                        type="text"
-                        value={src.reference}
-                        onChange={e => updateSource(entry.tempId, src.id, { reference: e.target.value })}
-                        placeholder="Ref / lot #"
-                        className={inputClass + ' !w-28'}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeSource(entry.tempId, src.id)}
-                        className="p-2 text-muted-foreground hover:text-red-600 shrink-0"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                    <div key={src.id} className="mb-3 border border-border/50 p-2 space-y-2">
+                      <div className="flex gap-2 items-start">
+                        <select
+                          value={src.sourceType}
+                          onChange={e => updateSource(entry.tempId, src.id, { sourceType: e.target.value })}
+                          className={inputClass + ' !w-40 shrink-0'}
+                        >
+                          {SOURCE_TYPES.map(st => (
+                            <option key={st.value} value={st.value}>{st.label}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="text"
+                          value={src.title}
+                          onChange={e => updateSource(entry.tempId, src.id, { title: e.target.value })}
+                          placeholder="Title or description"
+                          className={inputClass + ' flex-1'}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeSource(entry.tempId, src.id)}
+                          className="p-2 text-muted-foreground hover:text-red-600 shrink-0"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={src.url}
+                          onChange={e => updateSource(entry.tempId, src.id, { url: e.target.value })}
+                          placeholder="URL (optional)"
+                          className={inputClass + ' flex-1'}
+                        />
+                        <input
+                          type="text"
+                          value={src.reference}
+                          onChange={e => updateSource(entry.tempId, src.id, { reference: e.target.value })}
+                          placeholder="Ref / lot #"
+                          className={inputClass + ' !w-40'}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
