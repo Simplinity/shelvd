@@ -61,7 +61,7 @@ export async function updatePreferences(formData: FormData): Promise<SettingsRes
   if (!user) return { error: 'Not authenticated' }
 
   const default_currency = formData.get('default_currency') as string
-  const date_format = formData.get('date_format') as string
+  const locale = formData.get('locale') as string
   const items_per_page_list = parseInt(formData.get('items_per_page_list') as string) || 50
   const items_per_page_grid = parseInt(formData.get('items_per_page_grid') as string) || 25
 
@@ -69,7 +69,7 @@ export async function updatePreferences(formData: FormData): Promise<SettingsRes
     .from('user_profiles')
     .update({
       default_currency: default_currency || 'EUR',
-      date_format: date_format || 'DD/MM/YYYY',
+      locale: locale || 'en-GB',
       items_per_page_list,
       items_per_page_grid,
       updated_at: new Date().toISOString(),

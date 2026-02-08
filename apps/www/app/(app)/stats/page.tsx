@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
+import { formatCurrency as fmtCurr, formatDateTime, formatInteger } from '@/lib/format'
 
 export default function StatsPage() {
   const [stats, setStats] = useState<any>(null)
@@ -11,6 +12,7 @@ export default function StatsPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [displayCurrency, setDisplayCurrency] = useState('EUR')
+  const [userLocale, setUserLocale] = useState('en-GB')
 
   const supabase = createClient()
 
@@ -23,9 +25,10 @@ export default function StatsPage() {
       return
     }
 
-    // Fetch user's display currency
-    const { data: profile } = await supabase.from('user_profiles').select('default_currency').eq('id', user.id).single()
+    // Fetch user's display currency and locale
+    const { data: profile } = await supabase.from('user_profiles').select('default_currency, locale').eq('id', user.id).single()
     if (profile?.default_currency) setDisplayCurrency(profile.default_currency)
+    if ((profile as any)?.locale) setUserLocale((profile as any).locale)
 
     const { data, error: fetchError } = await (supabase as any)
       .from('user_stats')
@@ -86,19 +89,13 @@ export default function StatsPage() {
     loadStats()
   }, [])
 
-  // Format helpers
+  // Format helpers (locale-aware)
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('nl-BE', { style: 'currency', currency: displayCurrency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
+    return fmtCurr(amount, displayCurrency, userLocale, { decimals: false })
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('nl-BE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+    return formatDateTime(dateString, userLocale) || dateString
   }
 
   const statusLabels: Record<string, string> = {

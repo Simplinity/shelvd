@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, ScanBarcode } from 'lucide-react'
+import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
 import MoveToLibraryButton from '@/components/move-to-library-button'
@@ -28,11 +29,11 @@ export default async function BookDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // Fetch user profile for date format preference
+  // Fetch user profile for locale preference
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = user ? await supabase
     .from('user_profiles')
-    .select('date_format')
+    .select('locale, default_currency')
     .eq('id', user.id)
     .single() : { data: null }
 
@@ -181,28 +182,11 @@ export default async function BookDetailPage({ params }: PageProps) {
     )
   }
 
-  // Format date based on user preference
-  const dateFormat = profile?.date_format || 'DD/MM/YYYY'
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return null
-    const d = new Date(dateStr)
-    if (isNaN(d.getTime())) return dateStr
-    const dd = String(d.getDate()).padStart(2, '0')
-    const mm = String(d.getMonth() + 1).padStart(2, '0')
-    const yyyy = d.getFullYear()
-    switch (dateFormat) {
-      case 'MM/DD/YYYY': return `${mm}/${dd}/${yyyy}`
-      case 'YYYY-MM-DD': return `${yyyy}-${mm}-${dd}`
-      case 'DD.MM.YYYY': return `${dd}.${mm}.${yyyy}`
-      case 'DD/MM/YYYY':
-      default: return `${dd}/${mm}/${yyyy}`
-    }
-  }
-
-  // Format currency
-  const formatPrice = (amount: number | null, currency: string | null) => {
+  const userLocale = (profile as any)?.locale || 'en-GB'
+  const fmtDate = (dateStr: string | null) => formatDate(dateStr, userLocale)
+  const fmtCurrency = (amount: number | null, currency?: string | null) => {
     if (!amount) return null
-    return `${currency || 'EUR'} ${amount.toFixed(2)}`
+    return formatCurrency(amount, currency || (profile as any)?.default_currency || 'EUR', userLocale)
   }
 
   // Format dimensions
@@ -634,11 +618,11 @@ export default async function BookDetailPage({ params }: PageProps) {
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Lowest Price" value={formatPrice(bookData.lowest_price, bookData.price_currency)} />
-              <Field label="Highest Price" value={formatPrice(bookData.highest_price, bookData.price_currency)} />
-              <Field label="Estimated Value" value={formatPrice(bookData.estimated_value, bookData.price_currency)} />
-              <Field label="Sales Price" value={formatPrice(bookData.sales_price, bookData.price_currency)} />
-              <Field label="Valuation Date" value={formatDate(bookData.valuation_date)} />
+              <Field label="Lowest Price" value={fmtCurrency(bookData.lowest_price, bookData.price_currency)} />
+              <Field label="Highest Price" value={fmtCurrency(bookData.highest_price, bookData.price_currency)} />
+              <Field label="Estimated Value" value={fmtCurrency(bookData.estimated_value, bookData.price_currency)} />
+              <Field label="Sales Price" value={fmtCurrency(bookData.sales_price, bookData.price_currency)} />
+              <Field label="Valuation Date" value={fmtDate(bookData.valuation_date)} />
             </dl>
             {(() => {
               const selfEntry = (provenanceData || []).find((e: any) => e.owner_type === 'self' && e.price_paid)
@@ -736,9 +720,9 @@ export default async function BookDetailPage({ params }: PageProps) {
 
         {/* Metadata */}
         <section className="text-xs text-muted-foreground pt-4 border-t">
-          {bookData.created_at && <p>Created: {formatDate(bookData.created_at)}</p>}
+          {bookData.created_at && <p>Created: {fmtDate(bookData.created_at)}</p>}
           {bookData.updated_at && bookData.updated_at !== bookData.created_at && (
-            <p>Last updated: {formatDate(bookData.updated_at)}</p>
+            <p>Last updated: {fmtDate(bookData.updated_at)}</p>
           )}
         </section>
 

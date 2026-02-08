@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Check, X, ExternalLink, Plus } from 'lucide-react'
+import { SUPPORTED_LOCALES } from '@/lib/format'
 import {
   updateProfile,
   updatePassword,
@@ -311,13 +312,6 @@ function DangerSection() {
 // ============================================
 // CONFIGURATION TAB
 // ============================================
-
-const DATE_FORMATS = [
-  { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY (31/01/2026)' },
-  { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY (01/31/2026)' },
-  { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (2026-01-31)' },
-  { value: 'DD.MM.YYYY', label: 'DD.MM.YYYY (31.01.2026)' },
-]
 
 const LIST_VIEW_OPTIONS = [
   { value: '25', label: '25' },
@@ -672,12 +666,13 @@ function ConfigurationSection({ profile }: { profile: any }) {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Date Format</label>
-            <select name="date_format" defaultValue={profile?.date_format || 'DD/MM/YYYY'} className={inputClass}>
-              {DATE_FORMATS.map(f => (
-                <option key={f.value} value={f.value}>{f.label}</option>
+            <label className={labelClass}>Locale</label>
+            <select name="locale" defaultValue={profile?.locale || 'en-GB'} className={inputClass}>
+              {SUPPORTED_LOCALES.map(l => (
+                <option key={l.code} value={l.code}>{l.label} — {l.dateExample}, {l.numberExample}</option>
               ))}
             </select>
+            <p className="text-xs text-muted-foreground mt-1">Controls date, number, and currency formatting across the app.</p>
           </div>
           <div>
             <label className={labelClass}>Items Per Page (List View)</label>
