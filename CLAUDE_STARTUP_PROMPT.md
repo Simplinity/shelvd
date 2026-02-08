@@ -30,7 +30,8 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - **Multiple Collections:** Library + Wishlist (non-deletable defaults), custom collections, nav dropdown, bulk actions, settings page, toggleable chips on detail page
 - **Custom Tags:** Colored tags, autocomplete/create, filter by tag, clickable on detail page
 - **Currency & Valuation:** 29 currencies, ECB exchange rates (frankfurter.app), per-book gain/loss on detail, value summary bar on books list, value distribution chart on stats
-- **Enrich Mode:** Enrich button on edit page, ISBN lookup + field search fallback, comparison panel (new/different), merge selected fields
+- **Enrich Mode:** Enrich button in edit page header (next to Cancel/Save), ISBN lookup + field search fallback, comparison panel (new/different), merge selected fields, smart author comparison + auto-merge
+- **Contributor Name Handling:** "Last, First" standard via `lib/name-utils.ts`, auto-converts lookup names, populates all DB fields (family_name, given_names, etc.), format-independent matching
 - **Book Detail:** External links with URLs + favicons, toggleable collection chips with toast, colored tag chips, Move to Library button, prev/next navigation
 
 ## Tech
@@ -86,6 +87,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 |---------|--------|
 | Currency & Valuation | ✅ Done |
 | Enrich mode | ✅ Done |
+| Contributor name handling | ✅ Done |
 | Image upload (covers, spine, damage) | 🔴 Todo |
 | Sharing & Public Catalog | 🔴 Todo |
 | Landing page + Knowledge base | 🔴 Todo |

@@ -233,12 +233,23 @@ status, action_needed, internal_notes
 - Value distribution histogram on stats dashboard by price range
 
 ### Enrich Mode
-- "Enrich" button on book edit page — searches providers by ISBN, shows comparison panel
+- "Enrich" button in edit page header bar (next to Cancel/Save)
 - Field-by-field comparison: NEW (green, pre-checked) / DIFFERENT (amber, unchecked) / same (hidden)
 - 19 enrichable fields (title, subtitle, publisher, year, identifiers, description, etc.)
+- Smart author comparison: detects "Tolkien, J.R.R." = "J.R.R. Tolkien" (skips matches, shows only truly new)
+- New authors auto-merge into contributors on Apply (in "Last, First" catalog format)
 - No-ISBN fallback: mini search form with title/author pre-filled, provider picker
 - "Search other providers" link to try different sources
 - Apply merges selected fields into form, user reviews and saves normally
+
+### Contributor Name Handling
+- Standard format: "Last, First" (e.g., "Tolkien, J.R.R.")
+- `lib/name-utils.ts`: parseName(), isSameAuthor(), toCatalogFormat(), normalizeNameForComparison()
+- Handles family prefixes (van/de/von/etc.), single names, organizations
+- Lookup authors auto-converted to "Last, First" on both add and edit forms
+- On save: parseName() populates canonical_name, sort_name, display_name, family_name, given_names, type
+- Existing contributor matching uses isSameAuthor() fallback (format-independent)
+- Placeholder on contributor inputs: "Last, First (e.g. Tolkien, J.R.R.)"
 
 ### Book Lookup (9 providers)
 - Multi-field search: title, author, publisher, year range, ISBN
@@ -258,6 +269,7 @@ status, action_needed, internal_notes
 |---|---------|--------|
 | — | Currency & Valuation (7 steps) | ✅ Done |
 | — | Enrich mode (merge lookup fields on edit page) | ✅ Done |
+| — | Contributor name handling ("Last, First" standard) | ✅ Done |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Sharing & Public Catalog | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
@@ -322,6 +334,7 @@ shelvd/
 │       ├── actions/              # Server actions (collections, etc.)
 │       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
 │       ├── currencies.ts         # 29 ISO 4217 currencies for dropdowns
+│       ├── name-utils.ts         # Contributor name parsing (Last, First)
 │       └── isbn-providers/       # Book lookup providers
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
