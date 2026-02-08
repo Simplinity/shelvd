@@ -10,7 +10,7 @@ import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
 import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
-import EnrichPanel from '@/components/enrich-panel'
+import { EnrichButton, EnrichDropdown, useEnrich } from '@/components/enrich-panel'
 import type { Tables } from '@/lib/supabase/database.types'
 
 type Book = Tables<'books'>
@@ -217,6 +217,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
   // External links state
   const [externalLinks, setExternalLinks] = useState<ExternalLinkData[]>(referenceData.bookExternalLinks || [])
+
+  // Enrich hook
+  const enrichAuthorName = contributors.find(c => c.roleName?.toLowerCase() === 'author' && !c.isDeleted)?.contributorName || contributors.find(c => !c.isDeleted)?.contributorName || ''
+  const enrich = useEnrich(formData, enrichAuthorName, (updates) => {
+    setFormData(prev => {
+      const next = { ...prev } as any
+      for (const [key, value] of Object.entries(updates)) next[key] = value
+      return next
+    })
+    setIsDirty(true)
+  })
 
   // Collections state
   type CollectionOption = { id: string; name: string; is_default: boolean }
@@ -495,6 +506,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           <h1 className="text-2xl font-bold">Edit Book</h1>
         </div>
         <div className="flex items-center gap-2">
+          <EnrichButton isbn={enrich.isbn} loading={enrich.loading} onEnrichIsbn={enrich.handleEnrichIsbn} onOpenSearch={enrich.handleOpenSearch} />
           <Button type="button" variant="outline" asChild>
             <Link href={`/books/${book.id}`} onClick={handleCancel}>Cancel</Link>
           </Button>
@@ -504,20 +516,20 @@ export default function BookEditForm({ book, referenceData }: Props) {
         </div>
       </div>
 
-      {/* Enrich panel */}
-      <EnrichPanel
-        book={formData}
-        authorName={contributors.find(c => c.roleName?.toLowerCase() === 'author' && !c.isDeleted)?.contributorName || contributors.find(c => !c.isDeleted)?.contributorName || ''}
-        onApply={(updates) => {
-          setFormData(prev => {
-            const next = { ...prev } as any
-            for (const [key, value] of Object.entries(updates)) {
-              next[key] = value
-            }
-            return next
-          })
-          setIsDirty(true)
-        }}
+      {/* Enrich dropdown panel */}
+      <EnrichDropdown
+        showPanel={enrich.showPanel} mode={enrich.mode} loading={enrich.loading}
+        error={enrich.error} applied={enrich.applied} provider={enrich.provider}
+        rows={enrich.rows} newCount={enrich.newCount} diffCount={enrich.diffCount} checkedCount={enrich.checkedCount}
+        searchTitle={enrich.searchTitle} setSearchTitle={enrich.setSearchTitle}
+        searchAuthor={enrich.searchAuthor} setSearchAuthor={enrich.setSearchAuthor}
+        selectedProvider={enrich.selectedProvider} setSelectedProvider={enrich.setSelectedProvider}
+        providers={enrich.providers}
+        searching={enrich.searching} searchResults={enrich.searchResults} loadingDetail={enrich.loadingDetail}
+        onClose={enrich.handleClose} onFieldSearch={enrich.handleFieldSearch}
+        onPickResult={enrich.handlePickResult} onToggleRow={enrich.toggleRow}
+        onSelectAllNew={enrich.selectAllNew} onApply={enrich.handleApply}
+        onSwitchToSearch={enrich.handleSwitchToSearch}
       />
 
       {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
