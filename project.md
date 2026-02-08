@@ -264,31 +264,40 @@ status, action_needed, internal_notes
 
 ## Roadmap
 
-### Next Priorities
-| # | Feature | Status |
-|---|---------|--------|
-| — | Currency & Valuation (7 steps) | ✅ Done |
-| — | Enrich mode (merge lookup fields on edit page) | ✅ Done |
-| — | Contributor name handling ("Last, First" standard) | ✅ Done |
-| — | Provenance tracking (ownership chain, auction history) | ✅ Done |
-| — | Image upload (covers, spine, damage) | 🔴 Todo |
-| — | Sharing & Public Catalog | 🔴 Todo |
-| — | Landing page + Knowledge base | 🔴 Todo |
-| — | Multiple Collections per user | ✅ Done |
-| — | Custom Tags | ✅ Done |
+### Completed
+| Feature | Status |
+|---------|--------|
+| Currency & Valuation (7 steps) | ✅ Done |
+| Enrich mode (merge lookup fields on edit page) | ✅ Done |
+| Contributor name handling ("Last, First" standard) | ✅ Done |
+| Provenance tracking (ownership chain, evidence, associations) | ✅ Done |
+| Acquisition → Provenance migration | ✅ Done |
+| Multiple Collections per user | ✅ Done |
+| Custom Tags | ✅ Done |
 
-### Currency & Valuation — Steps
-| # | Step | Description |
-|---|------|-------------|
-| 1 | ~~Clean up duplicate DB columns~~ | ~~Drop 5 unused columns~~ ✅ Done |
-| 2 | ~~Currency dropdowns~~ | ~~29 ISO 4217 currencies, select dropdowns on add/edit~~ ✅ Done |
-| 3 | ~~Home currency in user settings~~ | ~~Stats reads user's default_currency~~ ✅ Done |
-| 4 | ~~Exchange rate conversion on stats~~ | ~~ECB rates via frankfurter.app, converts all prices~~ ✅ Done |
-| 5 | Per-book gain/loss on detail page | "Bought €45 → Estimated €120 (+167%)" with green/red styling |
-| 6 | Collection value summary on books list | Summary bar: total cost / total value / unrealized gain for current view |
-| 7 | Value distribution chart on stats | Histogram by value range (€0-50, €50-200, €200-500, €500-1000, €1000+) |
+### Todo — Core Product
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| 1 | Locale & number formatting | High | Medium | Single locale setting (en-US, nl-BE, de-DE) drives number format (1,234.56 vs 1.234,56) and date display. Storage stays canonical. Extends existing date format setting. |
+| 2 | Admin button in header | High | Low | Gear/shield icon in header, conditionally shown for admin users. |
+| 3 | Edit page collapsible sections | High | Medium | Accordion-style sections with filled-field count badges. Default: first open, rest collapsed. "Expand all" toggle. |
+| 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
+| 5 | Feedback & bug reporting | High | Medium | Feedback form (bug/feature/question), `feedback` table with status tracking, auto-attach browser info. Admin queue. |
+| 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
+| 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
+| 8 | Landing page + Knowledge base | Medium | Medium | Marketing landing page, getting started guide, FAQ, feature docs. |
 
-### Under Consideration
+### Todo — Admin Section Enhancements
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
+| A2 | Feedback/bug queue | High | Medium | Review submitted feedback, change status, respond. |
+| A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. |
+| A4 | User management improvements | Medium | Medium | Invite codes, approve registrations, user details view. |
+| A5 | Announcement system | Low | Low | Post banner/message to all users. |
+| A6 | Data health checks | Low | Medium | Orphaned records, missing required fields, import error log. |
+
+### Under Consideration (Future)
 - Insurance & valuation PDF reports
 - Price history field (auction results, dealer quotes, previous sale prices)
 - Condition history (restorations, reports)
@@ -296,6 +305,8 @@ status, action_needed, internal_notes
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
 - Templates system
+- Stats page: migrate acquired_price reads to provenance data
+- Drop legacy acquired_* DB columns
 
 ---
 

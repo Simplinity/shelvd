@@ -63,22 +63,49 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 
 ---
 
-## Next Priorities
+## Feature Backlog
 
-| # | Feature | Status |
-|---|---------|--------|
-| 1 | Currency & Valuation (7 steps) | ✅ Done |
-| 2 | Enrich mode (merge lookup fields on edit page) | ✅ Done |
-| 3 | Provenance tracking (ownership chain, auction history) | ✅ Done |
-| 4 | Image upload (covers, spine, damage) | 🔴 Todo |
-| 5 | Sharing & Public Catalog | 🔴 Todo |
-| 6 | Landing page + Knowledge base | 🔴 Todo |
+### Completed
+| Feature | Status |
+|---------|--------|
+| Currency & Valuation (7 steps) | ✅ Done |
+| Enrich mode (merge lookup fields on edit page) | ✅ Done |
+| Contributor name handling ("Last, First" standard) | ✅ Done |
+| Provenance tracking (ownership chain, evidence, associations) | ✅ Done |
+| Acquisition → Provenance migration (removed redundant section) | ✅ Done |
 
-### Under Consideration
+### Todo — Core Product
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| 1 | Locale & number formatting | High | Medium | Single locale setting (en-US, nl-BE, de-DE, etc.) drives number format (1,234.56 vs 1.234,56) and date display (MM/DD vs DD/MM). Storage stays canonical. Extends existing date format setting. |
+| 2 | Admin button in header | High | Low | Gear/shield icon in header, conditionally shown for admin users. Currently admin is a hidden URL. |
+| 3 | Edit page collapsible sections | High | Medium | Accordion-style collapsible sections. Default: first open, rest collapsed. Badge per section showing filled field count. "Expand all" toggle. Current grouping is logical, just visually overwhelming. |
+| 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action (create/update/delete), entity_type (book/collection/tag), entity_id, details (JSON diff), timestamp. Admin gets filterable log viewer. Essential before multi-user beta. |
+| 5 | Feedback & bug reporting | High | Medium | Single feedback form with type selector (bug/feature request/question). `feedback` table in Supabase with status tracking (new/acknowledged/resolved). Auto-attach browser info for bugs. Visible in admin. |
+| 6 | Image upload | Medium | High | Cover images, spine, damage photos. Storage via Supabase Storage. Gallery on detail page. |
+| 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
+| 8 | Landing page + Knowledge base | Medium | Medium | Marketing landing page, getting started guide, FAQ, feature documentation. |
+
+### Todo — Admin Section Enhancements
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
+| A2 | Feedback/bug queue | High | Medium | Review submitted feedback, change status, respond. From feature #5 above. |
+| A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. From feature #4 above. |
+| A4 | User management improvements | Medium | Medium | Invite codes, approve registrations (if not open signup), user details view. |
+| A5 | Announcement system | Low | Low | Post banner/message to all users ("Maintenance tonight", "New feature"). |
+| A6 | Data health checks | Low | Medium | Orphaned records, books without required fields, import error log, DB consistency. |
+
+### Under Consideration (Future)
 - Insurance & valuation PDF reports
 - Price history field (auction results, dealer quotes, previous sale prices)
 - Condition history (restorations, reports)
 - Dealer & contact management
+- Sales platform integration (WooCommerce, Catawiki, AbeBooks)
+- PDF catalog export
+- Templates system
+- Stats page: migrate acquired_price reads to provenance data
+- Drop legacy acquired_* DB columns
 
 ---
 
