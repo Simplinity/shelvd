@@ -270,7 +270,7 @@ status, action_needed, internal_notes
 | — | Currency & Valuation (7 steps) | ✅ Done |
 | — | Enrich mode (merge lookup fields on edit page) | ✅ Done |
 | — | Contributor name handling ("Last, First" standard) | ✅ Done |
-| — | Provenance tracking (ownership chain, auction history) | 🟡 In Progress |
+| — | Provenance tracking (ownership chain, auction history) | ✅ Done |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Sharing & Public Catalog | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
@@ -328,6 +328,8 @@ shelvd/
 │   │   ├── move-to-library-button.tsx # One-click Wishlist → Library
 │   │   ├── tag-input.tsx         # Tag autocomplete/create input
 │   │   ├── enrich-panel.tsx      # ISBN/field search enrichment panel
+│   │   ├── provenance-editor.tsx  # Repeatable card UI for provenance chain
+│   │   ├── provenance-timeline.tsx # Vertical timeline display (detail page)
 │   │   └── delete-book-button.tsx
 │   └── lib/
 │       ├── supabase/             # DB client + types

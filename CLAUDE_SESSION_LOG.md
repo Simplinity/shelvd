@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-08)
 
-All features up to and including **Contributor Name Handling** are **complete**. Currently working on **Provenance Tracking**. 9 lookup providers active. Collections: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page. Tags: colored, autocomplete, filter by tag, clickable on detail page. Enrich mode: ISBN lookup + field search, smart author comparison, auto-merge. Contributor names: "Last, First" standard, name parser, format-independent matching.
+All features up to and including **Provenance Tracking** are **complete**. 9 lookup providers active. Collections: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page. Tags: colored, autocomplete, filter by tag, clickable on detail page. Enrich mode: ISBN lookup + field search, smart author comparison, auto-merge. Contributor names: "Last, First" standard, name parser, format-independent matching. Provenance: full ownership chain tracking with evidence types, associations, transactions, sources, timeline display.
 
 ---
 
@@ -23,6 +23,7 @@ All features up to and including **Contributor Name Handling** are **complete**.
 - ✅ Custom Tags (colored tags, create/search/autocomplete, filter by tag, clickable on detail page, migration 014)
 - ✅ Currency & Valuation (29 currencies, ECB exchange rates, per-book gain/loss, value summary bar, value distribution chart)
 - ✅ Enrich Mode (ISBN lookup + field search fallback, comparison panel, merge selected fields into edit form)
+- ✅ Provenance Tracking (ownership chain with evidence types, associations, transactions, sources; timeline display on detail page; editor on add/edit forms; DB: provenance_entries + provenance_sources tables)
 
 ### Book Detail Page
 - ✅ Full book info display with all cataloging fields
@@ -68,7 +69,7 @@ All features up to and including **Contributor Name Handling** are **complete**.
 |---|---------|--------|
 | 1 | Currency & Valuation (7 steps) | ✅ Done |
 | 2 | Enrich mode (merge lookup fields on edit page) | ✅ Done |
-| 3 | Provenance tracking (ownership chain, auction history) | 🟡 In Progress |
+| 3 | Provenance tracking (ownership chain, auction history) | ✅ Done |
 | 4 | Image upload (covers, spine, damage) | 🔴 Todo |
 | 5 | Sharing & Public Catalog | 🔴 Todo |
 | 6 | Landing page + Knowledge base | 🔴 Todo |
@@ -231,7 +232,7 @@ Provenance is **chronological** — described as a timeline from earliest known 
 | 7c | Edit form: save logic | Provenance entries + sources saved on book save (insert/update/delete with cascade). Fixed LinkType nullability across 3 files, cleaned database.types.ts, regenerated types. | ✅ Done |
 | 7d | Detail page: provenance timeline | ProvenanceTimeline component with vertical line, evidence icons, association badges, transaction details, sources. Fetched in detail page. | ✅ Done |
 | 7e | Add form: provenance section | ProvenanceEditor integrated into add form with save logic (insert entries + sources on new book creation) | ✅ Done |
-| 7f | Polish & docs | Evidence type icons, empty states, documentation updates | 🔴 Todo |
+| 7f | Polish & docs | Updated project.md, CLAUDE_STARTUP_PROMPT.md, CLAUDE_SESSION_LOG.md. Provenance marked complete across all docs. | ✅ Done |
 
 ---
 
