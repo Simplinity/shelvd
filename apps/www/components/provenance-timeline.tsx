@@ -4,8 +4,13 @@
 const OWNER_TYPE_LABELS: Record<string, string> = {
   person: 'Person',
   institution: 'Institution',
+  library: 'Library',
+  monastery: 'Monastery',
   dealer: 'Dealer',
   auction_house: 'Auction House',
+  publisher: 'Publisher',
+  estate: 'Estate',
+  unknown: 'Unknown owner',
   self: 'You (current owner)',
 }
 

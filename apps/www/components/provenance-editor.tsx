@@ -45,8 +45,13 @@ export type ProvenanceEntry = {
 const OWNER_TYPES = [
   { value: 'person', label: 'Person' },
   { value: 'institution', label: 'Institution' },
+  { value: 'library', label: 'Library' },
+  { value: 'monastery', label: 'Monastery / Religious house' },
   { value: 'dealer', label: 'Dealer' },
   { value: 'auction_house', label: 'Auction House' },
+  { value: 'publisher', label: 'Publisher' },
+  { value: 'estate', label: 'Estate' },
+  { value: 'unknown', label: 'Unknown owner' },
   { value: 'self', label: 'You (current owner)' },
 ]
 
