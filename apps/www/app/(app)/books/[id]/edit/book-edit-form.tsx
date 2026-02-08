@@ -10,6 +10,7 @@ import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
 import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
+import EnrichPanel from '@/components/enrich-panel'
 import type { Tables } from '@/lib/supabase/database.types'
 
 type Book = Tables<'books'>
@@ -502,6 +503,21 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </Button>
         </div>
       </div>
+
+      {/* Enrich panel */}
+      <EnrichPanel
+        book={formData}
+        onApply={(updates) => {
+          setFormData(prev => {
+            const next = { ...prev } as any
+            for (const [key, value] of Object.entries(updates)) {
+              next[key] = value
+            }
+            return next
+          })
+          setIsDirty(true)
+        }}
+      />
 
       {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
 
