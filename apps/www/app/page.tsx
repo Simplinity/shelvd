@@ -78,7 +78,7 @@ export default function Home() {
       <section className="bg-foreground text-background py-12">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <NumberStat number="76" label="Historical book formats" sublabel="Because 'paperback' doesn't begin to cover it" />
-          <NumberStat number="9" label="Lookup providers" sublabel="From Library of Congress to BnF" />
+          <NumberStat number="9+" label="Lookup providers" sublabel="From Library of Congress to BnF" />
           <NumberStat number="69" label="MARC contributor roles" sublabel="Author is just the beginning" />
           <NumberStat number="45+" label="Cover types & bindings" sublabel="Half-leather, marbled boards, vellum…" />
         </div>
@@ -91,7 +91,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <p className="text-sm md:text-base font-medium uppercase tracking-wide">
             <Sparkles className="inline w-4 h-4 mr-2 mb-0.5" />
-            Early Access — First 1,000 users get lifetime free access
+            Early Access — First 100 users get lifetime free access
             <Sparkles className="inline w-4 h-4 ml-2 mb-0.5" />
           </p>
         </div>
@@ -111,13 +111,13 @@ export default function Home() {
                 by their covers. <span className="text-muted-foreground">Literally.</span>
               </h2>
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-                Whether you have 50 treasured volumes or 5,000, Shelvd gives you the tools to 
+                Whether you have fifty treasured volumes or five thousand, Shelvd gives you the tools to 
                 catalog, value, and understand your collection the way a professional bibliographer would.
               </p>
               <ul className="space-y-4">
                 <BulletPoint>Track condition, binding, format, paper type — not just title and author</BulletPoint>
                 <BulletPoint>Full provenance chains: who owned it, where it came from, evidence and sources</BulletPoint>
-                <BulletPoint>Real-time collection valuation with multi-currency support (29 currencies)</BulletPoint>
+                <BulletPoint>Real-time collection valuation with multi-currency support</BulletPoint>
                 <BulletPoint>Statistics dashboard: value trends, top authors, acquisition history</BulletPoint>
                 <BulletPoint>Multiple collections: Library, Wishlist, or create your own</BulletPoint>
               </ul>
@@ -129,12 +129,13 @@ export default function Home() {
               />
               <div className="border-t pt-6">
                 <p className="text-sm font-medium mb-3">Your books get the catalog entry they deserve:</p>
-                <div className="bg-background border p-4 font-mono text-xs leading-relaxed text-muted-foreground">
-                  <p>Tolkien, J.R.R.</p>
-                  <p className="ml-4">The Lord of the Rings / J.R.R. Tolkien. —</p>
-                  <p className="ml-4">London : George Allen & Unwin, 1954-1955. —</p>
-                  <p className="ml-4">3 v. ; 22 cm. — First edition, first impression.</p>
-                  <p className="ml-4 mt-1 text-primary">Provenance: From the library of W.H. Auden</p>
+                <div className="bg-background border p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="font-semibold text-foreground">Tolkien, J.R.R. (1892–1973)</p>
+                  <p className="ml-4 mt-1">The fellowship of the ring : being the first part of The Lord of the Rings / by J.R.R. Tolkien ; with a foreword by the author. — London : George Allen & Unwin, 1954. — 423 p. ; 22 cm.</p>
+                  <p className="ml-4 mt-2"><span className="text-foreground/70">Edition:</span> First edition, first impression. — <span className="text-foreground/70">Binding:</span> Original red cloth boards, gilt lettering to spine. — <span className="text-foreground/70">Dust jacket:</span> First state, with &ldquo;4 rings&rdquo; design by the author.</p>
+                  <p className="ml-4 mt-1"><span className="text-foreground/70">Condition:</span> Near fine; minor shelf wear to extremities. Dust jacket very good, price-clipped, with light toning to spine panel.</p>
+                  <p className="ml-4 mt-1"><span className="text-foreground/70">ISBN:</span> — &emsp; <span className="text-foreground/70">Language:</span> English &emsp; <span className="text-foreground/70">Format:</span> Crown 8vo</p>
+                  <p className="ml-4 mt-2 text-primary"><span className="font-semibold">Provenance:</span> From the library of W.H. Auden (bookplate to front pastedown). Acquired at Christie’s London, 12 June 2019, Lot 142.</p>
                 </div>
               </div>
             </div>
@@ -161,7 +162,7 @@ export default function Home() {
                   <span className="px-3 py-1.5 bg-muted text-xs font-medium">Excel</span>
                   <span className="px-3 py-1.5 bg-muted text-xs font-medium">CSV</span>
                   <span className="px-3 py-1.5 bg-muted text-xs font-medium">JSON</span>
-                  <span className="px-3 py-1.5 bg-muted text-xs font-medium">ISBD (4 languages)</span>
+                  <span className="px-3 py-1.5 bg-muted text-xs font-medium">ISBD (multilingual)</span>
                 </div>
               </div>
             </div>
@@ -174,14 +175,13 @@ export default function Home() {
               </h2>
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
                 Professional inventory management with the bibliographic depth your stock demands. 
-                Generate ISBD catalog entries in four languages. Track provenance for discerning buyers.
+                Generate ISBD catalog entries in multiple languages. Track provenance for discerning buyers.
                 Know your margins.
               </p>
               <ul className="space-y-4">
-                <BulletPoint>ISBD-compliant catalog entries in EN, NL, FR, DE — one click</BulletPoint>
                 <BulletPoint>Provenance tracking with auction records, dealer catalogs, certificates</BulletPoint>
                 <BulletPoint>Profit/loss tracking: acquisition cost vs. estimated value, per book and total</BulletPoint>
-                <BulletPoint>Bulk import from spreadsheets, enrich from 9 library databases</BulletPoint>
+                <BulletPoint>Bulk import from spreadsheets, enrich from multiple library databases</BulletPoint>
                 <BulletPoint>14-field advanced search across your entire inventory</BulletPoint>
               </ul>
             </div>
@@ -208,12 +208,12 @@ export default function Home() {
             <FeatureCard
               icon={<Database className="w-5 h-5" />}
               title="Bibliographic Depth"
-              description="76 book formats, 45+ cover types, 65 bindings, 3,887 BISAC subject codes. Describe every physical detail."
+              description="76 book formats, 45+ cover types, 65 bindings, BISAC subject codes. Describe every physical detail."
             />
             <FeatureCard
               icon={<PenTool className="w-5 h-5" />}
               title="ISBD Catalog Entries"
-              description="Professional catalog entries in 4 languages. Roman numerals, circa dates, bibliographic pagination. Your local auction house will be impressed."
+              description="Professional catalog entries in multiple languages. Roman numerals, circa dates, bibliographic pagination. Your local auction house will be impressed."
             />
             <FeatureCard
               icon={<Users className="w-5 h-5" />}
@@ -246,12 +246,12 @@ export default function Home() {
             <FeatureCard
               icon={<Landmark className="w-5 h-5" />}
               title="Provenance Tracking"
-              description="Full ownership chains: person, institution, dealer, auction house. Evidence types, association copies, dedication copies. The whole story."
+              description="Visual timeline of every owner: person, institution, dealer, auction house. Evidence types, association copies, dedication copies. The whole story, beautifully told."
             />
             <FeatureCard
               icon={<Scale className="w-5 h-5" />}
               title="Valuation & P/L"
-              description="Track acquisition price, estimated value, and profit/loss. 29 currencies with live ECB exchange rates. See your collection's worth at a glance."
+              description="Track acquisition price, estimated value, and profit/loss. Multi-currency with live ECB exchange rates. See your collection's worth at a glance."
             />
             <FeatureCard
               icon={<BarChart3 className="w-5 h-5" />}
@@ -264,8 +264,8 @@ export default function Home() {
           <FeatureCategory title="Data & Integration">
             <FeatureCard
               icon={<Globe className="w-5 h-5" />}
-              title="9 Lookup Providers"
-              description="Library of Congress, BnF, DNB, K10plus, SUDOC, LIBRIS, Open Library, Google Books, Standaard Boekhandel. One search, nine libraries."
+              title="Library Lookup"
+              description="Library of Congress, BnF, DNB, K10plus, SUDOC, LIBRIS, Open Library, Google Books — and many more coming in the weeks ahead. One search, multiple libraries."
             />
             <FeatureCard
               icon={<RefreshCw className="w-5 h-5" />}
@@ -300,7 +300,7 @@ export default function Home() {
           <div className="space-y-4">
             <ComparisonRow 
               problem="ISBN scanners are useless for pre-1970 books"
-              solution="Built around bibliographic cataloging, not barcodes. (We tried the barcode thing. It didn't end well.)"
+              solution="Built around bibliographic cataloging, not barcodes. Your 1623 Shakespeare Folio doesn't have a barcode. We checked."
             />
             <ComparisonRow 
               problem="Every app treats books as just 'title + author + cover'"
@@ -312,7 +312,7 @@ export default function Home() {
             />
             <ComparisonRow 
               problem="Provenance? What provenance?"
-              solution="Full ownership chains with evidence types, auction records, dealer catalogs, association copies. Because 'I got it at a flea market' is not a provenance chain."
+              solution="Visual timelines with evidence types, auction records, dealer catalogs, association copies. Because 'I got it at a flea market' is not a provenance chain."
             />
             <ComparisonRow 
               problem="Your collection data is trapped in proprietary apps"
@@ -402,10 +402,10 @@ export default function Home() {
             Unlike that "mint condition" book with the hidden foxing on page 47.
           </p>
           <p className="text-sm text-muted-foreground mb-12">
-            We're in early access. The first 1,000 users get lifetime free access — no credit card, no catch.
+            We’re in early access. The first 100 users get lifetime free access — no credit card, no catch.
           </p>
 
-          <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {/* Free tier */}
             <div className="border-2 border-primary bg-background p-8 text-left relative">
               <div className="absolute -top-3 left-6 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1">
@@ -413,7 +413,7 @@ export default function Home() {
               </div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Early Access</p>
               <p className="text-4xl font-bold mb-1">Free</p>
-              <p className="text-xs text-muted-foreground mb-6">Forever, for the first 1,000 users</p>
+              <p className="text-xs text-muted-foreground mb-6">Forever, for the first 100 users</p>
               <ul className="space-y-3 mb-8">
                 <PricingItem>Unlimited books</PricingItem>
                 <PricingItem>All features included</PricingItem>
@@ -427,16 +427,34 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Paid tier */}
+            {/* Collector Pro */}
             <div className="border bg-background p-8 text-left opacity-70">
               <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Collector Pro</p>
-              <p className="text-4xl font-bold mb-1">€7<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
-              <p className="text-xs text-muted-foreground mb-6">After early access period</p>
+              <p className="text-4xl font-bold mb-1">€9.99<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
+              <p className="text-xs text-muted-foreground mb-6">For serious collectors</p>
               <ul className="space-y-3 mb-8">
                 <PricingItem muted>Everything in Free</PricingItem>
-                <PricingItem muted>Image storage</PricingItem>
+                <PricingItem muted>1 GB image storage</PricingItem>
+                <PricingItem muted>High-quality photo uploads</PricingItem>
                 <PricingItem muted>Public catalog sharing</PricingItem>
                 <PricingItem muted>Priority support</PricingItem>
+              </ul>
+              <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled>
+                Coming Soon
+              </Button>
+            </div>
+
+            {/* Dealer */}
+            <div className="border bg-background p-8 text-left opacity-70">
+              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Dealer</p>
+              <p className="text-4xl font-bold mb-1">€49<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
+              <p className="text-xs text-muted-foreground mb-6">For professional dealers</p>
+              <ul className="space-y-3 mb-8">
+                <PricingItem muted>Everything in Pro</PricingItem>
+                <PricingItem muted>25 GB storage</PricingItem>
+                <PricingItem muted>Document storage (invoices, certificates)</PricingItem>
+                <PricingItem muted>Bulk operations</PricingItem>
+                <PricingItem muted>Dedicated support</PricingItem>
               </ul>
               <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled>
                 Coming Soon
@@ -485,7 +503,7 @@ export default function Home() {
               No books were harmed in the making of this software.
             </p>
             <p className="text-xs text-muted-foreground">
-              © 2026 Simplinity · Made in Belgium
+              © 2026 Simplinity - Bruno van Branden · Made in Belgium
             </p>
           </div>
         </div>
