@@ -681,12 +681,11 @@ export default async function BookDetailPage({ params }: PageProps) {
         )}
 
         {/* 13. Notes */}
-        {(bookData.summary || bookData.provenance || bookData.bibliography || bookData.illustrations || bookData.illustrations_description || bookData.signature_details || bookData.signatures_description || bookData.private_notes || bookData.internal_notes) && (
+        {(bookData.summary || bookData.bibliography || bookData.illustrations || bookData.illustrations_description || bookData.signature_details || bookData.signatures_description || bookData.private_notes || bookData.internal_notes) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
             <dl className="space-y-4">
               <Field label="Summary" value={bookData.summary} />
-              <Field label="Provenance" value={bookData.provenance} />
               <Field label="Dedication / Inscription" value={bookData.dedication_text} />
               <Field label="Colophon" value={bookData.colophon_text} />
               <Field label="Bibliography" value={bookData.bibliography} />

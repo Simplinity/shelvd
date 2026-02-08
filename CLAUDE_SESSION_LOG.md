@@ -232,7 +232,7 @@ Provenance is **chronological** — described as a timeline from earliest known 
 | 7c | Edit form: save logic | Provenance entries + sources saved on book save (insert/update/delete with cascade). Fixed LinkType nullability across 3 files, cleaned database.types.ts, regenerated types. | ✅ Done |
 | 7d | Detail page: provenance timeline | ProvenanceTimeline component with vertical line, evidence icons, association badges, transaction details, sources. Fetched in detail page. | ✅ Done |
 | 7e | Add form: provenance section | ProvenanceEditor integrated into add form with save logic (insert entries + sources on new book creation) | ✅ Done |
-| 7f | Polish & docs | Updated project.md, CLAUDE_STARTUP_PROMPT.md, CLAUDE_SESSION_LOG.md. Provenance marked complete across all docs. | ✅ Done |
+| 7f | Polish & docs | Removed old free-text provenance field from detail page, add form. Catalog entry generator uses structured entries (falls back to legacy text). Updated project.md, CLAUDE_STARTUP_PROMPT.md, CLAUDE_SESSION_LOG.md. | ✅ Done |
 
 ---
 

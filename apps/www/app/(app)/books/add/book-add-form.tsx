@@ -1282,10 +1282,6 @@ export default function BookAddForm({ referenceData }: Props) {
               <textarea value={formData.summary} onChange={e => handleChange('summary', e.target.value)} rows={3} className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
             </div>
             <div>
-              <label className={labelClass}>Provenance</label>
-              <textarea value={formData.provenance} onChange={e => handleChange('provenance', e.target.value)} rows={2} className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
-            </div>
-            <div>
               <label className={labelClass}>Dedication / Inscription</label>
               <textarea value={formData.dedication_text} onChange={e => handleChange('dedication_text', e.target.value)} rows={2} placeholder="Transcription of dedication or inscription" className="w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y" />
             </div>
