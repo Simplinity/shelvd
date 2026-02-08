@@ -642,6 +642,25 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="Sales Price" value={formatPrice(bookData.sales_price, bookData.price_currency)} />
               <Field label="Valuation Date" value={formatDate(bookData.valuation_date)} />
             </dl>
+            {bookData.acquired_price && bookData.estimated_value && (() => {
+              const paid = Number(bookData.acquired_price)
+              const est = Number(bookData.estimated_value)
+              const diff = est - paid
+              const pct = paid > 0 ? ((diff / paid) * 100).toFixed(0) : null
+              const isGain = diff >= 0
+              const cur = bookData.price_currency || bookData.acquired_currency || 'EUR'
+              return (
+                <div className={`mt-4 p-3 border text-sm ${isGain ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800'}`}>
+                  <span className="font-medium">
+                    Bought for {cur}&nbsp;{paid.toFixed(2)} → Estimated {cur}&nbsp;{est.toFixed(2)}
+                  </span>
+                  <span className="ml-2 font-bold">
+                    {isGain ? '+' : ''}{cur}&nbsp;{diff.toFixed(2)}
+                    {pct ? ` (${isGain ? '+' : ''}${pct}%)` : ''}
+                  </span>
+                </div>
+              )
+            })()}
           </section>
         )}
 

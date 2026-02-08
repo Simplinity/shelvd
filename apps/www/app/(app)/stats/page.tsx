@@ -174,6 +174,7 @@ export default function StatsPage() {
     topCoverTypes,
     topShelves,
     topAcquisitionYears,
+    valueDistribution,
     ratesDate,
   } = stats
 
@@ -262,6 +263,33 @@ export default function StatsPage() {
 
         </div>
       </div>
+
+      {/* Value Distribution */}
+      {valueDistribution && valueDistribution.some((r: any) => r.count > 0) && (() => {
+        const maxCount = Math.max(...valueDistribution.map((r: any) => r.count))
+        return (
+          <div className="mb-10">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Value Distribution</h2>
+            <div className="border border-gray-200 p-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">By Estimated Value</h3>
+              <div className="space-y-3">
+                {valueDistribution.map((range: any) => {
+                  const pct = maxCount > 0 ? (range.count / maxCount) * 100 : 0
+                  return (
+                    <div key={range.label} className="flex items-center gap-3">
+                      <span className="text-sm text-gray-600 w-24 text-right">{range.label}</span>
+                      <div className="flex-1 h-6 bg-gray-100 relative">
+                        <div className="h-full bg-gray-800 transition-all" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700 w-12 text-right">{range.count}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Tier 2: Status & Condition */}
       <div className="mb-10">

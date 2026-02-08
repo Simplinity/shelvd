@@ -256,6 +256,28 @@ export async function POST() {
     const topShelves = Object.entries(shelfCounts).sort((a, b) => b[1] - a[1]).slice(0, 10)
     const topAcquisitionYears = Object.entries(acquisitionYearCounts).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 10)
 
+    // Value distribution
+    const valueRanges = [
+      { label: '€0–50', min: 0, max: 50 },
+      { label: '€50–200', min: 50, max: 200 },
+      { label: '€200–500', min: 200, max: 500 },
+      { label: '€500–1k', min: 500, max: 1000 },
+      { label: '€1k–5k', min: 1000, max: 5000 },
+      { label: '€5k+', min: 5000, max: Infinity },
+    ]
+    const valueDistribution = valueRanges.map(r => ({ label: r.label, count: 0 }))
+    allBooks.forEach(book => {
+      if (book.estimated_value) {
+        const val = convert(Number(book.estimated_value), book.price_currency)
+        for (let i = 0; i < valueRanges.length; i++) {
+          if (val >= valueRanges[i].min && val < valueRanges[i].max) {
+            valueDistribution[i].count++
+            break
+          }
+        }
+      }
+    })
+
     // Derived values
     const profitLoss = totalEstimatedValue - totalAcquiredPrice
     const avgValuePerBook = booksWithValue > 0 ? totalEstimatedValue / booksWithValue : 0
@@ -297,6 +319,7 @@ export async function POST() {
       topCoverTypes,
       topShelves,
       topAcquisitionYears,
+      valueDistribution,
       displayCurrency,
       ratesDate,
     }

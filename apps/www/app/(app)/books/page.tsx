@@ -189,6 +189,10 @@ export default function BooksPage() {
   const tagId = searchParams.get('tag') || ''
   const [tagName, setTagName] = useState<string | null>(null)
 
+  // Value summary
+  type ValueSummary = { totalAcquired: number; totalEstimated: number; bookCount: number; currency: string }
+  const [valueSummary, setValueSummary] = useState<ValueSummary | null>(null)
+
   // Get global search query from URL
   const globalSearchQuery = searchParams.get('q') || ''
 
@@ -1111,12 +1115,83 @@ export default function BooksPage() {
     }
   }, [books, loading, hasGlobalSearch, hasAdvancedFilters])
 
+  // Fetch value summary for current view (collection/tag/all)
+  const fetchValueSummary = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Get user display currency
+      const { data: profile } = await supabase.from('user_profiles').select('default_currency').eq('id', user.id).single()
+      const displayCur = profile?.default_currency || 'EUR'
+
+      // Determine book IDs to aggregate
+      let bookIds: string[] | null = null // null = all books
+      const colId = searchParams.get('collection') || ''
+      const tId = searchParams.get('tag') || ''
+
+      if (colId && tId) {
+        const colIds = await getBookIdsForCollection(colId)
+        const tagIds = await getBookIdsForTag(tId)
+        const tagSet = new Set(tagIds)
+        bookIds = colIds.filter(id => tagSet.has(id))
+      } else if (colId) {
+        bookIds = await getBookIdsForCollection(colId)
+      } else if (tId) {
+        bookIds = await getBookIdsForTag(tId)
+      }
+
+      // Fetch price columns only
+      let allPrices: any[] = []
+      if (bookIds !== null) {
+        // Batched fetch for filtered set
+        for (let i = 0; i < bookIds.length; i += 500) {
+          const batch = bookIds.slice(i, i + 500)
+          const { data } = await supabase
+            .from('books')
+            .select('acquired_price, acquired_currency, estimated_value, price_currency')
+            .eq('user_id', user.id)
+            .in('id', batch)
+          if (data) allPrices.push(...data)
+        }
+      } else {
+        // All books — paginated
+        let offset = 0
+        while (true) {
+          const { data } = await supabase
+            .from('books')
+            .select('acquired_price, acquired_currency, estimated_value, price_currency')
+            .eq('user_id', user.id)
+            .range(offset, offset + 999)
+          if (!data || data.length === 0) break
+          allPrices.push(...data)
+          if (data.length < 1000) break
+          offset += 1000
+        }
+      }
+
+      let totalAcquired = 0
+      let totalEstimated = 0
+      let count = 0
+      for (const b of allPrices) {
+        if (b.acquired_price) totalAcquired += Number(b.acquired_price)
+        if (b.estimated_value) totalEstimated += Number(b.estimated_value)
+        if (b.acquired_price || b.estimated_value) count++
+      }
+
+      setValueSummary({ totalAcquired, totalEstimated, bookCount: count, currency: displayCur })
+    } catch {
+      // Silently fail — summary is non-critical
+    }
+  }
+
   useEffect(() => {
     setPage(0)
     if (!hasGlobalSearch || hasAdvancedFilters) {
       fetchCount()
     }
     fetchBooks(0)
+    fetchValueSummary()
   }, [searchParams.toString()])
 
   const loadMore = () => {
@@ -1712,6 +1787,27 @@ export default function BooksPage() {
           </div>
         </div>
       )}
+
+      {/* Value summary bar */}
+      {valueSummary && valueSummary.bookCount > 0 && !loading && (() => {
+        const { totalAcquired, totalEstimated, bookCount, currency } = valueSummary
+        const diff = totalEstimated - totalAcquired
+        const pct = totalAcquired > 0 ? ((diff / totalAcquired) * 100).toFixed(1) : null
+        const isGain = diff >= 0
+        const fmt = (n: number) => new Intl.NumberFormat('nl-BE', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n)
+        return (
+          <div className="mb-6 flex items-center gap-6 text-sm text-muted-foreground">
+            {totalAcquired > 0 && <span>Cost: <span className="font-medium text-foreground">{fmt(totalAcquired)}</span></span>}
+            {totalEstimated > 0 && <span>Value: <span className="font-medium text-foreground">{fmt(totalEstimated)}</span></span>}
+            {totalAcquired > 0 && totalEstimated > 0 && (
+              <span className={isGain ? 'text-green-700' : 'text-red-600'}>
+                {isGain ? '+' : ''}{fmt(diff)}
+                {pct ? ` (${isGain ? '+' : ''}${pct}%)` : ''}
+              </span>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Loading state */}
       {loading && (
