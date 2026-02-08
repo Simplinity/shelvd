@@ -91,6 +91,7 @@ const columns: { header: string; key: string; width: number }[] = [
   
   // Notes
   { header: 'Summary', key: 'summary', width: 55 },
+  { header: 'Provenance', key: 'provenance', width: 45 },
   { header: 'Bibliography', key: 'bibliography', width: 45 },
   { header: 'Illustrations Description', key: 'illustrations_description', width: 45 },
   { header: 'Signatures Description', key: 'signatures_description', width: 45 },
@@ -104,6 +105,7 @@ const columns: { header: string; key: string; width: number }[] = [
 function transformBookData(
   book: any, 
   contributorsByBook: Record<string, string[]>,
+  provenanceByBook: Record<string, string>,
   languageMap: Map<string, string>,
   bindingMap: Map<string, string>,
   formatMap: Map<string, string>,
@@ -175,6 +177,7 @@ function transformBookData(
     price_currency: book.price_currency,
     valuation_date: book.valuation_date,
     summary: book.summary,
+    provenance: provenanceByBook[book.id] || '',
     bibliography: book.bibliography,
     illustrations_description: book.illustrations_description,
     signatures_description: book.signatures_description,
@@ -406,10 +409,44 @@ export async function GET(request: NextRequest) {
     contributorsByBook[bc.book_id].push(`${name} (${role})`)
   })
 
+  // Fetch provenance entries for all books
+  const bookIds = (books || []).map((b: any) => b.id)
+  const provenanceByBook: Record<string, string> = {}
+  if (bookIds.length > 0) {
+    let allProvEntries: any[] = []
+    let provOffset = 0
+    while (true) {
+      const { data: provPage } = await supabase
+        .from('provenance_entries')
+        .select('book_id, owner_name, owner_type, date_from, date_to, notes, position')
+        .in('book_id', bookIds)
+        .order('position')
+        .range(provOffset, provOffset + 999)
+      if (!provPage || provPage.length === 0) break
+      allProvEntries = [...allProvEntries, ...provPage]
+      if (provPage.length < 1000) break
+      provOffset += 1000
+    }
+    for (const entry of allProvEntries) {
+      const parts: string[] = []
+      parts.push(entry.owner_name)
+      const dates = [entry.date_from, entry.date_to].filter(Boolean)
+      if (dates.length > 0) parts.push(`(${dates.join('\u2013')})`)
+      if (entry.notes) parts.push(`- ${entry.notes}`)
+      const text = parts.join(' ')
+      if (!provenanceByBook[entry.book_id]) {
+        provenanceByBook[entry.book_id] = text
+      } else {
+        provenanceByBook[entry.book_id] += '; ' + text
+      }
+    }
+  }
+
   // Transform all books
   const rows = books?.map(book => transformBookData(
     book, 
     contributorsByBook,
+    provenanceByBook,
     languageMap,
     bindingMap,
     formatMap,

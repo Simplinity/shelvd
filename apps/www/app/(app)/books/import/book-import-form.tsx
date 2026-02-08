@@ -110,6 +110,7 @@ const columnMapping: Record<string, string> = {
   'Sales Price': 'sales_price',
   'Price Currency': 'price_currency',
   'Summary': 'summary',
+  'Provenance': 'provenance',
   'Bibliography': 'bibliography',
   'Illustrations Description': 'illustrations_description',
   'Signatures Description': 'signatures_description',
@@ -495,6 +496,17 @@ export default function BookImportForm({ referenceData, userId }: Props) {
               role_id: role.id
             })
           }
+        }
+
+        // Handle provenance text → structured entry
+        if (book.data.provenance?.trim()) {
+          await supabase.from('provenance_entries').insert({
+            book_id: newBook.id,
+            position: 1,
+            owner_name: 'Imported provenance',
+            owner_type: 'unknown',
+            notes: book.data.provenance.trim(),
+          })
         }
 
         success++
