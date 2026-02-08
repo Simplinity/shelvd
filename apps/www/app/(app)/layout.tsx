@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings, Shield } from 'lucide-react'
+import { APP_VERSION } from '@/lib/changelog'
 import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
 import { getCollectionsWithCounts } from '@/lib/actions/collections'
@@ -62,6 +63,7 @@ export default async function AppLayout({
                 <BookOpen className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
               </div>
               <span className="text-lg font-bold tracking-tight uppercase">Shelvd</span>
+              <span className="text-[9px] text-muted-foreground font-mono ml-1 mt-1">v{APP_VERSION}</span>
             </Link>
 
             {/* Navigation - alle opties */}
