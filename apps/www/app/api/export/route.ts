@@ -74,12 +74,6 @@ const columns: { header: string; key: string; width: number }[] = [
   { header: 'Shelf', key: 'shelf', width: 14 },
   { header: 'Section', key: 'shelf_section', width: 14 },
   
-  // Acquisition
-  { header: 'Acquired From', key: 'acquired_from', width: 25 },
-  { header: 'Acquired Date', key: 'acquired_date', width: 14 },
-  { header: 'Acquired Price', key: 'acquired_price', width: 14 },
-  { header: 'Acquired Currency', key: 'acquired_currency', width: 14 },
-  { header: 'Acquisition Notes', key: 'acquired_notes', width: 40 },
   
   // Valuation
   { header: 'Lowest Price', key: 'lowest_price', width: 16 },
@@ -165,11 +159,6 @@ function transformBookData(
     location: locationMap.get(book.location_id) || '',
     shelf: book.shelf,
     shelf_section: book.shelf_section,
-    acquired_from: book.acquired_from,
-    acquired_date: book.acquired_date,
-    acquired_price: book.acquired_price,
-    acquired_currency: book.acquired_currency,
-    acquired_notes: book.acquired_notes,
     lowest_price: book.lowest_price,
     highest_price: book.highest_price,
     estimated_value: book.estimated_value,

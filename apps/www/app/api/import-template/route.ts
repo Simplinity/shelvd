@@ -70,12 +70,6 @@ const columns: { header: string; width: number; example: string }[] = [
   { header: 'Shelf', width: 14, example: 'A3 or Top shelf' },
   { header: 'Section', width: 14, example: 'Fiction-E' },
   
-  // Acquisition
-  { header: 'Acquired From', width: 25, example: 'Antiquariaat De Roo, Ghent' },
-  { header: 'Acquired Date', width: 14, example: '2024-03-15' },
-  { header: 'Acquired Price', width: 14, example: '45.00' },
-  { header: 'Acquired Currency', width: 14, example: 'EUR' },
-  { header: 'Acquisition Notes', width: 40, example: "Bought at book fair; includes seller's invoice #1234" },
   
   // Valuation
   { header: 'Lowest Price', width: 16, example: '30.00 (market low)' },
