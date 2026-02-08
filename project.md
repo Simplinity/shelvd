@@ -232,6 +232,14 @@ status, action_needed, internal_notes
 - Collection value summary bar on books list: total acquired / estimated / unrealized gain
 - Value distribution histogram on stats dashboard by price range
 
+### Enrich Mode
+- "Enrich" button on book edit page — searches providers by ISBN, shows comparison panel
+- Field-by-field comparison: NEW (green, pre-checked) / DIFFERENT (amber, unchecked) / same (hidden)
+- 19 enrichable fields (title, subtitle, publisher, year, identifiers, description, etc.)
+- No-ISBN fallback: mini search form with title/author pre-filled, provider picker
+- "Search other providers" link to try different sources
+- Apply merges selected fields into form, user reviews and saves normally
+
 ### Book Lookup (9 providers)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
@@ -249,7 +257,7 @@ status, action_needed, internal_notes
 | # | Feature | Status |
 |---|---------|--------|
 | — | Currency & Valuation (7 steps) | ✅ Done |
-| — | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
+| — | Enrich mode (merge lookup fields on edit page) | ✅ Done |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Sharing & Public Catalog | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
@@ -307,6 +315,7 @@ shelvd/
 │   │   ├── collection-nav.tsx    # Nav dropdown for collections
 │   │   ├── move-to-library-button.tsx # One-click Wishlist → Library
 │   │   ├── tag-input.tsx         # Tag autocomplete/create input
+│   │   ├── enrich-panel.tsx      # ISBN/field search enrichment panel
 │   │   └── delete-book-button.tsx
 │   └── lib/
 │       ├── supabase/             # DB client + types

@@ -22,6 +22,7 @@ All features up to and including **Custom Tags** are **complete**. 9 lookup prov
 - ✅ Multiple Collections (Library + Wishlist default, nav dropdown, filtering, bulk add/remove, settings page, migrations 011–012)
 - ✅ Custom Tags (colored tags, create/search/autocomplete, filter by tag, clickable on detail page, migration 014)
 - ✅ Currency & Valuation (29 currencies, ECB exchange rates, per-book gain/loss, value summary bar, value distribution chart)
+- ✅ Enrich Mode (ISBN lookup + field search fallback, comparison panel, merge selected fields into edit form)
 
 ### Book Detail Page
 - ✅ Full book info display with all cataloging fields
@@ -66,7 +67,7 @@ All features up to and including **Custom Tags** are **complete**. 9 lookup prov
 | # | Feature | Status |
 |---|---------|--------|
 | 1 | Currency & Valuation (7 steps) | ✅ Done |
-| 2 | Enrich mode (merge lookup fields on edit page) | 🔴 Todo |
+| 2 | Enrich mode (merge lookup fields on edit page) | ✅ Done |
 | 3 | Image upload (covers, spine, damage) | 🔴 Todo |
 | 4 | Sharing & Public Catalog | 🔴 Todo |
 | 5 | Landing page + Knowledge base | 🔴 Todo |
@@ -140,8 +141,11 @@ Enrich mode lets users fill missing fields on existing books by searching ISBN l
 - Refactored into state machine: idle → search → results → compare
 - `authorName` prop passed from edit form (first Author contributor, or first any contributor)
 
-### Subtask 5: Multi-provider tabs
-🔴 Todo — try additional providers after first result
+### Subtask 5: Multi-provider search (`80ba28c`)
+- "Search other providers" link shown after comparison or empty results
+- Switches to field search form with title/author pre-filled, provider picker
+- User can try any field-search-capable provider
+- Works for both ISBN-based and search-based enrichment flows
 
 ---
 
@@ -256,6 +260,7 @@ Enrich mode lets users fill missing fields on existing books by searching ISBN l
 | CollectionNav | `components/collection-nav.tsx` | Nav dropdown for switching collections |
 | MoveToLibraryButton | `components/move-to-library-button.tsx` | One-click Wishlist → Library |
 | TagInput | `components/tag-input.tsx` | Tag autocomplete/create input for add/edit forms |
+| EnrichPanel | `components/enrich-panel.tsx` | ISBN/field search enrichment with comparison panel |
 | DeleteBookButton | `components/delete-book-button.tsx` | Book deletion with confirmation |
 
 ---
