@@ -199,6 +199,12 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
   {
+    title: 'User Management',
+    description: 'Invite codes, registration approval, user detail views. Because letting everyone in without checking is how you end up with a book fair in your living room.',
+    category: 'admin',
+    status: 'planned',
+  },
+  {
     title: 'Data Health Checks',
     description: 'Orphaned records, missing required fields, import error log. Hygiene for your database, because not all messes are on the shelves.',
     category: 'admin',
