@@ -209,7 +209,7 @@ export default function StatsPage() {
           
           <div className="bg-white border border-gray-200 p-6">
             <p className="text-sm font-medium text-gray-500">Total Books</p>
-            <p className="text-3xl font-bold mt-1">{(totalBooks || 0).toLocaleString()}</p>
+            <p className="text-3xl font-bold mt-1">{formatInteger(totalBooks || 0, userLocale)}</p>
           </div>
 
           <div className="bg-white border border-gray-200 p-6">
@@ -302,7 +302,7 @@ export default function StatsPage() {
                   <div key={status}>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">{statusLabels[status] || status}</span>
-                      <span className="font-medium">{(count as number).toLocaleString()} <span className="text-gray-400">({percentage}%)</span></span>
+                      <span className="font-medium">{formatInteger(count as number, userLocale)} <span className="text-gray-400">({percentage}%)</span></span>
                     </div>
                     <div className="w-full bg-gray-100 h-2">
                       <div className={`h-2 ${statusColors[status] || 'bg-gray-400'}`} style={{ width: `${percentage}%` }} />
@@ -322,7 +322,7 @@ export default function StatsPage() {
                   <div key={condition}>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">{condition}</span>
-                      <span className="font-medium">{(count as number).toLocaleString()} <span className="text-gray-400">({percentage}%)</span></span>
+                      <span className="font-medium">{formatInteger(count as number, userLocale)} <span className="text-gray-400">({percentage}%)</span></span>
                     </div>
                     <div className="w-full bg-gray-100 h-2">
                       <div className="h-2 bg-gray-500" style={{ width: `${percentage}%` }} />
@@ -419,7 +419,7 @@ export default function StatsPage() {
                   <div key={lang}>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">{lang}</span>
-                      <span className="font-medium">{count.toLocaleString()} <span className="text-gray-400">({percentage}%)</span></span>
+                      <span className="font-medium">{formatInteger(count, userLocale)} <span className="text-gray-400">({percentage}%)</span></span>
                     </div>
                     <div className="w-full bg-gray-100 h-2">
                       <div className="h-2 bg-gray-600" style={{ width: `${percentage}%` }} />
@@ -463,7 +463,7 @@ export default function StatsPage() {
                   <div key={coverType}>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">{coverType}</span>
-                      <span className="font-medium">{count.toLocaleString()} <span className="text-gray-400">({percentage}%)</span></span>
+                      <span className="font-medium">{formatInteger(count, userLocale)} <span className="text-gray-400">({percentage}%)</span></span>
                     </div>
                     <div className="w-full bg-gray-100 h-2">
                       <div className="h-2 bg-gray-600" style={{ width: `${percentage}%` }} />
