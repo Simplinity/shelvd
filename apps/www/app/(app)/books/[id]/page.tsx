@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
 import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
+import ProvenanceTimeline from '@/components/provenance-timeline'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -104,7 +105,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     .order('sort_order')
 
   // Fetch book's collection memberships, ALL user collections, and tags
-  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }] = await Promise.all([
+  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }, { data: provenanceData }] = await Promise.all([
     supabase
       .from('book_collections')
       .select('collection_id')
@@ -116,7 +117,17 @@ export default async function BookDetailPage({ params }: PageProps) {
     supabase
       .from('book_tags')
       .select('tag_id, tags ( id, name, color )')
+      .eq('book_id', id),
+    supabase
+      .from('provenance_entries')
+      .select(`
+        id, position, owner_name, owner_type, date_from, date_to,
+        evidence_type, evidence_description, transaction_type, transaction_detail,
+        price_paid, price_currency, association_type, association_note, notes,
+        provenance_sources ( id, source_type, title, url, reference, notes )
+      `)
       .eq('book_id', id)
+      .order('position')
   ])
 
   const bookCollectionIds = new Set((bookCollections || []).map((bc: any) => bc.collection_id))
@@ -664,7 +675,12 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 12. Notes */}
+        {/* 12. Provenance */}
+        {provenanceData && provenanceData.length > 0 && (
+          <ProvenanceTimeline entries={provenanceData as any} />
+        )}
+
+        {/* 13. Notes */}
         {(bookData.summary || bookData.provenance || bookData.bibliography || bookData.illustrations || bookData.illustrations_description || bookData.signature_details || bookData.signatures_description || bookData.private_notes || bookData.internal_notes) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>

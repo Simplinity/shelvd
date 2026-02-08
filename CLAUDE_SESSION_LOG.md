@@ -229,7 +229,7 @@ Provenance is **chronological** — described as a timeline from earliest known 
 | 7a | DB migration | Create `provenance_entries` and `provenance_sources` tables with RLS policies. Also repaired Supabase migration history (001-015 marked applied). | ✅ Done |
 | 7b | Edit form: provenance section | Repeatable card UI to add/edit/reorder provenance entries. Collapsible cards, all fields. (Already implemented in prior session) | ✅ Done |
 | 7c | Edit form: save logic | Provenance entries + sources saved on book save (insert/update/delete with cascade). Fixed LinkType nullability across 3 files, cleaned database.types.ts, regenerated types. | ✅ Done |
-| 7d | Detail page: provenance timeline | Vertical timeline component showing ownership chain with icons, dates, transaction details | 🔴 Todo |
+| 7d | Detail page: provenance timeline | ProvenanceTimeline component with vertical line, evidence icons, association badges, transaction details, sources. Fetched in detail page. | ✅ Done |
 | 7e | Add form: provenance section | Same UI as edit form, create provenance entries on new book add | 🔴 Todo |
 | 7f | Polish & docs | Evidence type icons, empty states, documentation updates | 🔴 Todo |
 
