@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon } from 'lucide-react'
+import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -23,7 +24,7 @@ type BisacCode = { code: string; subject: string }
 type Contributor = { name: string; role: string }
 type ContributorRole = { id: string; name: string }
 type ExistingContributor = { id: string; name: string }
-type LinkType = { id: string; label: string; domain: string | null; category: string; sort_order: number; is_system: boolean }
+type LinkType = { id: string; label: string; domain: string | null; category: string; sort_order: number | null; is_system: boolean | null }
 type ExternalLinkData = { id?: string; linkTypeId: string; url: string; label: string }
 type BookContributor = {
   id: string
@@ -53,6 +54,7 @@ type ReferenceData = {
   printingPlaceList: string[]
   linkTypes: LinkType[]
   bookExternalLinks: ExternalLinkData[]
+  provenanceEntries: Omit<ProvenanceEntry, 'tempId' | 'isNew' | 'isDeleted'>[]
 }
 
 type Props = {
@@ -218,6 +220,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
   // External links state
   const [externalLinks, setExternalLinks] = useState<ExternalLinkData[]>(referenceData.bookExternalLinks || [])
+
+  // Provenance state
+  const [provenanceEntries, setProvenanceEntries] = useState<ProvenanceEntry[]>(
+    (referenceData.provenanceEntries || []).map((pe, i) => ({
+      ...pe,
+      tempId: `prov_existing_${i}`,
+      isNew: false,
+      isDeleted: false,
+      sources: (pe.sources || []).map((s: any) => ({ ...s, isNew: false, isDeleted: false })),
+    }))
+  )
 
   // Enrich hook
   const enrichAuthorName = contributors.find(c => c.roleName?.toLowerCase() === 'author' && !c.isDeleted)?.contributorName || contributors.find(c => !c.isDeleted)?.contributorName || ''
@@ -503,6 +516,85 @@ export default function BookEditForm({ book, referenceData }: Props) {
             tag_id: t.id,
           }))
         )
+      }
+
+      // Save provenance entries
+      // 1. Delete removed entries (cascade deletes sources)
+      const deletedEntries = provenanceEntries.filter(e => e.isDeleted && !e.isNew && e.dbId)
+      for (const de of deletedEntries) {
+        await supabase.from('provenance_entries').delete().eq('id', de.dbId!)
+      }
+
+      // 2. Upsert active entries
+      const activeProvEntries = provenanceEntries.filter(e => !e.isDeleted)
+      for (const entry of activeProvEntries) {
+        const row = {
+          book_id: book.id,
+          position: entry.position,
+          owner_name: entry.ownerName,
+          owner_type: entry.ownerType,
+          date_from: entry.dateFrom || null,
+          date_to: entry.dateTo || null,
+          evidence_type: entry.evidenceType,
+          evidence_description: entry.evidenceDescription || null,
+          transaction_type: entry.transactionType,
+          transaction_detail: entry.transactionDetail || null,
+          price_paid: entry.pricePaid,
+          price_currency: entry.priceCurrency || null,
+          association_type: entry.associationType,
+          association_note: entry.associationNote || null,
+          notes: entry.notes || null,
+        }
+
+        let entryId: string
+
+        if (entry.isNew) {
+          const { data: inserted, error: insertErr } = await supabase
+            .from('provenance_entries')
+            .insert(row)
+            .select('id')
+            .single()
+          if (insertErr || !inserted) throw insertErr || new Error('Failed to insert provenance entry')
+          entryId = inserted.id
+        } else {
+          entryId = entry.dbId!
+          const { error: updateErr } = await supabase
+            .from('provenance_entries')
+            .update(row)
+            .eq('id', entryId)
+          if (updateErr) throw updateErr
+        }
+
+        // 3. Handle sources for this entry
+        const deletedSources = entry.sources.filter(s => s.isDeleted && !s.isNew)
+        for (const ds of deletedSources) {
+          await supabase.from('provenance_sources').delete().eq('id', ds.id)
+        }
+
+        const activeSources = entry.sources.filter(s => !s.isDeleted)
+        for (const src of activeSources) {
+          const srcRow = {
+            provenance_entry_id: entryId,
+            source_type: src.sourceType,
+            title: src.title || null,
+            url: src.url || null,
+            reference: src.reference || null,
+            notes: src.notes || null,
+          }
+
+          if (src.isNew) {
+            const { error: srcInsertErr } = await supabase
+              .from('provenance_sources')
+              .insert(srcRow)
+            if (srcInsertErr) throw srcInsertErr
+          } else {
+            const { error: srcUpdateErr } = await supabase
+              .from('provenance_sources')
+              .update(srcRow)
+              .eq('id', src.id)
+            if (srcUpdateErr) throw srcUpdateErr
+          }
+        }
       }
 
       setIsDirty(false)
@@ -981,17 +1073,25 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 13. Notes */}
+        {/* 13. Provenance */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Provenance</h2>
+          <ProvenanceEditor
+            entries={provenanceEntries}
+            onChange={(updated: ProvenanceEntry[]) => {
+              setProvenanceEntries(updated)
+              setIsDirty(true)
+            }}
+          />
+        </section>
+
+        {/* 14. Notes */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
           <div className="space-y-4">
             <div>
               <label className={labelClass}>Summary</label>
               <textarea value={formData.summary || ''} onChange={e => handleChange('summary', e.target.value)} rows={3} className={textareaClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Provenance</label>
-              <textarea value={formData.provenance || ''} onChange={e => handleChange('provenance', e.target.value)} rows={2} className={textareaClass} />
             </div>
             <div>
               <label className={labelClass}>Dedication / Inscription</label>
@@ -1020,7 +1120,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 14. External Links */}
+        {/* 15. External Links */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">External Links</h2>
           
@@ -1096,7 +1196,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </button>
         </section>
 
-        {/* 15. Catalog Entry */}
+        {/* 16. Catalog Entry */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
           <div className="mb-4">
@@ -1148,7 +1248,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>
         </section>
 
-        {/* 16. Collections */}
+        {/* 17. Collections */}
         {availableCollections.length > 0 && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Collections</h2>

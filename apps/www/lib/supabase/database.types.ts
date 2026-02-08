@@ -65,6 +65,39 @@ export type Database = {
         }
         Relationships: []
       }
+      book_collections: {
+        Row: {
+          added_at: string
+          book_id: string
+          collection_id: string
+        }
+        Insert: {
+          added_at?: string
+          book_id: string
+          collection_id: string
+        }
+        Update: {
+          added_at?: string
+          book_id?: string
+          collection_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_collections_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_collections_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       book_contributors: {
         Row: {
           book_id: string
@@ -117,68 +150,53 @@ export type Database = {
           },
         ]
       }
-      book_collections: {
+      book_external_links: {
         Row: {
           book_id: string
-          collection_id: string
-          added_at: string
+          created_at: string | null
+          id: string
+          label: string | null
+          link_type_id: string | null
+          notes: string | null
+          sort_order: number | null
+          url: string
+          user_id: string
         }
         Insert: {
           book_id: string
-          collection_id: string
-          added_at?: string
+          created_at?: string | null
+          id?: string
+          label?: string | null
+          link_type_id?: string | null
+          notes?: string | null
+          sort_order?: number | null
+          url: string
+          user_id: string
         }
         Update: {
           book_id?: string
-          collection_id?: string
-          added_at?: string
+          created_at?: string | null
+          id?: string
+          label?: string | null
+          link_type_id?: string | null
+          notes?: string | null
+          sort_order?: number | null
+          url?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "book_collections_book_id_fkey"
+            foreignKeyName: "book_external_links_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "book_collections_collection_id_fkey"
-            columns: ["collection_id"]
+            foreignKeyName: "book_external_links_link_type_id_fkey"
+            columns: ["link_type_id"]
             isOneToOne: false
-            referencedRelation: "collections"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      book_tags: {
-        Row: {
-          book_id: string
-          tag_id: string
-          added_at: string
-        }
-        Insert: {
-          book_id: string
-          tag_id: string
-          added_at?: string
-        }
-        Update: {
-          book_id?: string
-          tag_id?: string
-          added_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "book_tags_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "book_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "tags"
+            referencedRelation: "external_link_types"
             referencedColumns: ["id"]
           },
         ]
@@ -318,6 +336,39 @@ export type Database = {
         }
         Relationships: []
       }
+      book_tags: {
+        Row: {
+          added_at: string
+          book_id: string
+          tag_id: string
+        }
+        Insert: {
+          added_at?: string
+          book_id: string
+          tag_id: string
+        }
+        Update: {
+          added_at?: string
+          book_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_tags_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           acquired_currency: string | null
@@ -376,10 +427,6 @@ export type Database = {
           paper_type: string | null
           place_printed: string | null
           price_currency: string | null
-          price_estimated: number | null
-          price_highest: number | null
-          price_lowest: number | null
-          price_sales: number | null
           printer: string | null
           printer_id: string | null
           printing_place: string | null
@@ -390,7 +437,6 @@ export type Database = {
           publication_year: string | null
           publisher_id: string | null
           publisher_name: string | null
-          purchase_currency: string | null
           purchase_source: string | null
           sales_price: number | null
           series: string | null
@@ -476,10 +522,6 @@ export type Database = {
           paper_type?: string | null
           place_printed?: string | null
           price_currency?: string | null
-          price_estimated?: number | null
-          price_highest?: number | null
-          price_lowest?: number | null
-          price_sales?: number | null
           printer?: string | null
           printer_id?: string | null
           printing_place?: string | null
@@ -490,7 +532,6 @@ export type Database = {
           publication_year?: string | null
           publisher_id?: string | null
           publisher_name?: string | null
-          purchase_currency?: string | null
           purchase_source?: string | null
           sales_price?: number | null
           series?: string | null
@@ -576,10 +617,6 @@ export type Database = {
           paper_type?: string | null
           place_printed?: string | null
           price_currency?: string | null
-          price_estimated?: number | null
-          price_highest?: number | null
-          price_lowest?: number | null
-          price_sales?: number | null
           printer?: string | null
           printer_id?: string | null
           printing_place?: string | null
@@ -590,7 +627,6 @@ export type Database = {
           publication_year?: string | null
           publisher_id?: string | null
           publisher_name?: string | null
-          purchase_currency?: string | null
           purchase_source?: string | null
           sales_price?: number | null
           series?: string | null
@@ -691,6 +727,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      collections: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_default: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       conditions: {
         Row: {
@@ -851,45 +926,6 @@ export type Database = {
         }
         Relationships: []
       }
-      collections: {
-        Row: {
-          id: string
-          user_id: string
-          name: string
-          description: string | null
-          icon: string | null
-          color: string | null
-          sort_order: number
-          is_default: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          name: string
-          description?: string | null
-          icon?: string | null
-          color?: string | null
-          sort_order?: number
-          is_default?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          description?: string | null
-          icon?: string | null
-          color?: string | null
-          sort_order?: number
-          is_default?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       dewey_classifications: {
         Row: {
           created_at: string | null
@@ -911,6 +947,78 @@ export type Database = {
           first_summary?: string
           second_summary?: string | null
           third_summary?: string | null
+        }
+        Relationships: []
+      }
+      external_link_types: {
+        Row: {
+          category: string
+          created_at: string | null
+          domain: string | null
+          id: string
+          is_system: boolean | null
+          label: string
+          slug: string
+          sort_order: number | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          domain?: string | null
+          id?: string
+          is_system?: boolean | null
+          label: string
+          slug: string
+          sort_order?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          domain?: string | null
+          id?: string
+          is_system?: boolean | null
+          label?: string
+          slug?: string
+          sort_order?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      isbn_providers: {
+        Row: {
+          base_url: string | null
+          code: string
+          country: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_enabled: boolean | null
+          name: string
+          provider_type: string
+        }
+        Insert: {
+          base_url?: string | null
+          code: string
+          country?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          name: string
+          provider_type: string
+        }
+        Update: {
+          base_url?: string | null
+          code?: string
+          country?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          name?: string
+          provider_type?: string
         }
         Relationships: []
       }
@@ -937,6 +1045,118 @@ export type Database = {
           name_native?: string | null
         }
         Relationships: []
+      }
+      provenance_entries: {
+        Row: {
+          association_note: string | null
+          association_type: string | null
+          book_id: string
+          created_at: string | null
+          date_from: string | null
+          date_to: string | null
+          evidence_description: string | null
+          evidence_type: string[] | null
+          id: string
+          notes: string | null
+          owner_name: string
+          owner_type: string
+          position: number
+          price_currency: string | null
+          price_paid: number | null
+          transaction_detail: string | null
+          transaction_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          association_note?: string | null
+          association_type?: string | null
+          book_id: string
+          created_at?: string | null
+          date_from?: string | null
+          date_to?: string | null
+          evidence_description?: string | null
+          evidence_type?: string[] | null
+          id?: string
+          notes?: string | null
+          owner_name: string
+          owner_type?: string
+          position?: number
+          price_currency?: string | null
+          price_paid?: number | null
+          transaction_detail?: string | null
+          transaction_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          association_note?: string | null
+          association_type?: string | null
+          book_id?: string
+          created_at?: string | null
+          date_from?: string | null
+          date_to?: string | null
+          evidence_description?: string | null
+          evidence_type?: string[] | null
+          id?: string
+          notes?: string | null
+          owner_name?: string
+          owner_type?: string
+          position?: number
+          price_currency?: string | null
+          price_paid?: number | null
+          transaction_detail?: string | null
+          transaction_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provenance_entries_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provenance_sources: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          provenance_entry_id: string
+          reference: string | null
+          source_type: string
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          provenance_entry_id: string
+          reference?: string | null
+          source_type?: string
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          provenance_entry_id?: string
+          reference?: string | null
+          source_type?: string
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provenance_sources_provenance_entry_id_fkey"
+            columns: ["provenance_entry_id"]
+            isOneToOne: false
+            referencedRelation: "provenance_entries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       publishers: {
         Row: {
@@ -974,86 +1194,49 @@ export type Database = {
         }
         Relationships: []
       }
-      external_link_types: {
+      tags: {
         Row: {
+          color: string | null
+          created_at: string
           id: string
-          slug: string
-          label: string
-          domain: string | null
-          category: string
-          sort_order: number
-          is_system: boolean
-          user_id: string | null
-          created_at: string | null
+          name: string
+          user_id: string
         }
         Insert: {
+          color?: string | null
+          created_at?: string
           id?: string
-          slug: string
-          label: string
-          domain?: string | null
-          category?: string
-          sort_order?: number
-          is_system?: boolean
-          user_id?: string | null
-          created_at?: string | null
+          name: string
+          user_id: string
         }
         Update: {
+          color?: string | null
+          created_at?: string
           id?: string
-          slug?: string
-          label?: string
-          domain?: string | null
-          category?: string
-          sort_order?: number
-          is_system?: boolean
-          user_id?: string | null
-          created_at?: string | null
+          name?: string
+          user_id?: string
         }
         Relationships: []
       }
-      book_external_links: {
+      user_active_link_types: {
         Row: {
-          id: string
-          book_id: string
-          user_id: string
-          link_type_id: string | null
-          label: string | null
-          url: string
-          notes: string | null
-          sort_order: number
           created_at: string | null
+          link_type_id: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          book_id: string
-          user_id: string
-          link_type_id?: string | null
-          label?: string | null
-          url: string
-          notes?: string | null
-          sort_order?: number
           created_at?: string | null
+          link_type_id: string
+          user_id: string
         }
         Update: {
-          id?: string
-          book_id?: string
-          user_id?: string
-          link_type_id?: string | null
-          label?: string | null
-          url?: string
-          notes?: string | null
-          sort_order?: number
           created_at?: string | null
+          link_type_id?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "book_external_links_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "book_external_links_link_type_id_fkey"
+            foreignKeyName: "user_active_link_types_link_type_id_fkey"
             columns: ["link_type_id"]
             isOneToOne: false
             referencedRelation: "external_link_types"
@@ -1061,35 +1244,37 @@ export type Database = {
           },
         ]
       }
-      user_active_link_types: {
+      user_isbn_providers: {
         Row: {
-          user_id: string
-          link_type_id: string
           created_at: string | null
+          id: string
+          is_active: boolean | null
+          priority: number | null
+          provider_id: string
+          user_id: string
         }
         Insert: {
-          user_id: string
-          link_type_id: string
           created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          provider_id: string
+          user_id: string
         }
         Update: {
-          user_id?: string
-          link_type_id?: string
           created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          provider_id?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_active_link_types_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "user_isbn_providers_provider_id_fkey"
+            columns: ["provider_id"]
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_active_link_types_link_type_id_fkey"
-            columns: ["link_type_id"]
-            isOneToOne: false
-            referencedRelation: "external_link_types"
+            referencedRelation: "isbn_providers"
             referencedColumns: ["id"]
           },
         ]
@@ -1115,30 +1300,6 @@ export type Database = {
           id?: string
           name?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      user_stats: {
-        Row: {
-          id: string
-          user_id: string
-          stats: Json
-          calculated_at: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          stats?: Json
-          calculated_at?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          stats?: Json
-          calculated_at?: string
-          created_at?: string
         }
         Relationships: []
       }
@@ -1223,27 +1384,27 @@ export type Database = {
         }
         Relationships: []
       }
-      tags: {
+      user_stats: {
         Row: {
-          id: string
-          user_id: string
-          name: string
-          color: string | null
+          calculated_at: string
           created_at: string
+          id: string
+          stats: Json
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id?: string
-          name: string
-          color?: string | null
+          calculated_at?: string
           created_at?: string
+          id?: string
+          stats?: Json
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          color?: string | null
+          calculated_at?: string
           created_at?: string
+          id?: string
+          stats?: Json
+          user_id?: string
         }
         Relationships: []
       }
@@ -1252,31 +1413,68 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      admin_delete_user: {
-        Args: { target_user_id: string }
-        Returns: boolean
+      admin_delete_user: { Args: { target_user_id: string }; Returns: boolean }
+      find_fuzzy_title_duplicates: {
+        Args: { similarity_threshold: number }
+        Returns: {
+          books: Json
+          similarity: number
+          title: string
+        }[]
+      }
+      find_isbn10_duplicates: {
+        Args: never
+        Returns: {
+          books: Json
+          isbn_10: string
+        }[]
+      }
+      find_isbn13_duplicates: {
+        Args: never
+        Returns: {
+          books: Json
+          isbn_13: string
+        }[]
+      }
+      find_title_duplicates: {
+        Args: never
+        Returns: {
+          books: Json
+          title: string
+        }[]
       }
       get_book_counts_for_admin: {
-        Args: Record<string, never>
+        Args: never
         Returns: {
-          user_id: string
           book_count: number
+          user_id: string
         }[]
       }
-      get_total_books_for_admin: {
-        Args: Record<string, never>
-        Returns: number
+      get_total_books_for_admin: { Args: never; Returns: number }
+      get_user_isbn_providers: {
+        Args: never
+        Returns: {
+          base_url: string
+          code: string
+          country: string
+          is_active: boolean
+          name: string
+          priority: number
+          provider_id: string
+          provider_type: string
+        }[]
       }
       get_users_for_admin: {
-        Args: Record<string, never>
+        Args: never
         Returns: {
-          id: string
-          email: string
-          email_confirmed_at: string | null
-          last_sign_in_at: string | null
           created_at: string
+          email: string
+          email_confirmed_at: string
+          id: string
+          last_sign_in_at: string
         }[]
       }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       book_status:

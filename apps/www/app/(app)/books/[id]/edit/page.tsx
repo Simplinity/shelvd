@@ -67,6 +67,7 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: allLinkTypes },
     { data: activeTypeRows },
     { data: bookExternalLinks },
+    { data: provenanceData },
   ] = await Promise.all([
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
@@ -100,6 +101,12 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('external_link_types').select('id, label, domain, category, sort_order, is_system').order('sort_order'),
     supabase.from('user_active_link_types').select('link_type_id'),
     supabase.from('book_external_links').select('id, link_type_id, label, url, sort_order').eq('book_id', id).order('sort_order'),
+    supabase.from('provenance_entries').select(`
+      id, position, owner_name, owner_type, date_from, date_to,
+      evidence_type, evidence_description, transaction_type, transaction_detail,
+      price_paid, price_currency, association_type, association_note, notes,
+      provenance_sources ( id, source_type, title, url, reference, notes )
+    `).eq('book_id', id).order('position'),
   ])
 
   // Get unique bindings (there are duplicates in the table)
@@ -183,6 +190,31 @@ export default async function BookEditPage({ params }: PageProps) {
       linkTypeId: l.link_type_id || '',
       url: l.url,
       label: l.label || '',
+    })),
+    provenanceEntries: (provenanceData || []).map((pe: any) => ({
+      dbId: pe.id,
+      position: pe.position,
+      ownerName: pe.owner_name || '',
+      ownerType: pe.owner_type || 'person',
+      dateFrom: pe.date_from || '',
+      dateTo: pe.date_to || '',
+      evidenceType: pe.evidence_type || [],
+      evidenceDescription: pe.evidence_description || '',
+      transactionType: pe.transaction_type || 'unknown',
+      transactionDetail: pe.transaction_detail || '',
+      pricePaid: pe.price_paid,
+      priceCurrency: pe.price_currency || '',
+      associationType: pe.association_type || 'none',
+      associationNote: pe.association_note || '',
+      notes: pe.notes || '',
+      sources: (pe.provenance_sources || []).map((s: any) => ({
+        id: s.id,
+        sourceType: s.source_type || 'url',
+        title: s.title || '',
+        url: s.url || '',
+        reference: s.reference || '',
+        notes: s.notes || '',
+      })),
     })),
   }
 

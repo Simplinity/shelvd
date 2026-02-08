@@ -19,7 +19,7 @@ type BookFormat = { id: string; type: string | null; name: string; abbreviation:
 type BisacCode = { code: string; subject: string }
 type ContributorRole = { id: string; name: string }
 type ExistingContributor = { id: string; name: string }
-type LinkType = { id: string; label: string; domain: string | null; category: string; sort_order: number; is_system: boolean }
+type LinkType = { id: string; label: string; domain: string | null; category: string; sort_order: number | null; is_system: boolean | null }
 
 type ReferenceData = {
   languages: Language[]

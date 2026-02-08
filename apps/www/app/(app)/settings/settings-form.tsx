@@ -19,8 +19,8 @@ interface LinkType {
   label: string
   domain: string | null
   category: string
-  sort_order: number
-  is_system: boolean
+  sort_order: number | null
+  is_system: boolean | null
   user_id: string | null
 }
 
