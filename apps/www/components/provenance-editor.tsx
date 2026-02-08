@@ -481,19 +481,19 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                       ))}
                     </select>
                   </div>
-                  {entry.associationType !== 'none' && (
-                    <div className="md:col-span-3">
-                      <label className={labelClass}>Association Note</label>
-                      <textarea
-                        value={entry.associationNote}
-                        onChange={e => updateEntry(entry.tempId, { associationNote: e.target.value })}
-                        placeholder="Author's personal copy"
-                        rows={2}
-                        className={textareaClass}
-                      />
-                    </div>
-                  )}
                 </div>
+                {entry.associationType !== 'none' && (
+                  <div>
+                    <label className={labelClass}>Association Note</label>
+                    <textarea
+                      value={entry.associationNote}
+                      onChange={e => updateEntry(entry.tempId, { associationNote: e.target.value })}
+                      placeholder="Author's personal copy"
+                      rows={2}
+                      className={textareaClass}
+                    />
+                  </div>
+                )}
 
                 {/* Row 7: Notes */}
                 <div>
