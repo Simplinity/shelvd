@@ -338,8 +338,7 @@ Currently the app is desktop-only in practice. Key issues:
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
 - Templates system
-- Stats page: migrate acquired_price reads to provenance data
-- Drop legacy acquired_* DB columns
+- Drop legacy acquired_* DB columns (all code references removed, columns are dead)
 
 ---
 
