@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
@@ -611,6 +611,86 @@ export default function BookEditForm({ book, referenceData }: Props) {
     }
   }
 
+  // --- Collapsible sections ---
+  const SECTION_FIELDS: Record<string, string[]> = {
+    'Title & Series': ['title', 'subtitle', 'original_title', 'series', 'series_number'],
+    'Language': ['language_id', 'original_language_id'],
+    'Publication': ['publisher_name', 'publication_place', 'publication_year', 'printer', 'printing_place'],
+    'Edition': ['edition', 'impression', 'issue_state', 'edition_notes'],
+    'Physical Description': ['pagination_description', 'volumes', 'height_mm', 'width_mm', 'depth_mm', 'weight_grams', 'cover_type', 'binding_id', 'format_id', 'protective_enclosure', 'paper_type', 'edge_treatment', 'endpapers_type', 'text_block_condition', 'has_dust_jacket', 'is_signed'],
+    'Condition & Status': ['condition_id', 'dust_jacket_condition_id', 'status', 'action_needed', 'condition_notes'],
+    'Identifiers': ['isbn_13', 'isbn_10', 'oclc_number', 'lccn', 'user_catalog_id', 'ddc', 'lcc', 'udc', 'topic'],
+    'BISAC Subject Codes': ['bisac_code', 'bisac_code_2', 'bisac_code_3'],
+    'Storage': ['storage_location', 'shelf', 'shelf_section'],
+    'Valuation': ['lowest_price', 'highest_price', 'estimated_value', 'sales_price', 'price_currency', 'valuation_date'],
+    'Notes': ['summary', 'dedication_text', 'colophon_text', 'bibliography', 'illustrations_description', 'signatures_description', 'internal_notes'],
+  }
+
+  const countFilled = (sectionTitle: string): [number, number] => {
+    const fields = SECTION_FIELDS[sectionTitle]
+    if (!fields) return [0, 0]
+    const filled = fields.filter(f => {
+      const v = (formData as any)[f]
+      if (v === null || v === undefined || v === '' || v === 'none') return false
+      if (typeof v === 'boolean') return v
+      return true
+    }).length
+    return [filled, fields.length]
+  }
+
+  // Special counts for non-formData sections
+  const specialCounts: Record<string, [number, number] | null> = {
+    'Contributors': activeContributors.length > 0 ? [activeContributors.length, activeContributors.length] : null,
+    'Provenance': provenanceEntries.length > 0 ? [provenanceEntries.length, provenanceEntries.length] : null,
+    'External Links': externalLinks.length > 0 ? [externalLinks.length, externalLinks.length] : null,
+  }
+
+  const allSections = [
+    'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
+    'Physical Description', 'Condition & Status', 'Identifiers', 'BISAC Subject Codes',
+    'Storage', 'Valuation', 'Provenance', 'Notes', 'External Links', 'Catalog Entry',
+    'Collections', 'Tags'
+  ]
+
+  const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(allSections))
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev => {
+      const next = new Set(prev)
+      if (next.has(title)) next.delete(title)
+      else next.add(title)
+      return next
+    })
+  }
+
+  const allExpanded = openSections.size === allSections.length
+  const toggleAll = () => {
+    setOpenSections(allExpanded ? new Set(['Title & Series']) : new Set(allSections))
+  }
+
+  const SectionHeader = ({ title }: { title: string }) => {
+    const isOpen = openSections.has(title)
+    const counts = specialCounts[title] !== undefined ? specialCounts[title] : (SECTION_FIELDS[title] ? countFilled(title) : null)
+    const [filled, total] = counts || [0, 0]
+    return (
+      <button
+        type="button"
+        onClick={() => toggleSection(title)}
+        className="w-full flex items-center justify-between pb-2 border-b group"
+      >
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="flex items-center gap-2">
+          {counts && filled > 0 && (
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              {filled}{total !== filled ? `/${total}` : ''}
+            </span>
+          )}
+          <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
+        </div>
+      </button>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
@@ -650,10 +730,18 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
       {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
 
+      <div className="flex justify-end mb-4">
+        <button type="button" onClick={toggleAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <ChevronsUpDown className="w-3.5 h-3.5" />
+          {allExpanded ? 'Collapse all' : 'Expand all'}
+        </button>
+      </div>
+
       <div className="space-y-8">
         {/* 1. Title & Series */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Title & Series</h2>
+          <SectionHeader title="Title & Series" />
+          {openSections.has('Title & Series') && <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className={labelClass}>Title</label>
@@ -677,11 +765,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <input type="text" value={formData.series_number || ''} onChange={e => handleChange('series_number', e.target.value)} className={inputClass} />
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 2. Contributors */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Contributors</h2>
+          <SectionHeader title="Contributors" />
+          {openSections.has('Contributors') && <div className="mt-4">
           {activeContributors.length > 0 && (
             <div className="mb-4 space-y-2">
               {activeContributors.map(c => (
@@ -715,11 +805,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <Plus className="w-4 h-4 mr-1" />Add
             </Button>
           </div>
+          </div>}
         </section>
 
         {/* 3. Language */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Language</h2>
+          <SectionHeader title="Language" />
+          {openSections.has('Language') && <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Language</label>
@@ -736,11 +828,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               </select>
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 4. Publication */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Publication</h2>
+          <SectionHeader title="Publication" />
+          {openSections.has('Publication') && <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Publisher</label>
@@ -766,11 +860,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <datalist id="printplace-list">{referenceData.printingPlaceList.map(p => <option key={p} value={p} />)}</datalist>
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 5. Edition */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Edition</h2>
+          <SectionHeader title="Edition" />
+          {openSections.has('Edition') && <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Edition</label>
@@ -789,11 +885,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <textarea value={formData.edition_notes || ''} onChange={e => handleChange('edition_notes', e.target.value)} rows={2} className={textareaClass} />
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 6. Physical Description */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Physical Description</h2>
+          <SectionHeader title="Physical Description" />
+          {openSections.has('Physical Description') && <div className="mt-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="col-span-2">
               <label className={labelClass}>Pagination</label>
@@ -886,11 +984,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               </label>
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 7. Condition & Status */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Condition & Status</h2>
+          <SectionHeader title="Condition & Status" />
+          {openSections.has('Condition & Status') && <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Condition</label>
@@ -924,11 +1024,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <textarea value={formData.condition_notes || ''} onChange={e => handleChange('condition_notes', e.target.value)} rows={3} className={textareaClass} />
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 8. Identifiers */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Identifiers</h2>
+          <SectionHeader title="Identifiers" />
+          {openSections.has('Identifiers') && <div className="mt-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <label className={labelClass}>ISBN-13</label>
@@ -967,21 +1069,25 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <input type="text" value={formData.topic || ''} onChange={e => handleChange('topic', e.target.value)} className={inputClass} />
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 9. BISAC Subject Codes */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">BISAC Subject Codes</h2>
+          <SectionHeader title="BISAC Subject Codes" />
+          {openSections.has('BISAC Subject Codes') && <div className="mt-4">
           <div className="space-y-4">
             <BisacCombobox label="Primary BISAC" value={(formData as any).bisac_code || null} onChange={(value) => { handleChange('bisac_code' as keyof Book, value); setIsDirty(true) }} options={referenceData.bisacCodes} placeholder="Search BISAC codes..." />
             <BisacCombobox label="Secondary BISAC" value={(formData as any).bisac_code_2 || null} onChange={(value) => { handleChange('bisac_code_2' as keyof Book, value); setIsDirty(true) }} options={referenceData.bisacCodes} placeholder="Optional..." />
             <BisacCombobox label="Tertiary BISAC" value={(formData as any).bisac_code_3 || null} onChange={(value) => { handleChange('bisac_code_3' as keyof Book, value); setIsDirty(true) }} options={referenceData.bisacCodes} placeholder="Optional..." />
           </div>
+          </div>}
         </section>
 
         {/* 10. Storage */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Storage</h2>
+          <SectionHeader title="Storage" />
+          {openSections.has('Storage') && <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Location</label>
@@ -999,11 +1105,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <datalist id="section-list">{referenceData.shelfSectionList.map(s => <option key={s} value={s} />)}</datalist>
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 11. Valuation */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
+          <SectionHeader title="Valuation" />
+          {openSections.has('Valuation') && <div className="mt-4">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div>
               <label className={labelClass}>Lowest Price</label>
@@ -1033,11 +1141,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <input type="text" value={formData.valuation_date || ''} onChange={e => handleChange('valuation_date', e.target.value)} placeholder="YYYY-MM-DD" className={inputClass} />
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 13. Provenance */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Provenance</h2>
+          <SectionHeader title="Provenance" />
+          {openSections.has('Provenance') && <div className="mt-4">
           <ProvenanceEditor
             entries={provenanceEntries}
             onChange={(updated: ProvenanceEntry[]) => {
@@ -1045,11 +1155,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               setIsDirty(true)
             }}
           />
+          </div>}
         </section>
 
         {/* 14. Notes */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
+          <SectionHeader title="Notes" />
+          {openSections.has('Notes') && <div className="mt-4">
           <div className="space-y-4">
             <div>
               <label className={labelClass}>Summary</label>
@@ -1080,11 +1192,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <textarea value={formData.internal_notes || ''} onChange={e => handleChange('internal_notes', e.target.value)} rows={3} className={textareaClass} />
             </div>
           </div>
+          </div>}
         </section>
 
         {/* 15. External Links */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">External Links</h2>
+          <SectionHeader title="External Links" />
+          {openSections.has('External Links') && <div className="mt-4">
           
           {externalLinks.map((link, index) => (
             <div key={index} className="flex gap-2 mb-2 items-start">
@@ -1156,11 +1270,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <Plus className="w-4 h-4" />
             Add Link
           </button>
+          </div>}
         </section>
 
         {/* 16. Catalog Entry */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
+          <SectionHeader title="Catalog Entry" />
+          {openSections.has('Catalog Entry') && <div className="mt-4">
           <div className="mb-4">
             <CatalogEntryGenerator
               book={{
@@ -1208,12 +1324,14 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <label className={labelClass}>Full Catalog Entry</label>
             <textarea value={formData.catalog_entry || ''} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
           </div>
+          </div>}
         </section>
 
         {/* 17. Collections */}
         {availableCollections.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Collections</h2>
+            <SectionHeader title="Collections" />
+          {openSections.has('Collections') && <div className="mt-4">
             <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
             <div className="space-y-2">
               {availableCollections.map(col => (
@@ -1237,18 +1355,21 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 </label>
               ))}
             </div>
-          </section>
+            </div>}
+        </section>
         )}
 
         {/* Tags */}
         <section>
-          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Tags</h2>
+          <SectionHeader title="Tags" />
+          {openSections.has('Tags') && <div className="mt-4">
           <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
           <TagInput
             bookId={book.id}
             selectedTags={selectedTags}
             onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
           />
+          </div>}
         </section>
 
         {/* Submit buttons */}
