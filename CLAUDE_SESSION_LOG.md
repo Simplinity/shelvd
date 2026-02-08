@@ -148,7 +148,7 @@ Providers return "First Last" (e.g., "J.R.R. Tolkien") but the catalog standard 
 | # | Subtask | Description | Status |
 |---|---------|-------------|--------|
 | 6a | Name parser utility | `lib/name-utils.ts` — parseName(), isSameAuthor(), toCatalogFormat(), normalizeNameForComparison(). Handles prefixes (van/de/von), orgs, single names. | ✅ Done (`0596914`) |
-| 6b | Fix enrich: smart author comparison + auto-merge | Compare normalized names (so "Tolkien, J.R.R." = "J.R.R. Tolkien"). Only flag truly new authors. Checked authors get added as contributors on Apply. | 🔴 Todo |
+| 6b | Fix enrich: smart author comparison + auto-merge | Uses isSameAuthor() to skip known authors. New authors shown in "Last, First" format, checkable, auto-added as contributors on Apply. | ✅ Done (`0dacee5`) |
 | 6c | Fix add form: parse lookup authors | When adding from lookup, parse author names through utility before saving to DB (family_name, given_names, canonical_name in "Last, First") | 🔴 Todo |
 | 6d | Fix edit form + manual entry | Parse on save. Placeholder text "Last, First" on contributor name input. | 🔴 Todo |
 | 6e | Backfill existing bad data | One-time script to fix contributors saved as "First Last" from past lookups | 🔴 Todo |
