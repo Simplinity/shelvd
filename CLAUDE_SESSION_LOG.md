@@ -105,7 +105,7 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 | 1 | Clean up duplicate DB columns | Migration 015: drop 5 unused columns (purchase_currency, price_lowest, price_highest, price_sales, price_estimated). Zero data loss. Detail page fallbacks cleaned up. | ✅ Done (`3068ed0`) |
 | 2 | Currency dropdowns | New `currencies.ts` with 29 ISO 4217 currencies. Freetext inputs replaced with select dropdowns on add + edit forms. | ✅ Done (`40e7d58`) |
 | 3 | Home currency in user settings | `default_currency` already in user_profiles. Unified settings dropdown to shared 29-currency list. Stats page now reads user's currency instead of hardcoded EUR. | ✅ Done (`5f8b21e`) |
-| 4 | Exchange rate conversion on stats page | Fetch rates from ECB or exchangerate.host API. Convert all prices to user's display currency before summing. Show "rates as of" date. Cache rates (daily refresh). | 🔴 Todo |
+| 4 | Exchange rate conversion on stats page | Stats API fetches ECB rates from frankfurter.app, converts all prices to display currency. Rates date shown on stats page. Graceful fallback if unavailable. | ✅ Done (`106b554`) |
 | 5 | Per-book gain/loss on detail page | Show on book detail: "Bought for €45 → Estimated €120 (+167%)". Green for gain, red for loss. Only when both acquired_price and estimated_value are set. | 🔴 Todo |
 | 6 | Collection value summary on books list | Small summary bar above book list: total acquired cost / total estimated value / unrealized gain for current view (all books, collection, or tag filter). | 🔴 Todo |
 | 7 | Value distribution chart on stats | Histogram: number of books per value range (€0-50, €50-200, €200-500, €500-1000, €1000+). Shows portfolio composition at a glance. | 🔴 Todo |
@@ -231,6 +231,7 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 
 | Hash | Description |
 |------|-------------|
+| `106b554` | Currency step 4: exchange rate conversion in stats calculation |
 | `5f8b21e` | Currency step 3: home currency in settings, stats page uses it |
 | `40e7d58` | Currency step 2: currency select dropdowns on add/edit forms |
 | `3068ed0` | Currency step 1: drop 5 unused price columns, clean up detail page |
