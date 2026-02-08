@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client'
 import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
 import { toCatalogFormat, parseName, isSameAuthor } from '@/lib/name-utils'
+import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
 
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
@@ -355,6 +356,7 @@ export default function BookAddForm({ referenceData }: Props) {
   // External links state
   type ExternalLink = { linkTypeId: string; url: string; label: string }
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
+  const [provenanceEntries, setProvenanceEntries] = useState<ProvenanceEntry[]>([])
   
   // Track if data came from ISBN lookup
   const [fromLookup, setFromLookup] = useState(false)
@@ -707,6 +709,50 @@ export default function BookAddForm({ referenceData }: Props) {
         }))
         const { error: tagErr } = await supabase.from('book_tags').insert(tagRows)
         if (tagErr) console.error('Failed to save tags:', tagErr)
+      }
+
+      // Add provenance entries
+      const activeProvEntries = provenanceEntries.filter(e => !e.isDeleted && e.ownerName.trim())
+      for (const entry of activeProvEntries) {
+        const { data: inserted, error: provErr } = await supabase
+          .from('provenance_entries')
+          .insert({
+            book_id: newBook.id,
+            position: entry.position,
+            owner_name: entry.ownerName,
+            owner_type: entry.ownerType,
+            date_from: entry.dateFrom || null,
+            date_to: entry.dateTo || null,
+            evidence_type: entry.evidenceType,
+            evidence_description: entry.evidenceDescription || null,
+            transaction_type: entry.transactionType,
+            transaction_detail: entry.transactionDetail || null,
+            price_paid: entry.pricePaid,
+            price_currency: entry.priceCurrency || null,
+            association_type: entry.associationType,
+            association_note: entry.associationNote || null,
+            notes: entry.notes || null,
+          })
+          .select('id')
+          .single()
+
+        if (provErr || !inserted) {
+          console.error('Failed to insert provenance entry:', provErr)
+          continue
+        }
+
+        // Insert sources for this entry
+        const activeSources = entry.sources.filter(s => !s.isDeleted && (s.title || s.url))
+        for (const src of activeSources) {
+          await supabase.from('provenance_sources').insert({
+            provenance_entry_id: inserted.id,
+            source_type: src.sourceType,
+            title: src.title || null,
+            url: src.url || null,
+            reference: src.reference || null,
+            notes: src.notes || null,
+          })
+        }
       }
 
       router.push(`/books/${newBook.id}`)
@@ -1215,7 +1261,19 @@ export default function BookAddForm({ referenceData }: Props) {
           </div>
         </section>
 
-        {/* 13. Notes */}
+        {/* 13. Provenance */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Provenance</h2>
+          <ProvenanceEditor
+            entries={provenanceEntries}
+            onChange={(updated: ProvenanceEntry[]) => {
+              setProvenanceEntries(updated)
+              setIsDirty(true)
+            }}
+          />
+        </section>
+
+        {/* 14. Notes */}
         <section>
           <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
           <div className="space-y-4">
