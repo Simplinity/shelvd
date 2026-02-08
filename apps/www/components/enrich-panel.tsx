@@ -321,14 +321,14 @@ export default function EnrichPanel({ book, authorName, onApply }: EnrichPanelPr
               disabled={loadingDetail}
               className="w-full text-left px-4 py-2.5 hover:bg-muted/50 flex items-start gap-3"
             >
-              {item.thumbnail && (
-                <img src={item.thumbnail} alt="" className="w-8 h-12 object-cover flex-shrink-0 bg-muted" />
+              {item.cover_url && (
+                <img src={item.cover_url} alt="" className="w-8 h-12 object-cover flex-shrink-0 bg-muted" />
               )}
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate">{item.title}</div>
-                {item.author && <div className="text-xs text-muted-foreground truncate">{item.author}</div>}
+                {item.authors && item.authors.length > 0 && <div className="text-xs text-muted-foreground truncate">{item.authors.join(', ')}</div>}
                 <div className="text-xs text-muted-foreground">
-                  {[item.publisher, item.year].filter(Boolean).join(' · ')}
+                  {[item.publisher, item.publication_year].filter(Boolean).join(' · ')}
                 </div>
               </div>
             </button>
