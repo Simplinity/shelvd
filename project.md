@@ -338,7 +338,7 @@ Currently the app is desktop-only in practice. Key issues:
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
 - Templates system
-- Drop legacy acquired_* DB columns (all code references removed, columns are dead)
+
 
 ---
 
@@ -390,7 +390,7 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-021
+├── supabase/migrations/          # 001-022
 └── project.md
 ```
 

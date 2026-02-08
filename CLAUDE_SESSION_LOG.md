@@ -105,7 +105,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
 - Templates system
-- Drop legacy acquired_* DB columns (all code references removed, columns are dead)
+
 
 ---
 

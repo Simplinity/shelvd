@@ -410,11 +410,6 @@ export type Database = {
       }
       books: {
         Row: {
-          acquired_currency: string | null
-          acquired_date: string | null
-          acquired_from: string | null
-          acquired_notes: string | null
-          acquired_price: number | null
           action_needed: string | null
           bibliography: string | null
           binding_id: string | null
@@ -504,11 +499,6 @@ export type Database = {
           width_mm: number | null
         }
         Insert: {
-          acquired_currency?: string | null
-          acquired_date?: string | null
-          acquired_from?: string | null
-          acquired_notes?: string | null
-          acquired_price?: number | null
           action_needed?: string | null
           bibliography?: string | null
           binding_id?: string | null
@@ -598,11 +588,6 @@ export type Database = {
           width_mm?: number | null
         }
         Update: {
-          acquired_currency?: string | null
-          acquired_date?: string | null
-          acquired_from?: string | null
-          acquired_notes?: string | null
-          acquired_price?: number | null
           action_needed?: string | null
           bibliography?: string | null
           binding_id?: string | null
