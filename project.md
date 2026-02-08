@@ -346,7 +346,7 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-016
+├── supabase/migrations/          # 001-017
 └── project.md
 ```
 

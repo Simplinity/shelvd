@@ -91,7 +91,6 @@ const columns: { header: string; key: string; width: number }[] = [
   
   // Notes
   { header: 'Summary', key: 'summary', width: 55 },
-  { header: 'Provenance', key: 'provenance', width: 45 },
   { header: 'Bibliography', key: 'bibliography', width: 45 },
   { header: 'Illustrations Description', key: 'illustrations_description', width: 45 },
   { header: 'Signatures Description', key: 'signatures_description', width: 45 },
@@ -176,7 +175,6 @@ function transformBookData(
     price_currency: book.price_currency,
     valuation_date: book.valuation_date,
     summary: book.summary,
-    provenance: book.provenance,
     bibliography: book.bibliography,
     illustrations_description: book.illustrations_description,
     signatures_description: book.signatures_description,

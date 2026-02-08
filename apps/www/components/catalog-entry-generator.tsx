@@ -47,7 +47,6 @@ type BookData = {
   condition_notes: string | null
   // Notes
   bibliography: string | null
-  provenance: string | null
   illustrations_description: string | null
   signatures_description: string | null
   // Structured provenance
@@ -609,8 +608,6 @@ function generateCatalogEntry(book: BookData, lang: Language): string {
       return parts.filter(Boolean).join(' ')
     })
     notes.push(t['provenance'] + ': ' + chain.join(' — '))
-  } else if (book.provenance) {
-    notes.push(t['provenance'] + ': ' + book.provenance)
   }
   
   // Illustrations description (detailed)

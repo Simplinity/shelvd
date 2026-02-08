@@ -424,7 +424,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           price_currency: formData.price_currency || null,
           illustrations_description: formData.illustrations_description || null,
           signatures_description: formData.signatures_description || null,
-          provenance: formData.provenance || null,
+
           bibliography: formData.bibliography || null,
           summary: formData.summary || null,
           catalog_entry: formData.catalog_entry || null,
@@ -1230,7 +1230,6 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 condition_name: referenceData.conditions.find(c => c.id === formData.condition_id)?.name || null,
                 condition_notes: formData.condition_notes,
                 bibliography: formData.bibliography,
-                provenance: formData.provenance,
                 illustrations_description: formData.illustrations_description,
                 signatures_description: formData.signatures_description,
                 isbn_13: formData.isbn_13,

@@ -432,7 +432,6 @@ export type Database = {
           printing_place: string | null
           private_notes: string | null
           protective_enclosure: string | null
-          provenance: string | null
           publication_place: string | null
           publication_year: string | null
           publisher_id: string | null
@@ -527,7 +526,6 @@ export type Database = {
           printing_place?: string | null
           private_notes?: string | null
           protective_enclosure?: string | null
-          provenance?: string | null
           publication_place?: string | null
           publication_year?: string | null
           publisher_id?: string | null
@@ -622,7 +620,6 @@ export type Database = {
           printing_place?: string | null
           private_notes?: string | null
           protective_enclosure?: string | null
-          provenance?: string | null
           publication_place?: string | null
           publication_year?: string | null
           publisher_id?: string | null

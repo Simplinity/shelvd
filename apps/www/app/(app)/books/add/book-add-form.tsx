@@ -114,7 +114,6 @@ type FormData = {
   price_currency: string
   illustrations_description: string
   signatures_description: string
-  provenance: string
   bibliography: string
   summary: string
   catalog_entry: string
@@ -190,7 +189,6 @@ const initialFormData: FormData = {
   price_currency: '',
   illustrations_description: '',
   signatures_description: '',
-  provenance: '',
   bibliography: '',
   summary: '',
   catalog_entry: '',
@@ -620,7 +618,6 @@ export default function BookAddForm({ referenceData }: Props) {
           price_currency: formData.price_currency || null,
           illustrations_description: formData.illustrations_description || null,
           signatures_description: formData.signatures_description || null,
-          provenance: formData.provenance || null,
           bibliography: formData.bibliography || null,
           summary: formData.summary || null,
           catalog_entry: formData.catalog_entry || null,
@@ -1418,7 +1415,6 @@ export default function BookAddForm({ referenceData }: Props) {
                 condition_name: referenceData.conditions.find(c => c.id === formData.condition_id)?.name || null,
                 condition_notes: formData.condition_notes || null,
                 bibliography: formData.bibliography || null,
-                provenance: formData.provenance || null,
                 illustrations_description: formData.illustrations_description || null,
                 signatures_description: formData.signatures_description || null,
                 isbn_13: formData.isbn_13 || null,
