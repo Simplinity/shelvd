@@ -78,8 +78,8 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
 | 1 | Locale & number formatting | High | Medium | Single locale setting (en-US, nl-BE, de-DE, etc.) drives number format (1,234.56 vs 1.234,56) and date display (MM/DD vs DD/MM). Storage stays canonical. Extends existing date format setting. |
-| 2 | Admin button in header | High | Low | Gear/shield icon in header, conditionally shown for admin users. Currently admin is a hidden URL. |
-| 3 | Edit page collapsible sections | High | Medium | Accordion-style collapsible sections. Default: first open, rest collapsed. Badge per section showing filled field count. "Expand all" toggle. Current grouping is logical, just visually overwhelming. |
+| 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
+| 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action (create/update/delete), entity_type (book/collection/tag), entity_id, details (JSON diff), timestamp. Admin gets filterable log viewer. Essential before multi-user beta. |
 | 5 | Feedback & bug reporting | High | Medium | Single feedback form with type selector (bug/feature request/question). `feedback` table in Supabase with status tracking (new/acknowledged/resolved). Auto-attach browser info for bugs. Visible in admin. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Storage via Supabase Storage. Gallery on detail page. |

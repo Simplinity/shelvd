@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock } from 'lucide-react'
 import { UserActions } from './users/user-actions'
+import { AnnouncementManager } from './announcements/announcement-manager'
 
 export default async function AdminPage({
   searchParams,
@@ -67,6 +68,12 @@ export default async function AdminPage({
     })
   } catch {}
 
+  // Announcements
+  const { data: announcements } = await supabase
+    .from('announcements')
+    .select('id, title, message, type, is_active, starts_at, ends_at, created_at')
+    .order('created_at', { ascending: false })
+
   // Search filter
   let filteredProfiles = profiles || []
   if (params.q) {
@@ -93,6 +100,11 @@ export default async function AdminPage({
         <StatCard label="Active" value={activeUsers ?? 0} icon={<Check className="w-4 h-4" />} />
         <StatCard label="Books" value={totalBooks} icon={<BookOpen className="w-4 h-4" />} />
         <StatCard label="Signups (7d)" value={recentSignups ?? 0} icon={<TrendingUp className="w-4 h-4" />} />
+      </div>
+
+      {/* Announcements */}
+      <div className="mb-8">
+        <AnnouncementManager announcements={announcements || []} />
       </div>
 
       {/* User Management Section */}

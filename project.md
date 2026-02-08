@@ -272,6 +272,7 @@ status, action_needed, internal_notes
 | Contributor name handling ("Last, First" standard) | ✅ Done |
 | Provenance tracking (ownership chain, evidence, associations) | ✅ Done |
 | Acquisition → Provenance migration | ✅ Done |
+| Edit/Add page collapsible sections | ✅ Done |
 | Multiple Collections per user | ✅ Done |
 | Custom Tags | ✅ Done |
 
@@ -279,8 +280,8 @@ status, action_needed, internal_notes
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
 | 1 | Locale & number formatting | High | Medium | Single locale setting (en-US, nl-BE, de-DE) drives number format (1,234.56 vs 1.234,56) and date display. Storage stays canonical. Extends existing date format setting. |
-| 2 | Admin button in header | High | Low | Gear/shield icon in header, conditionally shown for admin users. |
-| 3 | Edit page collapsible sections | High | Medium | Accordion-style sections with filled-field count badges. Default: first open, rest collapsed. "Expand all" toggle. |
+| 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
+| 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
 | 5 | Feedback & bug reporting | High | Medium | Feedback form (bug/feature/question), `feedback` table with status tracking, auto-attach browser info. Admin queue. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |

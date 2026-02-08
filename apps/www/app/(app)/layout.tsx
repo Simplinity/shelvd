@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
 import { getCollectionsWithCounts } from '@/lib/actions/collections'
 import { CollectionNav } from '@/components/collection-nav'
+import { AnnouncementBanner } from '@/components/announcement-banner'
 
 export default async function AppLayout({
   children,
@@ -34,8 +35,23 @@ export default async function AppLayout({
     .from('books')
     .select('*', { count: 'exact', head: true })
 
+  // Active announcements
+  const now = new Date().toISOString()
+  const { data: announcements } = await supabase
+    .from('announcements')
+    .select('id, title, message, type')
+    .eq('is_active', true)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .or(`ends_at.is.null,ends_at.gte.${now}`)
+    .order('created_at', { ascending: false })
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Announcements */}
+      {announcements && announcements.length > 0 && (
+        <AnnouncementBanner announcements={announcements as any} />
+      )}
+
       {/* Header - Swiss Design Optie B */}
       <header className="bg-white border-b-4 border-red-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
