@@ -270,6 +270,7 @@ status, action_needed, internal_notes
 | — | Currency & Valuation (7 steps) | ✅ Done |
 | — | Enrich mode (merge lookup fields on edit page) | ✅ Done |
 | — | Contributor name handling ("Last, First" standard) | ✅ Done |
+| — | Provenance tracking (ownership chain, auction history) | 🟡 In Progress |
 | — | Image upload (covers, spine, damage) | 🔴 Todo |
 | — | Sharing & Public Catalog | 🔴 Todo |
 | — | Landing page + Knowledge base | 🔴 Todo |
@@ -289,7 +290,6 @@ status, action_needed, internal_notes
 
 ### Under Consideration
 - Insurance & valuation PDF reports
-- Provenance tracking (previous owners, auction history)
 - Price history field (auction results, dealer quotes, previous sale prices)
 - Condition history (restorations, reports)
 - Dealer & contact management

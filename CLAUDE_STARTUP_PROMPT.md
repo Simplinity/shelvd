@@ -88,6 +88,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 | Currency & Valuation | ✅ Done |
 | Enrich mode | ✅ Done |
 | Contributor name handling | ✅ Done |
+| Provenance tracking (ownership chain) | 🟡 In Progress |
 | Image upload (covers, spine, damage) | 🔴 Todo |
 | Sharing & Public Catalog | 🔴 Todo |
 | Landing page + Knowledge base | 🔴 Todo |

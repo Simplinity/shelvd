@@ -1,8 +1,8 @@
 # Claude Session Log
 
-## Current State (2026-02-07)
+## Current State (2026-02-08)
 
-All features up to and including **Custom Tags** are **complete**. 9 lookup providers active. Collections: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page. Tags: colored, autocomplete, filter by tag, clickable on detail page. Bug fixes: external link URLs, collection filtering, SRU provider source_url. Polish: toggleable collection chips, toast feedback, complete status definitions.
+All features up to and including **Contributor Name Handling** are **complete**. Currently working on **Provenance Tracking**. 9 lookup providers active. Collections: Library + Wishlist auto-created per user, nav dropdown, filtering, bulk actions, settings page. Tags: colored, autocomplete, filter by tag, clickable on detail page. Enrich mode: ISBN lookup + field search, smart author comparison, auto-merge. Contributor names: "Last, First" standard, name parser, format-independent matching.
 
 ---
 
@@ -68,14 +68,16 @@ All features up to and including **Custom Tags** are **complete**. 9 lookup prov
 |---|---------|--------|
 | 1 | Currency & Valuation (7 steps) | ✅ Done |
 | 2 | Enrich mode (merge lookup fields on edit page) | ✅ Done |
-| 3 | Image upload (covers, spine, damage) | 🔴 Todo |
-| 4 | Sharing & Public Catalog | 🔴 Todo |
-| 5 | Landing page + Knowledge base | 🔴 Todo |
+| 3 | Provenance tracking (ownership chain, auction history) | 🟡 In Progress |
+| 4 | Image upload (covers, spine, damage) | 🔴 Todo |
+| 5 | Sharing & Public Catalog | 🔴 Todo |
+| 6 | Landing page + Knowledge base | 🔴 Todo |
 
 ### Under Consideration
 - Insurance & valuation PDF reports
-- Provenance tracking (previous owners, auction history)
 - Price history field (auction results, dealer quotes, previous sale prices)
+- Condition history (restorations, reports)
+- Dealer & contact management
 
 ---
 
@@ -159,6 +161,77 @@ Providers return "First Last" (e.g., "J.R.R. Tolkien") but the catalog standard 
 - Switches to field search form with title/author pre-filled, provider picker
 - User can try any field-search-capable provider
 - Works for both ISBN-based and search-based enrichment flows
+
+---
+
+## Feature: Provenance Tracking (2026-02-08)
+
+### Context
+In the antiquarian/rare book trade, provenance is the **chain of custody** of a specific copy — not the edition, but that particular physical object. It's what separates a €350 copy from a €750 one. Auction houses (Sotheby's, Christie's), dealer associations (ABAA, ILAB), and institutional catalogers (Beinecke/Yale, Princeton) all track the same core elements:
+
+**Ownership evidence** — physical marks left by previous owners:
+- Bookplates (ex libris), ownership inscriptions, stamps, annotations/marginalia
+- Binder's marks (armorial bindings, monogrammed spines), shelfmarks
+
+**Transaction history** — how the book changed hands:
+- Presentation/inscription by author, auction sales, dealer purchases, gifts, inheritance
+
+**Association value** — significance of the connection:
+- Association copy (owned by someone connected to author/subject)
+- Presentation copy (given by author with inscription)
+- From a notable collection
+
+Provenance is **chronological** — described as a timeline from earliest known owner to present.
+
+### Data Model
+
+**Table: `provenance_entries`** — one row per ownership event in the chain
+
+| Field | Type | Purpose |
+|-------|------|--------|
+| id | uuid | PK |
+| book_id | uuid → books | FK |
+| position | int | Order in chain (1 = earliest known) |
+| owner_name | text | Person or institution |
+| owner_type | enum | person, institution, dealer, auction_house, self |
+| date_from | text | Flexible: "1922", "c. 1850", "17th century" |
+| date_to | text | When it left their hands |
+| evidence_type | text[] | Array: bookplate, inscription, stamp, annotation, binding, shelfmark, auction_record, dealer_record, receipt, oral_history, none |
+| evidence_description | text | "Armorial bookplate on front pastedown" |
+| transaction_type | enum | presentation, purchase, gift, inheritance, auction, dealer, unknown |
+| transaction_detail | text | "Sotheby's London, lot 85, 2 Nov 1977" |
+| price_paid | decimal | Price at this step (if known) |
+| price_currency | text | ISO 4217 |
+| association_type | enum | none, association_copy, presentation_copy, inscribed, annotated, from_notable_collection |
+| association_note | text | Why this ownership matters |
+| notes | text | Anything else |
+
+**Table: `provenance_sources`** — supporting documentation
+
+| Field | Type | Purpose |
+|-------|------|--------|
+| id | uuid | PK |
+| provenance_entry_id | uuid → provenance_entries | FK |
+| source_type | enum | auction_catalog, dealer_catalog, receipt, certificate, publication, url, correspondence |
+| title | text | "Sotheby's Fine Books, Dec 2019" |
+| url | text | Link to online catalog |
+| reference | text | Page/lot number |
+| notes | text | |
+
+### UI Design
+- **Detail page:** Provenance section with vertical timeline — each node is an owner, with evidence type icons and transaction info. Final entry = "You" (self) with acquisition details.
+- **Edit page:** Repeatable card section to add/reorder entries. Expand/collapse per entry. Drag to reorder.
+
+### Subtasks
+
+| # | Subtask | Description | Status |
+|---|---------|-------------|--------|
+| 7a | DB migration | Create `provenance_entries` and `provenance_sources` tables with RLS policies | 🔴 Todo |
+| 7b | Edit form: provenance section | Repeatable card UI to add/edit/reorder provenance entries. Collapsible cards, all fields. | 🔴 Todo |
+| 7c | Edit form: save logic | Server action to upsert provenance entries + sources on book save | 🔴 Todo |
+| 7d | Detail page: provenance timeline | Vertical timeline component showing ownership chain with icons, dates, transaction details | 🔴 Todo |
+| 7e | Add form: provenance section | Same UI as edit form, create provenance entries on new book add | 🔴 Todo |
+| 7f | Polish & docs | Evidence type icons, empty states, documentation updates | 🔴 Todo |
 
 ---
 
