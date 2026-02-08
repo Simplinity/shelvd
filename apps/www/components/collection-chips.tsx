@@ -58,7 +58,7 @@ export default function CollectionChips({ bookId, collections: initial }: Props)
   }
 
   return (
-    <div className="relative mt-3">
+    <div className="relative mt-3 pb-5">
       <div className="flex gap-1.5 flex-wrap">
         {collections.map(col => (
           <button
