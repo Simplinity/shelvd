@@ -86,7 +86,6 @@ const columns: { header: string; width: number; example: string }[] = [
   
   // Notes
   { header: 'Summary', width: 55, example: 'Brother William investigates murders in a Benedictine monastery in 1327' },
-  { header: 'Provenance', width: 45, example: 'Ex-library copy from University of Ghent; bookplate of Prof. Jan De Vries' },
   { header: 'Bibliography', width: 45, example: 'Carter A23a; First edition, first printing per Gaskell' },
   { header: 'Illustrations Description', width: 45, example: 'Frontispiece portrait; 12 b/w plates of monastery plans' },
   { header: 'Signatures Description', width: 45, example: 'A-Z⁸ Aa-Ff⁸ (collation formula for bibliographers)' },
