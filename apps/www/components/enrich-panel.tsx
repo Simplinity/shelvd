@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { lookupIsbn, lookupByFields, lookupDetails, getActiveProviders } from '@/lib/actions/isbn-lookup'
 import type { BookData, ActiveProvider, SearchResultItem } from '@/lib/isbn-providers/types'
 import { isProviderImplemented, supportsFieldSearch } from '@/lib/isbn-providers'
+import { isSameAuthor, toCatalogFormat } from '@/lib/name-utils'
 
 const ENRICHABLE_FIELDS: {
   key: string; label: string; bookField: string; lookupField: keyof BookData
@@ -37,7 +38,7 @@ type ComparisonRow = {
   status: 'new' | 'different'; checked: boolean
 }
 
-function buildRows(book: Record<string, any>, data: BookData): ComparisonRow[] {
+function buildRows(book: Record<string, any>, data: BookData, existingContributorNames: string[]): ComparisonRow[] {
   const rows: ComparisonRow[] = []
   for (const field of ENRICHABLE_FIELDS) {
     const rawLookup = data[field.lookupField]
@@ -51,8 +52,19 @@ function buildRows(book: Record<string, any>, data: BookData): ComparisonRow[] {
       rows.push({ key: field.key, label: field.label, bookField: field.bookField, currentValue, newValue: newTrimmed, status: 'different', checked: false })
     }
   }
+  // Authors: compare each lookup author against existing contributors
   if (data.authors && data.authors.length > 0) {
-    rows.push({ key: '_authors', label: 'Authors', bookField: '_authors', currentValue: '(see contributors)', newValue: data.authors.join(', '), status: 'different', checked: false })
+    const newAuthors = data.authors.filter(
+      lookupName => !existingContributorNames.some(existing => isSameAuthor(existing, lookupName))
+    )
+    for (const author of newAuthors) {
+      const catalogName = toCatalogFormat(author)
+      rows.push({
+        key: `_author_${catalogName}`, label: 'Author', bookField: '_author',
+        currentValue: '', newValue: catalogName,
+        status: 'new', checked: true,
+      })
+    }
   }
   return rows
 }
@@ -203,8 +215,8 @@ export function EnrichDropdown({
           </div>
           <div className="divide-y divide-border">
             {rows.map(row => (
-              <label key={row.key} className={`flex items-start gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/50 ${row.key === '_authors' ? 'opacity-60' : ''}`}>
-                <input type="checkbox" checked={row.checked} onChange={() => onToggleRow(row.key)} disabled={row.key === '_authors'} className="mt-1 w-4 h-4" />
+              <label key={row.key} className="flex items-start gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/50">
+                <input type="checkbox" checked={row.checked} onChange={() => onToggleRow(row.key)} className="mt-1 w-4 h-4" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-sm font-medium">{row.label}</span>
@@ -237,7 +249,13 @@ export function EnrichDropdown({
 
 // --- Hook that wires everything together ---
 
-export function useEnrich(book: Record<string, any>, authorName: string, onApply: (updates: Record<string, string>) => void) {
+export function useEnrich(
+  book: Record<string, any>,
+  authorName: string,
+  contributorNames: string[],
+  onApply: (updates: Record<string, string>) => void,
+  onApplyAuthors: (names: string[]) => void,
+) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [provider, setProvider] = useState<string | null>(null)
@@ -271,7 +289,7 @@ export function useEnrich(book: Record<string, any>, authorName: string, onApply
         setLoading(false); return
       }
       setProvider(response.result.provider)
-      setRows(buildRows(book, response.result.data))
+      setRows(buildRows(book, response.result.data, contributorNames))
       setMode('compare')
     } catch (err) { setError(err instanceof Error ? err.message : 'Lookup failed') }
     finally { setLoading(false) }
@@ -300,7 +318,7 @@ export function useEnrich(book: Record<string, any>, authorName: string, onApply
     setLoadingDetail(true); setError(null)
     try {
       const response = await lookupDetails(item.edition_key, selectedProvider)
-      if (response.success && response.data) { setProvider(response.provider); setRows(buildRows(book, response.data)); setMode('compare') }
+      if (response.success && response.data) { setProvider(response.provider); setRows(buildRows(book, response.data, contributorNames)); setMode('compare') }
       else setError(response.error || 'Could not load details')
     } catch (err) { setError(err instanceof Error ? err.message : 'Failed to load details') }
     finally { setLoadingDetail(false) }
@@ -318,8 +336,18 @@ export function useEnrich(book: Record<string, any>, authorName: string, onApply
 
   const handleApply = () => {
     const updates: Record<string, string> = {}
-    for (const row of rows) { if (row.checked && row.key !== '_authors') updates[row.bookField] = row.newValue }
-    onApply(updates); setApplied(true)
+    const newAuthors: string[] = []
+    for (const row of rows) {
+      if (!row.checked) continue
+      if (row.bookField === '_author') {
+        newAuthors.push(row.newValue)
+      } else {
+        updates[row.bookField] = row.newValue
+      }
+    }
+    if (Object.keys(updates).length > 0) onApply(updates)
+    if (newAuthors.length > 0) onApplyAuthors(newAuthors)
+    setApplied(true)
   }
 
   const checkedCount = rows.filter(r => r.checked).length

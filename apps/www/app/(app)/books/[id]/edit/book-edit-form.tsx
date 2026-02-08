@@ -220,14 +220,35 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
   // Enrich hook
   const enrichAuthorName = contributors.find(c => c.roleName?.toLowerCase() === 'author' && !c.isDeleted)?.contributorName || contributors.find(c => !c.isDeleted)?.contributorName || ''
-  const enrich = useEnrich(formData, enrichAuthorName, (updates) => {
-    setFormData(prev => {
-      const next = { ...prev } as any
-      for (const [key, value] of Object.entries(updates)) next[key] = value
-      return next
-    })
-    setIsDirty(true)
-  })
+  const enrichContributorNames = contributors.filter(c => !c.isDeleted).map(c => c.contributorName)
+  const enrich = useEnrich(
+    formData,
+    enrichAuthorName,
+    enrichContributorNames,
+    (updates) => {
+      setFormData(prev => {
+        const next = { ...prev } as any
+        for (const [key, value] of Object.entries(updates)) next[key] = value
+        return next
+      })
+      setIsDirty(true)
+    },
+    (authorNames) => {
+      // Add new authors as contributors
+      const authorRole = referenceData.contributorRoles.find(r => r.name.toLowerCase() === 'author')
+      if (!authorRole) return
+      const newContribs: LocalContributor[] = authorNames.map((name, i) => ({
+        tempId: `enrich-${Date.now()}-${i}`,
+        contributorName: name,
+        roleId: authorRole.id,
+        roleName: authorRole.name,
+        isNew: true,
+        isDeleted: false,
+      }))
+      setContributors(prev => [...prev, ...newContribs])
+      setIsDirty(true)
+    },
+  )
 
   // Collections state
   type CollectionOption = { id: string; name: string; is_default: boolean }
