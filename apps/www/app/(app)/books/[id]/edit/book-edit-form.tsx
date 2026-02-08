@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client'
 import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
 import { EnrichButton, EnrichDropdown, useEnrich } from '@/components/enrich-panel'
+import { parseName, isSameAuthor } from '@/lib/name-utils'
 import type { Tables } from '@/lib/supabase/database.types'
 
 type Book = Tables<'books'>
@@ -432,16 +433,23 @@ export default function BookEditForm({ book, referenceData }: Props) {
         let contributorId: string
         const existing = referenceData.allContributors.find(
           c => c.name.toLowerCase() === nc.contributorName.toLowerCase()
+        ) || referenceData.allContributors.find(
+          c => isSameAuthor(c.name, nc.contributorName)
         )
         
         if (existing) {
           contributorId = existing.id
         } else {
+          const parsed = parseName(nc.contributorName)
           const { data: newContributor, error: createError } = await supabase
             .from('contributors')
             .insert({ 
-              canonical_name: nc.contributorName,
-              sort_name: nc.contributorName,
+              canonical_name: parsed.canonical_name,
+              sort_name: parsed.sort_name,
+              display_name: parsed.display_name,
+              family_name: parsed.family_name || null,
+              given_names: parsed.given_names || null,
+              type: parsed.type,
               created_by_user_id: (await supabase.auth.getUser()).data.user?.id
             })
             .select('id')
@@ -606,7 +614,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           <div className="flex gap-2 items-end">
             <div className="flex-1">
               <label className={labelClass}>Name</label>
-              <input type="text" list="contributors-list" value={newContributorName} onChange={e => setNewContributorName(e.target.value)} placeholder="Type or select name" className={inputClass} />
+              <input type="text" list="contributors-list" value={newContributorName} onChange={e => setNewContributorName(e.target.value)} placeholder="Last, First (e.g. Tolkien, J.R.R.)" className={inputClass} />
               <datalist id="contributors-list">{referenceData.allContributors.map(c => <option key={c.id} value={c.name} />)}</datalist>
             </div>
             <div className="w-48">

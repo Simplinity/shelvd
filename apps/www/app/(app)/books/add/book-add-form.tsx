@@ -812,7 +812,7 @@ export default function BookAddForm({ referenceData }: Props) {
           <div className="flex gap-2 items-end">
             <div className="flex-1">
               <label className={labelClass}>Name</label>
-              <input type="text" list="contributors-list" value={newContributorName} onChange={e => setNewContributorName(e.target.value)} placeholder="Type or select name" className={inputClass} />
+              <input type="text" list="contributors-list" value={newContributorName} onChange={e => setNewContributorName(e.target.value)} placeholder="Last, First (e.g. Tolkien, J.R.R.)" className={inputClass} />
               <datalist id="contributors-list">{referenceData.allContributors.map(c => <option key={c.id} value={c.name} />)}</datalist>
             </div>
             <div className="w-48">
