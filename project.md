@@ -288,8 +288,14 @@ status, action_needed, internal_notes
 | 5 | Feedback & bug reporting | High | Medium | Feedback form (bug/feature/question), `feedback` table with status tracking, auto-attach browser info. Admin queue. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
-| 8a | Landing page (marketing website) | High | Medium | Full redesign targeting collectors AND dealers. See detail below. |
+| 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
+| 8c | Privacy Policy (`/privacy`) | High | Low | GDPR-compliant privacy policy. Data collected, storage, cookies, rights, contact. Legally required. |
+| 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, account termination, IP rights. Required before paid tiers. |
+| 8e | About / Story (`/about`) | High | Low | Who's behind Shelvd, the origin story, mission, Belgian bibliophile angle. Trust page with personality and humor. |
+| 8f | Changelog (`/changelog`) | Medium | Low | Public-facing release log. Date, title, short description per entry. Shows product is alive and evolving. |
+| 8g | Roadmap (`/roadmap`) | Medium | Low | Public roadmap: Done / In Progress / Planned columns. Transparency for users. |
+| 8h | Blog (`/blog`) | Low | Medium | Articles on book collecting, condition grading, ISBD, provenance. Authority + SEO. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
 
 #### #9 Mobile Responsiveness — Detail

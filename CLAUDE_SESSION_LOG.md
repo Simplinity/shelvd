@@ -84,8 +84,14 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 5 | Feedback & bug reporting | High | Medium | Single feedback form with type selector (bug/feature request/question). `feedback` table in Supabase with status tracking (new/acknowledged/resolved). Auto-attach browser info for bugs. Visible in admin. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Storage via Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
-| 8a | Landing page (marketing website) | High | Medium | Full redesign targeting collectors AND dealers. Swiss design, humor, conversion-focused. |
+| 8a | Landing page (marketing website) | ✅ Done | — | Full redesign with 4 visual spotlights, 3-tier pricing, humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
+| 8c | Privacy Policy (`/privacy`) | High | Low | GDPR-compliant privacy policy. Legally required. |
+| 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, IP rights. Required before paid tiers. |
+| 8e | About / Story (`/about`) | High | Low | Origin story, mission, trust page with personality. |
+| 8f | Changelog (`/changelog`) | Medium | Low | Public release log. Date + title + description per entry. |
+| 8g | Roadmap (`/roadmap`) | Medium | Low | Done / In Progress / Planned columns. Public transparency. |
+| 8h | Blog (`/blog`) | Low | Medium | Authority + SEO articles on collecting, ISBD, provenance. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit: hamburger nav (currently invisible <768px), touch targets, single-column forms, card-based lists, responsive charts. Desktop-only in practice today. |
 
 ### Todo — Admin Section Enhancements
