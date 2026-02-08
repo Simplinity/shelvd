@@ -484,12 +484,12 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
                   {entry.associationType !== 'none' && (
                     <div className="md:col-span-3">
                       <label className={labelClass}>Association Note</label>
-                      <input
-                        type="text"
+                      <textarea
                         value={entry.associationNote}
                         onChange={e => updateEntry(entry.tempId, { associationNote: e.target.value })}
                         placeholder="Author's personal copy"
-                        className={inputClass}
+                        rows={2}
+                        className={textareaClass}
                       />
                     </div>
                   )}
