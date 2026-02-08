@@ -1430,6 +1430,7 @@ export default function BookAddForm({ referenceData }: Props) {
                 oclc_number: formData.oclc_number || null,
                 lccn: formData.lccn || null,
                 contributors: contributorsForCatalog,
+                provenanceEntries: provenanceEntries.filter(e => !e.isDeleted && e.ownerName.trim()).sort((a, b) => a.position - b.position),
               }}
               onGenerate={(entry) => handleChange('catalog_entry', entry)}
             />

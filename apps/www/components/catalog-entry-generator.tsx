@@ -50,6 +50,19 @@ type BookData = {
   provenance: string | null
   illustrations_description: string | null
   signatures_description: string | null
+  // Structured provenance
+  provenanceEntries?: {
+    ownerName: string
+    ownerType: string
+    dateFrom: string
+    dateTo: string
+    evidenceType: string[]
+    evidenceDescription: string
+    transactionType: string
+    transactionDetail: string
+    associationType: string
+    associationNote: string
+  }[]
   // Identifiers
   isbn_13: string | null
   isbn_10: string | null
@@ -533,8 +546,70 @@ function generateCatalogEntry(book: BookData, lang: Language): string {
     notes.push(t['bibliography'] + ': ' + book.bibliography)
   }
   
-  // Provenance
-  if (book.provenance) {
+  // Provenance (structured entries take priority over free-text field)
+  if (book.provenanceEntries && book.provenanceEntries.length > 0) {
+    const chain = book.provenanceEntries.map(entry => {
+      const parts: string[] = []
+
+      // Evidence prefix (e.g. "Bookplate of", "Inscription:")
+      const evidenceTypes = (entry.evidenceType || []).filter(t => t !== 'none')
+      const evidenceLabel = evidenceTypes.length > 0
+        ? evidenceTypes.map(t => {
+            const labels: Record<string, string> = {
+              bookplate: 'Bookplate', inscription: 'Inscription', stamp: 'Stamp',
+              annotation: 'Annotations', binding: 'Binding mark', shelfmark: 'Shelfmark',
+              auction_record: 'Auction record', dealer_record: 'Dealer record',
+              receipt: 'Receipt', oral_history: 'Oral history',
+            }
+            return labels[t] || t
+          }).join(', ')
+        : null
+
+      // Owner name with optional evidence prefix
+      if (evidenceLabel && entry.ownerType !== 'self') {
+        parts.push(`${evidenceLabel} of ${entry.ownerName}`)
+      } else if (entry.ownerType === 'self') {
+        parts.push(entry.ownerName)
+      } else {
+        parts.push(entry.ownerName)
+      }
+
+      // Dates
+      const dates = [entry.dateFrom, entry.dateTo].filter(Boolean)
+      if (dates.length > 0) {
+        parts.push(`(${dates.join('–')})`)
+      }
+
+      // Transaction detail (e.g. "Sotheby's London, lot 85, 2 Nov 1977")
+      if (entry.transactionDetail) {
+        parts.push(entry.transactionDetail)
+      } else if (entry.transactionType && entry.transactionType !== 'unknown') {
+        const txLabels: Record<string, string> = {
+          purchase: 'Purchased', auction: 'Sold at auction', dealer: 'Acquired from dealer',
+          gift: 'Gift', presentation: 'Presentation by author', inheritance: 'Inherited',
+        }
+        parts.push(txLabels[entry.transactionType] || '')
+      }
+
+      // Association note
+      if (entry.associationType && entry.associationType !== 'none') {
+        const assocLabels: Record<string, string> = {
+          association_copy: 'association copy', presentation_copy: 'presentation copy',
+          inscribed: 'inscribed by author', annotated: 'annotated by notable person',
+          from_notable_collection: 'from notable collection',
+        }
+        const label = assocLabels[entry.associationType] || ''
+        if (entry.associationNote) {
+          parts.push(`[${label}: ${entry.associationNote}]`)
+        } else if (label) {
+          parts.push(`[${label}]`)
+        }
+      }
+
+      return parts.filter(Boolean).join(' ')
+    })
+    notes.push(t['provenance'] + ': ' + chain.join(' — '))
+  } else if (book.provenance) {
     notes.push(t['provenance'] + ': ' + book.provenance)
   }
   

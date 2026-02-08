@@ -1238,6 +1238,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 oclc_number: formData.oclc_number,
                 lccn: formData.lccn,
                 contributors: contributorsForCatalog,
+                provenanceEntries: provenanceEntries.filter(e => !e.isDeleted && e.ownerName.trim()).sort((a, b) => a.position - b.position),
               }}
               onGenerate={(entry) => { handleChange('catalog_entry', entry); setIsDirty(true) }}
             />
