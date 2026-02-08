@@ -90,7 +90,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 8d | Terms of Service (`/terms`) | ✅ Done | — | 14 sections, literary wit, same style as privacy page. |
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story, 28k books, literary wit, pull quotes. |
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases, data-driven, timeline design, version badge in app. |
-| 8g | Roadmap (`/roadmap`) | Medium | Low | Done / In Progress / Planned columns. Public transparency. |
+| 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board, 26 items, category badges, witty descriptions. |
 | 8h | Blog (`/blog`) | Low | Medium | Authority + SEO articles on collecting, ISBD, provenance. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit: hamburger nav (currently invisible <768px), touch targets, single-column forms, card-based lists, responsive charts. Desktop-only in practice today. |
 

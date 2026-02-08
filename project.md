@@ -294,7 +294,7 @@ status, action_needed, internal_notes
 | 8d | Terms of Service (`/terms`) | ✅ Done | — | 14 sections with literary wit: agreement, data ownership, acceptable use, IP, liability, pricing, termination, governing law. Same visual style as privacy page. |
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story with literary wit: the problem, the solution (28k books + broken spreadsheet), what we care about, what we are/aren't, the name. Pull quotes, highlight boxes, care items with icons. |
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases (0.1.0–0.9.0), data-driven from lib/changelog.ts, timeline design, color-coded change types, version badge in app header. |
-| 8g | Roadmap (`/roadmap`) | Medium | Low | Public roadmap: Done / In Progress / Planned columns. Transparency for users. |
+| 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board (Shipped/Building/Planned), data-driven from lib/roadmap.ts, 26 items with category badges, 2-col card grid, stats bar, witty descriptions. |
 | 8h | Blog (`/blog`) | Low | Medium | Articles on book collecting, condition grading, ISBD, provenance. Authority + SEO. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
 

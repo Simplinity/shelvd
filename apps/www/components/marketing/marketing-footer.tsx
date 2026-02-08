@@ -39,7 +39,7 @@ export function MarketingFooter() {
             <div className="space-y-2">
               <FooterLink href="/about">About</FooterLink>
               <FooterLink href="/changelog">Changelog</FooterLink>
-              <FooterLink href="/roadmap" comingSoon>Roadmap</FooterLink>
+              <FooterLink href="/roadmap">Roadmap</FooterLink>
               <FooterLink href="/blog" comingSoon>Blog</FooterLink>
             </div>
           </div>

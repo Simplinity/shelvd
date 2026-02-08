@@ -10,7 +10,7 @@ const infoPages = [
   { href: '/terms', label: 'Terms of Service', icon: FileText, description: 'The fine print' },
   { href: '/about', label: 'About Shelvd', icon: User, description: 'The story behind the shelves' },
   { href: '/changelog', label: 'Changelog', icon: Newspaper, description: 'What we\'ve been building' },
-  { href: '/roadmap', label: 'Roadmap', icon: Map, description: 'Where we\'re headed', comingSoon: true },
+  { href: '/roadmap', label: 'Roadmap', icon: Map, description: 'Where we\'re headed' },
   { href: '/blog', label: 'Blog', icon: PenLine, description: 'Notes on books & collecting', comingSoon: true },
 ]
 
