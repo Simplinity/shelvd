@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 
 const infoPages = [
   { href: '/privacy', label: 'Privacy Policy', icon: Shield, description: 'How we handle your data' },
-  { href: '/terms', label: 'Terms of Service', icon: FileText, description: 'The fine print', comingSoon: true },
+  { href: '/terms', label: 'Terms of Service', icon: FileText, description: 'The fine print' },
   { href: '/about', label: 'About Shelvd', icon: User, description: 'The story behind the shelves' },
   { href: '/changelog', label: 'Changelog', icon: Newspaper, description: 'What we\'ve been building', comingSoon: true },
   { href: '/roadmap', label: 'Roadmap', icon: Map, description: 'Where we\'re headed', comingSoon: true },

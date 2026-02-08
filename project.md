@@ -291,7 +291,7 @@ status, action_needed, internal_notes
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
 | 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant privacy policy with literary wit. 11 sections, third-party table, GDPR rights, contact. Accessible to visitors and logged-in users. |
-| 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, account termination, IP rights. Required before paid tiers. |
+| 8d | Terms of Service (`/terms`) | ✅ Done | — | 14 sections with literary wit: agreement, data ownership, acceptable use, IP, liability, pricing, termination, governing law. Same visual style as privacy page. |
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story with literary wit: the problem, the solution (28k books + broken spreadsheet), what we care about, what we are/aren't, the name. Pull quotes, highlight boxes, care items with icons. |
 | 8f | Changelog (`/changelog`) | Medium | Low | Public-facing release log. Date, title, short description per entry. Shows product is alive and evolving. |
 | 8g | Roadmap (`/roadmap`) | Medium | Low | Public roadmap: Done / In Progress / Planned columns. Transparency for users. |

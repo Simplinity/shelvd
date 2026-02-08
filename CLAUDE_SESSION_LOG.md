@@ -87,7 +87,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign with 4 visual spotlights, 3-tier pricing, humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
 | 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant, literary wit, 11 sections. Public route. |
-| 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, IP rights. Required before paid tiers. |
+| 8d | Terms of Service (`/terms`) | ✅ Done | — | 14 sections, literary wit, same style as privacy page. |
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story, 28k books, literary wit, pull quotes. |
 | 8f | Changelog (`/changelog`) | Medium | Low | Public release log. Date + title + description per entry. |
 | 8g | Roadmap (`/roadmap`) | Medium | Low | Done / In Progress / Planned columns. Public transparency. |

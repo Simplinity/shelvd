@@ -49,7 +49,7 @@ export function MarketingFooter() {
             <p className="text-xs font-semibold uppercase tracking-wide mb-3">Legal</p>
             <div className="space-y-2">
               <FooterLink href="/privacy">Privacy Policy</FooterLink>
-              <FooterLink href="/terms" comingSoon>Terms of Service</FooterLink>
+              <FooterLink href="/terms">Terms of Service</FooterLink>
             </div>
           </div>
         </div>
