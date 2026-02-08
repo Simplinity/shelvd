@@ -507,6 +507,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
       {/* Enrich panel */}
       <EnrichPanel
         book={formData}
+        authorName={contributors.find(c => c.roleName?.toLowerCase() === 'author' && !c.isDeleted)?.contributorName || contributors.find(c => !c.isDeleted)?.contributorName || ''}
         onApply={(updates) => {
           setFormData(prev => {
             const next = { ...prev } as any

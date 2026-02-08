@@ -113,6 +113,33 @@ Books table has price/currency data on ~5000 books (99.98% EUR, 1 USD). Five dup
 
 ---
 
+## Feature: Enrich Mode (2026-02-08)
+
+### What was done
+Enrich mode lets users fill missing fields on existing books by searching ISBN lookup providers.
+
+### Subtask 1–3: EnrichPanel component with search, comparison, and merge (`333cb32`)
+- New `components/enrich-panel.tsx` — self-contained component
+- "Enrich" button on edit page (below header, above form)
+- Clicks triggers `lookupIsbn()` with book's ISBN-13/10
+- Comparison panel shows field-by-field diff:
+  - 🟢 NEW (green badge) — book field empty, provider has value → pre-checked
+  - 🟡 DIFFERENT (amber badge) — both have values that differ → unchecked
+  - Same values → hidden (nothing to enrich)
+- 19 enrichable fields: title, subtitle, publisher, year, place, pages, pagination, ISBN-13/10, LCCN, OCLC, DDC, LCC, edition, series, series_number, description, subjects, notes
+- Authors shown as info-only row (not auto-merged into contributors)
+- "Select all new" shortcut, per-field checkboxes
+- "Apply N fields" merges into form state → sets isDirty → user reviews & saves
+- Success message after apply
+
+### Subtask 4: No-ISBN fallback
+🔴 Todo — mini search form when book has no ISBN
+
+### Subtask 5: Multi-provider tabs
+🔴 Todo — try additional providers after first result
+
+---
+
 ## Bug Fixes & Cleanup (2026-02-07)
 
 ### Bug: External link URL missing from lookup
