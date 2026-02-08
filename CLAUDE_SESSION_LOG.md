@@ -94,7 +94,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | A2 | Feedback/bug queue | High | Medium | Review submitted feedback, change status, respond. From feature #5 above. |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. From feature #4 above. |
 | A4 | User management improvements | Medium | Medium | Invite codes, approve registrations (if not open signup), user details view. |
-| A5 | Announcement system | Low | Low | Post banner/message to all users ("Maintenance tonight", "New feature"). |
+| A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners, admin CRUD, dismissible, optional expiry. |
 | A6 | Data health checks | Low | Medium | Orphaned records, books without required fields, import error log, DB consistency. |
 
 ### Under Consideration (Future)

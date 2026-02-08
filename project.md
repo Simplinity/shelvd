@@ -179,6 +179,7 @@ status, action_needed, internal_notes
 
 ### Admin Dashboard
 - Stats bar (users, books, signups), user management (search, filter, suspend/ban/delete)
+- Announcement system: admin creates banners (info/warning/success/maintenance) with optional expiry, users see colored banner above header, dismissible via X button
 
 ### User Settings
 - Account: profile, security, address, subscription, danger zone
@@ -273,6 +274,7 @@ status, action_needed, internal_notes
 | Provenance tracking (ownership chain, evidence, associations) | ✅ Done |
 | Acquisition → Provenance migration | ✅ Done |
 | Edit/Add page collapsible sections | ✅ Done |
+| Announcement system (admin banners) | ✅ Done |
 | Multiple Collections per user | ✅ Done |
 | Custom Tags | ✅ Done |
 
@@ -325,7 +327,7 @@ Currently the app is desktop-only in practice. Key issues:
 | A2 | Feedback/bug queue | High | Medium | Review submitted feedback, change status, respond. |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. |
 | A4 | User management improvements | Medium | Medium | Invite codes, approve registrations, user details view. |
-| A5 | Announcement system | Low | Low | Post banner/message to all users. |
+| A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
 | A6 | Data health checks | Low | Medium | Orphaned records, missing required fields, import error log. |
 
 ### Under Consideration (Future)
@@ -365,6 +367,7 @@ shelvd/
 │   │   ├── (auth)/               # Login/register
 │   │   └── api/                  # API routes
 │   ├── components/
+│   │   ├── announcement-banner.tsx # Dismissible colored banners (layout)
 │   │   ├── collection-chips.tsx  # Toggleable collection chips (detail page)
 │   │   ├── collection-nav.tsx    # Nav dropdown for collections
 │   │   ├── move-to-library-button.tsx # One-click Wishlist → Library
@@ -388,7 +391,7 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-020
+├── supabase/migrations/          # 001-021
 └── project.md
 ```
 
