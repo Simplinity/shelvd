@@ -86,7 +86,7 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign with 4 visual spotlights, 3-tier pricing, humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
-| 8c | Privacy Policy (`/privacy`) | High | Low | GDPR-compliant privacy policy. Legally required. |
+| 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant, literary wit, 11 sections. Public route. |
 | 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, IP rights. Required before paid tiers. |
 | 8e | About / Story (`/about`) | High | Low | Origin story, mission, trust page with personality. |
 | 8f | Changelog (`/changelog`) | Medium | Low | Public release log. Date + title + description per entry. |

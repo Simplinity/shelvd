@@ -290,7 +290,7 @@ status, action_needed, internal_notes
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
-| 8c | Privacy Policy (`/privacy`) | High | Low | GDPR-compliant privacy policy. Data collected, storage, cookies, rights, contact. Legally required. |
+| 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant privacy policy with literary wit. 11 sections, third-party table, GDPR rights, contact. Accessible to visitors and logged-in users. |
 | 8d | Terms of Service (`/terms`) | High | Low | Usage terms, liability, account termination, IP rights. Required before paid tiers. |
 | 8e | About / Story (`/about`) | High | Low | Who's behind Shelvd, the origin story, mission, Belgian bibliophile angle. Trust page with personality and humor. |
 | 8f | Changelog (`/changelog`) | Medium | Low | Public-facing release log. Date, title, short description per entry. Shows product is alive and evolving. |

@@ -657,9 +657,13 @@ export default function Home() {
             <p className="text-xs text-muted-foreground italic">
               No books were harmed in the making of this software.
             </p>
-            <p className="text-xs text-muted-foreground">
-              © 2026 Simplinity - Bruno van Branden · Made in Belgium
-            </p>
+            <div className="flex items-center gap-4">
+              <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+              <span className="text-muted-foreground/30">·</span>
+              <p className="text-xs text-muted-foreground">
+                © 2026 Simplinity - Bruno van Branden · Made in Belgium
+              </p>
+            </div>
           </div>
         </div>
       </footer>
