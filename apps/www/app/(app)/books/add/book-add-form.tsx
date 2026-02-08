@@ -10,6 +10,7 @@ import CatalogEntryGenerator from '@/components/catalog-entry-generator'
 import { createClient } from '@/lib/supabase/client'
 import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
+import { toCatalogFormat, parseName, isSameAuthor } from '@/lib/name-utils'
 
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
@@ -410,7 +411,7 @@ export default function BookAddForm({ referenceData }: Props) {
           if (authorRole) {
             const newContributors: LocalContributor[] = data.authors.map((name: string, i: number) => ({
               tempId: `lookup-${i}-${Date.now()}`,
-              contributorName: name,
+              contributorName: toCatalogFormat(name),
               roleId: authorRole.id,
               roleName: authorRole.name,
             }))
@@ -633,16 +634,23 @@ export default function BookAddForm({ referenceData }: Props) {
         let contributorId: string
         const existing = referenceData.allContributors.find(
           c => c.name.toLowerCase() === nc.contributorName.toLowerCase()
+        ) || referenceData.allContributors.find(
+          c => isSameAuthor(c.name, nc.contributorName)
         )
         
         if (existing) {
           contributorId = existing.id
         } else {
+          const parsed = parseName(nc.contributorName)
           const { data: newContributor, error: createError } = await supabase
             .from('contributors')
             .insert({ 
-              canonical_name: nc.contributorName,
-              sort_name: nc.contributorName,
+              canonical_name: parsed.canonical_name,
+              sort_name: parsed.sort_name,
+              display_name: parsed.display_name,
+              family_name: parsed.family_name || null,
+              given_names: parsed.given_names || null,
+              type: parsed.type,
               created_by_user_id: user.id
             })
             .select('id')
