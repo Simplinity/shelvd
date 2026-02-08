@@ -151,7 +151,7 @@ Providers return "First Last" (e.g., "J.R.R. Tolkien") but the catalog standard 
 | 6b | Fix enrich: smart author comparison + auto-merge | Uses isSameAuthor() to skip known authors. New authors shown in "Last, First" format, checkable, auto-added as contributors on Apply. | ✅ Done (`0dacee5`) |
 | 6c | Fix add form: parse lookup authors | toCatalogFormat() on lookup load, parseName() on save (all fields), isSameAuthor() for existing matching | ✅ Done (`a0cb557`) |
 | 6d | Fix edit form + manual entry | parseName() on save, isSameAuthor() matching, placeholder "Last, First (e.g. Tolkien, J.R.R.)" on both forms | ✅ Done (`86131cc`) |
-| 6e | Backfill existing bad data | One-time script to fix contributors saved as "First Last" from past lookups | 🔴 Todo |
+| 6e | Backfill existing bad data | Fixed 7 records via SQL: 3 lookup "First Last" + 4 FileMaker ", Name" artifacts. 0 issues remaining. | ✅ Done (`e133aec`) |
 | 6f | Docs | Update session log, project.md, startup prompt | 🔴 Todo |
 
 ### Subtask 5: Multi-provider search (`80ba28c`)
