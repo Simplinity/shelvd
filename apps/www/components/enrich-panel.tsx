@@ -169,12 +169,12 @@ export default function EnrichPanel({ book, authorName, onApply }: EnrichPanelPr
   }
 
   const handlePickResult = async (item: SearchResultItem) => {
-    if (!item.editionKey) return
+    if (!item.edition_key) return
     setLoadingDetail(true)
     setError(null)
 
     try {
-      const response = await lookupDetails(item.editionKey, item.provider || selectedProvider)
+      const response = await lookupDetails(item.edition_key, item.provider || selectedProvider)
       if (response.success && response.data) {
         setProvider(response.provider)
         setRows(buildRows(book, response.data))
