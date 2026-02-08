@@ -54,11 +54,19 @@ const TRANSACTION_LABELS: Record<string, string> = {
 
 const ASSOCIATION_LABELS: Record<string, string> = {
   none: '',
+  dedication_copy: 'Dedication copy',
   association_copy: 'Association copy',
   presentation_copy: 'Presentation copy',
   inscribed: 'Inscribed by author',
+  signed: 'Signed by author',
+  authors_copy: "Author's own copy",
   annotated: 'Annotated by notable person',
   from_notable_collection: 'From notable collection',
+  ex_library: 'Ex-library',
+  review_copy: 'Review copy',
+  subscriber_copy: 'Subscriber copy',
+  prize_copy: 'Prize / award copy',
+  working_copy: 'Working copy',
 }
 
 const SOURCE_TYPE_LABELS: Record<string, string> = {

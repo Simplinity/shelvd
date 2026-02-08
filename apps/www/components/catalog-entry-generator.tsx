@@ -593,9 +593,13 @@ function generateCatalogEntry(book: BookData, lang: Language): string {
       // Association note
       if (entry.associationType && entry.associationType !== 'none') {
         const assocLabels: Record<string, string> = {
-          association_copy: 'association copy', presentation_copy: 'presentation copy',
-          inscribed: 'inscribed by author', annotated: 'annotated by notable person',
-          from_notable_collection: 'from notable collection',
+          dedication_copy: 'dedication copy', association_copy: 'association copy',
+          presentation_copy: 'presentation copy', inscribed: 'inscribed by author',
+          signed: 'signed by author', authors_copy: "author's own copy",
+          annotated: 'annotated by notable person', from_notable_collection: 'from notable collection',
+          ex_library: 'ex-library', review_copy: 'review copy',
+          subscriber_copy: 'subscriber copy', prize_copy: 'prize/award copy',
+          working_copy: 'working copy',
         }
         const label = assocLabels[entry.associationType] || ''
         if (entry.associationNote) {

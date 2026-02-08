@@ -81,11 +81,19 @@ const TRANSACTION_TYPES = [
 
 const ASSOCIATION_TYPES = [
   { value: 'none', label: 'None' },
+  { value: 'dedication_copy', label: 'Dedication copy' },
   { value: 'association_copy', label: 'Association copy' },
   { value: 'presentation_copy', label: 'Presentation copy' },
   { value: 'inscribed', label: 'Inscribed by author' },
+  { value: 'signed', label: 'Signed by author' },
+  { value: 'authors_copy', label: "Author's own copy" },
   { value: 'annotated', label: 'Annotated by notable person' },
   { value: 'from_notable_collection', label: 'From notable collection' },
+  { value: 'ex_library', label: 'Ex-library' },
+  { value: 'review_copy', label: 'Review copy' },
+  { value: 'subscriber_copy', label: 'Subscriber copy' },
+  { value: 'prize_copy', label: 'Prize / award copy' },
+  { value: 'working_copy', label: 'Working copy' },
 ]
 
 const SOURCE_TYPES = [
