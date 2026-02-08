@@ -132,8 +132,13 @@ Enrich mode lets users fill missing fields on existing books by searching ISBN l
 - "Apply N fields" merges into form state → sets isDirty → user reviews & saves
 - Success message after apply
 
-### Subtask 4: No-ISBN fallback
-🔴 Todo — mini search form when book has no ISBN
+### Subtask 4: No-ISBN fallback (`a8f61db`)
+- When book has no ISBN, "Enrich (search)" button opens mini search form
+- Title + first author pre-filled from book data
+- Provider picker (only field-search-capable providers)
+- Search results list, click to load details → comparison panel
+- Refactored into state machine: idle → search → results → compare
+- `authorName` prop passed from edit form (first Author contributor, or first any contributor)
 
 ### Subtask 5: Multi-provider tabs
 🔴 Todo — try additional providers after first result

@@ -407,6 +407,27 @@ export default function EnrichPanel({ book, authorName, onApply }: EnrichPanelPr
           All fields already match. Nothing to enrich.
         </div>
       )}
+
+      {/* Try another provider */}
+      {(mode === 'compare' || (mode === 'results' && searchResults.length === 0 && !searching)) && (
+        <div className="px-4 py-2.5 border-t border-border text-center">
+          <button
+            type="button"
+            onClick={async () => {
+              setApplied(false)
+              setError(null)
+              setSearchTitle(book.title || '')
+              setSearchAuthor(authorName || '')
+              setSearchResults([])
+              if (providers.length === 0) await loadProviders()
+              setMode('search')
+            }}
+            className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Search other providers
+          </button>
+        </div>
+      )}
     </div>
   )
 }
