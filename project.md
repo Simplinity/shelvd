@@ -288,7 +288,8 @@ status, action_needed, internal_notes
 | 5 | Feedback & bug reporting | High | Medium | Feedback form (bug/feature/question), `feedback` table with status tracking, auto-attach browser info. Admin queue. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
-| 8 | Landing page + Knowledge base | Medium | Medium | Marketing landing page, getting started guide, FAQ, feature docs. |
+| 8a | Landing page (marketing website) | High | Medium | Full redesign targeting collectors AND dealers. See detail below. |
+| 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
 
 #### #9 Mobile Responsiveness — Detail

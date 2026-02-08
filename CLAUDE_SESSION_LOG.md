@@ -84,7 +84,8 @@ All features up to and including **Provenance Tracking** are **complete**. 9 loo
 | 5 | Feedback & bug reporting | High | Medium | Single feedback form with type selector (bug/feature request/question). `feedback` table in Supabase with status tracking (new/acknowledged/resolved). Auto-attach browser info for bugs. Visible in admin. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Storage via Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
-| 8 | Landing page + Knowledge base | Medium | Medium | Marketing landing page, getting started guide, FAQ, feature documentation. |
+| 8a | Landing page (marketing website) | High | Medium | Full redesign targeting collectors AND dealers. Swiss design, humor, conversion-focused. |
+| 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit: hamburger nav (currently invisible <768px), touch targets, single-column forms, card-based lists, responsive charts. Desktop-only in practice today. |
 
 ### Todo — Admin Section Enhancements

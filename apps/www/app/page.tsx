@@ -1,4 +1,4 @@
-import { BookOpen, Check, Sparkles, Database, FileSpreadsheet, BarChart3, Search, Globe, Shield, Zap, ArrowRight } from 'lucide-react'
+import { BookOpen, Check, Sparkles, Database, FileSpreadsheet, BarChart3, Search, Globe, Shield, Zap, ArrowRight, Tags, Layers, Users, Clock, Landmark, Import, Download, RefreshCw, BookMarked, Scale, PenTool, Eye, ChevronRight, Star, Megaphone } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="w-full px-6 py-4 flex justify-between items-center">
+      <header className="w-full px-6 py-4 flex justify-between items-center max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 bg-primary flex items-center justify-center">
             <BookOpen className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
@@ -28,24 +28,33 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* Hero */}
-      <section className="flex-1 flex items-center justify-center p-8 min-h-[80vh]">
-        <div className="text-center max-w-3xl">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-            The catalog your
-            <br />
-            <span className="text-primary">books deserve.</span>
-          </h1>
-          
-          <p className="text-muted-foreground text-lg md:text-xl mb-10 max-w-xl mx-auto">
-            Professional collection management for serious collectors. 
-            First editions, signed copies, fine bindings — cataloged with bibliographic precision.
+      {/* ═══════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════ */}
+      <section className="flex items-center justify-center px-6 pt-16 pb-24 md:pt-24 md:pb-32">
+        <div className="text-center max-w-4xl">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
+            For collectors &amp; dealers who take books seriously
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.05]">
+            Your first edition
+            <br />
+            Hemingway deserves
+            <br />
+            <span className="text-primary">better than a spreadsheet.</span>
+          </h1>
+          
+          <p className="text-muted-foreground text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+            Shelvd is professional collection management for antiquarian books, 
+            rare editions, and fine bindings. Catalog with bibliographic precision. 
+            Track provenance. Know your collection's value.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button asChild size="lg" className="h-12 px-8 text-sm font-semibold uppercase tracking-wide">
               <Link href="/signup">
-                Start For Free
+                Start For Free <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-12 px-8 text-sm font-semibold uppercase tracking-wide">
@@ -55,143 +64,401 @@ export default function Home() {
             </Button>
           </div>
           
-          {/* Swiss Design element: red line */}
-          <div className="mt-16 w-24 h-1 bg-primary mx-auto" />
-          
-          <p className="mt-8 text-xs text-muted-foreground uppercase tracking-widest">
-            Built for collectors who know the difference between a first edition and a first printing.
+          {/* Swiss Design element */}
+          <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+          <p className="text-xs text-muted-foreground italic">
+            Built for people who know the difference between a first edition and a first printing.
           </p>
         </div>
       </section>
 
-      {/* Early Access Banner */}
-      <section className="bg-primary text-primary-foreground py-6">
+      {/* ═══════════════════════════════════════
+          NUMBERS STRIP
+      ═══════════════════════════════════════ */}
+      <section className="bg-foreground text-background py-12">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <NumberStat number="76" label="Historical book formats" sublabel="Because 'paperback' doesn't begin to cover it" />
+          <NumberStat number="9" label="Lookup providers" sublabel="From Library of Congress to BnF" />
+          <NumberStat number="69" label="MARC contributor roles" sublabel="Author is just the beginning" />
+          <NumberStat number="45+" label="Cover types & bindings" sublabel="Half-leather, marbled boards, vellum…" />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          EARLY ACCESS BANNER
+      ═══════════════════════════════════════ */}
+      <section className="bg-primary text-primary-foreground py-5">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <p className="text-sm md:text-base font-medium uppercase tracking-wide">
-            <Sparkles className="inline w-4 h-4 mr-2 mb-1" />
+            <Sparkles className="inline w-4 h-4 mr-2 mb-0.5" />
             Early Access — First 1,000 users get lifetime free access
-            <Sparkles className="inline w-4 h-4 ml-2 mb-1" />
+            <Sparkles className="inline w-4 h-4 ml-2 mb-0.5" />
           </p>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 px-6 bg-background">
+      {/* ═══════════════════════════════════════
+          FOR COLLECTORS
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">For Collectors</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                For people who judge books
+                <br />
+                by their covers. <span className="text-muted-foreground">Literally.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+                Whether you have 50 treasured volumes or 5,000, Shelvd gives you the tools to 
+                catalog, value, and understand your collection the way a professional bibliographer would.
+              </p>
+              <ul className="space-y-4">
+                <BulletPoint>Track condition, binding, format, paper type — not just title and author</BulletPoint>
+                <BulletPoint>Full provenance chains: who owned it, where it came from, evidence and sources</BulletPoint>
+                <BulletPoint>Real-time collection valuation with multi-currency support (29 currencies)</BulletPoint>
+                <BulletPoint>Statistics dashboard: value trends, top authors, acquisition history</BulletPoint>
+                <BulletPoint>Multiple collections: Library, Wishlist, or create your own</BulletPoint>
+              </ul>
+            </div>
+            <div className="bg-muted/30 border p-8 space-y-6">
+              <QuoteBlock 
+                quote="I used to track everything in Excel. 2,300 rows. Three tabs. One formula error away from disaster." 
+                author="Every collector before Shelvd"
+              />
+              <div className="border-t pt-6">
+                <p className="text-sm font-medium mb-3">Your books get the catalog entry they deserve:</p>
+                <div className="bg-background border p-4 font-mono text-xs leading-relaxed text-muted-foreground">
+                  <p>Tolkien, J.R.R.</p>
+                  <p className="ml-4">The Lord of the Rings / J.R.R. Tolkien. —</p>
+                  <p className="ml-4">London : George Allen & Unwin, 1954-1955. —</p>
+                  <p className="ml-4">3 v. ; 22 cm. — First edition, first impression.</p>
+                  <p className="ml-4 mt-1 text-primary">Provenance: From the library of W.H. Auden</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          FOR DEALERS
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 bg-background border p-8 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <MiniStat label="Books cataloged" value="4,712" />
+                <MiniStat label="Total inventory value" value="€283,400" />
+                <MiniStat label="Unrealized gain" value="+42%" accent />
+                <MiniStat label="Sold this year" value="187" />
+              </div>
+              <div className="border-t pt-6">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Quick catalog export</p>
+                <div className="flex gap-2">
+                  <span className="px-3 py-1.5 bg-muted text-xs font-medium">Excel</span>
+                  <span className="px-3 py-1.5 bg-muted text-xs font-medium">CSV</span>
+                  <span className="px-3 py-1.5 bg-muted text-xs font-medium">JSON</span>
+                  <span className="px-3 py-1.5 bg-muted text-xs font-medium">ISBD (4 languages)</span>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">For Dealers</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                Sell books.
+                <br />
+                <span className="text-muted-foreground">Not your soul to Excel.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+                Professional inventory management with the bibliographic depth your stock demands. 
+                Generate ISBD catalog entries in four languages. Track provenance for discerning buyers.
+                Know your margins.
+              </p>
+              <ul className="space-y-4">
+                <BulletPoint>ISBD-compliant catalog entries in EN, NL, FR, DE — one click</BulletPoint>
+                <BulletPoint>Provenance tracking with auction records, dealer catalogs, certificates</BulletPoint>
+                <BulletPoint>Profit/loss tracking: acquisition cost vs. estimated value, per book and total</BulletPoint>
+                <BulletPoint>Bulk import from spreadsheets, enrich from 9 library databases</BulletPoint>
+                <BulletPoint>14-field advanced search across your entire inventory</BulletPoint>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          FEATURE SHOWCASE
+      ═══════════════════════════════════════ */}
+      <section id="features" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Everything a serious collector needs.
+              We obsessed over the details.
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Not another reading list app. Shelvd is built from the ground up for bibliophiles who collect physical books as valuable objects.
+              So you can obsess over your books.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Cataloging */}
+          <FeatureCategory title="Cataloging & Description">
             <FeatureCard
-              icon={<Database className="w-6 h-6" />}
+              icon={<Database className="w-5 h-5" />}
               title="Bibliographic Depth"
-              description="76 historical book formats (Folio, Quarto, Octavo...), 45+ cover types, 65 binding styles. Describe your books the way they deserve."
+              description="76 book formats, 45+ cover types, 65 bindings, 3,887 BISAC subject codes. Describe every physical detail."
             />
             <FeatureCard
-              icon={<FileSpreadsheet className="w-6 h-6" />}
-              title="Professional Cataloging"
-              description="ISBD-compliant catalog entries in 4 languages. 69 MARC contributor roles. Roman numerals, circa dates, bibliographic pagination."
+              icon={<PenTool className="w-5 h-5" />}
+              title="ISBD Catalog Entries"
+              description="Professional catalog entries in 4 languages. Roman numerals, circa dates, bibliographic pagination. Your local auction house will be impressed."
             />
             <FeatureCard
-              icon={<Search className="w-6 h-6" />}
-              title="Powerful Search"
-              description="Search across 14 fields. Find books by condition, binding, language, publisher, or any combination. Instant results across 5,000+ books."
+              icon={<Users className="w-5 h-5" />}
+              title="69 Contributor Roles"
+              description="Author, illustrator, translator, binder, engraver, cartographer… because books are made by more than just writers."
+            />
+          </FeatureCategory>
+
+          {/* Search & Organization */}
+          <FeatureCategory title="Search & Organization">
+            <FeatureCard
+              icon={<Search className="w-5 h-5" />}
+              title="Advanced Search"
+              description="14 searchable fields with AND/OR logic. Find every signed octavo in French published before 1850. In seconds."
             />
             <FeatureCard
-              icon={<BarChart3 className="w-6 h-6" />}
-              title="Collection Statistics"
-              description="Track total value, profit/loss, condition distribution. See your top authors, publishers, acquisition trends at a glance."
+              icon={<Layers className="w-5 h-5" />}
+              title="Collections"
+              description="Library, Wishlist, and unlimited custom collections. Organize by theme, room, project, or whim."
             />
             <FeatureCard
-              icon={<FileSpreadsheet className="w-6 h-6" />}
+              icon={<Tags className="w-5 h-5" />}
+              title="Custom Tags"
+              description="Color-coded tags for any classification you need. 'Needs rebinding', 'Gift ideas', 'Do not sell under threat of death'."
+            />
+          </FeatureCategory>
+
+          {/* Provenance & Value */}
+          <FeatureCategory title="Provenance & Value">
+            <FeatureCard
+              icon={<Landmark className="w-5 h-5" />}
+              title="Provenance Tracking"
+              description="Full ownership chains: person, institution, dealer, auction house. Evidence types, association copies, dedication copies. The whole story."
+            />
+            <FeatureCard
+              icon={<Scale className="w-5 h-5" />}
+              title="Valuation & P/L"
+              description="Track acquisition price, estimated value, and profit/loss. 29 currencies with live ECB exchange rates. See your collection's worth at a glance."
+            />
+            <FeatureCard
+              icon={<BarChart3 className="w-5 h-5" />}
+              title="Statistics Dashboard"
+              description="Total value, condition distribution, top publishers, acquisition trends by year. More charts than a stockbroker's office."
+            />
+          </FeatureCategory>
+
+          {/* Data & Integration */}
+          <FeatureCategory title="Data & Integration">
+            <FeatureCard
+              icon={<Globe className="w-5 h-5" />}
+              title="9 Lookup Providers"
+              description="Library of Congress, BnF, DNB, K10plus, SUDOC, LIBRIS, Open Library, Google Books, Standaard Boekhandel. One search, nine libraries."
+            />
+            <FeatureCard
+              icon={<RefreshCw className="w-5 h-5" />}
+              title="Enrich Mode"
+              description="Already cataloged? Search providers and merge new data field-by-field. Green for new, amber for different. You pick what stays."
+            />
+            <FeatureCard
+              icon={<Download className="w-5 h-5" />}
               title="Import & Export"
-              description="Excel import with smart templates. Export to Excel, CSV, or JSON. Your data is always yours."
+              description="Bulk import from Excel with smart templates. Export to Excel, CSV, or JSON anytime. Your data is yours. We mean it."
             />
-            <FeatureCard
-              icon={<Zap className="w-6 h-6" />}
-              title="Fast & Modern"
-              description="Built with Next.js 15. Instant page loads, responsive design, works beautifully on desktop and mobile."
-            />
-          </div>
+          </FeatureCategory>
         </div>
       </section>
 
-      {/* Why Shelvd */}
-      <section className="py-24 px-6 bg-muted/30">
+      {/* ═══════════════════════════════════════
+          THE SHELVD DIFFERENCE
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6 bg-muted/20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Why collectors choose Shelvd
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            <ComparisonRow 
-              problem="ISBN scanners are useless for pre-1970 books"
-              solution="Shelvd is built around bibliographic cataloging, not barcodes"
-            />
-            <ComparisonRow 
-              problem="CLZ and LibraryThing feel outdated"
-              solution="Modern web app with Swiss Design — clean, fast, beautiful"
-            />
-            <ComparisonRow 
-              problem="No app understands fine bindings and paper types"
-              solution="Half leather, marbled endpapers, gilt edges — we speak your language"
-            />
-            <ComparisonRow 
-              problem="Condition grading is oversimplified"
-              solution="Separate dust jacket condition, text block condition, detailed notes"
-            />
-            <ComparisonRow 
-              problem="Your data is trapped in proprietary formats"
-              solution="Full Excel/CSV/JSON export anytime. Your collection, your data."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Coming Soon */}
-      <section className="py-24 px-6 bg-background">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              And we're just getting started.
+              Not another book app.
             </h2>
             <p className="text-muted-foreground text-lg">
-              Features in development — available soon for all users.
+              Goodreads tracks what you've read. Shelvd catalogs what you own.
+              <br />
+              <span className="text-sm italic">There's a difference. You know there is.</span>
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <ComingSoonItem>Book images with zoom</ComingSoonItem>
-            <ComingSoonItem>Wishlist / Desiderata</ComingSoonItem>
-            <ComingSoonItem>Custom collections & tags</ComingSoonItem>
-            <ComingSoonItem>Insurance reports (PDF)</ComingSoonItem>
-            <ComingSoonItem>Public catalog sharing</ComingSoonItem>
-            <ComingSoonItem>Duplicate detection</ComingSoonItem>
-            <ComingSoonItem>WooCommerce & Catawiki export</ComingSoonItem>
-            <ComingSoonItem>Provenance tracking</ComingSoonItem>
+          <div className="space-y-4">
+            <ComparisonRow 
+              problem="ISBN scanners are useless for pre-1970 books"
+              solution="Built around bibliographic cataloging, not barcodes. (We tried the barcode thing. It didn't end well.)"
+            />
+            <ComparisonRow 
+              problem="Every app treats books as just 'title + author + cover'"
+              solution="76 formats, 45 cover types, 65 bindings, pagination, collation, paper type, edge gilding…"
+            />
+            <ComparisonRow 
+              problem="'Condition: Good' tells you nothing"
+              solution="Separate dust jacket condition, text block, detailed notes. Foxing, bumped corners, ownership marks — we speak your language."
+            />
+            <ComparisonRow 
+              problem="Provenance? What provenance?"
+              solution="Full ownership chains with evidence types, auction records, dealer catalogs, association copies. Because 'I got it at a flea market' is not a provenance chain."
+            />
+            <ComparisonRow 
+              problem="Your collection data is trapped in proprietary apps"
+              solution="Full Excel/CSV/JSON export anytime. No lock-in. No hostage negotiations with customer support."
+            />
+            <ComparisonRow 
+              problem="CLZ and LibraryThing feel like they were designed in 2005"
+              solution="Because they were. Shelvd is built with modern tech, Swiss design principles, and an unreasonable amount of attention to typography."
+            />
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* ═══════════════════════════════════════
+          PROVENANCE SPOTLIGHT
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Provenance Tracking</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                Every book has a story.
+                <br />
+                <span className="text-muted-foreground">Now you can tell it.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Track the complete chain of custody: from monastery library to aristocratic collection 
+                to auction house to the dealer on that rainy Tuesday in Ghent to your shelf. 
+                With evidence, sources, and all 14 types of association.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Dedication copy? Presentation copy? Author's copy? Ex-library? 
+                We know the difference and so do you.
+              </p>
+            </div>
+            <div className="border bg-background">
+              <div className="border-b p-4 bg-muted/30">
+                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Provenance Timeline</p>
+              </div>
+              <div className="p-6 space-y-0">
+                <TimelineEntry 
+                  position={1}
+                  owner="Monastery of St. Gall"
+                  type="Monastery"
+                  dates="c. 1490 – 1798"
+                  detail="Dissolution of monasteries"
+                  isFirst
+                />
+                <TimelineEntry 
+                  position={2}
+                  owner="Baron von Hügel"
+                  type="Person"
+                  dates="1802 – 1870"
+                  detail="Purchased at auction, Zurich"
+                />
+                <TimelineEntry 
+                  position={3}
+                  owner="Christie's, London"
+                  type="Auction House"
+                  dates="1871"
+                  detail="Lot 247, £42"
+                />
+                <TimelineEntry 
+                  position={4}
+                  owner="Current owner"
+                  type="Self"
+                  dates="2019 – present"
+                  detail="Via Antiquariaat De Roo"
+                  isLast
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          PRICING / EARLY ACCESS
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            Simple pricing. No surprises.
+          </h2>
+          <p className="text-muted-foreground text-lg mb-4">
+            Unlike that "mint condition" book with the hidden foxing on page 47.
+          </p>
+          <p className="text-sm text-muted-foreground mb-12">
+            We're in early access. The first 1,000 users get lifetime free access — no credit card, no catch.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            {/* Free tier */}
+            <div className="border-2 border-primary bg-background p-8 text-left relative">
+              <div className="absolute -top-3 left-6 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1">
+                Now available
+              </div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Early Access</p>
+              <p className="text-4xl font-bold mb-1">Free</p>
+              <p className="text-xs text-muted-foreground mb-6">Forever, for the first 1,000 users</p>
+              <ul className="space-y-3 mb-8">
+                <PricingItem>Unlimited books</PricingItem>
+                <PricingItem>All features included</PricingItem>
+                <PricingItem>Full export anytime</PricingItem>
+                <PricingItem>No credit card required</PricingItem>
+              </ul>
+              <Button asChild className="w-full h-11 text-sm font-semibold uppercase tracking-wide">
+                <Link href="/signup">
+                  Claim Your Spot <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Paid tier */}
+            <div className="border bg-background p-8 text-left opacity-70">
+              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Collector Pro</p>
+              <p className="text-4xl font-bold mb-1">€7<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
+              <p className="text-xs text-muted-foreground mb-6">After early access period</p>
+              <ul className="space-y-3 mb-8">
+                <PricingItem muted>Everything in Free</PricingItem>
+                <PricingItem muted>Image storage</PricingItem>
+                <PricingItem muted>Public catalog sharing</PricingItem>
+                <PricingItem muted>Priority support</PricingItem>
+              </ul>
+              <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled>
+                Coming Soon
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          FINAL CTA
+      ═══════════════════════════════════════ */}
       <section className="py-24 px-6 bg-foreground text-background">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
-            Join the first 1,000.
+            Your books are waiting.
           </h2>
-          <p className="text-lg md:text-xl mb-4 opacity-80">
-            We're in early access. Sign up now and get lifetime free access — no credit card, no catch.
+          <p className="text-lg md:text-xl mb-2 opacity-80">
+            Don't leave them uncataloged.
           </p>
-          <p className="text-sm mb-10 opacity-60">
-            After 1,000 users, paid plans will start at €7/month. Early users keep free access forever.
+          <p className="text-sm mb-10 opacity-50">
+            They've survived centuries. The least you can do is give them a proper database entry.
           </p>
           
           <Button asChild size="lg" variant="secondary" className="h-14 px-10 text-base font-semibold uppercase tracking-wide">
@@ -202,59 +469,143 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-6 border-t">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-primary flex items-center justify-center">
-              <BookOpen className="w-3 h-3 text-primary-foreground" strokeWidth={2.5} />
+      {/* ═══════════════════════════════════════
+          FOOTER
+      ═══════════════════════════════════════ */}
+      <footer className="py-10 px-6 border-t">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-primary flex items-center justify-center">
+                <BookOpen className="w-3 h-3 text-primary-foreground" strokeWidth={2.5} />
+              </div>
+              <span className="text-sm font-bold tracking-tight uppercase">Shelvd</span>
             </div>
-            <span className="text-sm font-bold tracking-tight uppercase">Shelvd</span>
+            <p className="text-xs text-muted-foreground italic">
+              No books were harmed in the making of this software.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              © 2026 Simplinity · Made in Belgium
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground">
-            © 2026 Bruno van Branden / Simplinity
-          </p>
         </div>
       </footer>
     </main>
   )
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+/* ═══════════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════════ */
+
+function NumberStat({ number, label, sublabel }: { number: string; label: string; sublabel: string }) {
   return (
-    <div className="p-6 border bg-background hover:border-primary/50 transition-colors">
-      <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-4 text-primary">
+    <div>
+      <p className="text-4xl md:text-5xl font-bold mb-1">{number}</p>
+      <p className="text-sm font-medium uppercase tracking-wide opacity-80">{label}</p>
+      <p className="text-xs opacity-50 mt-1">{sublabel}</p>
+    </div>
+  )
+}
+
+function BulletPoint({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3">
+      <div className="w-5 h-5 bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <Check className="w-3 h-3 text-primary" />
+      </div>
+      <span className="text-sm leading-relaxed">{children}</span>
+    </li>
+  )
+}
+
+function QuoteBlock({ quote, author }: { quote: string; author: string }) {
+  return (
+    <blockquote>
+      <p className="text-sm italic text-muted-foreground leading-relaxed">"{quote}"</p>
+      <cite className="text-xs text-muted-foreground mt-2 block not-italic">— {author}</cite>
+    </blockquote>
+  )
+}
+
+function MiniStat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="p-4 bg-muted/30 border">
+      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{label}</p>
+      <p className={`text-xl font-bold ${accent ? 'text-green-600' : ''}`}>{value}</p>
+    </div>
+  )
+}
+
+function FeatureCategory({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-12 last:mb-0">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-0.5 bg-primary" />
+        <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">{title}</h3>
+      </div>
+      <div className="grid md:grid-cols-3 gap-6">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <div className="p-6 border bg-background hover:border-primary/40 transition-colors group">
+      <div className="w-10 h-10 bg-primary/10 flex items-center justify-center mb-4 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
         {icon}
       </div>
-      <h3 className="text-lg font-bold mb-2">{title}</h3>
+      <h4 className="text-base font-bold mb-2">{title}</h4>
       <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
     </div>
   )
 }
 
-function ComparisonRow({ problem, solution }: { problem: string, solution: string }) {
+function ComparisonRow({ problem, solution }: { problem: string; solution: string }) {
   return (
     <div className="flex flex-col md:flex-row gap-4 md:gap-8 p-6 bg-background border">
       <div className="flex-1">
-        <p className="text-sm text-muted-foreground mb-1 uppercase tracking-wide">The problem</p>
-        <p className="font-medium">{problem}</p>
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">The problem</p>
+        <p className="text-sm font-medium">{problem}</p>
       </div>
-      <div className="hidden md:block w-px bg-border" />
+      <div className="hidden md:flex items-center">
+        <ChevronRight className="w-4 h-4 text-primary" />
+      </div>
       <div className="flex-1">
-        <p className="text-sm text-primary mb-1 uppercase tracking-wide">Shelvd</p>
-        <p className="font-medium">{solution}</p>
+        <p className="text-[10px] uppercase tracking-widest text-primary mb-1.5">Shelvd</p>
+        <p className="text-sm font-medium">{solution}</p>
       </div>
     </div>
   )
 }
 
-function ComingSoonItem({ children }: { children: React.ReactNode }) {
+function TimelineEntry({ position, owner, type, dates, detail, isFirst, isLast }: { 
+  position: number; owner: string; type: string; dates: string; detail: string; isFirst?: boolean; isLast?: boolean 
+}) {
   return (
-    <div className="flex items-center gap-3 p-4 border bg-muted/30">
-      <div className="w-6 h-6 border-2 border-primary/30 flex items-center justify-center">
-        <div className="w-2 h-2 bg-primary/30" />
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold flex-shrink-0 ${isLast ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30'}`}>
+          {position}
+        </div>
+        {!isLast && <div className="w-px h-full bg-muted-foreground/20 min-h-[2rem]" />}
       </div>
-      <span className="text-sm font-medium">{children}</span>
+      <div className="pb-6">
+        <p className="text-sm font-semibold">{owner}</p>
+        <p className="text-xs text-muted-foreground">{type} · {dates}</p>
+        <p className="text-xs text-muted-foreground italic mt-0.5">{detail}</p>
+      </div>
     </div>
+  )
+}
+
+function PricingItem({ children, muted }: { children: React.ReactNode; muted?: boolean }) {
+  return (
+    <li className="flex items-center gap-2">
+      <Check className={`w-4 h-4 flex-shrink-0 ${muted ? 'text-muted-foreground/50' : 'text-primary'}`} />
+      <span className={`text-sm ${muted ? 'text-muted-foreground' : ''}`}>{children}</span>
+    </li>
   )
 }
