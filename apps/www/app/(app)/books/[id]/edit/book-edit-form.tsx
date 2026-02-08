@@ -1094,8 +1094,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
               <textarea value={formData.summary || ''} onChange={e => handleChange('summary', e.target.value)} rows={3} className={textareaClass} />
             </div>
             <div>
-              <label className={labelClass}>Dedication / Inscription</label>
-              <textarea value={(formData as any).dedication_text || ''} onChange={e => handleChange('dedication_text' as keyof Book, e.target.value)} rows={2} placeholder="Transcription of dedication or inscription" className={textareaClass} />
+              <label className={labelClass}>Printed Dedication</label>
+              <textarea value={(formData as any).dedication_text || ''} onChange={e => handleChange('dedication_text' as keyof Book, e.target.value)} rows={2} placeholder="Printed dedication as it appears in the book" className={textareaClass} />
             </div>
             <div>
               <label className={labelClass}>Colophon</label>

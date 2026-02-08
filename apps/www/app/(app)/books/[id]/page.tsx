@@ -686,7 +686,7 @@ export default async function BookDetailPage({ params }: PageProps) {
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Notes</h2>
             <dl className="space-y-4">
               <Field label="Summary" value={bookData.summary} />
-              <Field label="Dedication / Inscription" value={bookData.dedication_text} />
+              <Field label="Printed Dedication" value={bookData.dedication_text} />
               <Field label="Colophon" value={bookData.colophon_text} />
               <Field label="Bibliography" value={bookData.bibliography} />
               <Field label="Illustrations" value={bookData.illustrations || bookData.illustrations_description} />

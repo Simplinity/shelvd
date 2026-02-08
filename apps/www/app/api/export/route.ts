@@ -95,7 +95,7 @@ const columns: { header: string; key: string; width: number }[] = [
   { header: 'Bibliography', key: 'bibliography', width: 45 },
   { header: 'Illustrations Description', key: 'illustrations_description', width: 45 },
   { header: 'Signatures Description', key: 'signatures_description', width: 45 },
-  { header: 'Dedication / Inscription', key: 'dedication_text', width: 45 },
+  { header: 'Printed Dedication', key: 'dedication_text', width: 45 },
   { header: 'Colophon', key: 'colophon_text', width: 45 },
   { header: 'Private Notes', key: 'internal_notes', width: 45 },
   { header: 'Catalog Entry', key: 'catalog_entry', width: 55 },
