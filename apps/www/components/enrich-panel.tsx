@@ -174,7 +174,7 @@ export default function EnrichPanel({ book, authorName, onApply }: EnrichPanelPr
     setError(null)
 
     try {
-      const response = await lookupDetails(item.edition_key, item.provider || selectedProvider)
+      const response = await lookupDetails(item.edition_key, selectedProvider)
       if (response.success && response.data) {
         setProvider(response.provider)
         setRows(buildRows(book, response.data))
