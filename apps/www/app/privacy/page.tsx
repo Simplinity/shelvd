@@ -1,6 +1,7 @@
-import { BookOpen, ArrowLeft, Shield, Mail } from 'lucide-react'
+import { ArrowLeft, Shield, Mail } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { MarketingHeader } from '@/components/marketing/marketing-header'
+import { MarketingFooter } from '@/components/marketing/marketing-footer'
 
 export const metadata = {
   title: 'Privacy Policy — Shelvd',
@@ -10,30 +11,7 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="w-full px-6 py-4 flex justify-between items-center max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-            <div className="w-9 h-9 bg-primary flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
-            </div>
-            <span className="text-lg font-bold tracking-tight uppercase">Shelvd</span>
-          </Link>
-        </div>
-        <nav className="flex items-center gap-4">
-          <Link 
-            href="/login" 
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Sign In
-          </Link>
-          <Button asChild size="sm">
-            <Link href="/signup">
-              Get Started
-            </Link>
-          </Button>
-        </nav>
-      </header>
+      <MarketingHeader />
 
       {/* Hero */}
       <section className="px-6 pt-16 pb-12 md:pt-20 md:pb-16">
@@ -335,25 +313,7 @@ export default function PrivacyPage() {
         </div>
       </article>
 
-      {/* Footer */}
-      <footer className="py-10 px-6 border-t mt-auto">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-              <div className="w-7 h-7 bg-primary flex items-center justify-center">
-                <BookOpen className="w-3 h-3 text-primary-foreground" strokeWidth={2.5} />
-              </div>
-              <span className="text-sm font-bold tracking-tight uppercase">Shelvd</span>
-            </Link>
-            <p className="text-xs text-muted-foreground italic">
-              No books were harmed in the making of this software.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              © 2026 Simplinity - Bruno van Branden · Made in Belgium
-            </p>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </main>
   )
 }
