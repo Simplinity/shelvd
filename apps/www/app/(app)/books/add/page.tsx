@@ -41,7 +41,6 @@ export default async function BookAddPage() {
     { data: allContributors },
     { data: seriesData },
     { data: publisherData },
-    { data: acquiredFromData },
     { data: storageLocationData },
     { data: shelfData },
     { data: shelfSectionData },
@@ -60,7 +59,6 @@ export default async function BookAddPage() {
     // Get distinct values for combobox fields
     supabase.from('books').select('series').not('series', 'is', null).order('series'),
     supabase.from('books').select('publisher_name').not('publisher_name', 'is', null).order('publisher_name'),
-    supabase.from('books').select('acquired_from').not('acquired_from', 'is', null).order('acquired_from'),
     supabase.from('books').select('storage_location').not('storage_location', 'is', null).order('storage_location'),
     supabase.from('books').select('shelf').not('shelf', 'is', null).order('shelf'),
     supabase.from('books').select('shelf_section').not('shelf_section', 'is', null).order('shelf_section'),
@@ -116,7 +114,6 @@ export default async function BookAddPage() {
     allContributors: (allContributors || []).map((c: any) => ({ id: c.id, name: c.canonical_name })),
     seriesList: getUniqueValues(seriesData, 'series'),
     publisherList: getUniqueValues(publisherData, 'publisher_name'),
-    acquiredFromList: getUniqueValues(acquiredFromData, 'acquired_from'),
     storageLocationList: getUniqueValues(storageLocationData, 'storage_location'),
     shelfList: getUniqueValues(shelfData, 'shelf'),
     shelfSectionList: getUniqueValues(shelfSectionData, 'shelf_section'),

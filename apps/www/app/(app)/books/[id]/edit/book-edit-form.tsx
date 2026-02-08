@@ -46,7 +46,6 @@ type ReferenceData = {
   allContributors: ExistingContributor[]
   seriesList: string[]
   publisherList: string[]
-  acquiredFromList: string[]
   storageLocationList: string[]
   shelfList: string[]
   shelfSectionList: string[]

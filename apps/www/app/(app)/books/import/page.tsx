@@ -30,7 +30,7 @@ export default async function ImportBooksPage() {
   // Get distinct values for combobox fields
   const { data: books } = await supabase
     .from('books')
-    .select('series, publisher_name, acquired_from, storage_location, shelf, shelf_section, publication_place, printing_place')
+    .select('series, publisher_name, storage_location, shelf, shelf_section, publication_place, printing_place')
 
   const getDistinct = (field: string) => {
     if (!books) return []
@@ -47,7 +47,6 @@ export default async function ImportBooksPage() {
     allContributors: (allContributors || []).map(c => ({ id: c.id, name: c.canonical_name })),
     seriesList: getDistinct('series'),
     publisherList: getDistinct('publisher_name'),
-    acquiredFromList: getDistinct('acquired_from'),
     storageLocationList: getDistinct('storage_location'),
     shelfList: getDistinct('shelf'),
     shelfSectionList: getDistinct('shelf_section'),

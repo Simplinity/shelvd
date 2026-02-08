@@ -1141,42 +1141,59 @@ export default function BooksPage() {
         bookIds = await getBookIdsForTag(tId)
       }
 
-      // Fetch price columns only
-      let allPrices: any[] = []
+      // Fetch estimated values from books
+      let allBooks: any[] = []
       if (bookIds !== null) {
-        // Batched fetch for filtered set
         for (let i = 0; i < bookIds.length; i += 500) {
           const batch = bookIds.slice(i, i + 500)
           const { data } = await supabase
             .from('books')
-            .select('acquired_price, acquired_currency, estimated_value, price_currency')
+            .select('id, estimated_value, price_currency')
             .eq('user_id', user.id)
             .in('id', batch)
-          if (data) allPrices.push(...data)
+          if (data) allBooks.push(...data)
         }
       } else {
-        // All books — paginated
         let offset = 0
         while (true) {
           const { data } = await supabase
             .from('books')
-            .select('acquired_price, acquired_currency, estimated_value, price_currency')
+            .select('id, estimated_value, price_currency')
             .eq('user_id', user.id)
             .range(offset, offset + 999)
           if (!data || data.length === 0) break
-          allPrices.push(...data)
+          allBooks.push(...data)
           if (data.length < 1000) break
           offset += 1000
         }
       }
 
+      // Fetch acquisition prices from provenance "self" entries
+      const allBookIds = allBooks.map((b: any) => b.id)
+      const acqMap = new Map<string, number>()
+      for (let i = 0; i < allBookIds.length; i += 500) {
+        const batch = allBookIds.slice(i, i + 500)
+        const { data } = await supabase
+          .from('provenance_entries')
+          .select('book_id, price_paid')
+          .eq('owner_type', 'self')
+          .not('price_paid', 'is', null)
+          .in('book_id', batch)
+        data?.forEach((p: any) => {
+          if (!acqMap.has(p.book_id) || Number(p.price_paid) > 0) {
+            acqMap.set(p.book_id, Number(p.price_paid))
+          }
+        })
+      }
+
       let totalAcquired = 0
       let totalEstimated = 0
       let count = 0
-      for (const b of allPrices) {
-        if (b.acquired_price) totalAcquired += Number(b.acquired_price)
+      for (const b of allBooks) {
+        const acqPrice = acqMap.get(b.id)
+        if (acqPrice) totalAcquired += acqPrice
         if (b.estimated_value) totalEstimated += Number(b.estimated_value)
-        if (b.acquired_price || b.estimated_value) count++
+        if (acqPrice || b.estimated_value) count++
       }
 
       setValueSummary({ totalAcquired, totalEstimated, bookCount: count, currency: displayCur })

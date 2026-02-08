@@ -18,7 +18,7 @@ export async function POST() {
     while (true) {
       const { data: booksPage, error: booksError } = await supabase
         .from('books')
-        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, acquired_price, sales_price, acquired_currency, price_currency, action_needed, publication_year, acquired_date, isbn_13')
+        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, sales_price, price_currency, action_needed, publication_year, isbn_13')
         .eq('user_id', user.id)
         .range(bookOffset, bookOffset + 999)
       
@@ -142,6 +142,25 @@ export async function POST() {
     }
 
     // ============================================
+    // PROVENANCE: Acquisition data from "self" entries
+    // ============================================
+    const acquisitionMap = new Map<string, { price_paid: number | null; price_currency: string | null; date_from: string | null }>()
+    for (let i = 0; i < bookIds.length; i += batchSize) {
+      const batchIds = bookIds.slice(i, i + batchSize)
+      const { data: batchProv } = await supabase
+        .from('provenance_entries')
+        .select('book_id, price_paid, price_currency, date_from')
+        .eq('owner_type', 'self')
+        .in('book_id', batchIds)
+      batchProv?.forEach(p => {
+        // If multiple self entries, use the one with a price (or first)
+        if (!acquisitionMap.has(p.book_id) || (p.price_paid && !acquisitionMap.get(p.book_id)!.price_paid)) {
+          acquisitionMap.set(p.book_id, { price_paid: p.price_paid, price_currency: p.price_currency, date_from: p.date_from })
+        }
+      })
+    }
+
+    // ============================================
     // CALCULATIONS
     // ============================================
     const currentYear = new Date().getFullYear().toString()
@@ -181,8 +200,9 @@ export async function POST() {
           mostExpensiveBook = { title: book.title || 'Untitled', value }
         }
       }
-      if (book.acquired_price) {
-        totalAcquiredPrice += convert(Number(book.acquired_price), book.acquired_currency)
+      const acq = acquisitionMap.get(book.id)
+      if (acq?.price_paid) {
+        totalAcquiredPrice += convert(Number(acq.price_paid), acq.price_currency)
         booksWithPrice++
       }
       if (book.action_needed && book.action_needed !== 'none') {
@@ -193,7 +213,7 @@ export async function POST() {
         if (book.sales_price) totalSoldRevenue += convert(Number(book.sales_price), book.price_currency)
       }
       if (book.isbn_13) booksWithISBN++
-      if (book.acquired_date?.startsWith(currentYear)) booksAddedThisYear++
+      if (acq?.date_from?.startsWith(currentYear)) booksAddedThisYear++
       if (book.is_signed) signedCount++
       if (book.has_dust_jacket) dustJacketCount++
 
@@ -231,11 +251,11 @@ export async function POST() {
       }
 
       // Acquisition year
-      if (book.acquired_date) {
-        const year = book.acquired_date.substring(0, 4)
+      if (acq?.date_from) {
+        const year = acq.date_from.substring(0, 4)
         acquisitionYearCounts[year] = (acquisitionYearCounts[year] || 0) + 1
-        if (!latestAcquisitionDate || book.acquired_date > latestAcquisitionDate) {
-          latestAcquisitionDate = book.acquired_date
+        if (!latestAcquisitionDate || acq.date_from > latestAcquisitionDate) {
+          latestAcquisitionDate = acq.date_from
         }
       }
     })
