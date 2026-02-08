@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { formatInteger, formatCurrency as fmtCurr } from '@/lib/format'
 import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, ScanBarcode, FolderPlus, FolderMinus } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -186,6 +187,7 @@ export default function BooksPage() {
   // Get collection filter from URL
   const collectionId = searchParams.get('collection') || ''
   const [collectionName, setCollectionName] = useState<string | null>(null)
+  const [userLocale, setUserLocale] = useState('en-GB')
   const tagId = searchParams.get('tag') || ''
   const [tagName, setTagName] = useState<string | null>(null)
 
@@ -1122,8 +1124,9 @@ export default function BooksPage() {
       if (!user) return
 
       // Get user display currency
-      const { data: profile } = await supabase.from('user_profiles').select('default_currency').eq('id', user.id).single()
+      const { data: profile } = await supabase.from('user_profiles').select('default_currency, locale').eq('id', user.id).single()
       const displayCur = profile?.default_currency || 'EUR'
+      if ((profile as any)?.locale) setUserLocale((profile as any).locale)
 
       // Determine book IDs to aggregate
       let bookIds: string[] | null = null // null = all books
@@ -1453,10 +1456,10 @@ export default function BooksPage() {
           </h1>
           <p className="text-muted-foreground">
             {hasAnySearch 
-              ? `Found ${totalCount.toLocaleString()} ${totalCount === 1 ? 'book' : 'books'}`
+              ? `Found ${formatInteger(totalCount, userLocale)} ${totalCount === 1 ? 'book' : 'books'}`
               : totalCount === 0 
                 ? "You haven't added any books yet"
-                : `${totalCount.toLocaleString()} ${totalCount === 1 ? 'book' : 'books'} in your collection`
+                : `${formatInteger(totalCount, userLocale)} ${totalCount === 1 ? 'book' : 'books'} in your collection`
             }
           </p>
         </div>
@@ -1811,7 +1814,7 @@ export default function BooksPage() {
         const diff = totalEstimated - totalAcquired
         const pct = totalAcquired > 0 ? ((diff / totalAcquired) * 100).toFixed(1) : null
         const isGain = diff >= 0
-        const fmt = (n: number) => new Intl.NumberFormat('nl-BE', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n)
+        const fmt = (n: number) => fmtCurr(n, currency, userLocale, { decimals: false })
         return (
           <div className="mb-6 flex items-center gap-6 text-sm text-muted-foreground">
             {totalAcquired > 0 && <span>Cost: <span className="font-medium text-foreground">{fmt(totalAcquired)}</span></span>}
@@ -2096,7 +2099,7 @@ export default function BooksPage() {
                 Loading...
               </>
             ) : (
-              `Load more (${books.length} of ${totalCount.toLocaleString()})`
+              `Load more (${books.length} of ${formatInteger(totalCount, userLocale)})`
             )}
           </Button>
         </div>
