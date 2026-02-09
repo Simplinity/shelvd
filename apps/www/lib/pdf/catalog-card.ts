@@ -91,30 +91,29 @@ function drawCardContent(
     page.drawRectangle({ x: 0, y: 0, width: CARD_W, height: CARD_H, color: CARD_BG })
   }
   
-  // ═══ RULED HORIZONTAL LINES ═══
+  // ═══ RULED HORIZONTAL LINES (decorative only) ═══
   const firstLineY = CARD_H - M_TOP
   const totalLines = Math.floor((firstLineY - M_BOTTOM) / RULE_SPACING)
   
-  for (let i = 0; i <= totalLines; i++) {
-    const y = firstLineY - i * RULE_SPACING
-    page.drawLine({
-      start: { x: M_LEFT, y },
-      end: { x: CARD_W - M_RIGHT, y },
-      thickness: 0.25,
-      color: RULE_COLOR,
-    })
-  }
-  
-  // ═══ RED VERTICAL LINE ═══
-  page.drawLine({
-    start: { x: RED_LINE_X, y: CARD_H - (decorative ? 4 : M_TOP) },
-    end: { x: RED_LINE_X, y: decorative ? 4 : M_BOTTOM },
-    thickness: 0.75,
-    color: RED,
-  })
-  
-  // ═══ DECORATIVE ELEMENTS (only on first page) ═══
   if (decorative) {
+    for (let i = 0; i <= totalLines; i++) {
+      const y = firstLineY - i * RULE_SPACING
+      page.drawLine({
+        start: { x: M_LEFT, y },
+        end: { x: CARD_W - M_RIGHT, y },
+        thickness: 0.25,
+        color: RULE_COLOR,
+      })
+    }
+    
+    // Red vertical line
+    page.drawLine({
+      start: { x: RED_LINE_X, y: CARD_H - 4 },
+      end: { x: RED_LINE_X, y: 4 },
+      thickness: 0.75,
+      color: RED,
+    })
+    
     // Card border
     page.drawRectangle({
       x: 2, y: 2, width: CARD_W - 4, height: CARD_H - 4,
@@ -137,7 +136,7 @@ function drawCardContent(
   }
   
   const contentRight = CARD_W - M_RIGHT
-  let line = 0
+  let line = 1  // Start 1 line down from top
   
   // ═══ CALL NUMBER (left of red line, stacked) ═══
   const callParts: string[] = []
@@ -156,7 +155,7 @@ function drawCardContent(
   const callMaxW = RED_LINE_X - M_LEFT - 6
   for (let i = 0; i < Math.min(callParts.length, 4); i++) {
     const t = truncate(callParts[i], regular, callMaxW, FONT_CALL)
-    page.drawText(t, { x: M_LEFT + 2, y: yForLine(i), size: FONT_CALL, font: bold, color: INK_FADED })
+    page.drawText(t, { x: M_LEFT + 2, y: yForLine(i + 1), size: FONT_CALL, font: bold, color: INK_FADED })
   }
   
   // ═══ AUTHOR (indent 1, line 0) ═══
