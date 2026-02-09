@@ -9,8 +9,8 @@
 ## First Actions — DO THESE IMMEDIATELY
 
 ```bash
-cat /Users/bruno/Developer/shelvd/project.md
-cat /Users/bruno/Developer/shelvd/CLAUDE_SESSION_LOG.md
+cat /Users/bruno/Developer/shelvd/docs/project.md
+cat /Users/bruno/Developer/shelvd/docs/CLAUDE_SESSION_LOG.md
 cd /Users/bruno/Developer/shelvd && git status && git log --oneline -10
 ```
 
@@ -61,8 +61,9 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 | Design | Swiss Design (minimal, monochrome, red accent) |
 
 ### Key Files
-- `project.md` — Full spec, schema, design decisions, pitfalls
-- `CLAUDE_SESSION_LOG.md` — Session history, completed work, next priorities
+- `docs/project.md` — Full spec, schema, design decisions, pitfalls
+- `docs/CLAUDE_SESSION_LOG.md` — Session history, completed work, next priorities
+- `docs/book-reference.md` — Domain knowledge: conditions, bindings, book parts, illustration types
 - `apps/www/lib/changelog.ts` — APP_VERSION + changelog data (powers changelog page + header badge)
 - `apps/www/lib/roadmap.ts` — Roadmap data (powers roadmap page)
 - `apps/www/lib/isbn-providers/` — Book lookup provider code
@@ -86,9 +87,9 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 
 ## Critical Rules
 
-1. **ALWAYS read project.md and session log** before starting work
+1. **ALWAYS read docs/project.md and docs/CLAUDE_SESSION_LOG.md** before starting work
 2. **ALWAYS check DB schema** before writing queries — NEVER guess column names
-3. **ALWAYS update CLAUDE_SESSION_LOG.md** after completing any task
+3. **ALWAYS update docs/CLAUDE_SESSION_LOG.md** after completing any task
 4. **ALWAYS push to GitHub** after completing work
 5. **Use `.range()` not `.limit()`** for Supabase pagination
 6. **Read files before editing** — use `str_replace` with exact old text
@@ -96,7 +97,7 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 8. **One step at a time** if input is needed
 9. **Test on Vercel** (not locally) — wait for build result
 10. **Modify files directly** — don't show code blocks to copy/paste
-11. **Roadmap changes → update `lib/roadmap.ts`** — the `/roadmap` page is data-driven from this file. Any feature added, moved between lanes, or removed in project.md MUST also be reflected in `lib/roadmap.ts` so the public website stays in sync.
+11. **Roadmap changes → update `lib/roadmap.ts`** — the `/roadmap` page is data-driven from this file. Any feature added, moved between lanes, or removed in docs/project.md MUST also be reflected in `lib/roadmap.ts` so the public website stays in sync.
 12. **Version bumps → update `lib/changelog.ts`** — the `/changelog` page and app header version badge are driven from `APP_VERSION` and the `CHANGELOG` array. Any new release MUST add an entry here and bump the version in both `lib/changelog.ts` and `package.json` files.
 
 ## Workflow
