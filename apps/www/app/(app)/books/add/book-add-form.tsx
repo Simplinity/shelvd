@@ -1571,7 +1571,7 @@ export default function BookAddForm({ referenceData }: Props) {
         </section>
 
         {/* Submit buttons at bottom */}
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" asChild>
             <Link href="/books" onClick={handleCancel}>Cancel</Link>
           </Button>
