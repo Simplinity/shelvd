@@ -1,208 +1,289 @@
 import { PDFDocument, StandardFonts, rgb, PDFFont, PDFPage } from 'pdf-lib'
 import { BookPdfData } from './types'
 
-// 3×5 inch catalog card = 216 × 360 points
-const CARD_WIDTH = 360
-const CARD_HEIGHT = 216
+// Standard library catalog card: 3×5 inches = 216 × 360 points
+const CARD_W = 360
+const CARD_H = 216
 
-const MARGIN_LEFT = 18
-const MARGIN_RIGHT = 18
-const MARGIN_TOP = 14
-const MARGIN_BOTTOM = 14
-const LINE_HEIGHT = 13
-const INDENT_1 = 12   // First indent (hanging indent for author)
-const INDENT_2 = 40   // Second indent (title continuation)
+// Margins
+const M_LEFT = 14
+const M_RIGHT = 14
+const M_TOP = 16
+const M_BOTTOM = 18
 
-// Ruled lines
-const RULE_START_Y = CARD_HEIGHT - MARGIN_TOP - 20
-const RULE_SPACING = LINE_HEIGHT
+// The iconic red vertical line position (first indentation)
+const RED_LINE_X = M_LEFT + 42
 
-function truncate(text: string, maxLen: number): string {
-  if (text.length <= maxLen) return text
-  return text.substring(0, maxLen - 3) + '...'
+// Indentation levels (AACR standard)
+const INDENT_1 = RED_LINE_X + 6    // Author starts here (just right of red line)
+const INDENT_2 = INDENT_1 + 36     // Title, imprint, collation
+const INDENT_3 = INDENT_2 + 12     // Continuation / notes
+
+// Typography
+const RULE_SPACING = 13.5
+const FONT_MAIN = 7.5
+const FONT_SMALL = 6.5
+const FONT_CALL = 7
+
+// Colors
+const INK = rgb(0.08, 0.06, 0.04)          // Near-black typewriter ink
+const INK_FADED = rgb(0.28, 0.25, 0.22)    // Faded ink for secondary text
+const RULE_COLOR = rgb(0.78, 0.76, 0.73)   // Light warm gray ruled lines
+const RED = rgb(0.72, 0.08, 0.08)          // Classic library card red
+const CARD_BG = rgb(0.98, 0.96, 0.93)      // Off-white / cream card stock
+const BORDER = rgb(0.60, 0.57, 0.53)       // Card edge
+
+function safeText(text: string): string {
+  return text.replace(/[^\x00-\xFF]/g, (ch) => {
+    const map: Record<string, string> = {
+      '\u2013': '-', '\u2014': '--', '\u2018': "'", '\u2019': "'",
+      '\u201C': '"', '\u201D': '"', '\u2026': '...', '\u2022': '*',
+      '\u00A0': ' ', '\u2192': '->', '\u200B': '',
+    }
+    return map[ch] || '?'
+  })
 }
 
-// The signature red line on classic library cards
-const RED_LINE_INDEX = 2  // Third ruled line from top (where title starts)
-
-function drawRuledLines(page: PDFPage) {
-  const lineColor = rgb(0.75, 0.72, 0.68)  // Warm gray, vintage feel
-  const redColor = rgb(0.75, 0.12, 0.12)   // Classic catalog card red
-  let y = RULE_START_Y
-  let lineNum = 0
-  while (y > MARGIN_BOTTOM) {
-    const isRedLine = lineNum === RED_LINE_INDEX
-    page.drawLine({
-      start: { x: MARGIN_LEFT, y },
-      end: { x: CARD_WIDTH - MARGIN_RIGHT, y },
-      thickness: isRedLine ? 0.75 : 0.25,
-      color: isRedLine ? redColor : lineColor,
-    })
-    y -= RULE_SPACING
-    lineNum++
+function truncate(text: string, font: PDFFont, maxWidth: number, size: number): string {
+  const safe = safeText(text)
+  if (font.widthOfTextAtSize(safe, size) <= maxWidth) return safe
+  let t = safe
+  while (t.length > 0 && font.widthOfTextAtSize(t + '...', size) > maxWidth) {
+    t = t.slice(0, -1)
   }
+  return t + '...'
 }
 
-function drawCardBorder(page: PDFPage) {
-  const borderColor = rgb(0.55, 0.52, 0.48)
-  // Outer border
-  page.drawRectangle({
-    x: 3,
-    y: 3,
-    width: CARD_WIDTH - 6,
-    height: CARD_HEIGHT - 6,
-    borderColor,
-    borderWidth: 0.75,
-    color: undefined,
-  })
-  // "Punch hole" circle at bottom center
-  page.drawCircle({
-    x: CARD_WIDTH / 2,
-    y: 12,
-    size: 4,
-    borderColor,
-    borderWidth: 0.5,
-    color: undefined,
-  })
-}
-
-function drawTypewriterText(
-  page: PDFPage,
-  font: PDFFont,
-  text: string,
-  x: number,
-  y: number,
-  size: number = 7.5,
-  color = rgb(0.12, 0.10, 0.08)
-) {
-  page.drawText(text, { x, y, size, font, color })
-}
-
-// Snap y to nearest ruled line
-function snapToLine(startY: number, lineIndex: number): number {
-  return startY - (lineIndex * RULE_SPACING)
+function wrapLines(text: string, font: PDFFont, maxWidth: number, size: number): string[] {
+  const safe = safeText(text)
+  const words = safe.split(' ')
+  const lines: string[] = []
+  let current = ''
+  for (const word of words) {
+    const test = current ? current + ' ' + word : word
+    if (font.widthOfTextAtSize(test, size) > maxWidth && current) {
+      lines.push(current)
+      current = word
+    } else {
+      current = test
+    }
+  }
+  if (current) lines.push(current)
+  return lines
 }
 
 export async function generateCatalogCard(data: BookPdfData): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create()
   const courier = await pdfDoc.embedFont(StandardFonts.Courier)
   const courierBold = await pdfDoc.embedFont(StandardFonts.CourierBold)
+  const courierOblique = await pdfDoc.embedFont(StandardFonts.CourierOblique)
   
-  const page = pdfDoc.addPage([CARD_WIDTH, CARD_HEIGHT])
+  const page = pdfDoc.addPage([CARD_W, CARD_H])
   
-  // Draw ruled lines first (background)
-  drawRuledLines(page)
-  drawCardBorder(page)
+  // ═══ CARD STOCK BACKGROUND ═══
+  page.drawRectangle({
+    x: 0, y: 0,
+    width: CARD_W, height: CARD_H,
+    color: CARD_BG,
+  })
   
-  const maxChars = 48 // Approximate chars per line at 7.5pt Courier
-  const textColor = rgb(0.12, 0.10, 0.08)
-  
-  let line = 0
-  const x0 = MARGIN_LEFT
-  const x1 = MARGIN_LEFT + INDENT_1
-  const x2 = MARGIN_LEFT + INDENT_2
-  
-  // === Call number (top-left, small) ===
-  const callNumber = data.ddc || data.lcc || data.user_catalog_id || ''
-  if (callNumber) {
-    drawTypewriterText(page, courier, callNumber, x0, CARD_HEIGHT - MARGIN_TOP - 2, 6.5, rgb(0.35, 0.32, 0.28))
+  // ═══ RULED HORIZONTAL LINES ═══
+  const firstRuleY = CARD_H - M_TOP - 2
+  let ruleY = firstRuleY
+  while (ruleY > M_BOTTOM) {
+    page.drawLine({
+      start: { x: M_LEFT, y: ruleY },
+      end: { x: CARD_W - M_RIGHT, y: ruleY },
+      thickness: 0.3,
+      color: RULE_COLOR,
+    })
+    ruleY -= RULE_SPACING
   }
   
-  // === Main entry: Author (line 0) ===
-  const primaryAuthor = data.contributors.find(c => c.role === 'Author')?.name || data.contributors[0]?.name || ''
+  // ═══ RED VERTICAL LINE ═══
+  page.drawLine({
+    start: { x: RED_LINE_X, y: CARD_H - 6 },
+    end: { x: RED_LINE_X, y: 6 },
+    thickness: 0.75,
+    color: RED,
+  })
+  
+  // ═══ CARD BORDER (double line, outer) ═══
+  page.drawRectangle({
+    x: 2, y: 2,
+    width: CARD_W - 4, height: CARD_H - 4,
+    borderColor: BORDER,
+    borderWidth: 0.75,
+    color: undefined,
+  })
+  
+  // ═══ HOLE AT BOTTOM CENTER ═══
+  page.drawCircle({
+    x: CARD_W / 2,
+    y: M_BOTTOM - 6,
+    size: 4.5,
+    borderColor: BORDER,
+    borderWidth: 0.5,
+    color: rgb(1, 1, 1), // white hole
+  })
+  
+  // ═══ TEXT PLACEMENT ═══
+  // We place text just above each ruled line
+  const textOffsetAboveLine = 3.5
+  let lineIdx = 0
+  
+  function lineY(idx: number): number {
+    return firstRuleY - (idx * RULE_SPACING) + textOffsetAboveLine + RULE_SPACING
+  }
+  
+  function drawText(text: string, x: number, line: number, font: PDFFont, size: number = FONT_MAIN, color = INK) {
+    page.drawText(text, { x, y: lineY(line), size, font, color })
+  }
+  
+  const contentWidth = CARD_W - M_RIGHT  // right boundary
+  
+  // ═══ CALL NUMBER (left of red line, stacked) ═══
+  const callParts: string[] = []
+  if (data.ddc) {
+    // Split DDC into class + subdivision for stacking
+    const ddc = data.ddc
+    if (ddc.includes('/') || ddc.includes('.')) {
+      callParts.push(ddc)
+    } else {
+      callParts.push(ddc)
+    }
+  } else if (data.lcc) {
+    callParts.push(data.lcc)
+  }
+  if (data.user_catalog_id) {
+    callParts.push(data.user_catalog_id)
+  }
+  
+  // Author's cutter number (first 4 chars of surname)
+  const primaryAuthor = data.contributors.find(c => c.role === 'Author')?.name || data.contributors[0]?.name
   if (primaryAuthor) {
-    drawTypewriterText(page, courierBold, truncate(primaryAuthor, maxChars), x1, snapToLine(RULE_START_Y, line) - 3, 7.5)
-    line++
+    const surname = primaryAuthor.split(',')[0].trim()
+    const cutter = surname.substring(0, 1).toUpperCase() + surname.substring(1, 4).toLowerCase()
+    if (!callParts.some(p => p.toLowerCase().startsWith(cutter.toLowerCase()))) {
+      callParts.push(cutter)
+    }
   }
   
-  // === Title (line 1-2, indented) ===
-  let titleLine = data.title
-  if (data.subtitle) titleLine += ' : ' + data.subtitle
-  titleLine += ' /'
-  if (primaryAuthor) titleLine += ' ' + primaryAuthor
-  
-  // Wrap title across lines
-  const titleCharsPerLine = maxChars - 5 // Account for indent
-  if (titleLine.length > titleCharsPerLine) {
-    drawTypewriterText(page, courier, truncate(titleLine.substring(0, titleCharsPerLine), titleCharsPerLine), x2, snapToLine(RULE_START_Y, line) - 3, 7.5)
-    line++
-    const remainder = titleLine.substring(titleCharsPerLine)
-    drawTypewriterText(page, courier, truncate(remainder, titleCharsPerLine), x2, snapToLine(RULE_START_Y, line) - 3, 7.5)
-    line++
-  } else {
-    drawTypewriterText(page, courier, titleLine, x2, snapToLine(RULE_START_Y, line) - 3, 7.5)
-    line++
+  for (let i = 0; i < Math.min(callParts.length, 4); i++) {
+    const callText = truncate(callParts[i], courier, RED_LINE_X - M_LEFT - 4, FONT_CALL)
+    drawText(callText, M_LEFT + 2, i, courierBold, FONT_CALL, INK_FADED)
   }
   
-  // === Edition (if present) ===
+  // ═══ MAIN ENTRY: AUTHOR (at indent 1, line 0) ═══
+  lineIdx = 0
+  if (primaryAuthor) {
+    // AACR: surname, forename(s)
+    const authorText = truncate(primaryAuthor, courierBold, contentWidth - INDENT_1, FONT_MAIN)
+    drawText(authorText, INDENT_1, lineIdx, courierBold, FONT_MAIN)
+    lineIdx++
+  }
+  
+  // ═══ TITLE PARAGRAPH (at indent 2) ═══
+  // Title proper / statement of responsibility
+  let titleBlock = data.title
+  if (data.subtitle) titleBlock += ' : ' + data.subtitle
+  titleBlock += ' / '
+  if (primaryAuthor) titleBlock += primaryAuthor
+  // Add other contributors
+  const otherContribs = data.contributors.filter(c => c.name !== primaryAuthor)
+  if (otherContribs.length > 0) {
+    titleBlock += ' ; ' + otherContribs.map(c => c.name).join(', ')
+  }
+  titleBlock += '.'
+  
+  const titleMaxW = contentWidth - INDENT_2
+  const titleLines = wrapLines(titleBlock, courier, titleMaxW, FONT_MAIN)
+  for (let i = 0; i < Math.min(titleLines.length, 3); i++) {
+    drawText(titleLines[i], INDENT_2, lineIdx, courier, FONT_MAIN)
+    lineIdx++
+  }
+  
+  // ═══ EDITION STATEMENT ═══
   if (data.edition || data.impression) {
-    const edLine = [data.edition, data.impression ? `${data.impression} impression` : ''].filter(Boolean).join(', ')
-    drawTypewriterText(page, courier, truncate('-- ' + edLine, maxChars), x2, snapToLine(RULE_START_Y, line) - 3, 7)
-    line++
+    const edParts = [data.edition]
+    if (data.impression) edParts.push(data.impression + ' impr.')
+    const edLine = '-- ' + edParts.filter(Boolean).join(', ') + '.'
+    drawText(truncate(edLine, courier, titleMaxW, FONT_MAIN), INDENT_2, lineIdx, courier, FONT_MAIN)
+    lineIdx++
   }
   
-  // === Imprint: Publisher, Place, Year (line 3) ===
-  const imprintParts = [
-    data.publication_place,
-    data.publisher ? `: ${data.publisher}` : '',
-    data.publication_year ? `, ${data.publication_year}` : '',
-  ].filter(Boolean).join('')
-  
-  if (imprintParts) {
-    drawTypewriterText(page, courier, truncate('-- ' + imprintParts + '.', maxChars), x2, snapToLine(RULE_START_Y, line) - 3, 7)
-    line++
+  // ═══ IMPRINT: place : publisher, year ═══
+  const imprintParts: string[] = []
+  if (data.publication_place) imprintParts.push(data.publication_place)
+  if (data.publisher) imprintParts.push(': ' + data.publisher)
+  if (data.publication_year) imprintParts.push(', ' + data.publication_year)
+  if (imprintParts.length > 0) {
+    const imprint = '-- ' + imprintParts.join('') + '.'
+    drawText(truncate(imprint, courier, titleMaxW, FONT_MAIN), INDENT_2, lineIdx, courier, FONT_MAIN)
+    lineIdx++
   }
   
-  // === Collation: pages, size ===
-  const collParts = [
-    data.pagination,
-    data.height_mm ? `${data.height_mm}mm` : '',
-  ].filter(Boolean).join(' ; ')
-  
-  if (collParts) {
-    drawTypewriterText(page, courier, truncate('-- ' + collParts + '.', maxChars), x2, snapToLine(RULE_START_Y, line) - 3, 7)
-    line++
+  // ═══ COLLATION: pages ; dimensions ═══
+  const collParts: string[] = []
+  if (data.pagination) collParts.push(data.pagination)
+  if (data.height_mm) collParts.push(data.height_mm + ' mm')
+  if (collParts.length > 0) {
+    const coll = '-- ' + collParts.join(' ; ') + '.'
+    drawText(truncate(coll, courier, titleMaxW, FONT_MAIN), INDENT_2, lineIdx, courier, FONT_MAIN)
+    lineIdx++
   }
   
-  // === Binding / Format ===
-  const physParts = [data.binding, data.format, data.cover_type].filter(Boolean).join(', ')
-  if (physParts) {
-    drawTypewriterText(page, courier, truncate('-- ' + physParts + '.', maxChars), x2, snapToLine(RULE_START_Y, line) - 3, 7)
-    line++
+  // ═══ PHYSICAL / NOTES ═══
+  const notes: string[] = []
+  if (data.binding) notes.push(data.binding)
+  if (data.is_signed) notes.push('Signed copy')
+  if (data.has_dust_jacket) notes.push('In dust jacket')
+  if (data.condition) notes.push('Condition: ' + data.condition)
+  
+  if (notes.length > 0) {
+    lineIdx++ // Skip a line before notes (AACR convention)
+    const noteLine = notes.join('. ') + '.'
+    const noteLines = wrapLines(noteLine, courier, titleMaxW, FONT_SMALL)
+    for (let i = 0; i < Math.min(noteLines.length, 2); i++) {
+      drawText(noteLines[i], INDENT_2, lineIdx, courier, FONT_SMALL, INK)
+      lineIdx++
+    }
   }
   
-  // Skip a line
-  line++
-  
-  // === Notes (condition, signed, etc.) ===
-  const noteParts: string[] = []
-  if (data.is_signed) noteParts.push('SIGNED')
-  if (data.has_dust_jacket) noteParts.push('In dust jacket')
-  if (data.condition) noteParts.push(`Condition: ${data.condition}`)
-  if (noteParts.length > 0) {
-    drawTypewriterText(page, courier, truncate(noteParts.join('. ') + '.', maxChars), x2, snapToLine(RULE_START_Y, line) - 3, 6.5)
-    line++
-  }
-  
-  // === ISBN ===
+  // ═══ ISBN ═══
   const isbn = data.isbn_13 || data.isbn_10
   if (isbn) {
-    drawTypewriterText(page, courier, `ISBN ${isbn}`, x2, snapToLine(RULE_START_Y, line) - 3, 6.5)
-    line++
+    drawText('ISBN ' + isbn, INDENT_2, lineIdx, courier, FONT_SMALL)
+    lineIdx++
   }
   
-  // === Bottom area: Subject tracings ===
-  const bottomY = MARGIN_BOTTOM + 8
+  // ═══ TRACINGS (bottom of card, subjects numbered, added entries Roman) ═══
+  // Calculate available lines from bottom
+  const maxLines = Math.floor((firstRuleY - M_BOTTOM) / RULE_SPACING)
+  const tracingStartLine = Math.max(lineIdx + 1, maxLines - 2) // At least 2 lines from bottom
+  
   if (data.bisac_subjects && data.bisac_subjects.length > 0) {
-    const subjects = data.bisac_subjects.map((s, i) => `${i + 1}. ${s}`).join('  ')
-    drawTypewriterText(page, courier, truncate(subjects, maxChars + 6), x0, bottomY, 6, rgb(0.35, 0.32, 0.28))
+    const subjects = data.bisac_subjects.map((s, i) => `${i + 1}. ${s.split(' — ')[1] || s}`)
+    const tracingText = subjects.join('  ')
+    const tracingMaxW = contentWidth - INDENT_1
+    const tLines = wrapLines(tracingText, courier, tracingMaxW, 5.5)
+    for (let i = 0; i < Math.min(tLines.length, 2); i++) {
+      drawText(tLines[i], INDENT_1, tracingStartLine + i, courier, 5.5, INK_FADED)
+    }
   }
   
-  // === Storage location (bottom right, small) ===
+  // ═══ STORAGE LOCATION (bottom-right corner, tiny) ═══
   if (data.storage_location || data.shelf) {
-    const loc = [data.storage_location, data.shelf, data.shelf_section].filter(Boolean).join(' / ')
-    const locWidth = courier.widthOfTextAtSize(loc, 5.5)
-    drawTypewriterText(page, courier, loc, CARD_WIDTH - MARGIN_RIGHT - locWidth, bottomY + LINE_HEIGHT, 5.5, rgb(0.45, 0.42, 0.38))
+    const loc = [data.storage_location, data.shelf].filter(Boolean).join(' / ')
+    const locSafe = safeText(loc)
+    const locW = courier.widthOfTextAtSize(locSafe, 5)
+    page.drawText(locSafe, {
+      x: CARD_W - M_RIGHT - locW,
+      y: M_BOTTOM - 2,
+      size: 5,
+      font: courier,
+      color: INK_FADED,
+    })
   }
   
   return pdfDoc.save()
