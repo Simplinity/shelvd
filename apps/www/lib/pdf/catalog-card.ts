@@ -34,14 +34,18 @@ const CARD_BG = rgb(0.97, 0.95, 0.91)
 const BORDER = rgb(0.60, 0.57, 0.53)
 
 function safeText(text: string): string {
-  return text.replace(/[^\x00-\xFF]/g, (ch) => {
-    const map: Record<string, string> = {
-      '\u2013': '-', '\u2014': '--', '\u2018': "'", '\u2019': "'",
-      '\u201C': '"', '\u201D': '"', '\u2026': '...', '\u2022': '*',
-      '\u00A0': ' ', '\u2192': '->', '\u200B': '',
-    }
-    return map[ch] || '?'
-  })
+  return text
+    .replace(/[\n\r\t]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/[^\x20-\xFF]/g, (ch) => {
+      const map: Record<string, string> = {
+        '\u2013': '-', '\u2014': '--', '\u2018': "'", '\u2019': "'",
+        '\u201C': '"', '\u201D': '"', '\u2026': '...', '\u2022': '*',
+        '\u00A0': ' ', '\u2192': '->', '\u200B': '',
+      }
+      return map[ch] || '?'
+    })
 }
 
 function truncate(text: string, font: PDFFont, maxWidth: number, size: number): string {

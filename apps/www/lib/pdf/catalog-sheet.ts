@@ -4,17 +4,20 @@ import { BookPdfData, PaperSize, PAPER_SIZES } from './types'
 // Standard PDF fonts only support WinAnsiEncoding (Latin-1).
 // Replace unsupported characters to prevent crashes.
 function safeText(text: string): string {
-  return text.replace(/[^\x00-\xFF]/g, (ch) => {
-    // Common substitutions
-    const map: Record<string, string> = {
-      '\u2013': '-', '\u2014': '--', '\u2018': "'", '\u2019': "'",
-      '\u201C': '"', '\u201D': '"', '\u2026': '...', '\u2022': '*',
-      '\u2032': "'", '\u2033': '"', '\u00AB': '"', '\u00BB': '"',
-      '\u2002': ' ', '\u2003': ' ', '\u2009': ' ', '\u200B': '',
-      '\u00A0': ' ', '\u2192': '->', '\u2190': '<-',
-    }
-    return map[ch] || '?'
-  })
+  return text
+    .replace(/[\n\r\t]/g, ' ')      // Replace control chars with space
+    .replace(/\s+/g, ' ')             // Collapse multiple spaces
+    .trim()
+    .replace(/[^\x20-\xFF]/g, (ch) => {
+      const map: Record<string, string> = {
+        '\u2013': '-', '\u2014': '--', '\u2018': "'", '\u2019': "'",
+        '\u201C': '"', '\u201D': '"', '\u2026': '...', '\u2022': '*',
+        '\u2032': "'", '\u2033': '"', '\u00AB': '"', '\u00BB': '"',
+        '\u2002': ' ', '\u2003': ' ', '\u2009': ' ', '\u200B': '',
+        '\u00A0': ' ', '\u2192': '->', '\u2190': '<-',
+      }
+      return map[ch] || '?'
+    })
 }
 
 interface DrawContext {
