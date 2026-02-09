@@ -170,7 +170,21 @@ export const ROADMAP: RoadmapItem[] = [
     description: 'Growth charts, feature adoption, user activation funnel, data health. Dashboards for knowing what\'s actually happening on the platform.',
     category: 'admin',
     status: 'shipped',
-    version: '0.9.0',
+    version: '0.10.0',
+  },
+  {
+    title: 'Condition History',
+    description: 'The physical life of a book: restorations, rebindings, repairs, damage events, assessments. Timeline with CRUD and auto-prompt on condition changes.',
+    category: 'cataloging',
+    status: 'shipped',
+    version: '0.10.0',
+  },
+  {
+    title: 'Printable PDF Inserts',
+    description: 'Vintage 3\u00D75\" catalog cards with red vertical line, Courier typewriter font, and AACR layout. Full catalog sheets in Swiss typography across 6 paper sizes. Two formats, one button.',
+    category: 'cataloging',
+    status: 'shipped',
+    version: '0.11.0',
   },
 
   // ═══════════════════════════════
@@ -230,13 +244,6 @@ export const ROADMAP: RoadmapItem[] = [
     category: 'data',
     status: 'planned',
   },
-  {
-    title: 'Condition History',
-    description: 'The physical life of a book: restorations, rebindings, repairs, damage events, assessments. Separate from provenance, because ownership and wear are different stories.',
-    category: 'cataloging',
-    status: 'planned',
-  },
-
   // Dealer & Marketplace
   {
     title: 'Dealer Directory & Messaging',
