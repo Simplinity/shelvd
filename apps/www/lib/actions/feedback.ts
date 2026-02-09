@@ -79,7 +79,7 @@ export async function submitFeedback(formData: FormData): Promise<FeedbackResult
 
   const { data, error } = await supabase
     .from('feedback')
-    .insert(record)
+    .insert(record as any)
     .select('id')
     .single()
 
@@ -200,7 +200,7 @@ export async function updateFeedbackStatus(
 
   const { error } = await supabase
     .from('feedback')
-    .update(update)
+    .update(update as any)
     .eq('id', feedbackId)
 
   if (error) return { error: 'Failed to update status' }
@@ -309,7 +309,7 @@ export async function bulkUpdateFeedbackStatus(
 
   const { error } = await supabase
     .from('feedback')
-    .update(update)
+    .update(update as any)
     .in('id', feedbackIds)
 
   if (error) return { error: 'Failed to update' }
