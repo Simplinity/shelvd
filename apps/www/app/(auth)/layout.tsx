@@ -33,23 +33,27 @@ export default async function AuthLayout({
             Professional collection management for serious collectors. 
             Catalog, organize, and value your books.
           </p>
-          <AuthQuote />
         </div>
-        
-        <div className="flex items-center gap-12">
-          <div>
-            <p className="text-3xl font-bold tabular-nums">{stats.totalBooks.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Books</p>
+
+        <div className="space-y-8">
+          <div className="flex items-center gap-12">
+            <div>
+              <p className="text-3xl font-bold tabular-nums">{stats.totalBooks.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Books</p>
+            </div>
+            <div className="w-px h-12 bg-muted-foreground/20" />
+            <div>
+              <p className="text-3xl font-bold tabular-nums">{stats.totalContributors.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Contributors</p>
+            </div>
+            <div className="w-px h-12 bg-muted-foreground/20" />
+            <div>
+              <p className="text-3xl font-bold tabular-nums">{stats.totalPublishers.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Publishers</p>
+            </div>
           </div>
-          <div className="w-px h-12 bg-muted-foreground/20" />
-          <div>
-            <p className="text-3xl font-bold tabular-nums">{stats.totalContributors.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Contributors</p>
-          </div>
-          <div className="w-px h-12 bg-muted-foreground/20" />
-          <div>
-            <p className="text-3xl font-bold tabular-nums">{stats.totalImages.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Images</p>
+          <div className="border-t border-muted-foreground/10 pt-6">
+            <AuthQuote />
           </div>
         </div>
       </div>

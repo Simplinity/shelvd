@@ -1,7 +1,4 @@
--- Public stats function for auth pages (no login required)
--- Returns aggregate counts only — no sensitive data exposed
-
-DROP FUNCTION IF EXISTS get_public_stats();
+-- Update public stats: replace images with publishers count
 
 CREATE OR REPLACE FUNCTION get_public_stats()
 RETURNS JSON
@@ -16,7 +13,3 @@ AS $$
     'total_collections', (SELECT count(*) FROM collections)
   );
 $$;
-
--- Allow anonymous access
-GRANT EXECUTE ON FUNCTION get_public_stats() TO anon;
-GRANT EXECUTE ON FUNCTION get_public_stats() TO authenticated;
