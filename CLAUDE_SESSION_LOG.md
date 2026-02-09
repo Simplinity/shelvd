@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-08)
 
-**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. Collections, Tags, Enrich Mode, Contributor Names, Provenance, Currency & Valuation — all shipped. Marketing site: Landing page, Privacy Policy, Terms of Service, About, Changelog, Roadmap — all live with shared header/footer. App versioning system with `lib/changelog.ts` as single source of truth. Blog content complete (22 articles in `content/blog/`), blog page code still needed. Only Knowledge Base remains for content pages.
+**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. Collections, Tags, Enrich Mode, Contributor Names, Provenance, Currency & Valuation — all shipped. Marketing site: Landing page, Privacy Policy, Terms of Service, About, Changelog, Roadmap — all live with shared header/footer. App versioning system with `lib/changelog.ts` as single source of truth. Blog complete (22 articles + index/article pages live at `/blog`). Only Knowledge Base remains for content pages.
 
 ---
 
@@ -69,7 +69,8 @@
 - ✅ About (`/about`) — Origin story, 28k books, problem/solution, pull quotes, care items with icons
 - ✅ Changelog (`/changelog`) — 9 releases (0.1.0–0.9.0), timeline design, color-coded change types, data-driven from `lib/changelog.ts`
 - ✅ Roadmap (`/roadmap`) — 3-lane board (Shipped/Building/Planned), 26 items, 7 category badges, data-driven from `lib/roadmap.ts`
-- ✅ Shared MarketingHeader (Info dropdown, 5 live + 1 coming soon) + MarketingFooter (4-column grid)
+- ✅ Blog (`/blog`) — 22 articles by Bruno van Branden, index page grouped by 6 themes, article pages with serif typography, font size control, JSON-LD SEO, prev/next navigation
+- ✅ Shared MarketingHeader (Info dropdown, 6 live) + MarketingFooter (4-column grid)
 - ✅ App Versioning — `APP_VERSION` in `lib/changelog.ts`, version badge in app header, package.json v0.9.0, git tag v0.9.0
 - ✅ Announcement System — Colored banners (info/warning/success/maintenance), admin CRUD, dismissible, expiry
 - ✅ Collapsible Form Sections — Accordion on add/edit forms, field count badges, expand/collapse all
@@ -104,7 +105,7 @@
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story, 28k books, literary wit, pull quotes. |
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases, data-driven, timeline design, version badge in app. |
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board, 26 items, category badges, witty descriptions. |
-| 8h | Blog (`/blog`) | ✅ Content done | Medium | 22 articles by Bruno van Branden in `content/blog/`. Blog page code still needed. |
+| 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Index + article pages, serif typography, font size control, JSON-LD SEO, prev/next nav. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit: hamburger nav (currently invisible <768px), touch targets, single-column forms, card-based lists, responsive charts. Desktop-only in practice today. |
 
 ### Todo — Admin Section Enhancements

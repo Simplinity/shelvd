@@ -295,7 +295,7 @@ status, action_needed, internal_notes
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story with literary wit: the problem, the solution (28k books + broken spreadsheet), what we care about, what we are/aren't, the name. Pull quotes, highlight boxes, care items with icons. |
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases (0.1.0–0.9.0), data-driven from lib/changelog.ts, timeline design, color-coded change types, version badge in app header. |
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board (Shipped/Building/Planned), data-driven from lib/roadmap.ts, 26 items with category badges, 2-col card grid, stats bar, witty descriptions. |
-| 8h | Blog (`/blog`) | ✅ Content done | Medium | 22 articles written by Bruno van Branden in `content/blog/`. Topics: bookshelf illusions, ISBN, ISBD, formats, paper history, bibliosmy, foxing/browning, bindings, dust jackets, price stickers, colophons, ex libris, provenance, first editions, condition grading, rebinding, private press, book fairs, auctions, insurance cataloging, personal essays. Blog page code still needed. |
+| 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
 
 #### #9 Mobile Responsiveness — Detail

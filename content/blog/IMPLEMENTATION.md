@@ -1,6 +1,6 @@
 # Feature 8h: Blog Page — Implementation Plan
 
-## Status: IN PROGRESS
+## Status: COMPLETE
 
 ## Architecture
 
@@ -61,10 +61,10 @@
 |------|-------------|--------|
 | 1 | `lib/blog.ts` — metadata array + markdown parsing | ✅ Done |
 | 2 | `/blog` index page | ✅ Done |
-| 3 | `/blog/[slug]` article page | 🔴 |
-| 4 | SEO: generateMetadata + JSON-LD | 🔴 |
-| 5 | Font size control | 🔴 |
-| 6 | Header/footer links, final test | 🔴 |
+| 3 | `/blog/[slug]` article page | ✅ Done |
+| 4 | SEO: generateMetadata + JSON-LD | ✅ Done (in step 3) |
+| 5 | Font size control | ✅ Done (in step 3) |
+| 6 | Header/footer links, final test | ✅ Done |
 
 ## Dependencies
 - `gray-matter` (frontmatter parsing)

@@ -45,7 +45,8 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - **About** (`/about`) — Origin story, 28k books, problem/solution, what we care about, the name
 - **Changelog** (`/changelog`) — 9 releases (0.1.0–0.9.0), timeline design, color-coded change types
 - **Roadmap** (`/roadmap`) — 3-lane board (Shipped/Building/Planned), 26 items, category badges
-- **Shared Components:** MarketingHeader (Info dropdown, 5 live + 1 coming soon), MarketingFooter (4-column grid)
+- **Blog** (`/blog`) — 22 articles by Bruno van Branden, serif typography, font size control, JSON-LD SEO, prev/next nav
+- **Shared Components:** MarketingHeader (Info dropdown, 6 live), MarketingFooter (4-column grid)
 - **App Versioning:** `APP_VERSION` in `lib/changelog.ts`, version badge in app header, git tag v0.9.0
 
 All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughout.
@@ -70,6 +71,7 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 - `apps/www/lib/currencies.ts` — 29 ISO 4217 currencies
 - `apps/www/lib/name-utils.ts` — Contributor name parser
 - `content/blog/` — 22 blog articles by Bruno van Branden (.md files, 01–22)
+- `apps/www/lib/blog.ts` — Blog metadata, categories, markdown parsing utilities
 - `apps/www/components/marketing/` — MarketingHeader, MarketingFooter (shared across all public pages)
 - `apps/www/components/` — Reusable components (collection-chips, tag-input, collection-nav, announcement-banner, etc.)
 - `supabase/migrations/` — DB migrations (001–024)
@@ -120,7 +122,7 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 | Feedback & bug reporting | 🔴 Todo |
 | Sharing & Public Catalog | 🔴 Todo |
 | Mobile responsiveness | 🔴 Todo |
-| Blog (`/blog`) | 🟡 Content done, page code needed |
+| Blog (`/blog`) | ✅ Done |
 | Knowledge base (`/help`) | 🔴 Todo |
 
 ---
