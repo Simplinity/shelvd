@@ -119,6 +119,7 @@
 /* Typography */
 @theme {
   --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-serif: 'Georgia', 'Times New Roman', ui-serif, serif;
   --font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
