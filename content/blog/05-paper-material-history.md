@@ -10,7 +10,7 @@ Every book is, before it is anything else, a piece of paper. Or several hundred 
 
 That history has five turning points. Each one changed the physical nature of the book so fundamentally that a collector who understands them can pick up a volume, feel the paper between thumb and forefinger, and place it within a century — sometimes within a decade — without reading a word.
 
-## Chapter 1: Bark, Bamboo, and the Chinese Invention
+## Bark, Bamboo, and the Chinese Invention
 
 Paper was invented in China. The traditional date is 105 AD, credited to Cai Lun, a eunuch official at the Han court, though archaeological evidence suggests that crude paper was being made from hemp fibres at least two centuries earlier. Cai Lun's contribution was probably not invention but industrialisation — he standardised the process and promoted its use for official documents, replacing the bamboo strips and silk scrolls that had served Chinese writing for millennia.
 
@@ -20,7 +20,7 @@ For six centuries, papermaking remained a Chinese monopoly. The technology sprea
 
 The Arab contribution was not merely transmissive. Papermakers in the Islamic world refined the process significantly, introducing linen rags as a fibre source (producing a stronger, smoother sheet than mulberry bark), developing new sizing methods using starch, and establishing the large-scale mills that would eventually supply paper to European markets. The paper of medieval Islamic manuscripts — smooth, cream-coloured, remarkably durable — is a testament to this refinement. Some of it has survived a thousand years in better condition than European paper half its age.
 
-## Chapter 2: Rags and Water Mills — Paper Comes to Europe
+## Rags and Water Mills — Paper Comes to Europe
 
 Paper arrived in Europe through the Islamic territories of Spain and Sicily. The oldest known European paper document is a deed of King Roger II of Sicily, dated 1109, written on paper of Arab manufacture. The earliest European paper mills appeared in the twelfth and thirteenth centuries — Xàtiva in Spain (mentioned by the geographer al-Idrisi in 1150), Fabriano in Italy (documented from the 1260s), and gradually spreading northward: Troyes and Essonne in France by the fourteenth century, Nuremberg by 1390, the Low Countries by the fifteenth century.
 
@@ -32,7 +32,7 @@ European paper in the hand-press period was made almost exclusively from **linen
 
 A book printed on rag paper in 1470 is, in many cases, in better physical condition today than a book printed on wood-pulp paper in 1870. The paper is supple, white or cream-coloured, and structurally sound. It has lasted 550 years and will, if stored properly, last several hundred more. This is not an accident. It is chemistry.
 
-## Chapter 3: The Wood Pulp Revolution (And Its Consequences)
+## The Wood Pulp Revolution (And Its Consequences)
 
 By the early nineteenth century, the demand for paper was outstripping the supply of rags. The Enlightenment had created a reading public. The Industrial Revolution had created mass literacy. Newspapers, journals, pamphlets, novels, textbooks — the appetite for printed material was growing exponentially, and the rag supply, which depended on a finite quantity of old clothing, could not keep up.
 
@@ -48,7 +48,7 @@ This is not a slow process in bibliographic terms. A rag paper book from 1500 ca
 
 The irony is bitter. The books from the period of greatest literary and scientific output — the late nineteenth and early twentieth centuries — are physically the most fragile. Dickens, Tolstoy, Zola, Freud, Darwin in later editions — their words survive in the text, but the original objects are disintegrating. Meanwhile, a Gutenberg Bible sits in the Morgan Library, its paper as sound as the day it was printed, because Johannes Gutenberg used rag paper and lignin had not yet been invited to the party.
 
-## Chapter 4: The Chemists Intervene — Sizing and Acidity
+## The Chemists Intervene — Sizing and Acidity
 
 The lignin problem was compounded by another, subtler disaster: **alum-rosin sizing**.
 
@@ -58,7 +58,7 @@ Alum-rosin sizing produces sulphuric acid as a byproduct — slowly, continuousl
 
 The library community's response was mass **deacidification** — industrial-scale chemical treatment to neutralise the acid and deposit an alkaline buffer (typically magnesium or calcium carbonate) in the paper to absorb future acid. Several systems were developed: the Wei T'o process (using magnesium methoxy compounds), the DEZ process (diethyl zinc gas — effective but alarmingly flammable), and the Battelle process used by the Deutsche Bücherei in Leipzig. The results have been mixed — deacidification slows deterioration but cannot reverse damage already done, and the treatments are expensive enough that only the most significant collections receive them.
 
-## Chapter 5: Acid-Free and Beyond — The Modern Era
+## Acid-Free and Beyond — The Modern Era
 
 The publishing industry's conversion to **acid-free paper** began in the 1980s, driven by librarians, archivists, and the slowly dawning realisation that books printed on acidic paper had a limited lifespan.
 

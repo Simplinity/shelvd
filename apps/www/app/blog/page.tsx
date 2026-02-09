@@ -5,11 +5,9 @@ import { MarketingFooter } from '@/components/marketing/marketing-footer'
 import {
   BLOG_ARTICLES,
   BLOG_STATS,
-  BLOG_CATEGORIES,
   CATEGORY_SECTIONS,
   BLOG_AUTHOR,
   type BlogArticle,
-  type BlogCategory,
 } from '@/lib/blog'
 
 export const metadata = {
@@ -23,16 +21,6 @@ export const metadata = {
     type: 'website',
     url: 'https://shelvd.app/blog',
   },
-}
-
-const categoryColors: Record<BlogCategory, string> = {
-  collecting: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-  materials: 'text-amber-700 bg-amber-50 border-amber-200',
-  bindings: 'text-violet-700 bg-violet-50 border-violet-200',
-  marks: 'text-blue-700 bg-blue-50 border-blue-200',
-  value: 'text-rose-700 bg-rose-50 border-rose-200',
-  market: 'text-slate-700 bg-slate-50 border-slate-200',
-  personal: 'text-cyan-700 bg-cyan-50 border-cyan-200',
 }
 
 function ArticleCard({ article }: { article: BlogArticle }) {
@@ -49,16 +37,11 @@ function ArticleCard({ article }: { article: BlogArticle }) {
           </span>
 
           <div className="flex-1 min-w-0">
-            {/* Category + reading time */}
+            {/* Reading time */}
             <div className="flex items-center gap-3 mb-2">
-              <span
-                className={`inline-flex items-center px-2 py-0.5 text-xs font-medium border ${categoryColors[article.category]}`}
-              >
-                {BLOG_CATEGORIES[article.category].label}
-              </span>
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="w-3 h-3" />
-                {article.readingTime} min
+                {article.readingTime} min read
               </span>
             </div>
 

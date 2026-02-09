@@ -1,16 +1,14 @@
-import { ArrowLeft, ArrowRight, Clock, Link as LinkIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 import {
   BLOG_ARTICLES,
-  BLOG_CATEGORIES,
   BLOG_AUTHOR,
   getArticleBySlug,
   getAdjacentArticles,
   getArticleContent,
-  type BlogCategory,
 } from '@/lib/blog'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
@@ -42,16 +40,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: `https://shelvd.app/blog/${article.slug}`,
     },
   }
-}
-
-const categoryColors: Record<BlogCategory, string> = {
-  collecting: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-  materials: 'text-amber-700 bg-amber-50 border-amber-200',
-  bindings: 'text-violet-700 bg-violet-50 border-violet-200',
-  marks: 'text-blue-700 bg-blue-50 border-blue-200',
-  value: 'text-rose-700 bg-rose-50 border-rose-200',
-  market: 'text-slate-700 bg-slate-50 border-slate-200',
-  personal: 'text-cyan-700 bg-cyan-50 border-cyan-200',
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -112,10 +100,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 </Link>
               </li>
               <li className="text-border">/</li>
-              <li>
-                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium border ${categoryColors[article.category]}`}>
-                  {BLOG_CATEGORIES[article.category].label}
-                </span>
+              <li className="text-foreground">
+                {article.title}
               </li>
             </ol>
           </nav>
@@ -135,28 +121,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             {article.subtitle}
           </p>
 
-          {/* Metadata line */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground font-mono pb-8 border-b border-border/50">
-            <span>By {BLOG_AUTHOR}</span>
-            <span className="text-border">·</span>
-            <time dateTime={article.date}>
-              {new Date(article.date + 'T12:00:00').toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </time>
-            <span className="text-border">·</span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {article.readingTime} min read
-            </span>
-          </div>
+
         </div>
       </header>
 
       {/* Article body */}
-      <ArticleBody contentHtml={contentHtml} />
+      <ArticleBody
+        contentHtml={contentHtml}
+        author={BLOG_AUTHOR}
+        date={article.date}
+        readingTime={article.readingTime}
+      />
 
       {/* Previous / Next navigation */}
       <nav aria-label="Article navigation" className="px-6 py-12 border-t border-border/50">
