@@ -81,7 +81,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 1. **Read `docs/project.md` and `docs/CLAUDE_SESSION_LOG.md`** before starting ANY work
 2. **Check DB schema** before writing queries — NEVER guess column names
 3. **Update `docs/CLAUDE_SESSION_LOG.md`** after completing any task
-4. **Push to GitHub** after completing work: `git add -A && git commit -m "msg" && git push`
+4. **Always commit AND push** via command prompt after completing work: `git add -A && git commit -m "msg" && git push` — never forget the push
 5. **Supabase:** use `.range()` not `.limit()` for pagination
 6. **Read files before editing** — use exact text matching
 7. **Explain plan → wait for OK** before executing changes
