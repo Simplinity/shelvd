@@ -124,6 +124,11 @@ while (true) {
 | book_collections | — | M:N books ↔ collections |
 | tags | — | User tags (name + color, unique per user) |
 | book_tags | — | M:N books ↔ tags |
+| provenance_entries | — | Ownership chain per book (position, owner, evidence, transaction, association) |
+| provenance_sources | — | Supporting documentation per provenance entry |
+| user_profiles | 1 | Settings: default_currency, locale, preferences |
+| announcements | — | System banners (admin-managed, dismissible, expiry) |
+| feedback | — | User feedback/bug reports (planned) |
 
 ### Books — Key Fields
 ```
@@ -152,6 +157,34 @@ status, action_needed, internal_notes
 | sudoc | SUDOC (France) | sru |
 | libris | LIBRIS (Sweden) | xsearch |
 | standaard | Standaard Boekhandel | html |
+
+### Migrations (supabase/migrations/)
+| # | File | Description |
+|---|------|-------------|
+| 001 | reference_tables | Conditions, bindings, formats, languages |
+| 002 | contributors | Contributor roles (69 MARC relator codes) |
+| 003 | user_data | Books, contributors, book_contributors, user_stats |
+| 004 | physical_description_fields | Additional physical description columns |
+| 005 | user_profiles_admin | User profiles, admin role |
+| 006 | external_links | External link types, user activation, book links |
+| 007 | user_active_link_types | Per-user link type activation |
+| 008 | books_updated_at_trigger | Auto-update updated_at on books |
+| 009 | duplicate_detection_functions | Server-side duplicate detection SQL |
+| 010 | isbn_providers | ISBN providers table + seed |
+| 011 | collections | Collections + book_collections, Library seed, trigger |
+| 012 | wishlist_collection | Wishlist auto-create, is_default column |
+| 013 | remove_wishlist_status | Convert wishlist-status books to in_collection |
+| 014 | tags | RLS policies for tags + book_tags |
+| 015 | drop_unused_price_columns | Drop 5 unused price columns |
+| 016 | provenance | provenance_entries + provenance_sources tables |
+| 017 | drop_provenance_column | Remove old free-text provenance field |
+| 018 | expand_owner_types | Additional owner types for provenance |
+| 019 | expand_association_types | Additional association types for provenance |
+| 020 | migrate_acquisition_to_provenance | Move acquisition data into provenance chain |
+| 021 | announcements | Announcements table (admin banners) |
+| 022 | drop_acquired_columns | Remove redundant acquired_from/date columns |
+| 023 | add_locale | Add locale to user_profiles |
+| 024 | drop_date_format | Remove legacy date_format column |
 
 ---
 
@@ -407,8 +440,9 @@ shelvd/
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
-├── supabase/migrations/          # 001-024
-└── project.md
+├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
+├── supabase/migrations/          # 001-024 (see Migrations table above)
+└── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md
 ```
 
 ---
