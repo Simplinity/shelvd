@@ -15,6 +15,8 @@ import TagInput from '@/components/tag-input'
 import { EnrichButton, EnrichDropdown, useEnrich } from '@/components/enrich-panel'
 import { parseName, isSameAuthor } from '@/lib/name-utils'
 import type { Tables } from '@/lib/supabase/database.types'
+import FieldHelp from '@/components/field-help'
+import { FIELD_HELP } from '@/lib/field-help-texts'
 
 type Book = Tables<'books'>
 type Language = { id: string; name_en: string }
@@ -194,9 +196,9 @@ const textBlockConditionOptions = [
   { value: 'rebound', label: 'Rebound' },
 ]
 
-const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
-const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
-const textareaClass = "w-full px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground resize-y"
+const inputClass = "w-full h-10 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-muted/30 focus:outline-none focus:ring-1 focus:ring-foreground focus:bg-background transition-colors"
+const labelClass = "flex items-center text-xs uppercase tracking-wide text-muted-foreground mb-1"
+const textareaClass = "w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-muted/30 focus:outline-none focus:ring-1 focus:ring-foreground focus:bg-background transition-colors resize-y"
 
 export default function BookEditForm({ book, referenceData }: Props) {
   const router = useRouter()
@@ -708,10 +710,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
   }
 
   const allSections = [
-    'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
+    'Title & Series', 'Contributors', 'Collections', 'Tags', 'Language', 'Publication', 'Edition',
     'Physical Description', 'Condition & Status', 'Identifiers', 'BISAC Subject Codes',
-    'Storage', 'Valuation', 'Provenance', 'Condition History', 'Notes', 'External Links', 'Catalog Entry',
-    'Collections', 'Tags'
+    'Storage', 'Valuation', 'Provenance', 'Condition History', 'Notes', 'External Links', 'Catalog Entry'
   ]
 
   const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(allSections))
@@ -804,26 +805,26 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Title & Series" />
           {openSections.has('Title & Series') && <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className={labelClass}>Title</label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="col-span-2 md:col-span-4">
+              <label className={labelClass}>Title<FieldHelp text={FIELD_HELP.title} /></label>
               <input type="text" value={formData.title || ''} onChange={e => handleChange('title', e.target.value)} className={inputClass} />
             </div>
-            <div className="md:col-span-2">
-              <label className={labelClass}>Subtitle</label>
+            <div className="col-span-2 md:col-span-4">
+              <label className={labelClass}>Subtitle<FieldHelp text={FIELD_HELP.subtitle} /></label>
               <input type="text" value={formData.subtitle || ''} onChange={e => handleChange('subtitle', e.target.value)} className={inputClass} />
             </div>
-            <div className="md:col-span-2">
-              <label className={labelClass}>Original Title</label>
+            <div className="col-span-2 md:col-span-4">
+              <label className={labelClass}>Original Title<FieldHelp text={FIELD_HELP.original_title} /></label>
               <input type="text" value={formData.original_title || ''} onChange={e => handleChange('original_title', e.target.value)} className={inputClass} />
             </div>
-            <div>
-              <label className={labelClass}>Series</label>
+            <div className="col-span-2">
+              <label className={labelClass}>Series<FieldHelp text={FIELD_HELP.series} /></label>
               <input type="text" list="series-list" value={formData.series || ''} onChange={e => handleChange('series', e.target.value)} className={inputClass} />
               <datalist id="series-list">{referenceData.seriesList.map(s => <option key={s} value={s} />)}</datalist>
             </div>
-            <div>
-              <label className={labelClass}>Series Number</label>
+            <div className="col-span-2">
+              <label className={labelClass}>Series Number<FieldHelp text={FIELD_HELP.series_number} /></label>
               <input type="text" value={formData.series_number || ''} onChange={e => handleChange('series_number', e.target.value)} className={inputClass} />
             </div>
           </div>
@@ -852,8 +853,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
           )}
           <div className="flex gap-2 items-end">
             <div className="flex-1">
-              <label className={labelClass}>Name</label>
-              <input type="text" list="contributors-list" value={newContributorName} onChange={e => setNewContributorName(e.target.value)} placeholder="Last, First (e.g. Tolkien, J.R.R.)" className={inputClass} />
+              <label className={labelClass}>Name<FieldHelp text={FIELD_HELP.contributor_name} /></label>
+              <input type="text" list="contributors-list" value={newContributorName} onChange={e => setNewContributorName(e.target.value)} className={inputClass} />
               <datalist id="contributors-list">{referenceData.allContributors.map(c => <option key={c.id} value={c.name} />)}</datalist>
             </div>
             <div className="w-48">
@@ -870,22 +871,71 @@ export default function BookEditForm({ book, referenceData }: Props) {
           </div>}
         </section>
 
-        {/* 3. Language */}
+        {/* 3. Collections */}
+        {availableCollections.length > 0 && (
+          <section>
+            <SectionHeader title="Collections" />
+          {openSections.has('Collections') && <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
+            <div className="flex flex-wrap gap-2">
+              {availableCollections.map(col => (
+                <label key={col.id} className={`flex items-center gap-2 px-3 py-1.5 text-sm border cursor-pointer transition-colors ${
+                  selectedCollectionIds.has(col.id)
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'border-gray-300 dark:border-gray-600 bg-muted/30 hover:border-foreground'
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={selectedCollectionIds.has(col.id)}
+                    onChange={() => {
+                      setSelectedCollectionIds(prev => {
+                        const next = new Set(prev)
+                        if (next.has(col.id)) next.delete(col.id)
+                        else next.add(col.id)
+                        return next
+                      })
+                      setIsDirty(true)
+                    }}
+                    className="sr-only"
+                  />
+                  {col.name}
+                  {col.is_default && <span className="text-xs opacity-60">(default)</span>}
+                </label>
+              ))}
+            </div>
+            </div>}
+        </section>
+        )}
+
+        {/* 4. Tags */}
+        <section>
+          <SectionHeader title="Tags" />
+          {openSections.has('Tags') && <div className="mt-4">
+          <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
+          <TagInput
+            bookId={book.id}
+            selectedTags={selectedTags}
+            onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
+          />
+          </div>}
+        </section>
+
+        {/* 5. Language */}
         <section>
           <SectionHeader title="Language" />
           {openSections.has('Language') && <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>Language</label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="col-span-2">
+              <label className={labelClass}>Language<FieldHelp text={FIELD_HELP.language} /></label>
               <select value={formData.language_id || ''} onChange={e => handleChange('language_id', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select language...</option>
                 {referenceData.languages.map(l => <option key={l.id} value={l.id}>{l.name_en}</option>)}
               </select>
             </div>
-            <div>
-              <label className={labelClass}>Original Language</label>
+            <div className="col-span-2">
+              <label className={labelClass}>Original Language<FieldHelp text={FIELD_HELP.original_language} /></label>
               <select value={formData.original_language_id || ''} onChange={e => handleChange('original_language_id', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select language...</option>
                 {referenceData.languages.map(l => <option key={l.id} value={l.id}>{l.name_en}</option>)}
               </select>
             </div>
@@ -897,27 +947,27 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Publication" />
           {openSections.has('Publication') && <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className={labelClass}>Publisher</label>
+              <label className={labelClass}>Publisher<FieldHelp text={FIELD_HELP.publisher} /></label>
               <input type="text" list="publisher-list" value={formData.publisher_name || ''} onChange={e => handleChange('publisher_name', e.target.value)} className={inputClass} />
               <datalist id="publisher-list">{referenceData.publisherList.map(p => <option key={p} value={p} />)}</datalist>
             </div>
             <div>
-              <label className={labelClass}>Place Published</label>
+              <label className={labelClass}>Place Published<FieldHelp text={FIELD_HELP.publication_place} /></label>
               <input type="text" list="pubplace-list" value={formData.publication_place || ''} onChange={e => handleChange('publication_place', e.target.value)} className={inputClass} />
               <datalist id="pubplace-list">{referenceData.publicationPlaceList.map(p => <option key={p} value={p} />)}</datalist>
             </div>
             <div>
-              <label className={labelClass}>Year Published</label>
-              <input type="text" value={formData.publication_year || ''} onChange={e => handleChange('publication_year', e.target.value)} placeholder="1969" className={inputClass} />
+              <label className={labelClass}>Year Published<FieldHelp text={FIELD_HELP.publication_year} /></label>
+              <input type="text" value={formData.publication_year || ''} onChange={e => handleChange('publication_year', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Printer</label>
+              <label className={labelClass}>Printer<FieldHelp text={FIELD_HELP.printer} /></label>
               <input type="text" value={formData.printer || ''} onChange={e => handleChange('printer', e.target.value)} className={inputClass} />
             </div>
-            <div>
-              <label className={labelClass}>Place Printed</label>
+            <div className="col-span-2">
+              <label className={labelClass}>Place Printed<FieldHelp text={FIELD_HELP.printing_place} /></label>
               <input type="text" list="printplace-list" value={formData.printing_place || ''} onChange={e => handleChange('printing_place', e.target.value)} className={inputClass} />
               <datalist id="printplace-list">{referenceData.printingPlaceList.map(p => <option key={p} value={p} />)}</datalist>
             </div>
@@ -929,21 +979,21 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Edition" />
           {openSections.has('Edition') && <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className={labelClass}>Edition</label>
-              <input type="text" value={formData.edition || ''} onChange={e => handleChange('edition', e.target.value)} placeholder="First Edition" className={inputClass} />
+              <label className={labelClass}>Edition<FieldHelp text={FIELD_HELP.edition} /></label>
+              <input type="text" value={formData.edition || ''} onChange={e => handleChange('edition', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Impression</label>
-              <input type="text" value={formData.impression || ''} onChange={e => handleChange('impression', e.target.value)} placeholder="First Impression" className={inputClass} />
+              <label className={labelClass}>Impression<FieldHelp text={FIELD_HELP.impression} /></label>
+              <input type="text" value={formData.impression || ''} onChange={e => handleChange('impression', e.target.value)} className={inputClass} />
             </div>
-            <div className="md:col-span-2">
-              <label className={labelClass}>Issue State</label>
+            <div className="col-span-2">
+              <label className={labelClass}>Issue State<FieldHelp text={FIELD_HELP.issue_state} /></label>
               <input type="text" value={formData.issue_state || ''} onChange={e => handleChange('issue_state', e.target.value)} className={inputClass} />
             </div>
-            <div className="md:col-span-2">
-              <label className={labelClass}>Edition Notes</label>
+            <div className="col-span-2 md:col-span-4">
+              <label className={labelClass}>Edition Notes<FieldHelp text={FIELD_HELP.edition_notes} /></label>
               <textarea value={formData.edition_notes || ''} onChange={e => handleChange('edition_notes', e.target.value)} rows={2} className={textareaClass} />
             </div>
           </div>
@@ -954,96 +1004,111 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Physical Description" />
           {openSections.has('Physical Description') && <div className="mt-4">
+          {/* Sub-group: Size & Weight */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="col-span-2">
-              <label className={labelClass}>Pagination</label>
-              <input type="text" value={formData.pagination_description || ''} onChange={e => handleChange('pagination_description', e.target.value)} placeholder="xvi, 352 p." className={inputClass} />
+              <label className={labelClass}>Pagination<FieldHelp text={FIELD_HELP.pagination} /></label>
+              <input type="text" value={formData.pagination_description || ''} onChange={e => handleChange('pagination_description', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Volumes</label>
+              <label className={labelClass}>Volumes<FieldHelp text={FIELD_HELP.volumes} /></label>
               <input type="text" value={formData.volumes || ''} onChange={e => handleChange('volumes', e.target.value)} className={inputClass} />
             </div>
             <div />
             <div>
-              <label className={labelClass}>Height (mm)</label>
+              <label className={labelClass}>Height (mm)<FieldHelp text={FIELD_HELP.height} /></label>
               <input type="number" value={formData.height_mm ?? ''} onChange={e => handleChange('height_mm', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Width (mm)</label>
+              <label className={labelClass}>Width (mm)<FieldHelp text={FIELD_HELP.width} /></label>
               <input type="number" value={formData.width_mm ?? ''} onChange={e => handleChange('width_mm', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Depth (mm)</label>
+              <label className={labelClass}>Depth (mm)<FieldHelp text={FIELD_HELP.depth} /></label>
               <input type="number" value={formData.depth_mm ?? ''} onChange={e => handleChange('depth_mm', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Weight (g)</label>
+              <label className={labelClass}>Weight (g)<FieldHelp text={FIELD_HELP.weight} /></label>
               <input type="number" value={formData.weight_grams ?? ''} onChange={e => handleChange('weight_grams', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
+          </div>
+
+          {/* Sub-group: Binding & Cover */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div className="col-span-2">
-              <label className={labelClass}>Cover Type</label>
+              <label className={labelClass}>Cover Type<FieldHelp text={FIELD_HELP.cover_type} /></label>
               <select value={formData.cover_type || ''} onChange={e => handleChange('cover_type', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select cover type...</option>
                 {coverTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
-            <div className="col-span-2">
-              <label className={labelClass}>Binding</label>
+            <div>
+              <label className={labelClass}>Binding<FieldHelp text={FIELD_HELP.binding} /></label>
               <select value={formData.binding_id || ''} onChange={e => handleChange('binding_id', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select binding...</option>
                 {referenceData.bindings.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
-            <div className="col-span-2">
-              <label className={labelClass}>Book Format</label>
+            <div>
+              <label className={labelClass}>Book Format<FieldHelp text={FIELD_HELP.format} /></label>
               <select value={formData.format_id || ''} onChange={e => handleChange('format_id', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select format...</option>
                 {referenceData.bookFormats.map(f => <option key={f.id} value={f.id}>{f.abbreviation ? `${f.name} (${f.abbreviation})` : f.name}</option>)}
               </select>
             </div>
             <div className="col-span-2">
-              <label className={labelClass}>Protective Enclosure</label>
+              <label className={labelClass}>Protective Enclosure<FieldHelp text={FIELD_HELP.protective_enclosure} /></label>
               <select value={(formData as any).protective_enclosure || 'none'} onChange={e => handleChange('protective_enclosure' as keyof Book, e.target.value)} className={inputClass}>
                 {protectiveEnclosureOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
+            <div className="col-span-2 flex items-end gap-6 pb-1">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className={`w-9 h-5 rounded-full transition-colors relative ${formData.has_dust_jacket ? 'bg-foreground' : 'bg-gray-300 dark:bg-gray-600'}`} onClick={() => handleChange('has_dust_jacket', !formData.has_dust_jacket)}>
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${formData.has_dust_jacket ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                </div>
+                <span className="text-sm">Has Dust Jacket</span>
+                <FieldHelp text={FIELD_HELP.has_dust_jacket} />
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className={`w-9 h-5 rounded-full transition-colors relative ${formData.is_signed ? 'bg-foreground' : 'bg-gray-300 dark:bg-gray-600'}`} onClick={() => handleChange('is_signed', !formData.is_signed)}>
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${formData.is_signed ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                </div>
+                <span className="text-sm">Signed</span>
+                <FieldHelp text={FIELD_HELP.is_signed} />
+              </label>
+            </div>
+          </div>
+
+          {/* Sub-group: Materials */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div>
-              <label className={labelClass}>Paper Type</label>
+              <label className={labelClass}>Paper Type<FieldHelp text={FIELD_HELP.paper_type} /></label>
               <select value={(formData as any).paper_type || ''} onChange={e => handleChange('paper_type' as keyof Book, e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select paper type...</option>
                 {paperTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Edge Treatment</label>
+              <label className={labelClass}>Edge Treatment<FieldHelp text={FIELD_HELP.edge_treatment} /></label>
               <select value={(formData as any).edge_treatment || ''} onChange={e => handleChange('edge_treatment' as keyof Book, e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select treatment...</option>
                 {edgeTreatmentOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Endpapers</label>
+              <label className={labelClass}>Endpapers<FieldHelp text={FIELD_HELP.endpapers} /></label>
               <select value={(formData as any).endpapers_type || ''} onChange={e => handleChange('endpapers_type' as keyof Book, e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select type...</option>
                 {endpapersTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Text Block</label>
+              <label className={labelClass}>Text Block<FieldHelp text={FIELD_HELP.text_block} /></label>
               <select value={(formData as any).text_block_condition || ''} onChange={e => handleChange('text_block_condition' as keyof Book, e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select condition...</option>
                 {textBlockConditionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
-            </div>
-            <div className="col-span-2 flex items-end gap-6">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={formData.has_dust_jacket || false} onChange={e => handleChange('has_dust_jacket', e.target.checked)} className="w-4 h-4" />
-                <span className="text-sm">Has Dust Jacket</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={formData.is_signed || false} onChange={e => handleChange('is_signed', e.target.checked)} className="w-4 h-4" />
-                <span className="text-sm">Signed</span>
-              </label>
             </div>
           </div>
           </div>}
@@ -1053,36 +1118,35 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Condition & Status" />
           {openSections.has('Condition & Status') && <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className={labelClass}>Condition</label>
+              <label className={labelClass}>Condition<FieldHelp text={FIELD_HELP.condition} /></label>
               <select value={formData.condition_id || ''} onChange={e => handleChange('condition_id', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select condition...</option>
                 {referenceData.conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Dust Jacket Condition</label>
+              <label className={labelClass}>DJ Condition<FieldHelp text={FIELD_HELP.dust_jacket_condition} /></label>
               <select value={formData.dust_jacket_condition_id || ''} onChange={e => handleChange('dust_jacket_condition_id', e.target.value || null)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select condition...</option>
                 {referenceData.conditions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Status</label>
+              <label className={labelClass}>Status<FieldHelp text={FIELD_HELP.status} /></label>
               <select value={formData.status || 'in_collection'} onChange={e => handleChange('status', e.target.value)} className={inputClass}>
                 {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Action Needed</label>
+              <label className={labelClass}>Action Needed<FieldHelp text={FIELD_HELP.action_needed} /></label>
               <select value={(formData as any).action_needed || 'none'} onChange={e => handleChange('action_needed' as keyof Book, e.target.value)} className={inputClass}>
                 {actionNeededOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
-            <div />
-            <div className="md:col-span-2">
-              <label className={labelClass}>Condition Notes</label>
+            <div className="col-span-2 md:col-span-4">
+              <label className={labelClass}>Condition Notes<FieldHelp text={FIELD_HELP.condition_notes} /></label>
               <textarea value={formData.condition_notes || ''} onChange={e => handleChange('condition_notes', e.target.value)} rows={3} className={textareaClass} />
             </div>
           </div>
@@ -1095,39 +1159,39 @@ export default function BookEditForm({ book, referenceData }: Props) {
           {openSections.has('Identifiers') && <div className="mt-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className={labelClass}>ISBN-13</label>
-              <input type="text" value={formData.isbn_13 || ''} onChange={e => handleChange('isbn_13', e.target.value)} placeholder="978-0-123456-78-9" className={inputClass} />
+              <label className={labelClass}>ISBN-13<FieldHelp text={FIELD_HELP.isbn_13} /></label>
+              <input type="text" value={formData.isbn_13 || ''} onChange={e => handleChange('isbn_13', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>ISBN-10</label>
-              <input type="text" value={formData.isbn_10 || ''} onChange={e => handleChange('isbn_10', e.target.value)} placeholder="0-123456-78-9" className={inputClass} />
+              <label className={labelClass}>ISBN-10<FieldHelp text={FIELD_HELP.isbn_10} /></label>
+              <input type="text" value={formData.isbn_10 || ''} onChange={e => handleChange('isbn_10', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>OCLC Number</label>
+              <label className={labelClass}>OCLC Number<FieldHelp text={FIELD_HELP.oclc} /></label>
               <input type="text" value={formData.oclc_number || ''} onChange={e => handleChange('oclc_number', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>LCCN</label>
+              <label className={labelClass}>LCCN<FieldHelp text={FIELD_HELP.lccn} /></label>
               <input type="text" value={formData.lccn || ''} onChange={e => handleChange('lccn', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Catalog ID</label>
+              <label className={labelClass}>Catalog ID<FieldHelp text={FIELD_HELP.catalog_id} /></label>
               <input type="text" value={formData.user_catalog_id || ''} onChange={e => handleChange('user_catalog_id', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>DDC</label>
+              <label className={labelClass}>DDC<FieldHelp text={FIELD_HELP.ddc} /></label>
               <input type="text" value={formData.ddc || ''} onChange={e => handleChange('ddc', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>LCC</label>
+              <label className={labelClass}>LCC<FieldHelp text={FIELD_HELP.lcc} /></label>
               <input type="text" value={formData.lcc || ''} onChange={e => handleChange('lcc', e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>UDC</label>
+              <label className={labelClass}>UDC<FieldHelp text={FIELD_HELP.udc} /></label>
               <input type="text" value={formData.udc || ''} onChange={e => handleChange('udc', e.target.value)} className={inputClass} />
             </div>
             <div className="col-span-2">
-              <label className={labelClass}>Topic</label>
+              <label className={labelClass}>Topic<FieldHelp text={FIELD_HELP.topic} /></label>
               <input type="text" value={formData.topic || ''} onChange={e => handleChange('topic', e.target.value)} className={inputClass} />
             </div>
           </div>
@@ -1150,19 +1214,19 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Storage" />
           {openSections.has('Storage') && <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className={labelClass}>Location</label>
+              <label className={labelClass}>Location<FieldHelp text={FIELD_HELP.storage_location} /></label>
               <input type="text" list="location-list" value={formData.storage_location || ''} onChange={e => handleChange('storage_location', e.target.value)} className={inputClass} />
               <datalist id="location-list">{referenceData.storageLocationList.map(l => <option key={l} value={l} />)}</datalist>
             </div>
             <div>
-              <label className={labelClass}>Shelf</label>
+              <label className={labelClass}>Shelf<FieldHelp text={FIELD_HELP.shelf} /></label>
               <input type="text" list="shelf-list" value={formData.shelf || ''} onChange={e => handleChange('shelf', e.target.value)} className={inputClass} />
               <datalist id="shelf-list">{referenceData.shelfList.map(s => <option key={s} value={s} />)}</datalist>
             </div>
             <div>
-              <label className={labelClass}>Section</label>
+              <label className={labelClass}>Section<FieldHelp text={FIELD_HELP.shelf_section} /></label>
               <input type="text" list="section-list" value={formData.shelf_section || ''} onChange={e => handleChange('shelf_section', e.target.value)} className={inputClass} />
               <datalist id="section-list">{referenceData.shelfSectionList.map(s => <option key={s} value={s} />)}</datalist>
             </div>
@@ -1174,33 +1238,33 @@ export default function BookEditForm({ book, referenceData }: Props) {
         <section>
           <SectionHeader title="Valuation" />
           {openSections.has('Valuation') && <div className="mt-4">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className={labelClass}>Lowest Price</label>
+              <label className={labelClass}>Lowest Price<FieldHelp text={FIELD_HELP.lowest_price} /></label>
               <input type="number" step="0.01" value={formData.lowest_price ?? ''} onChange={e => handleChange('lowest_price', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Highest Price</label>
+              <label className={labelClass}>Highest Price<FieldHelp text={FIELD_HELP.highest_price} /></label>
               <input type="number" step="0.01" value={formData.highest_price ?? ''} onChange={e => handleChange('highest_price', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Estimated Value</label>
+              <label className={labelClass}>Estimated Value<FieldHelp text={FIELD_HELP.estimated_value} /></label>
               <input type="number" step="0.01" value={formData.estimated_value ?? ''} onChange={e => handleChange('estimated_value', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Sales Price</label>
+              <label className={labelClass}>Sales Price<FieldHelp text={FIELD_HELP.sales_price} /></label>
               <input type="number" step="0.01" value={formData.sales_price ?? ''} onChange={e => handleChange('sales_price', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Currency</label>
+              <label className={labelClass}>Currency<FieldHelp text={FIELD_HELP.price_currency} /></label>
               <select value={formData.price_currency || ''} onChange={e => handleChange('price_currency', e.target.value)} className={inputClass}>
-                <option value="">—</option>
+                <option value="">Select currency...</option>
                 {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Valuation Date</label>
-              <input type="text" value={formData.valuation_date || ''} onChange={e => handleChange('valuation_date', e.target.value)} placeholder="YYYY-MM-DD" className={inputClass} />
+              <label className={labelClass}>Valuation Date<FieldHelp text={FIELD_HELP.valuation_date} /></label>
+              <input type="text" value={formData.valuation_date || ''} onChange={e => handleChange('valuation_date', e.target.value)} className={inputClass} />
             </div>
           </div>
           </div>}
@@ -1241,31 +1305,33 @@ export default function BookEditForm({ book, referenceData }: Props) {
           {openSections.has('Notes') && <div className="mt-4">
           <div className="space-y-4">
             <div>
-              <label className={labelClass}>Summary</label>
+              <label className={labelClass}>Summary<FieldHelp text={FIELD_HELP.summary} /></label>
               <textarea value={formData.summary || ''} onChange={e => handleChange('summary', e.target.value)} rows={3} className={textareaClass} />
             </div>
-            <div>
-              <label className={labelClass}>Printed Dedication</label>
-              <textarea value={(formData as any).dedication_text || ''} onChange={e => handleChange('dedication_text' as keyof Book, e.target.value)} rows={2} placeholder="Printed dedication as it appears in the book" className={textareaClass} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>Printed Dedication<FieldHelp text={FIELD_HELP.dedication_text} /></label>
+                <textarea value={(formData as any).dedication_text || ''} onChange={e => handleChange('dedication_text' as keyof Book, e.target.value)} rows={2} className={textareaClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Colophon<FieldHelp text={FIELD_HELP.colophon} /></label>
+                <textarea value={(formData as any).colophon_text || ''} onChange={e => handleChange('colophon_text' as keyof Book, e.target.value)} rows={2} className={textareaClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Bibliography<FieldHelp text={FIELD_HELP.bibliography} /></label>
+                <textarea value={formData.bibliography || ''} onChange={e => handleChange('bibliography', e.target.value)} rows={2} className={textareaClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Illustrations<FieldHelp text={FIELD_HELP.illustrations} /></label>
+                <textarea value={formData.illustrations_description || ''} onChange={e => handleChange('illustrations_description', e.target.value)} rows={2} className={textareaClass} />
+              </div>
             </div>
             <div>
-              <label className={labelClass}>Colophon</label>
-              <textarea value={(formData as any).colophon_text || ''} onChange={e => handleChange('colophon_text' as keyof Book, e.target.value)} rows={2} placeholder="Transcription of colophon" className={textareaClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Bibliography</label>
-              <textarea value={formData.bibliography || ''} onChange={e => handleChange('bibliography', e.target.value)} rows={2} className={textareaClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Illustrations Description</label>
-              <textarea value={formData.illustrations_description || ''} onChange={e => handleChange('illustrations_description', e.target.value)} rows={2} className={textareaClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Signatures Description</label>
+              <label className={labelClass}>Signatures<FieldHelp text={FIELD_HELP.signatures} /></label>
               <textarea value={formData.signatures_description || ''} onChange={e => handleChange('signatures_description', e.target.value)} rows={2} className={textareaClass} />
             </div>
             <div>
-              <label className={labelClass}>Private Notes</label>
+              <label className={labelClass}>Private Notes<FieldHelp text={FIELD_HELP.internal_notes} /></label>
               <textarea value={formData.internal_notes || ''} onChange={e => handleChange('internal_notes', e.target.value)} rows={3} className={textareaClass} />
             </div>
           </div>
@@ -1398,54 +1464,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
             />
           </div>
           <div>
-            <label className={labelClass}>Full Catalog Entry</label>
+            <label className={labelClass}>Full Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
             <textarea value={formData.catalog_entry || ''} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
           </div>
-          </div>}
-        </section>
-
-        {/* 17. Collections */}
-        {availableCollections.length > 0 && (
-          <section>
-            <SectionHeader title="Collections" />
-          {openSections.has('Collections') && <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
-            <div className="space-y-2">
-              {availableCollections.map(col => (
-                <label key={col.id} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedCollectionIds.has(col.id)}
-                    onChange={() => {
-                      setSelectedCollectionIds(prev => {
-                        const next = new Set(prev)
-                        if (next.has(col.id)) next.delete(col.id)
-                        else next.add(col.id)
-                        return next
-                      })
-                      setIsDirty(true)
-                    }}
-                    className="w-4 h-4 rounded border-border"
-                  />
-                  <span className="text-sm">{col.name}</span>
-                  {col.is_default && <span className="text-xs text-muted-foreground">(default)</span>}
-                </label>
-              ))}
-            </div>
-            </div>}
-        </section>
-        )}
-
-        {/* Tags */}
-        <section>
-          <SectionHeader title="Tags" />
-          {openSections.has('Tags') && <div className="mt-4">
-          <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
-          <TagInput
-            bookId={book.id}
-            selectedTags={selectedTags}
-            onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
-          />
           </div>}
         </section>
 
