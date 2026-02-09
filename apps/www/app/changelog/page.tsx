@@ -1,4 +1,4 @@
-import { ArrowLeft, History, Plus, Sparkles, Wrench, Trash2 } from 'lucide-react'
+import { ArrowLeft, History, Plus, Sparkles, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
@@ -14,7 +14,6 @@ const typeConfig: Record<ChangeType, { label: string; color: string; icon: typeo
   added: { label: 'Added', color: 'text-green-700 bg-green-100', icon: Plus },
   improved: { label: 'Improved', color: 'text-blue-700 bg-blue-100', icon: Sparkles },
   fixed: { label: 'Fixed', color: 'text-amber-700 bg-amber-100', icon: Wrench },
-  removed: { label: 'Removed', color: 'text-red-700 bg-red-100', icon: Trash2 },
 }
 
 function formatDate(dateStr: string): string {
