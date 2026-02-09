@@ -1007,6 +1007,81 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          admin_notes: string | null
+          admin_response: string | null
+          browser_info: Json | null
+          category: string | null
+          created_at: string
+          id: string
+          message: string | null
+          phone: string | null
+          preferred_response: string | null
+          preferred_time: string | null
+          priority: string
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string | null
+          status: string
+          steps_to_reproduce: string | null
+          subject: string | null
+          timezone: string | null
+          type: string
+          updated_at: string
+          urgency: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          admin_response?: string | null
+          browser_info?: Json | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          preferred_response?: string | null
+          preferred_time?: string | null
+          priority?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          subject?: string | null
+          timezone?: string | null
+          type: string
+          updated_at?: string
+          urgency?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          admin_response?: string | null
+          browser_info?: Json | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          preferred_response?: string | null
+          preferred_time?: string | null
+          priority?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          subject?: string | null
+          timezone?: string | null
+          type?: string
+          updated_at?: string
+          urgency?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       isbn_providers: {
         Row: {
           base_url: string | null
