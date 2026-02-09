@@ -56,9 +56,9 @@ export default async function AppLayout({
       {/* Header - Swiss Design */}
       <header className="bg-white border-b-4 border-red-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex items-center h-16">
             {/* Logo */}
-            <Link href="/books" className="flex items-center gap-3">
+            <Link href="/books" className="flex items-center gap-3 mr-6">
               <div className="w-9 h-9 bg-primary flex items-center justify-center">
                 <BookOpen className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
               </div>
@@ -66,8 +66,8 @@ export default async function AppLayout({
               <span className="text-[9px] text-muted-foreground font-mono ml-1 mt-1">v{APP_VERSION}</span>
             </Link>
 
-            {/* Primary navigation — core book actions only */}
-            <nav className="hidden md:flex items-center gap-1">
+            {/* Primary navigation — core book actions, left-aligned */}
+            <nav className="hidden md:flex items-center gap-1 flex-1">
               <CollectionNav collections={collections || []} totalBookCount={totalBookCount || 0} />
               <Link 
                 href="/books/add" 
@@ -100,7 +100,9 @@ export default async function AppLayout({
             </nav>
 
             {/* User menu dropdown — Settings, Support, Admin, Sign Out */}
-            <UserMenu email={user.email || ''} isAdmin={isAdmin} />
+            <div className="ml-auto">
+              <UserMenu email={user.email || ''} isAdmin={isAdmin} />
+            </div>
           </div>
         </div>
       </header>

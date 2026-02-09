@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Settings, MessageSquare, Shield, LogOut, ChevronDown } from 'lucide-react'
+import { Settings, MessageSquare, Shield, LogOut, ChevronDown, User } from 'lucide-react'
 import { logout } from '@/lib/actions/auth'
 
 interface UserMenuProps {
@@ -34,21 +34,15 @@ export function UserMenu({ email, isAdmin }: UserMenuProps) {
     return () => document.removeEventListener('keydown', handleEscape)
   }, [open])
 
-  // Get user initial
-  const initial = email.charAt(0).toUpperCase()
-
   return (
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 group"
+        className="flex items-center gap-1.5 px-2 py-1.5 rounded-sm text-gray-500 hover:text-black transition-colors group"
         aria-expanded={open}
         aria-haspopup="true"
       >
-        {/* Avatar circle with initial */}
-        <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center text-xs font-bold uppercase select-none">
-          {initial}
-        </div>
+        <User className="w-4 h-4" strokeWidth={1.75} />
         <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
