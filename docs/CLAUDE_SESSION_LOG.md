@@ -50,6 +50,7 @@
 | ~~A1~~ | ~~System stats dashboard~~ | ~~High~~ | ~~Medium~~ | ~~DONE — /admin/stats with metrics, distributions, growth charts~~ |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action, date, entity. Depends on #4. |
 | A4 | User detail view | Low | Medium | Click user in admin table → full profile: books count, collections, last active, features used, support tickets. |
+| A5 | Admin impersonation | Medium | Medium | "View as user" button in admin user table. Admin temporarily sees the platform as that user — their books, collections, settings, everything. Essential for debugging reported issues. Banner at top showing impersonation mode + "Exit" button. Supabase approach: admin session stores target user_id, RLS queries use that instead of auth user. Audit logged. |
 | A6 | Data health checks | Low | Medium | Orphaned records, missing fields, import errors, DB consistency. |
 
 ### Completed
