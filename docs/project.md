@@ -185,6 +185,7 @@ status, action_needed, internal_notes
 | 022 | drop_acquired_columns | Remove redundant acquired_from/date columns |
 | 023 | add_locale | Add locale to user_profiles |
 | 024 | drop_date_format | Remove legacy date_format column |
+| 025 | feedback | Feedback & support table, RLS, indexes, trigger |
 
 ---
 
@@ -285,6 +286,19 @@ status, action_needed, internal_notes
 - Existing contributor matching uses isSameAuthor() fallback (format-independent)
 - Placeholder on contributor inputs: "Last, First (e.g. Tolkien, J.R.R.)"
 
+### Feedback & Support
+- Three form types: Bug Report (severity, steps), Contact Request (category), Callback Request (phone, time, urgency)
+- Auto-captures browser info (UA, screen, URL, app version) as JSONB
+- User support page (`/support`) with "My Submissions" tab, status chips, admin response display
+- Admin queue (`/admin/support`): filterable by type/status/priority, expandable detail panels
+- Status workflow: new → acknowledged → in_progress → resolved / closed / spam
+- Priority management: none/low/medium/high/critical with color dots
+- Admin notes (internal), admin response (visible to user), bulk actions
+- Badge count on admin Support Queue link (red, shows new submissions)
+- Email notifications to admin users via Resend on new submissions
+- Support link in app nav + marketing footer
+- Migration 025: `feedback` table with RLS, indexes, trigger
+
 ### Book Lookup (9 providers)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
@@ -310,6 +324,7 @@ status, action_needed, internal_notes
 | Announcement system (admin banners) | ✅ Done |
 | Multiple Collections per user | ✅ Done |
 | Custom Tags | ✅ Done |
+| Feedback & Support + Admin queue | ✅ Done |
 
 ### Todo — Core Product
 | # | Feature | Priority | Effort | Description |
@@ -318,7 +333,7 @@ status, action_needed, internal_notes
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
-| 5 | Feedback & bug reporting | High | Medium | Feedback form (bug/feature/question), `feedback` table with status tracking, auto-attach browser info. Admin queue. |
+| 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Bug/contact/callback forms, `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications (Resend), badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
@@ -364,7 +379,7 @@ Currently the app is desktop-only in practice. Key issues:
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
 | A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
-| A2 | Feedback/bug queue | High | Medium | Review submitted feedback, change status, respond. |
+| A2 | ~~Feedback/bug queue~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Admin support queue at `/admin/support` with full workflow. Part of #5. |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. |
 | A4 | User management improvements | Medium | Medium | Invite codes, approve registrations, user details view. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
@@ -424,10 +439,12 @@ shelvd/
 │   │   ├── enrich-panel.tsx      # ISBN/field search enrichment panel
 │   │   ├── provenance-editor.tsx  # Repeatable card UI for provenance chain
 │   │   ├── provenance-timeline.tsx # Vertical timeline display (detail page)
-│   │   └── delete-book-button.tsx
+│   │   ├── delete-book-button.tsx
+│   │   └── (support/callback/contact forms inline in support-client.tsx)
 │   └── lib/
 │       ├── supabase/             # DB client + types
-│       ├── actions/              # Server actions (collections, etc.)
+│       ├── actions/              # Server actions (collections, feedback, etc.)
+│       ├── email.ts              # Resend email notifications
 │       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
 │       ├── currencies.ts         # 29 ISO 4217 currencies for dropdowns
 │       ├── name-utils.ts         # Contributor name parsing (Last, First)
@@ -441,7 +458,7 @@ shelvd/
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
-├── supabase/migrations/          # 001-024 (see Migrations table above)
+├── supabase/migrations/          # 001-025 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md
 ```
 

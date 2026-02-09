@@ -70,7 +70,9 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 - `apps/www/lib/name-utils.ts` — Contributor name parser ("Last, First" standard)
 - `apps/www/components/marketing/` — MarketingHeader, MarketingFooter
 - `content/blog/` — 22 blog articles (.md, by Bruno van Branden)
-- `supabase/migrations/` — 001–024
+- `apps/www/lib/email.ts` — Resend email notifications (admin alerts)
+- `apps/www/lib/actions/feedback.ts` — Feedback server actions (submit, admin workflow, bulk)
+- `supabase/migrations/` — 001–025
 
 ---
 
@@ -103,7 +105,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 
 ## WHAT'S DONE (summary — full details in project.md)
 
-**Core:** Collections, Search, Import/Export, Stats, Cataloging (ISBD), Admin, Settings, External Links, Duplicate Detection, Multiple Collections, Tags, Currency & Valuation, Enrich Mode, Contributor Names, Provenance, Locale Formatting, Collapsible Forms, Book Detail Page.
+**Core:** Collections, Search, Import/Export, Stats, Cataloging (ISBD), Admin, Settings, External Links, Duplicate Detection, Multiple Collections, Tags, Currency & Valuation, Enrich Mode, Contributor Names, Provenance, Locale Formatting, Collapsible Forms, Book Detail Page, Feedback & Support.
 
 **Lookup:** 9 providers (Open Library, Google Books, LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, Standaard Boekhandel).
 
@@ -117,8 +119,7 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 |----------|---------|
 | 🔴 High | Mobile responsiveness |
 | 🔴 High | Activity logging |
-| 🔴 High | Feedback & bug reporting |
-| 🔴 High | Admin: stats dashboard, feedback queue, activity viewer |
+| 🔴 High | Admin: stats dashboard, activity viewer |
 | 🟡 Medium | Image upload |
 | 🟡 Medium | Sharing & Public Catalog |
 | 🟡 Medium | Knowledge base (`/help`) |
