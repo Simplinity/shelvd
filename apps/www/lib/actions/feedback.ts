@@ -270,10 +270,13 @@ export async function sendAdminResponse(
   if (error) return { error: 'Failed to send response' }
 
   // Send email to user
+  console.log('[Feedback] Response saved. feedback record:', JSON.stringify(feedback))
   if (feedback?.user_id) {
     try {
-      const { data: userProfile } = await supabase.rpc('get_users_for_admin')
+      const { data: userProfile, error: rpcError } = await supabase.rpc('get_users_for_admin')
+      console.log('[Feedback] get_users_for_admin result:', userProfile?.length, 'users, error:', rpcError)
       const feedbackUser = (userProfile || []).find((u: any) => u.id === feedback.user_id)
+      console.log('[Feedback] Found user:', feedbackUser?.email || 'NOT FOUND')
       if (feedbackUser?.email) {
         await sendAdminResponseEmail(
           feedbackUser.email,
@@ -285,6 +288,8 @@ export async function sendAdminResponse(
     } catch (err) {
       console.error('[Feedback] Failed to send response email:', err)
     }
+  } else {
+    console.log('[Feedback] No user_id on feedback record, skipping email')
   }
 
   revalidatePath('/admin/support')
