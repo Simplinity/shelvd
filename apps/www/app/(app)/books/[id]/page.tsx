@@ -5,6 +5,7 @@ import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLin
 import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
+import BookPdfButton from '@/components/book-pdf-button'
 import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
 import ProvenanceTimeline from '@/components/provenance-timeline'
@@ -471,6 +472,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               Edit
             </Link>
           </Button>
+          <BookPdfButton bookId={id} />
           <DeleteBookButton bookId={id} bookTitle={bookData.title} />
         </div>
       </div>
