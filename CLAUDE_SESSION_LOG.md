@@ -69,7 +69,7 @@
 - ✅ About (`/about`) — Origin story, 28k books, problem/solution, pull quotes, care items with icons
 - ✅ Changelog (`/changelog`) — 9 releases (0.1.0–0.9.0), timeline design, color-coded change types, data-driven from `lib/changelog.ts`
 - ✅ Roadmap (`/roadmap`) — 3-lane board (Shipped/Building/Planned), 26 items, 7 category badges, data-driven from `lib/roadmap.ts`
-- ✅ Blog (`/blog`) — 22 articles by Bruno van Branden, index page grouped by 6 themes, article pages with serif typography, font size control, JSON-LD SEO, prev/next navigation
+- ✅ Blog / Marginalia (`/blog`) — 22 articles by Bruno van Branden. `lib/blog.ts` + `content/blog/*.md`. Deps: `remark`, `remark-html`. Serif body, sans-serif titles, font size control (A−/A/A+), JSON-LD SEO, prev/next nav. Index grouped by 6 themes. Continental European references throughout. Articles: 01 bookshelf-lying, 02 isbn, 03 isbd, 04 book-formats, 05 paper-history, 06 book-smell, 07 foxing-browning, 08 bindings, 09 dust-jacket, 10 price-stickers, 11 colophon, 12 ex-libris, 13 provenance, 14 first-editions, 15 condition-scale, 16 rebinding, 17 private-press, 18 book-fairs, 19 auctions, 20 insurance, 21 28000-books, 22 cataloging-sunday.
 - ✅ Shared MarketingHeader (Info dropdown, 6 live) + MarketingFooter (4-column grid)
 - ✅ App Versioning — `APP_VERSION` in `lib/changelog.ts`, version badge in app header, package.json v0.9.0, git tag v0.9.0
 - ✅ Announcement System — Colored banners (info/warning/success/maintenance), admin CRUD, dismissible, expiry
