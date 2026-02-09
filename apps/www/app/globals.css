@@ -159,3 +159,150 @@
 :focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2;
 }
+
+/* ============================================
+   BLOG ARTICLE TYPOGRAPHY
+   Print-like reading experience, Swiss design
+   ============================================ */
+
+.article-prose {
+  font-family: var(--font-family-serif);
+  color: hsl(var(--foreground));
+}
+
+/* Paragraphs */
+.article-prose p {
+  margin-bottom: 1.5em;
+  text-align: left;
+  hanging-punctuation: first;
+}
+
+/* Headings — sans-serif for contrast */
+.article-prose h2 {
+  font-family: var(--font-family-sans);
+  font-size: 1.5em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2.5em;
+  margin-bottom: 0.75em;
+  padding-top: 1.5em;
+  border-top: 1px solid hsl(var(--border) / 0.3);
+  color: hsl(var(--foreground));
+}
+
+.article-prose h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.article-prose h3 {
+  font-family: var(--font-family-sans);
+  font-size: 1.15em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  color: hsl(var(--foreground));
+}
+
+/* Bold text */
+.article-prose strong {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+/* Italic text */
+.article-prose em {
+  font-style: italic;
+}
+
+/* Links */
+.article-prose a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+
+.article-prose a:hover {
+  color: hsl(var(--foreground));
+}
+
+/* Blockquotes — red left border, Swiss style */
+.article-prose blockquote {
+  margin: 2em 0;
+  padding: 0.75em 0 0.75em 1.5em;
+  border-left: 3px solid hsl(var(--primary));
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+.article-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists */
+.article-prose ul {
+  margin: 1.5em 0;
+  padding-left: 1.5em;
+  list-style-type: disc;
+}
+
+.article-prose ol {
+  margin: 1.5em 0;
+  padding-left: 1.5em;
+  list-style-type: decimal;
+}
+
+.article-prose li {
+  margin-bottom: 0.5em;
+  padding-left: 0.25em;
+}
+
+.article-prose li::marker {
+  color: hsl(var(--primary) / 0.5);
+}
+
+/* Horizontal rules — thin red line */
+.article-prose hr {
+  margin: 2.5em 0;
+  border: none;
+  height: 1px;
+  background: hsl(var(--primary) / 0.2);
+}
+
+/* Code inline */
+.article-prose code {
+  font-family: var(--font-family-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+/* Code blocks */
+.article-prose pre {
+  margin: 2em 0;
+  padding: 1.25em 1.5em;
+  background: hsl(var(--muted));
+  overflow-x: auto;
+  font-family: var(--font-family-mono);
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
+.article-prose pre code {
+  padding: 0;
+  background: none;
+}
+
+/* The "next article" teaser at the end — style as regular italic */
+.article-prose > p:last-child em:only-child {
+  display: block;
+  margin-top: 2em;
+  padding-top: 1.5em;
+  border-top: 1px solid hsl(var(--border) / 0.3);
+  font-size: 0.9em;
+  color: hsl(var(--muted-foreground));
+}

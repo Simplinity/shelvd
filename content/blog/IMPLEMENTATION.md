@@ -60,7 +60,7 @@
 | Step | Description | Status |
 |------|-------------|--------|
 | 1 | `lib/blog.ts` — metadata array + markdown parsing | ✅ Done |
-| 2 | `/blog` index page | 🔴 |
+| 2 | `/blog` index page | ✅ Done |
 | 3 | `/blog/[slug]` article page | 🔴 |
 | 4 | SEO: generateMetadata + JSON-LD | 🔴 |
 | 5 | Font size control | 🔴 |
