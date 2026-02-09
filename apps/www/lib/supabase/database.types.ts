@@ -1703,6 +1703,10 @@ export type Database = {
           publisher: string
         }[]
       }
+      get_public_stats: {
+        Args: Record<string, never>
+        Returns: Json
+      }
       get_total_books_for_admin: { Args: never; Returns: number }
       get_user_isbn_providers: {
         Args: never

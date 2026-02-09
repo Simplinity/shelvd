@@ -1,6 +1,7 @@
 import { BookOpen } from 'lucide-react'
 import Link from 'next/link'
 import { getPublicStats } from '@/lib/actions/public-stats'
+import { AuthQuote } from '@/components/auth-quotes'
 
 export default async function AuthLayout({
   children,
@@ -32,6 +33,7 @@ export default async function AuthLayout({
             Professional collection management for serious collectors. 
             Catalog, organize, and value your books.
           </p>
+          <AuthQuote />
         </div>
         
         <div className="flex items-center gap-12">
