@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.10.0'
+export const APP_VERSION = '0.11.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,21 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.11.0',
+    date: '2026-02-09',
+    title: 'Print Inserts & Polish',
+    description: 'The update where your screen collection meets paper. Because some things deserve to exist in both worlds.',
+    changes: [
+      { type: 'added', text: 'Printable PDF book inserts — generate catalog cards and full catalog sheets directly from any book\'s detail page' },
+      { type: 'added', text: 'Vintage catalog card (3\u00D75\u201D) — authentic library aesthetic with red vertical line, Courier typewriter font, AACR indentation, cutter numbers, and punch hole. Two pages per PDF: decorative version for display, clean version for printing on real card stock' },
+      { type: 'added', text: 'Full catalog sheet — complete book record in Swiss typography across 6 paper sizes: A4, A5, A6, US Letter, US Legal, US Half Letter. Red accent bar, inline field pairs, empty fields omitted' },
+      { type: 'added', text: 'Live stats on auth pages — books cataloged, contributors tracked, and publishers cataloged, fetched from the database in real time' },
+      { type: 'added', text: 'Literary quotes on auth pages — rotating quotes from Borges, Cicero, Eco, Hemingway, and others' },
+      { type: 'improved', text: 'Form sections reordered by logical collector workflow: Identity \u2192 Bibliographic \u2192 Physical \u2192 History \u2192 Classification \u2192 Collection Management \u2192 Supplementary' },
+      { type: 'improved', text: 'Catalog sheet layout: no decorative lines, inline field pairs that follow content naturally instead of fixed columns, section headers in red small caps' },
+    ],
+  },
   {
     version: '0.10.0',
     date: '2026-02-09',

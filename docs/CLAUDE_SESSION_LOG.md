@@ -2,29 +2,40 @@
 
 ## Current State (2026-02-09)
 
-**App version: v0.10.0.** All core features, marketing site, and feedback system complete. 9 lookup providers active. 26 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live. Only Knowledge Base remains for content pages.
+**App version: v0.11.0.** All core features, marketing site, feedback system, and PDF print inserts complete. 9 lookup providers active. 26 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
-**Recent session work:**
-- **Admin system stats dashboard (A1) — COMPLETE**
-  - Server action (`lib/actions/admin-stats.ts`): fetches all platform stats bypassing RLS
-  - Stats page (`/admin/stats`): key metrics (total books, estimated value, sales, avg value), secondary counts (users, collections, tags, provenance, ext links, no-ISBN), distribution bar charts (status, language, condition, publishers), growth timeline charts (books/month, signups/month), books per user table
-  - Migration 026: 7 admin RPC functions (get_books_by_status_for_admin, get_books_by_condition_for_admin, get_top_publishers_for_admin, get_books_by_month_for_admin, get_books_per_user_for_admin, get_platform_stats_for_admin, get_signups_by_week_for_admin)
-  - Swiss design: CSS-only bar charts (red accent on top item), monospace numbers, hover tooltips on timeline
-  - Quick link from admin dashboard
-- **Header redesign**: user menu dropdown (Settings/Support/Admin/Sign Out behind user icon), left-aligned nav
-- **Resend email**: API key + from email env vars added to Vercel, redeploy triggered
-- **Feedback & Support system — COMPLETE (all 6 steps done)**
-  - Migration 025: `feedback` table with RLS, indexes, trigger (bug/contact/callback types, status workflow, priority, admin notes/response)
-  - User support page (`/support`): three form types (bug report, contact, callback) with auto browser info capture, "My Submissions" tab with status chips + admin response display
-  - Admin support queue (`/admin/support`): filterable by type/status/priority, expandable detail panel, status workflow, priority dots, admin notes, admin response, bulk actions (acknowledge/close/spam/delete)
-  - Admin badge count: red badge on Support Queue link showing new submission count
-  - Email notifications: Resend integration — admin users emailed on new submissions (needs `RESEND_API_KEY` + `RESEND_FROM_EMAIL` env vars on Vercel)
-  - Support link in app nav (MessageSquare icon) + marketing footer
-  - Files: `lib/actions/feedback.ts`, `lib/email.ts`, `app/(app)/support/`, `app/(app)/admin/support/`
-- Blog / Marginalia: 22 articles written + blog pages built (`/blog`, `/blog/[slug]`)
-- Header dropdown reordered (About, Marginalia, Privacy, Terms, Changelog, Roadmap), "coming soon" removed
-- Blog renamed from "Blog" to "Marginalia" across header, footer, page title
-- Docs reorganized: all reference docs moved to `docs/`, consolidated `book-reference.md`
+**Recent session work (v0.11.0):**
+- **Printable PDF book inserts — COMPLETE**
+  - Vintage catalog card (3×5"): authentic 1930s-50s library aesthetic
+    - Courier typewriter font, red vertical line at first indentation, ruled lines, card border, punch hole
+    - AACR standard layout: call number (DDC/LCC + cutter), author, title paragraph, imprint, collation, notes, tracings, storage location
+    - Two-page PDF: page 1 decorative (cream bg, border, ruled lines) for display, page 2 clean (text only, white bg) for printing on real card stock
+    - Files: `lib/pdf/catalog-card.ts`, `lib/pdf/types.ts`
+  - Full catalog sheet: complete book record in Swiss typography
+    - 6 paper sizes: A4, A5, A6, US Letter, US Legal, US Half Letter
+    - Red accent bar at top, red section headers in small caps, no decorative lines
+    - Inline field pairs (second field follows first with 20pt gap, wraps if needed)
+    - All sections: Publication & Edition, Physical, Condition, Condition History, Provenance, Identifiers, Storage & Valuation, Notes, Catalog Entry, References
+    - Empty fields/sections omitted automatically
+    - Adaptive typography per paper size
+    - File: `lib/pdf/catalog-sheet.ts`
+  - API route: `/api/books/[id]/pdf` with type (catalog-card/catalog-sheet) and size params
+  - UI: BookPdfButton dropdown on book detail page ("Print Insert" with paper size options)
+  - File: `components/book-pdf-button.tsx`
+  - Dependency: `pdf-lib` (TypeScript-native PDF generation)
+  - Key challenge: StandardFonts only support WinAnsiEncoding — built `safeText()` to convert all Unicode to Latin-1
+- **Auth page improvements**
+  - Live stats from database (books, contributors, publishers)
+  - Rotating literary quotes (Borges, Cicero, Eco, Hemingway, etc.)
+- **Form UX**: sections reordered by collector workflow (Identity → Bibliographic → Physical → History → Classification → Collection Management → Supplementary)
+
+**Previous session (v0.10.0):**
+- Admin system stats dashboard (A1)
+- Feedback & Support system (all 6 steps)
+- Header redesign with user menu dropdown
+- Resend email integration
+- Blog / Marginalia: 22 articles
+- Docs reorganized
 
 ---
 
@@ -60,6 +71,8 @@
 | 5 + A2 | Feedback & Support + Admin queue | 2026-02-09 |
 | B3 | Condition history (timeline + CRUD + auto-prompt) | 2026-02-09 |
 | UX1 | Edit page UX/UI overhaul | 2026-02-09 |
+| PDF | Printable PDF inserts (catalog card + catalog sheet) | 2026-02-09 |
+| AUTH | Auth page live stats + literary quotes | 2026-02-09 |
 
 ### Book Data Features
 | # | Feature | Priority | Effort | Description |

@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2026-02-07
+> **Last updated:** 2026-02-09
 
 ---
 
@@ -388,11 +388,13 @@ Currently the app is desktop-only in practice. Key issues:
 ### Under Consideration (Future)
 - Insurance & valuation PDF reports
 - Price history field (auction results, dealer quotes, previous sale prices)
-- Condition history (restorations, reports)
 - Dealer & contact management
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)
-- PDF catalog export
 - Templates system
+
+### Recently Completed
+- ~~PDF catalog export~~ → v0.11.0: Printable PDF inserts (catalog card + catalog sheet)
+- ~~Condition history~~ → v0.10.0: Condition history timeline + CRUD + auto-prompt
 
 
 ---
