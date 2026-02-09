@@ -136,7 +136,7 @@ function drawCardContent(
   }
   
   const contentRight = CARD_W - M_RIGHT
-  let line = 1  // Start 1 line down from top
+  let line = 2  // Start 2 lines down from top (printer margin safety)
   
   // ═══ CALL NUMBER (left of red line, stacked) ═══
   const callParts: string[] = []
@@ -155,7 +155,7 @@ function drawCardContent(
   const callMaxW = RED_LINE_X - M_LEFT - 6
   for (let i = 0; i < Math.min(callParts.length, 4); i++) {
     const t = truncate(callParts[i], regular, callMaxW, FONT_CALL)
-    page.drawText(t, { x: M_LEFT + 2, y: yForLine(i + 1), size: FONT_CALL, font: bold, color: INK_FADED })
+    page.drawText(t, { x: M_LEFT + 2, y: yForLine(i + 2), size: FONT_CALL, font: bold, color: INK_FADED })
   }
   
   // ═══ AUTHOR (indent 1, line 0) ═══
