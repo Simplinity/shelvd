@@ -92,6 +92,213 @@ export async function submitFeedback(formData: FormData): Promise<FeedbackResult
   }
 }
 
+// ─── Admin: get all feedback ───
+
+export async function getAllFeedback(filters?: {
+  type?: string
+  status?: string
+  priority?: string
+}): Promise<{ error?: string; data: any[] }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated', data: [] }
+
+  // Verify admin
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single()
+  if (!profile?.is_admin) return { error: 'Not authorized', data: [] }
+
+  let query = supabase
+    .from('feedback')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (filters?.type && filters.type !== 'all') {
+    query = query.eq('type', filters.type)
+  }
+  if (filters?.status && filters.status !== 'all') {
+    query = query.eq('status', filters.status)
+  }
+  if (filters?.priority && filters.priority !== 'all') {
+    query = query.eq('priority', filters.priority)
+  }
+
+  const { data, error } = await query
+  if (error) return { error: 'Failed to load feedback', data: [] }
+  return { data: data || [] }
+}
+
+// ─── Admin: get new feedback count ───
+
+export async function getNewFeedbackCount(): Promise<number> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return 0
+
+  const { count } = await supabase
+    .from('feedback')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'new')
+
+  return count || 0
+}
+
+// ─── Admin: update feedback status ───
+
+export async function updateFeedbackStatus(
+  feedbackId: string,
+  status: string
+): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const update: Record<string, any> = { status }
+
+  if (status === 'resolved' || status === 'closed') {
+    update.resolved_by = user.id
+    update.resolved_at = new Date().toISOString()
+  }
+
+  const { error } = await supabase
+    .from('feedback')
+    .update(update)
+    .eq('id', feedbackId)
+
+  if (error) return { error: 'Failed to update status' }
+  revalidatePath('/admin/support')
+  return { success: true, message: `Status updated to ${status}` }
+}
+
+// ─── Admin: update feedback priority ───
+
+export async function updateFeedbackPriority(
+  feedbackId: string,
+  priority: string
+): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('feedback')
+    .update({ priority })
+    .eq('id', feedbackId)
+
+  if (error) return { error: 'Failed to update priority' }
+  revalidatePath('/admin/support')
+  return { success: true }
+}
+
+// ─── Admin: update admin notes ───
+
+export async function updateAdminNotes(
+  feedbackId: string,
+  notes: string
+): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('feedback')
+    .update({ admin_notes: notes })
+    .eq('id', feedbackId)
+
+  if (error) return { error: 'Failed to update notes' }
+  revalidatePath('/admin/support')
+  return { success: true }
+}
+
+// ─── Admin: send response to user ───
+
+export async function sendAdminResponse(
+  feedbackId: string,
+  response: string
+): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('feedback')
+    .update({ 
+      admin_response: response,
+      status: 'resolved',
+      resolved_by: user.id,
+      resolved_at: new Date().toISOString(),
+    })
+    .eq('id', feedbackId)
+
+  if (error) return { error: 'Failed to send response' }
+  revalidatePath('/admin/support')
+  revalidatePath('/support')
+  return { success: true, message: 'Response sent' }
+}
+
+// ─── Admin: delete feedback ───
+
+export async function deleteFeedback(feedbackId: string): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('feedback')
+    .delete()
+    .eq('id', feedbackId)
+
+  if (error) return { error: 'Failed to delete' }
+  revalidatePath('/admin/support')
+  return { success: true, message: 'Deleted' }
+}
+
+// ─── Admin: bulk update status ───
+
+export async function bulkUpdateFeedbackStatus(
+  feedbackIds: string[],
+  status: string
+): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const update: Record<string, any> = { status }
+  if (status === 'resolved' || status === 'closed') {
+    update.resolved_by = user.id
+    update.resolved_at = new Date().toISOString()
+  }
+
+  const { error } = await supabase
+    .from('feedback')
+    .update(update)
+    .in('id', feedbackIds)
+
+  if (error) return { error: 'Failed to update' }
+  revalidatePath('/admin/support')
+  return { success: true, message: `${feedbackIds.length} items updated` }
+}
+
+// ─── Admin: bulk delete ───
+
+export async function bulkDeleteFeedback(feedbackIds: string[]): Promise<FeedbackResult> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('feedback')
+    .delete()
+    .in('id', feedbackIds)
+
+  if (error) return { error: 'Failed to delete' }
+  revalidatePath('/admin/support')
+  return { success: true, message: `${feedbackIds.length} items deleted` }
+}
+
 // ─── Get user's own submissions ───
 
 export async function getUserFeedback(): Promise<{ error?: string; data: any[] }> {

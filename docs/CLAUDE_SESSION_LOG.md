@@ -5,7 +5,19 @@
 **App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. 25 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live. Only Knowledge Base remains for content pages.
 
 **Recent session work:**
-- **Feedback & Support system — Step 2/6: User support page done**
+- **Feedback & Support system — Step 3/6: Admin support queue done**
+  - `/admin/support` page with full queue table: type icon, subject, user email, priority dot, status chip, time ago
+  - Filter bar: by type (bug/contact/callback) and status (new/acknowledged/in_progress) with count badges
+  - Expandable detail panel: message, severity, steps, browser info, category, phone/time/urgency
+  - Status workflow: dropdown to change status (new → acknowledged → in_progress → resolved/closed/spam)
+  - Priority management: dropdown (none/low/medium/high/critical) with color dots
+  - Admin notes: internal-only textarea (auto-saves on change)
+  - Admin response: write response visible to user, "Send & Resolve" button
+  - Delete with confirmation
+  - Bulk actions: select multiple → acknowledge, close, spam, delete
+  - "Support Queue" link added to admin dashboard
+  - Server actions: updateFeedbackStatus, updateFeedbackPriority, updateAdminNotes, sendAdminResponse, deleteFeedback, bulkUpdateFeedbackStatus, bulkDeleteFeedback, getAllFeedback, getNewFeedbackCount
+- **Step 2/6: User support page done**
   - `/support` page with three form types: Bug Report, Contact, Callback
   - Type selector cards (Swiss design: red left border on selected)
   - Bug form: subject, severity (4 levels), description, steps to reproduce

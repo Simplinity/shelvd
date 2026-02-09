@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock } from 'lucide-react'
+import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock, MessageSquare } from 'lucide-react'
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './users/user-actions'
 import { AnnouncementManager } from './announcements/announcement-manager'
@@ -101,6 +101,17 @@ export default async function AdminPage({
         <StatCard label="Active" value={activeUsers ?? 0} icon={<Check className="w-4 h-4" />} />
         <StatCard label="Books" value={totalBooks} icon={<BookOpen className="w-4 h-4" />} />
         <StatCard label="Signups (7d)" value={recentSignups ?? 0} icon={<TrendingUp className="w-4 h-4" />} />
+      </div>
+
+      {/* Quick links */}
+      <div className="flex gap-3 mb-8">
+        <a
+          href="/admin/support"
+          className="flex items-center gap-2 px-4 py-2.5 border hover:border-foreground/50 transition-colors text-sm"
+        >
+          <MessageSquare className="w-4 h-4 text-red-600" />
+          Support Queue
+        </a>
       </div>
 
       {/* Announcements */}
