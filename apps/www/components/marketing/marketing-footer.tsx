@@ -68,12 +68,7 @@ export function MarketingFooter() {
   )
 }
 
-function FooterLink({ href, children, comingSoon }: { href: string; children: React.ReactNode; comingSoon?: boolean }) {
-  if (comingSoon) {
-    return (
-      <p className="text-xs text-muted-foreground/40 cursor-default">{children}</p>
-    )
-  }
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link href={href} className="block text-xs text-muted-foreground hover:text-foreground transition-colors">
       {children}

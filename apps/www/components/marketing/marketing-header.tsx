@@ -57,22 +57,6 @@ export function MarketingHeader() {
               <div className="p-2">
                 {infoPages.map((page) => {
                   const Icon = page.icon
-                  if (page.comingSoon) {
-                    return (
-                      <div
-                        key={page.href}
-                        className="flex items-start gap-3 p-3 opacity-40 cursor-default"
-                      >
-                        <div className="w-8 h-8 bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Icon className="w-4 h-4 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">{page.label}</p>
-                          <p className="text-[11px] text-muted-foreground">{page.description}</p>
-                        </div>
-                      </div>
-                    )
-                  }
                   return (
                     <Link
                       key={page.href}
