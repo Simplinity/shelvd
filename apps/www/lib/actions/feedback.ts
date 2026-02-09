@@ -91,9 +91,10 @@ export async function submitFeedback(formData: FormData): Promise<FeedbackResult
   try {
     const adminEmailsRaw = process.env.ADMIN_NOTIFICATION_EMAILS || ''
     const adminEmails = adminEmailsRaw.split(',').map(e => e.trim()).filter(Boolean)
+    console.log('[Feedback] ADMIN_NOTIFICATION_EMAILS env:', adminEmailsRaw ? 'set' : 'EMPTY', '-> emails:', adminEmails)
 
     if (adminEmails.length > 0) {
-      sendFeedbackNotification({
+      await sendFeedbackNotification({
         type: type as 'bug' | 'contact' | 'callback',
         subject: subject || undefined,
         message: message || undefined,

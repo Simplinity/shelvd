@@ -33,7 +33,9 @@ const SEVERITY_COLORS: Record<string, string> = {
 }
 
 export async function sendFeedbackNotification(data: FeedbackEmailData, adminEmails: string[]) {
-  if (!resend || adminEmails.length === 0) return
+  console.log('[Email] Attempting to send feedback notification to:', adminEmails)
+  if (!resend) { console.log('[Email] No RESEND_API_KEY configured'); return }
+  if (adminEmails.length === 0) { console.log('[Email] No admin emails'); return }
 
   const typeLabel = TYPE_LABELS[data.type] || data.type
   const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://shelvd.org'}/admin/support`
@@ -87,14 +89,14 @@ export async function sendFeedbackNotification(data: FeedbackEmailData, adminEma
   `
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'Shelvd <onboarding@resend.dev>',
       to: adminEmails,
       subject: `[Shelvd] ${typeLabel}: ${data.subject || 'New submission'}`,
       html,
     })
+    console.log('[Email] Send result:', JSON.stringify(result))
   } catch (err) {
-    console.error('Failed to send feedback notification email:', err)
-    // Don't throw — email failure shouldn't block the submission
+    console.error('[Email] Failed to send:', err)
   }
 }
