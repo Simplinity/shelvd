@@ -6,12 +6,12 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 
 const infoPages = [
+  { href: '/about', label: 'About Shelvd', icon: User, description: 'The story behind the shelves' },
+  { href: '/blog', label: 'Marginalia', icon: PenLine, description: 'Essays on books & collecting' },
   { href: '/privacy', label: 'Privacy Policy', icon: Shield, description: 'How we handle your data' },
   { href: '/terms', label: 'Terms of Service', icon: FileText, description: 'The fine print' },
-  { href: '/about', label: 'About Shelvd', icon: User, description: 'The story behind the shelves' },
   { href: '/changelog', label: 'Changelog', icon: Newspaper, description: 'What we\'ve been building' },
   { href: '/roadmap', label: 'Roadmap', icon: Map, description: 'Where we\'re headed' },
-  { href: '/blog', label: 'Blog', icon: PenLine, description: 'Notes on books & collecting' },
 ]
 
 export function MarketingHeader() {
@@ -75,11 +75,7 @@ export function MarketingHeader() {
                   )
                 })}
               </div>
-              <div className="border-t px-4 py-2.5 bg-muted/20">
-                <p className="text-[10px] text-muted-foreground text-center">
-                  More pages coming soon
-                </p>
-              </div>
+
             </div>
           )}
         </div>
