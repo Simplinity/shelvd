@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings, Shield } from 'lucide-react'
+import { BookOpen, LogOut, User, Plus, Upload, Search, BarChart3, Settings, Shield, MessageSquare } from 'lucide-react'
 import { APP_VERSION } from '@/lib/changelog'
 import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
@@ -103,6 +103,13 @@ export default async function AppLayout({
               >
                 <Settings className="w-3.5 h-3.5" />
                 Settings
+              </Link>
+              <Link 
+                href="/support" 
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors flex items-center gap-1.5"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                Support
               </Link>
               {isAdmin && (
                 <Link 
