@@ -36,6 +36,9 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Literary quotes on auth pages — rotating quotes from Borges, Cicero, Eco, Hemingway, and others' },
       { type: 'improved', text: 'Form sections reordered by logical collector workflow: Identity \u2192 Bibliographic \u2192 Physical \u2192 History \u2192 Classification \u2192 Collection Management \u2192 Supplementary' },
       { type: 'improved', text: 'Catalog sheet layout: no decorative lines, inline field pairs that follow content naturally instead of fixed columns, section headers in red small caps' },
+      { type: 'added', text: 'Admin support responses now email the user directly — branded HTML email with your response and the original message quoted, plus a link to their tickets' },
+      { type: 'fixed', text: 'Support ticket email notifications were silently failing — non-admin users couldn\'t call the admin RPC to look up emails. Now uses environment variable instead' },
+      { type: 'fixed', text: 'Email sends were not awaited in serverless functions — the function terminated before Resend could deliver. Classic.' },
     ],
   },
   {

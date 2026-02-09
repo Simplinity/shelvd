@@ -28,6 +28,16 @@
   - Live stats from database (books, contributors, publishers)
   - Rotating literary quotes (Borges, Cicero, Eco, Hemingway, etc.)
 - **Form UX**: sections reordered by collector workflow (Identity → Bibliographic → Physical → History → Classification → Collection Management → Supplementary)
+- **Feedback & email fixes**
+  - Admin response to user now sends branded HTML email (new `sendAdminResponseEmail()` in `lib/email.ts`)
+  - Feedback notification fix: was calling `get_users_for_admin` RPC as non-admin user → silent failure. Now uses `ADMIN_NOTIFICATION_EMAILS` env var
+  - Email sends now `await`ed — serverless function was terminating before Resend could deliver
+  - Added logging throughout email pipeline for Vercel debugging
+  - New env var: `ADMIN_NOTIFICATION_EMAILS=bruno@simplinity.co` on Vercel
+- **Blog**: font size control simplified from `[T] [−] [M] [+]` to `[−] T [+]`
+- **Roadmap**: split "Data Health Checks" into two features:
+  - Platform Health Checks (admin) — orphaned records, cross-user inconsistencies
+  - Collection Audit (user-facing) — per-user library health score with one-click fixes
 
 **Previous session (v0.10.0):**
 - Admin system stats dashboard (A1)
