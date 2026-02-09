@@ -6,7 +6,6 @@ import {
   BLOG_ARTICLES,
   BLOG_STATS,
   CATEGORY_SECTIONS,
-  BLOG_AUTHOR,
   type BlogArticle,
 } from '@/lib/blog'
 
@@ -104,15 +103,6 @@ export default function BlogPage() {
             <span className="text-border">·</span>
             <span>{BLOG_STATS.totalWords.toLocaleString('en-US')} words</span>
           </div>
-        </div>
-      </section>
-
-      {/* Author line */}
-      <section className="px-6 pb-8">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-sm text-muted-foreground font-mono">
-            By {BLOG_AUTHOR}
-          </p>
         </div>
       </section>
 
