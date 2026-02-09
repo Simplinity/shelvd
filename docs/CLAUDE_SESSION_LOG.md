@@ -34,6 +34,7 @@
   - Email sends now `await`ed — serverless function was terminating before Resend could deliver
   - Added logging throughout email pipeline for Vercel debugging
   - New env var: `ADMIN_NOTIFICATION_EMAILS=bruno@simplinity.co` on Vercel
+- **Support forms simplified**: removed Callback type entirely (phone, timezone, urgency), renamed Contact → Message, 3-col → 2-col grid, removed preferred response dropdown. Database untouched, old records still display. Minus 108 lines.
 - **Blog**: font size control simplified from `[T] [−] [M] [+]` to `[−] T [+]`
 - **Roadmap**: split "Data Health Checks" into two features:
   - Platform Health Checks (admin) — orphaned records, cross-user inconsistencies
@@ -60,6 +61,7 @@
 | 8b | Knowledge base (`/help`) | Medium | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
 | 9 | Mobile responsiveness | High | High | Hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice today. |
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. Gamification that drives data quality and return visits. |
+| 11 | Catalog Generator | Medium | Medium-High | Select books → generate professional DOCX catalog. Numbered entries (Lot N / #N), author/title/year/condition/provenance/price, image placeholders, title page, TOC, colophon. Editable in Word. For dealers, auction houses, serious collectors. Phased: v1 one template + basic config, v2 multiple templates + drag-drop ordering, v3 PDF + custom branding. |
 
 ### Growth & Marketing
 | # | Feature | Priority | Effort | Description |

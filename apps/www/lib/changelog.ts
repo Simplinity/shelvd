@@ -39,6 +39,7 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Admin support responses now email the user directly — branded HTML email with your response and the original message quoted, plus a link to their tickets' },
       { type: 'fixed', text: 'Support ticket email notifications were silently failing — non-admin users couldn\'t call the admin RPC to look up emails. Now uses environment variable instead' },
       { type: 'fixed', text: 'Email sends were not awaited in serverless functions — the function terminated before Resend could deliver. Classic.' },
+      { type: 'improved', text: 'Support forms simplified from three types (Bug/Contact/Callback) to two: Bug Report and Message. No more phone numbers, timezones, or urgency selectors — this is a book catalog, not an enterprise helpdesk' },
     ],
   },
   {

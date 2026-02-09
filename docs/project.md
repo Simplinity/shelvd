@@ -333,7 +333,7 @@ status, action_needed, internal_notes
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
-| 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Bug/contact/callback forms, `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
+| 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
@@ -346,6 +346,43 @@ status, action_needed, internal_notes
 | 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
+| 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
+
+#### #11 Catalog Generator — Detail
+
+**The pitch:** A dealer who can assemble their catalog inside Shelvd instead of manually in Word comes back every week. This is lock-in through value, not walls.
+
+**Why DOCX:** Word is the standard in the antiquarian trade. DOCX is editable — the dealer adds their own photos, adjusts descriptions, drops in a logo. We deliver the skeleton, they finish it. That’s the right boundary.
+
+**What gets generated:**
+- Title page (dealer/collector name, catalog title, date, optional subtitle)
+- Table of contents (auto-generated from entries)
+- Per book: numbered entry (Lot 1, Lot 2… or #1, #2…) with author, title, year, publisher, edition, physical description, condition (with notes), provenance summary, description/annotation, price (optional)
+- Empty image placeholder per entry (so dealer can drag-drop their own photos in Word)
+- Colophon / contact page at the end
+
+**Selection & ordering UI (the hard part):**
+- Checkbox selection in books list view, or dedicated “Catalog” concept (named set of books)
+- Drag-and-drop reordering of selected books
+- Choose which fields to include (toggle: show price, show provenance, show condition, etc.)
+- Preview of entry count + estimated pages
+
+**Configuration options:**
+- Catalog title + optional intro text
+- Numbering style: Lot N / #N / none
+- Show/hide pricing
+- Currency for prices
+- Template selection (v2+)
+
+**Phased delivery:**
+- **v1:** Select books → generate clean DOCX. One template (Swiss typography), fixed field order. Image placeholders. Basic config (title, pricing on/off).
+- **v2:** Multiple templates (auction style, dealer price list, minimal collector). Drag-and-drop ordering. Custom field selection.
+- **v3:** PDF variant (pixel-perfect, non-editable). Custom branding (logo upload, color scheme). Batch generation for recurring catalogs.
+
+**Technical approach:**
+- DOCX generation via existing docx skill (python-docx or similar)
+- Data already in database — just query + format
+- Main effort is the selection/ordering UI, not the generation itself
 
 #### #9 Mobile Responsiveness — Detail
 Currently the app is desktop-only in practice. Key issues:

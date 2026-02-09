@@ -271,4 +271,10 @@ export const ROADMAP: RoadmapItem[] = [
     category: 'cataloging',
     status: 'planned',
   },
+  {
+    title: 'Catalog Generator',
+    description: 'Select books, generate a professional DOCX catalog. Numbered entries with author, title, year, condition, provenance, optional pricing. Image placeholders ready for your photos. Editable in Word — we build the skeleton, you make it yours. For dealers, auction houses, and collectors who take their library seriously.',
+    category: 'cataloging',
+    status: 'planned',
+  },
 ]
