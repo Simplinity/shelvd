@@ -85,35 +85,26 @@ export async function submitFeedback(formData: FormData): Promise<FeedbackResult
 
   if (error) return { error: 'Failed to submit feedback. Please try again.' }
 
-  // Send email notification to admin users (non-blocking)
+  // Send email notification to admins (non-blocking)
+  // Uses ADMIN_NOTIFICATION_EMAILS env var (comma-separated) because
+  // the submitting user doesn't have admin RPC access
   try {
-    const { data: adminProfiles } = await supabase
-      .from('user_profiles')
-      .select('id')
-      .eq('is_admin', true)
+    const adminEmailsRaw = process.env.ADMIN_NOTIFICATION_EMAILS || ''
+    const adminEmails = adminEmailsRaw.split(',').map(e => e.trim()).filter(Boolean)
 
-    if (adminProfiles && adminProfiles.length > 0) {
-      // Get admin emails via auth
-      const { data: authUsers } = await supabase.rpc('get_users_for_admin')
-      const adminIds = new Set(adminProfiles.map(p => p.id))
-      const adminEmails = (authUsers || [])
-        .filter((u: any) => adminIds.has(u.id) && u.email)
-        .map((u: any) => u.email)
-
-      if (adminEmails.length > 0) {
-        sendFeedbackNotification({
-          type: type as 'bug' | 'contact' | 'callback',
-          subject: subject || undefined,
-          message: message || undefined,
-          severity: record.severity,
-          urgency: record.urgency,
-          category: record.category,
-          phone: record.phone,
-          preferredTime: record.preferred_time,
-          userEmail: user.email || 'unknown',
-          feedbackId: data.id,
-        }, adminEmails)
-      }
+    if (adminEmails.length > 0) {
+      sendFeedbackNotification({
+        type: type as 'bug' | 'contact' | 'callback',
+        subject: subject || undefined,
+        message: message || undefined,
+        severity: record.severity,
+        urgency: record.urgency,
+        category: record.category,
+        phone: record.phone,
+        preferredTime: record.preferred_time,
+        userEmail: user.email || 'unknown',
+        feedbackId: data.id,
+      }, adminEmails)
     }
   } catch {
     // Email failure should never block submission
