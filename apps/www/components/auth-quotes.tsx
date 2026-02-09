@@ -37,13 +37,15 @@ export function AuthQuote() {
   const quote = QUOTES[index]
 
   return (
-    <div className={`transition-all duration-500 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}>
-      <p className="text-sm leading-relaxed text-muted-foreground italic max-w-md">
-        &ldquo;{quote.text}&rdquo;
-      </p>
-      <p className="text-xs text-muted-foreground/60 mt-2 font-medium tracking-wide">
-        — {quote.author}
-      </p>
+    <div className="h-20">
+      <div className={`transition-all duration-500 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}>
+        <p className="text-sm leading-relaxed text-muted-foreground italic max-w-md line-clamp-3">
+          &ldquo;{quote.text}&rdquo;
+        </p>
+        <p className="text-xs text-muted-foreground/60 mt-2 font-medium tracking-wide">
+          — {quote.author}
+        </p>
+      </div>
     </div>
   )
 }
