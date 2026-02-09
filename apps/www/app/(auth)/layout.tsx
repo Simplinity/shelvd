@@ -1,4 +1,4 @@
-import { BookOpen } from 'lucide-react'
+import { BookOpen, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { getPublicStats } from '@/lib/actions/public-stats'
 import { AuthQuote } from '@/components/auth-quotes'
@@ -70,6 +70,15 @@ export default async function AuthLayout({
               <span className="text-xl font-bold tracking-tight">Shelvd</span>
             </Link>
           </div>
+
+          {/* Back to website */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            Back to website
+          </Link>
           
           {children}
         </div>
