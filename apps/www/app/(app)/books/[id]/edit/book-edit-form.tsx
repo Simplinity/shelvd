@@ -715,7 +715,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
     'Storage', 'Valuation', 'Provenance', 'Condition History', 'Notes', 'External Links', 'Catalog Entry'
   ]
 
-  const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(allSections))
+  const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(['Title & Series', 'Contributors']))
 
   const toggleSection = (title: string) => {
     setOpenSections(prev => {
@@ -728,7 +728,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
   const allExpanded = openSections.size === allSections.length
   const toggleAll = () => {
-    setOpenSections(allExpanded ? new Set(['Title & Series']) : new Set(allSections))
+    setOpenSections(allExpanded ? new Set(['Title & Series', 'Contributors']) : new Set(allSections))
   }
 
   const SectionHeader = ({ title }: { title: string }) => {
