@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       announcements: {
@@ -788,6 +813,79 @@ export type Database = {
         }
         Relationships: []
       }
+      condition_history: {
+        Row: {
+          after_condition_id: string | null
+          before_condition_id: string | null
+          book_id: string
+          cost: number | null
+          cost_currency: string | null
+          created_at: string | null
+          description: string | null
+          event_date: string | null
+          event_type: string
+          id: string
+          notes: string | null
+          performed_by: string | null
+          position: number
+          updated_at: string | null
+        }
+        Insert: {
+          after_condition_id?: string | null
+          before_condition_id?: string | null
+          book_id: string
+          cost?: number | null
+          cost_currency?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_date?: string | null
+          event_type?: string
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+          position?: number
+          updated_at?: string | null
+        }
+        Update: {
+          after_condition_id?: string | null
+          before_condition_id?: string | null
+          book_id?: string
+          cost?: number | null
+          cost_currency?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_date?: string | null
+          event_type?: string
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+          position?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "condition_history_after_condition_id_fkey"
+            columns: ["after_condition_id"]
+            isOneToOne: false
+            referencedRelation: "conditions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "condition_history_before_condition_id_fkey"
+            columns: ["before_condition_id"]
+            isOneToOne: false
+            referencedRelation: "conditions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "condition_history_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conditions: {
         Row: {
           abbreviation: string
@@ -1546,6 +1644,65 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_books_by_condition_for_admin: {
+        Args: never
+        Returns: {
+          condition_name: string
+          count: number
+        }[]
+      }
+      get_books_by_month_for_admin: {
+        Args: never
+        Returns: {
+          count: number
+          month: string
+        }[]
+      }
+      get_books_by_status_for_admin: {
+        Args: never
+        Returns: {
+          count: number
+          status: string
+        }[]
+      }
+      get_books_per_user_for_admin: {
+        Args: never
+        Returns: {
+          book_count: number
+          email: string
+          user_id: string
+        }[]
+      }
+      get_platform_stats_for_admin: {
+        Args: never
+        Returns: {
+          books_no_condition: number
+          books_no_isbn: number
+          books_no_publisher: number
+          total_books: number
+          total_collections: number
+          total_contributors: number
+          total_external_links: number
+          total_feedback: number
+          total_provenance: number
+          total_tags: number
+          total_users: number
+        }[]
+      }
+      get_signups_by_week_for_admin: {
+        Args: never
+        Returns: {
+          count: number
+          week: string
+        }[]
+      }
+      get_top_publishers_for_admin: {
+        Args: { lim?: number }
+        Returns: {
+          count: number
+          publisher: string
+        }[]
+      }
       get_total_books_for_admin: { Args: never; Returns: number }
       get_user_isbn_providers: {
         Args: never
@@ -1706,6 +1863,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       book_status: [

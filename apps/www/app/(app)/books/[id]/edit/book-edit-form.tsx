@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
+import ConditionHistoryEditor, { type ConditionHistoryEntry } from '@/components/condition-history-editor'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -54,6 +55,7 @@ type ReferenceData = {
   linkTypes: LinkType[]
   bookExternalLinks: ExternalLinkData[]
   provenanceEntries: Omit<ProvenanceEntry, 'tempId' | 'isNew' | 'isDeleted'>[]
+  conditionHistoryEntries: Omit<ConditionHistoryEntry, 'tempId' | 'isNew' | 'isDeleted'>[]
 }
 
 type Props = {
@@ -228,6 +230,16 @@ export default function BookEditForm({ book, referenceData }: Props) {
       isNew: false,
       isDeleted: false,
       sources: (pe.sources || []).map((s: any) => ({ ...s, isNew: false, isDeleted: false })),
+    }))
+  )
+
+  // Condition history state
+  const [conditionHistoryEntries, setConditionHistoryEntries] = useState<ConditionHistoryEntry[]>(
+    (referenceData.conditionHistoryEntries || []).map((ch, i) => ({
+      ...ch,
+      tempId: `ch_existing_${i}`,
+      isNew: false,
+      isDeleted: false,
     }))
   )
 
@@ -591,6 +603,44 @@ export default function BookEditForm({ book, referenceData }: Props) {
         }
       }
 
+      // Save condition history entries
+      // 1. Delete removed entries
+      const deletedCondEntries = conditionHistoryEntries.filter(e => e.isDeleted && !e.isNew && e.dbId)
+      for (const de of deletedCondEntries) {
+        await supabase.from('condition_history').delete().eq('id', de.dbId!)
+      }
+
+      // 2. Upsert active entries
+      const activeCondEntries = conditionHistoryEntries.filter(e => !e.isDeleted)
+      for (const entry of activeCondEntries) {
+        const row = {
+          book_id: book.id,
+          position: entry.position,
+          event_date: entry.eventDate || null,
+          event_type: entry.eventType,
+          description: entry.description || null,
+          performed_by: entry.performedBy || null,
+          cost: entry.cost,
+          cost_currency: entry.costCurrency || null,
+          before_condition_id: entry.beforeConditionId || null,
+          after_condition_id: entry.afterConditionId || null,
+          notes: entry.notes || null,
+        }
+
+        if (entry.isNew) {
+          const { error: insertErr } = await supabase
+            .from('condition_history')
+            .insert(row)
+          if (insertErr) throw insertErr
+        } else {
+          const { error: updateErr } = await supabase
+            .from('condition_history')
+            .update(row)
+            .eq('id', entry.dbId!)
+          if (updateErr) throw updateErr
+        }
+      }
+
       setIsDirty(false)
       router.push(`/books/${book.id}`)
       router.refresh()
@@ -641,13 +691,14 @@ export default function BookEditForm({ book, referenceData }: Props) {
   const specialCounts: Record<string, [number, number] | null> = {
     'Contributors': activeContributors.length > 0 ? [activeContributors.length, activeContributors.length] : null,
     'Provenance': provenanceEntries.length > 0 ? [provenanceEntries.length, provenanceEntries.length] : null,
+    'Condition History': conditionHistoryEntries.filter(e => !e.isDeleted).length > 0 ? [conditionHistoryEntries.filter(e => !e.isDeleted).length, conditionHistoryEntries.filter(e => !e.isDeleted).length] : null,
     'External Links': externalLinks.length > 0 ? [externalLinks.length, externalLinks.length] : null,
   }
 
   const allSections = [
     'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
     'Physical Description', 'Condition & Status', 'Identifiers', 'BISAC Subject Codes',
-    'Storage', 'Valuation', 'Provenance', 'Notes', 'External Links', 'Catalog Entry',
+    'Storage', 'Valuation', 'Provenance', 'Condition History', 'Notes', 'External Links', 'Catalog Entry',
     'Collections', 'Tags'
   ]
 
@@ -1151,6 +1202,21 @@ export default function BookEditForm({ book, referenceData }: Props) {
             entries={provenanceEntries}
             onChange={(updated: ProvenanceEntry[]) => {
               setProvenanceEntries(updated)
+              setIsDirty(true)
+            }}
+          />
+          </div>}
+        </section>
+
+        {/* Condition History */}
+        <section>
+          <SectionHeader title="Condition History" />
+          {openSections.has('Condition History') && <div className="mt-4">
+          <ConditionHistoryEditor
+            entries={conditionHistoryEntries}
+            conditions={referenceData.conditions}
+            onChange={(updated: ConditionHistoryEntry[]) => {
+              setConditionHistoryEntries(updated)
               setIsDirty(true)
             }}
           />

@@ -12,6 +12,7 @@ import { CURRENCIES } from '@/lib/currencies'
 import TagInput from '@/components/tag-input'
 import { toCatalogFormat, parseName, isSameAuthor } from '@/lib/name-utils'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
+import ConditionHistoryEditor, { type ConditionHistoryEntry } from '@/components/condition-history-editor'
 
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
@@ -344,6 +345,7 @@ export default function BookAddForm({ referenceData }: Props) {
   type ExternalLink = { linkTypeId: string; url: string; label: string }
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
   const [provenanceEntries, setProvenanceEntries] = useState<ProvenanceEntry[]>([])
+  const [conditionHistoryEntries, setConditionHistoryEntries] = useState<ConditionHistoryEntry[]>([])
   
   // Track if data came from ISBN lookup
   const [fromLookup, setFromLookup] = useState(false)
@@ -736,6 +738,27 @@ export default function BookAddForm({ referenceData }: Props) {
         }
       }
 
+      // Add condition history entries
+      const activeCondEntries = conditionHistoryEntries.filter(e => !e.isDeleted)
+      for (const entry of activeCondEntries) {
+        const { error: chErr } = await supabase
+          .from('condition_history')
+          .insert({
+            book_id: newBook.id,
+            position: entry.position,
+            event_date: entry.eventDate || null,
+            event_type: entry.eventType,
+            description: entry.description || null,
+            performed_by: entry.performedBy || null,
+            cost: entry.cost,
+            cost_currency: entry.costCurrency || null,
+            before_condition_id: entry.beforeConditionId || null,
+            after_condition_id: entry.afterConditionId || null,
+            notes: entry.notes || null,
+          })
+        if (chErr) console.error('Failed to insert condition history entry:', chErr)
+      }
+
       router.push(`/books/${newBook.id}`)
       router.refresh()
     } catch (err: unknown) {
@@ -774,6 +797,7 @@ export default function BookAddForm({ referenceData }: Props) {
   const specialCounts: Record<string, [number, number] | null> = {
     'Contributors': contributors.length > 0 ? [contributors.length, contributors.length] : null,
     'Provenance': provenanceEntries.length > 0 ? [provenanceEntries.length, provenanceEntries.length] : null,
+    'Condition History': conditionHistoryEntries.length > 0 ? [conditionHistoryEntries.length, conditionHistoryEntries.length] : null,
     'External Links': externalLinks.length > 0 ? [externalLinks.length, externalLinks.length] : null,
   }
 
@@ -781,7 +805,7 @@ export default function BookAddForm({ referenceData }: Props) {
     'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
     'Physical Description', 'Condition & Status', 'Collections', 'Tags',
     'Identifiers', 'BISAC Subject Codes', 'Storage', 'Valuation',
-    'Provenance', 'Notes', 'External Links', 'Catalog Entry'
+    'Provenance', 'Condition History', 'Notes', 'External Links', 'Catalog Entry'
   ]
 
   const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(allSections))
@@ -1328,6 +1352,21 @@ export default function BookAddForm({ referenceData }: Props) {
             entries={provenanceEntries}
             onChange={(updated: ProvenanceEntry[]) => {
               setProvenanceEntries(updated)
+              setIsDirty(true)
+            }}
+          />
+          </div>}
+        </section>
+
+        {/* Condition History */}
+        <section>
+          <SectionHeader title="Condition History" />
+          {openSections.has('Condition History') && <div className="mt-4">
+          <ConditionHistoryEditor
+            entries={conditionHistoryEntries}
+            conditions={referenceData.conditions}
+            onChange={(updated: ConditionHistoryEntry[]) => {
+              setConditionHistoryEntries(updated)
               setIsDirty(true)
             }}
           />

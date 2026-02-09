@@ -8,6 +8,7 @@ import DeleteBookButton from '@/components/delete-book-button'
 import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
 import ProvenanceTimeline from '@/components/provenance-timeline'
+import ConditionHistoryTimeline from '@/components/condition-history-timeline'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -106,7 +107,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     .order('sort_order')
 
   // Fetch book's collection memberships, ALL user collections, and tags
-  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }, { data: provenanceData }] = await Promise.all([
+  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }, { data: provenanceData }, { data: conditionHistoryData }] = await Promise.all([
     supabase
       .from('book_collections')
       .select('collection_id')
@@ -126,6 +127,16 @@ export default async function BookDetailPage({ params }: PageProps) {
         evidence_type, evidence_description, transaction_type, transaction_detail,
         price_paid, price_currency, association_type, association_note, notes,
         provenance_sources ( id, source_type, title, url, reference, notes )
+      `)
+      .eq('book_id', id)
+      .order('position'),
+    supabase
+      .from('condition_history')
+      .select(`
+        id, position, event_date, event_type, description, performed_by,
+        cost, cost_currency, notes,
+        before_condition:conditions!condition_history_before_condition_id_fkey ( name ),
+        after_condition:conditions!condition_history_after_condition_id_fkey ( name )
       `)
       .eq('book_id', id)
       .order('position')
@@ -651,6 +662,11 @@ export default async function BookDetailPage({ params }: PageProps) {
         {/* 11. Provenance */}
         {provenanceData && provenanceData.length > 0 && (
           <ProvenanceTimeline entries={provenanceData as any} />
+        )}
+
+        {/* 12. Condition History */}
+        {conditionHistoryData && conditionHistoryData.length > 0 && (
+          <ConditionHistoryTimeline entries={conditionHistoryData as any} />
         )}
 
         {/* 13. Notes */}

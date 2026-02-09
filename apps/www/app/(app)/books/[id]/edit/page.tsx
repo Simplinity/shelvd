@@ -67,6 +67,7 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: activeTypeRows },
     { data: bookExternalLinks },
     { data: provenanceData },
+    { data: conditionHistoryData },
   ] = await Promise.all([
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
@@ -104,6 +105,10 @@ export default async function BookEditPage({ params }: PageProps) {
       evidence_type, evidence_description, transaction_type, transaction_detail,
       price_paid, price_currency, association_type, association_note, notes,
       provenance_sources ( id, source_type, title, url, reference, notes )
+    `).eq('book_id', id).order('position'),
+    supabase.from('condition_history').select(`
+      id, position, event_date, event_type, description, performed_by,
+      cost, cost_currency, before_condition_id, after_condition_id, notes
     `).eq('book_id', id).order('position'),
   ])
 
@@ -187,6 +192,19 @@ export default async function BookEditPage({ params }: PageProps) {
       linkTypeId: l.link_type_id || '',
       url: l.url,
       label: l.label || '',
+    })),
+    conditionHistoryEntries: (conditionHistoryData || []).map((ch: any) => ({
+      dbId: ch.id,
+      position: ch.position,
+      eventDate: ch.event_date || '',
+      eventType: ch.event_type || 'assessment',
+      description: ch.description || '',
+      performedBy: ch.performed_by || '',
+      cost: ch.cost,
+      costCurrency: ch.cost_currency || '',
+      beforeConditionId: ch.before_condition_id || '',
+      afterConditionId: ch.after_condition_id || '',
+      notes: ch.notes || '',
     })),
     provenanceEntries: (provenanceData || []).map((pe: any) => ({
       dbId: pe.id,
