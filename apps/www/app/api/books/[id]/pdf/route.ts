@@ -223,23 +223,28 @@ export async function GET(
   }
   
   // Generate PDF
-  let pdfBytes: Uint8Array
-  let filename: string
-  
-  if (type === 'catalog-card') {
-    pdfBytes = await generateCatalogCard(pdfData)
-    filename = `${sanitizeFilename(b.title)}_card.pdf`
-  } else {
-    pdfBytes = await generateCatalogSheet(pdfData, paperSize)
-    filename = `${sanitizeFilename(b.title)}_catalog_${paperSize}.pdf`
+  try {
+    let pdfBytes: Uint8Array
+    let filename: string
+    
+    if (type === 'catalog-card') {
+      pdfBytes = await generateCatalogCard(pdfData)
+      filename = `${sanitizeFilename(b.title)}_card.pdf`
+    } else {
+      pdfBytes = await generateCatalogSheet(pdfData, paperSize)
+      filename = `${sanitizeFilename(b.title)}_catalog_${paperSize}.pdf`
+    }
+    
+    return new NextResponse(Buffer.from(pdfBytes), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="${filename}"`,
+      },
+    })
+  } catch (err: any) {
+    console.error('PDF generation error:', err)
+    return NextResponse.json({ error: 'PDF generation failed', detail: err?.message || String(err) }, { status: 500 })
   }
-  
-  return new NextResponse(Buffer.from(pdfBytes), {
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="${filename}"`,
-    },
-  })
 }
 
 function sanitizeFilename(title: string): string {
