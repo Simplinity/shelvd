@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Settings, MessageSquare, Shield, LogOut, ChevronDown, User } from 'lucide-react'
+import { Settings, MessageSquare, Shield, LogOut, ChevronDown, User, PenLine, Map, Newspaper } from 'lucide-react'
 import { logout } from '@/lib/actions/auth'
 
 interface UserMenuProps {
@@ -54,7 +54,7 @@ export function UserMenu({ email, isAdmin }: UserMenuProps) {
             <p className="text-sm font-medium truncate">{email}</p>
           </div>
 
-          {/* Menu items */}
+          {/* App items */}
           <div className="py-1">
             <MenuLink href="/settings" icon={<Settings className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
               Settings
@@ -62,15 +62,29 @@ export function UserMenu({ email, isAdmin }: UserMenuProps) {
             <MenuLink href="/support" icon={<MessageSquare className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
               Support
             </MenuLink>
-            {isAdmin && (
-              <>
-                <div className="border-t my-1" />
-                <MenuLink href="/admin" icon={<Shield className="w-3.5 h-3.5" />} onClick={() => setOpen(false)} accent>
-                  Admin
-                </MenuLink>
-              </>
-            )}
           </div>
+
+          {/* Info pages */}
+          <div className="border-t py-1">
+            <MenuLink href="/blog" icon={<PenLine className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
+              Marginalia
+            </MenuLink>
+            <MenuLink href="/roadmap" icon={<Map className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
+              Roadmap
+            </MenuLink>
+            <MenuLink href="/changelog" icon={<Newspaper className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
+              Changelog
+            </MenuLink>
+          </div>
+
+          {/* Admin */}
+          {isAdmin && (
+            <div className="border-t py-1">
+              <MenuLink href="/admin" icon={<Shield className="w-3.5 h-3.5" />} onClick={() => setOpen(false)} accent>
+                Admin
+              </MenuLink>
+            </div>
+          )}
 
           {/* Sign out */}
           <div className="border-t">

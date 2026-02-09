@@ -4,6 +4,7 @@ import { BookOpen, ChevronDown, Shield, FileText, User, Newspaper, Map, PenLine 
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
 
 const infoPages = [
   { href: '/about', label: 'About Shelvd', icon: User, description: 'The story behind the shelves' },
@@ -16,7 +17,15 @@ const infoPages = [
 
 export function MarketingHeader() {
   const [open, setOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user)
+    })
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -75,22 +84,31 @@ export function MarketingHeader() {
                   )
                 })}
               </div>
-
             </div>
           )}
         </div>
 
-        <Link 
-          href="/login" 
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Sign In
-        </Link>
-        <Button asChild size="sm">
-          <Link href="/signup">
-            Get Started
-          </Link>
-        </Button>
+        {isLoggedIn ? (
+          <Button asChild size="sm">
+            <Link href="/books">
+              Go to Collection
+            </Link>
+          </Button>
+        ) : (
+          <>
+            <Link 
+              href="/login" 
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Sign In
+            </Link>
+            <Button asChild size="sm">
+              <Link href="/signup">
+                Get Started
+              </Link>
+            </Button>
+          </>
+        )}
       </nav>
     </header>
   )
