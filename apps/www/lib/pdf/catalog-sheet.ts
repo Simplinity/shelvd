@@ -92,35 +92,41 @@ function fld(c: Ctx, label: string, value: string | undefined | null, startX?: n
   c.y -= c.ls
 }
 
-// ── Two fields side by side — ONLY if both have values ──
-// If only one has value, render as single full-width field
+// ── Two fields on one line — inline, no fixed columns ──
+// If only one has value, render as single field
 function fld2(c: Ctx, l1: string, v1: string | undefined | null, l2: string, v2: string | undefined | null) {
   const has1 = !!v1?.trim(), has2 = !!v2?.trim()
   if (!has1 && !has2) return
   if (!fits(c)) return
   
-  // Only one value? Full width, no awkward gap
   if (has1 && !has2) { fld(c, l1, v1); return }
   if (!has1 && has2) { fld(c, l2, v2); return }
   
-  // Both values: render side by side
-  const halfW = (c.mxW - 12) / 2  // 12pt gutter
+  // Both: render inline — field1 then field2 with gap
   const lbl1 = safe(l1), val1 = safe(v1!)
   const lbl2 = safe(l2), val2 = safe(v2!)
-  
   const lw1 = c.b.widthOfTextAtSize(lbl1, c.lb)
+  const vw1 = c.r.widthOfTextAtSize(val1, c.fs)
   const lw2 = c.b.widthOfTextAtSize(lbl2, c.lb)
   
   // Left field
   c.p.drawText(lbl1, { x: c.mg, y: c.y, size: c.lb, font: c.b, color: c.gray })
   c.p.drawText(val1, { x: c.mg + lw1 + 4, y: c.y, size: c.fs, font: c.r, color: c.black })
   
-  // Right field
-  const x2 = c.mg + halfW + 12
-  c.p.drawText(lbl2, { x: x2, y: c.y, size: c.lb, font: c.b, color: c.gray })
-  c.p.drawText(val2, { x: x2 + lw2 + 4, y: c.y, size: c.fs, font: c.r, color: c.black })
-  
-  c.y -= c.ls
+  // Right field follows with 20pt gap
+  const x2 = c.mg + lw1 + 4 + vw1 + 20
+  // Only place it if it fits on the same line
+  if (x2 + lw2 + 4 + c.r.widthOfTextAtSize(val2, c.fs) < c.w - c.mg) {
+    c.p.drawText(lbl2, { x: x2, y: c.y, size: c.lb, font: c.b, color: c.gray })
+    c.p.drawText(val2, { x: x2 + lw2 + 4, y: c.y, size: c.fs, font: c.r, color: c.black })
+    c.y -= c.ls
+  } else {
+    // Doesn't fit: put on next line
+    c.y -= c.ls
+    c.p.drawText(lbl2, { x: c.mg, y: c.y, size: c.lb, font: c.b, color: c.gray })
+    c.p.drawText(val2, { x: c.mg + lw2 + 4, y: c.y, size: c.fs, font: c.r, color: c.black })
+    c.y -= c.ls
+  }
 }
 
 // ── Multiline text block ──
@@ -156,12 +162,12 @@ export async function generateCatalogSheet(data: BookPdfData, paperSize: PaperSi
   // ── Red bar ──
   const bh = sm ? 2.5 : 3.5
   pg.drawRectangle({ x: c.mg, y: c.y, width: c.mxW, height: bh, color: c.red })
-  c.y -= bh + c.ls * 0.5
+  c.y -= bh + ts * 1.2  // enough room for title descenders
 
   // ── Title ──
   for (const ln of wrap(b, safe(data.title), c.mxW, ts)) {
     pg.drawText(ln, { x: c.mg, y: c.y, size: ts, font: b, color: c.black })
-    c.y -= ts * 1.1
+    c.y -= ts * 1.15
   }
   if (data.subtitle) {
     pg.drawText(safe(data.subtitle), { x: c.mg, y: c.y, size: ss, font: i, color: c.gray })
