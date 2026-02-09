@@ -759,6 +759,18 @@ export default function BookAddForm({ referenceData }: Props) {
         if (chErr) console.error('Failed to insert condition history entry:', chErr)
       }
 
+      // Check if latest condition history entry suggests updating the book's condition
+      const sortedCondEntries = activeCondEntries
+        .filter(e => e.afterConditionId)
+        .sort((a, b) => b.position - a.position)
+      const latestWithCondition = sortedCondEntries[0]
+      if (latestWithCondition && latestWithCondition.afterConditionId !== (formData.condition_id || null)) {
+        const condName = referenceData.conditions.find(c => c.id === latestWithCondition.afterConditionId)?.name
+        if (condName && window.confirm(`Update the book's general condition to "${condName}"?`)) {
+          await supabase.from('books').update({ condition_id: latestWithCondition.afterConditionId }).eq('id', newBook.id)
+        }
+      }
+
       router.push(`/books/${newBook.id}`)
       router.refresh()
     } catch (err: unknown) {

@@ -641,6 +641,18 @@ export default function BookEditForm({ book, referenceData }: Props) {
         }
       }
 
+      // Check if latest condition history entry suggests updating the book's condition
+      const sortedCondEntries = activeCondEntries
+        .filter(e => e.afterConditionId)
+        .sort((a, b) => b.position - a.position)
+      const latestWithCondition = sortedCondEntries[0]
+      if (latestWithCondition && latestWithCondition.afterConditionId !== formData.condition_id) {
+        const condName = referenceData.conditions.find(c => c.id === latestWithCondition.afterConditionId)?.name
+        if (condName && window.confirm(`Update the book's general condition to "${condName}"?`)) {
+          await supabase.from('books').update({ condition_id: latestWithCondition.afterConditionId }).eq('id', book.id)
+        }
+      }
+
       setIsDirty(false)
       router.push(`/books/${book.id}`)
       router.refresh()
