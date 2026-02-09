@@ -2,9 +2,17 @@
 
 ## Current State (2026-02-09)
 
-**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. 24 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live. Only Knowledge Base remains for content pages.
+**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. 25 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live. Only Knowledge Base remains for content pages.
 
 **Recent session work:**
+- **Feedback & Support system — Step 1/6: Migration 025 applied**
+  - `feedback` table created with full schema (bug/contact/callback types)
+  - RLS: users see own submissions, admins see/update/delete all
+  - Indexes on user_id, status, type, priority, created_at
+  - Auto-update trigger on updated_at
+  - Status workflow: new → acknowledged → in_progress → resolved/closed/spam
+  - Priority levels: none/low/medium/high/critical
+  - Browser info auto-capture (JSONB), admin_notes, admin_response fields
 - Blog / Marginalia: 22 articles written + blog pages built (`/blog`, `/blog/[slug]`)
 - Header dropdown reordered (About, Marginalia, Privacy, Terms, Changelog, Roadmap), "coming soon" removed
 - Blog renamed from "Blog" to "Marginalia" across header, footer, page title
