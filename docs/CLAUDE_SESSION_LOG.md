@@ -58,6 +58,8 @@
 |---|---------|------|
 | A1 | System stats dashboard | 2026-02-09 |
 | 5 + A2 | Feedback & Support + Admin queue | 2026-02-09 |
+| B3 | Condition history (timeline + CRUD + auto-prompt) | 2026-02-09 |
+| UX1 | Edit page UX/UI overhaul | 2026-02-09 |
 
 ### Book Data Features
 | # | Feature | Priority | Effort | Description |
