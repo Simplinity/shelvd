@@ -45,7 +45,7 @@ function ArticleCard({ article }: { article: BlogArticle }) {
             </div>
 
             {/* Title */}
-            <h3 className="font-serif text-lg md:text-xl font-semibold text-foreground group-hover:text-primary transition-colors leading-tight mb-1.5">
+            <h3 className="text-lg md:text-xl font-semibold text-foreground group-hover:text-primary transition-colors leading-tight mb-1.5">
               {article.title}
             </h3>
 

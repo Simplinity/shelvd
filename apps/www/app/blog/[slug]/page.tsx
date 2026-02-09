@@ -111,13 +111,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <span className="font-mono text-sm text-primary/30 block mb-2">
               {String(article.number).padStart(2, '0')}
             </span>
-            <h1 className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] font-bold tracking-tight leading-tight text-foreground">
+            <h1 className="text-3xl md:text-4xl lg:text-[2.75rem] font-bold tracking-tight leading-tight text-foreground">
               {article.title}
             </h1>
           </div>
 
           {/* Subtitle */}
-          <p className="font-serif text-lg md:text-xl text-muted-foreground leading-relaxed italic mb-8">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed italic mb-8">
             {article.subtitle}
           </p>
 
@@ -145,7 +145,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <ArrowLeft className="w-3 h-3" />
                 Previous
               </span>
-              <span className="font-serif text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">
+              <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">
                 {prev.title}
               </span>
             </Link>
@@ -162,7 +162,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 Next
                 <ArrowRight className="w-3 h-3" />
               </span>
-              <span className="font-serif text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">
+              <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">
                 {next.title}
               </span>
             </Link>
