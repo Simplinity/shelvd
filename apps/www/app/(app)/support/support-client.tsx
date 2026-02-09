@@ -2,11 +2,11 @@
 
 import { useState, useTransition } from 'react'
 import { submitFeedback } from '@/lib/actions/feedback'
-import { Bug, Mail, Phone, CheckCircle2, Clock, MessageSquare, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Bug, Mail, CheckCircle2, Clock, MessageSquare, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 
 // ─── Types ───
 
-type FeedbackType = 'bug' | 'contact' | 'callback'
+type FeedbackType = 'bug' | 'contact'
 
 type Submission = {
   id: string
@@ -45,13 +45,13 @@ const STATUS_LABELS: Record<string, string> = {
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   bug: <Bug className="w-4 h-4" />,
   contact: <Mail className="w-4 h-4" />,
-  callback: <Phone className="w-4 h-4" />,
+  callback: <Mail className="w-4 h-4" />,
 }
 
 const TYPE_LABELS: Record<string, string> = {
   bug: 'Bug Report',
-  contact: 'Contact',
-  callback: 'Callback',
+  contact: 'Message',
+  callback: 'Message',
 }
 
 // ─── Browser info capture ───
@@ -146,7 +146,7 @@ export function SupportPageClient({
       )}
 
       {/* ─── Type selector cards ─── */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <TypeCard
           type="bug"
           icon={<Bug className="w-5 h-5" />}
@@ -158,18 +158,10 @@ export function SupportPageClient({
         <TypeCard
           type="contact"
           icon={<Mail className="w-5 h-5" />}
-          title="Contact"
-          description="General inquiry or feature request"
+          title="Message"
+          description="Question, suggestion, or anything else"
           selected={selectedType === 'contact'}
           onClick={() => { setSelectedType('contact'); setResult(null) }}
-        />
-        <TypeCard
-          type="callback"
-          icon={<Phone className="w-5 h-5" />}
-          title="Callback"
-          description="Request a phone call from our team"
-          selected={selectedType === 'callback'}
-          onClick={() => { setSelectedType('callback'); setResult(null) }}
         />
       </div>
 
@@ -180,7 +172,6 @@ export function SupportPageClient({
 
           {selectedType === 'bug' && <BugForm />}
           {selectedType === 'contact' && <ContactForm />}
-          {selectedType === 'callback' && <CallbackForm />}
 
           <div className="flex items-center justify-between pt-2">
             <button
@@ -334,88 +325,6 @@ function ContactForm() {
         />
       </FormField>
 
-      <FormField label="Preferred response">
-        <select
-          name="preferred_response"
-          defaultValue="email"
-          className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-        >
-          <option value="email">Email</option>
-          <option value="in_app">In-app reply</option>
-        </select>
-      </FormField>
-    </>
-  )
-}
-
-// ─── Callback form ───
-
-function CallbackForm() {
-  const detectedTimezone = typeof Intl !== 'undefined'
-    ? Intl.DateTimeFormat().resolvedOptions().timeZone
-    : ''
-
-  return (
-    <>
-      <FormField label="Subject">
-        <input
-          name="subject"
-          placeholder="Brief reason for the call (optional)"
-          className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      </FormField>
-
-      <FormField label="Phone number" required>
-        <input
-          name="phone"
-          type="tel"
-          required
-          placeholder="+32 …"
-          className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      </FormField>
-
-      <div className="grid grid-cols-2 gap-4">
-        <FormField label="Preferred time">
-          <select
-            name="preferred_time"
-            defaultValue="morning"
-            className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-          >
-            <option value="morning">Morning (9:00–12:00)</option>
-            <option value="afternoon">Afternoon (12:00–17:00)</option>
-            <option value="evening">Evening (17:00–20:00)</option>
-          </select>
-        </FormField>
-
-        <FormField label="Urgency">
-          <select
-            name="urgency"
-            defaultValue="normal"
-            className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-          >
-            <option value="normal">Normal</option>
-            <option value="urgent">Urgent</option>
-          </select>
-        </FormField>
-      </div>
-
-      <FormField label="Timezone">
-        <input
-          name="timezone"
-          defaultValue={detectedTimezone}
-          className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      </FormField>
-
-      <FormField label="Additional details">
-        <textarea
-          name="reason"
-          rows={3}
-          placeholder="Anything we should know before calling?"
-          className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-y"
-        />
-      </FormField>
     </>
   )
 }

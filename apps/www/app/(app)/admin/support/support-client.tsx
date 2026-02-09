@@ -12,7 +12,7 @@ import {
   bulkDeleteFeedback,
 } from '@/lib/actions/feedback'
 import {
-  MessageSquare, Bug, Mail, Phone, ChevronDown, ChevronUp,
+  MessageSquare, Bug, Mail, ChevronDown, ChevronUp,
   Trash2, ArrowLeft, Monitor, Globe, ExternalLink,
 } from 'lucide-react'
 
@@ -38,13 +38,13 @@ const PRIORITY_OPTIONS = [
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   bug: <Bug className="w-4 h-4" />,
   contact: <Mail className="w-4 h-4" />,
-  callback: <Phone className="w-4 h-4" />,
+  callback: <Mail className="w-4 h-4" />,
 }
 
 const TYPE_LABELS: Record<string, string> = {
   bug: 'Bug',
-  contact: 'Contact',
-  callback: 'Callback',
+  contact: 'Message',
+  callback: 'Message',
 }
 
 type FeedbackItem = {
@@ -149,10 +149,7 @@ export function AdminSupportClient({
           <Bug className="w-3 h-3" /> Bug ({counts.bug})
         </FilterChip>
         <FilterChip href="/admin/support?type=contact" active={filters.type === 'contact'}>
-          <Mail className="w-3 h-3" /> Contact ({counts.contact})
-        </FilterChip>
-        <FilterChip href="/admin/support?type=callback" active={filters.type === 'callback'}>
-          <Phone className="w-3 h-3" /> Callback ({counts.callback})
+          <Mail className="w-3 h-3" /> Message ({(counts.contact || 0) + (counts.callback || 0)})
         </FilterChip>
 
         <span className="text-xs text-muted-foreground self-center ml-3 mr-1">Status:</span>

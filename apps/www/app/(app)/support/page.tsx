@@ -10,7 +10,7 @@ export default async function SupportPage() {
       <div className="mb-10">
         <h1 className="text-2xl font-bold">Support</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Report a bug, get in touch, or request a callback.
+          Report a bug or send us a message.
         </p>
       </div>
 
