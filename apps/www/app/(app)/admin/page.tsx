@@ -110,25 +110,25 @@ export default async function AdminPage({
       </div>
 
       {/* Quick links */}
-      <div className="flex gap-3 mb-8">
-        <a
-          href="/admin/stats"
-          className="flex items-center gap-2 px-4 py-2.5 border hover:border-foreground/50 transition-colors text-sm"
-        >
-          <BarChart3 className="w-4 h-4 text-red-600" />
-          System Stats
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <a href="/admin/stats" className="p-4 border hover:border-foreground/30 transition-colors group">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+            <BarChart3 className="w-4 h-4" />
+            <span className="text-xs uppercase tracking-wide">System Stats</span>
+          </div>
+          <p className="text-sm text-muted-foreground">Growth, adoption, health</p>
         </a>
-        <a
-          href="/admin/support"
-          className="flex items-center gap-2 px-4 py-2.5 border hover:border-foreground/50 transition-colors text-sm"
-        >
-          <MessageSquare className="w-4 h-4 text-red-600" />
-          Support Queue
-          {(newFeedbackCount ?? 0) > 0 && (
-            <span className="ml-1 min-w-[20px] h-5 flex items-center justify-center bg-red-600 text-white text-[11px] font-bold px-1.5">
-              {newFeedbackCount}
-            </span>
-          )}
+        <a href="/admin/support" className="p-4 border hover:border-foreground/30 transition-colors group">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-xs uppercase tracking-wide">Support Queue</span>
+            {(newFeedbackCount ?? 0) > 0 && (
+              <span className="min-w-[20px] h-5 flex items-center justify-center bg-red-600 text-white text-[11px] font-bold px-1.5">
+                {newFeedbackCount}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">Bug reports, contacts</p>
         </a>
       </div>
 
