@@ -32,6 +32,49 @@ const SEVERITY_COLORS: Record<string, string> = {
   cosmetic: '#6b7280',
 }
 
+// ─── Send admin response to user ───
+
+export async function sendAdminResponseEmail(userEmail: string, subject: string, response: string, originalMessage?: string) {
+  console.log('[Email] Sending admin response to:', userEmail)
+  if (!resend) { console.log('[Email] No RESEND_API_KEY configured'); return }
+
+  const html = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;">
+      <div style="border-bottom:3px solid #dc2626;padding:16px 0;">
+        <span style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">SHELVD</span>
+        <span style="font-size:11px;color:#6b7280;margin-left:8px;">Support Response</span>
+      </div>
+      <div style="padding:24px 0;">
+        <p style="font-size:15px;font-weight:600;margin:0 0 16px;">Re: ${subject}</p>
+        <div style="font-size:14px;line-height:1.6;white-space:pre-wrap;margin:0 0 24px;">${response}</div>
+        ${originalMessage ? `
+          <div style="border-top:1px solid #e5e7eb;padding-top:16px;margin-top:16px;">
+            <p style="font-size:11px;color:#9ca3af;margin:0 0 8px;">Your original message:</p>
+            <div style="font-size:12px;color:#6b7280;line-height:1.5;white-space:pre-wrap;">${originalMessage}</div>
+          </div>
+        ` : ''}
+      </div>
+      <div style="border-top:1px solid #e5e7eb;padding:12px 0;font-size:11px;color:#9ca3af;">
+        Shelvd Support &middot; <a href="https://shelvd.org/support" style="color:#dc2626;">View your tickets</a>
+      </div>
+    </div>
+  `
+
+  try {
+    const result = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'Shelvd <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: `[Shelvd] Re: ${subject}`,
+      html,
+    })
+    console.log('[Email] Admin response send result:', JSON.stringify(result))
+  } catch (err) {
+    console.error('[Email] Failed to send admin response:', err)
+  }
+}
+
+// ─── Send feedback notification to admins ───
+
 export async function sendFeedbackNotification(data: FeedbackEmailData, adminEmails: string[]) {
   console.log('[Email] Attempting to send feedback notification to:', adminEmails)
   if (!resend) { console.log('[Email] No RESEND_API_KEY configured'); return }

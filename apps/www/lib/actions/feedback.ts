@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { sendFeedbackNotification } from '@/lib/email'
+import { sendFeedbackNotification, sendAdminResponseEmail } from '@/lib/email'
 
 export type FeedbackResult = {
   error?: string
@@ -250,6 +250,13 @@ export async function sendAdminResponse(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  // Get the feedback record first (for user email + original message)
+  const { data: feedback } = await supabase
+    .from('feedback')
+    .select('user_id, subject, message, type')
+    .eq('id', feedbackId)
+    .single()
+
   const { error } = await supabase
     .from('feedback')
     .update({ 
@@ -261,6 +268,25 @@ export async function sendAdminResponse(
     .eq('id', feedbackId)
 
   if (error) return { error: 'Failed to send response' }
+
+  // Send email to user
+  if (feedback?.user_id) {
+    try {
+      const { data: userProfile } = await supabase.rpc('get_users_for_admin')
+      const feedbackUser = (userProfile || []).find((u: any) => u.id === feedback.user_id)
+      if (feedbackUser?.email) {
+        await sendAdminResponseEmail(
+          feedbackUser.email,
+          feedback.subject || feedback.type || 'Your support request',
+          response,
+          feedback.message || undefined
+        )
+      }
+    } catch (err) {
+      console.error('[Feedback] Failed to send response email:', err)
+    }
+  }
+
   revalidatePath('/admin/support')
   revalidatePath('/support')
   return { success: true, message: 'Response sent' }
