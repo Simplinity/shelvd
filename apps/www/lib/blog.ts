@@ -319,7 +319,13 @@ export function getArticlesByCategory(category: BlogCategory): BlogArticle[] {
 
 // Utility: read article markdown content (server-side only)
 export function getArticleContent(filename: string): string {
-  const filePath = path.join(process.cwd(), 'content', 'blog', filename)
+  // Try monorepo root first (local dev), then workspace root (Vercel)
+  const candidates = [
+    path.join(process.cwd(), 'content', 'blog', filename),
+    path.join(process.cwd(), '..', '..', 'content', 'blog', filename),
+  ]
+  const filePath = candidates.find(p => fs.existsSync(p))
+  if (!filePath) throw new Error(`Article not found: ${filename}`)
   const raw = fs.readFileSync(filePath, 'utf-8')
   // Strip the title, subtitle, author, and first --- (already in metadata)
   // Find the first --- and return everything after it
