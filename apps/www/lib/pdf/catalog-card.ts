@@ -22,17 +22,24 @@ function truncate(text: string, maxLen: number): string {
   return text.substring(0, maxLen - 3) + '...'
 }
 
+// The signature red line on classic library cards
+const RED_LINE_INDEX = 2  // Third ruled line from top (where title starts)
+
 function drawRuledLines(page: PDFPage) {
   const lineColor = rgb(0.75, 0.72, 0.68)  // Warm gray, vintage feel
+  const redColor = rgb(0.75, 0.12, 0.12)   // Classic catalog card red
   let y = RULE_START_Y
+  let lineNum = 0
   while (y > MARGIN_BOTTOM) {
+    const isRedLine = lineNum === RED_LINE_INDEX
     page.drawLine({
       start: { x: MARGIN_LEFT, y },
       end: { x: CARD_WIDTH - MARGIN_RIGHT, y },
-      thickness: 0.25,
-      color: lineColor,
+      thickness: isRedLine ? 0.75 : 0.25,
+      color: isRedLine ? redColor : lineColor,
     })
     y -= RULE_SPACING
+    lineNum++
   }
 }
 

@@ -1,6 +1,22 @@
 import { PDFDocument, StandardFonts, rgb, PDFFont, PDFPage } from 'pdf-lib'
 import { BookPdfData, PaperSize, PAPER_SIZES } from './types'
 
+// Standard PDF fonts only support WinAnsiEncoding (Latin-1).
+// Replace unsupported characters to prevent crashes.
+function safeText(text: string): string {
+  return text.replace(/[^\x00-\xFF]/g, (ch) => {
+    // Common substitutions
+    const map: Record<string, string> = {
+      '\u2013': '-', '\u2014': '--', '\u2018': "'", '\u2019': "'",
+      '\u201C': '"', '\u201D': '"', '\u2026': '...', '\u2022': '*',
+      '\u2032': "'", '\u2033': '"', '\u00AB': '"', '\u00BB': '"',
+      '\u2002': ' ', '\u2003': ' ', '\u2009': ' ', '\u200B': '',
+      '\u00A0': ' ', '\u2192': '->', '\u2190': '<-',
+    }
+    return map[ch] || '?'
+  })
+}
+
 interface DrawContext {
   page: PDFPage
   regular: PDFFont
@@ -88,6 +104,7 @@ function wrapText(font: PDFFont, text: string, maxWidth: number, fontSize: numbe
 function drawField(ctx: DrawContext, label: string, value: string | undefined | null, options?: { inline?: boolean }) {
   if (!value || !value.trim()) return
   if (ctx.y < ctx.margin + 15) return
+  value = safeText(value)
   
   const labelText = label + ':  '
   const labelWidth = ctx.bold.widthOfTextAtSize(labelText, ctx.labelSize)
