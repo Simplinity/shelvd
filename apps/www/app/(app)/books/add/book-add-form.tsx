@@ -817,10 +817,11 @@ export default function BookAddForm({ referenceData }: Props) {
   }
 
   const allSections = [
-    'Title & Series', 'Contributors', 'Collections', 'Tags', 'Language', 'Publication', 'Edition',
-    'Physical Description', 'Condition & Status',
-    'Identifiers', 'BISAC Subject Codes', 'Storage', 'Valuation',
-    'Provenance', 'Condition History', 'Notes', 'External Links', 'Catalog Entry'
+    'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
+    'Physical Description', 'Condition & Status', 'Condition History', 'Provenance',
+    'Identifiers', 'BISAC Subject Codes', 'Catalog Entry',
+    'Collections', 'Tags', 'Storage', 'Valuation',
+    'Notes', 'External Links'
   ]
 
   const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(['Title & Series', 'Contributors']))
@@ -911,7 +912,7 @@ export default function BookAddForm({ referenceData }: Props) {
       </div>
 
       <div className="space-y-8">
-        {/* 1. Title & Series */}
+{/* 1. Title & Series */}
         <section>
           <SectionHeader title="Title & Series" />
           {openSections.has('Title & Series') && <div className="mt-4">
@@ -978,54 +979,6 @@ export default function BookAddForm({ referenceData }: Props) {
               <Plus className="w-4 h-4 mr-1" />Add
             </Button>
           </div>
-          </div>}
-        </section>
-
-        {/* 3. Collections */}
-        {availableCollections.length > 0 && (
-          <section>
-            <SectionHeader title="Collections" />
-          {openSections.has('Collections') && <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
-            <div className="flex flex-wrap gap-2">
-              {availableCollections.map(col => (
-                <label key={col.id} className={`flex items-center gap-2 px-3 py-1.5 text-sm border cursor-pointer transition-colors ${
-                  selectedCollectionIds.has(col.id)
-                    ? 'border-foreground bg-foreground text-background'
-                    : 'border-gray-300 dark:border-gray-600 bg-muted/30 hover:border-foreground'
-                }`}>
-                  <input
-                    type="checkbox"
-                    checked={selectedCollectionIds.has(col.id)}
-                    onChange={() => {
-                      setSelectedCollectionIds(prev => {
-                        const next = new Set(prev)
-                        if (next.has(col.id)) next.delete(col.id)
-                        else next.add(col.id)
-                        return next
-                      })
-                      setIsDirty(true)
-                    }}
-                    className="sr-only"
-                  />
-                  {col.name}
-                  {col.is_default && <span className="text-xs opacity-60">(default)</span>}
-                </label>
-              ))}
-            </div>
-            </div>}
-        </section>
-        )}
-
-        {/* 4. Tags */}
-        <section>
-          <SectionHeader title="Tags" />
-          {openSections.has('Tags') && <div className="mt-4">
-          <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
-          <TagInput
-            selectedTags={selectedTags}
-            onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
-          />
           </div>}
         </section>
 
@@ -1257,6 +1210,34 @@ export default function BookAddForm({ referenceData }: Props) {
           </div>}
         </section>
 
+        {/* 14. Provenance */}
+                <section>
+          <SectionHeader title="Condition History" />
+          {openSections.has('Condition History') && <div className="mt-4">
+          <ConditionHistoryEditor
+            entries={conditionHistoryEntries}
+            conditions={referenceData.conditions}
+            onChange={(updated: ConditionHistoryEntry[]) => {
+              setConditionHistoryEntries(updated)
+              setIsDirty(true)
+            }}
+          />
+          </div>}
+        </section>
+
+<section>
+          <SectionHeader title="Provenance" />
+          {openSections.has('Provenance') && <div className="mt-4">
+          <ProvenanceEditor
+            entries={provenanceEntries}
+            onChange={(updated) => {
+              setProvenanceEntries(updated)
+              setIsDirty(true)
+            }}
+          />
+          </div>}
+        </section>
+
         {/* 10. Identifiers */}
         <section>
           <SectionHeader title="Identifiers" />
@@ -1314,6 +1295,108 @@ export default function BookAddForm({ referenceData }: Props) {
           </div>}
         </section>
 
+        {/* 15. Catalog Entry */}
+        <section>
+          <SectionHeader title="Catalog Entry" />
+          {openSections.has('Catalog Entry') && <div className="mt-4">
+          <div className="mb-4">
+            <CatalogEntryGenerator
+              book={{
+                title: formData.title,
+                subtitle: formData.subtitle || null,
+                original_title: formData.original_title || null,
+                series: formData.series || null,
+                series_number: formData.series_number || null,
+                publisher_name: formData.publisher_name || null,
+                publication_place: formData.publication_place || null,
+                publication_year: formData.publication_year || null,
+                printer: formData.printer || null,
+                printing_place: formData.printing_place || null,
+                edition: formData.edition || null,
+                impression: formData.impression || null,
+                issue_state: formData.issue_state || null,
+                edition_notes: formData.edition_notes || null,
+                pagination_description: formData.pagination_description || null,
+                page_count: formData.page_count ? parseInt(formData.page_count) : null,
+                volumes: formData.volumes || null,
+                height_mm: formData.height_mm ? parseFloat(formData.height_mm) : null,
+                width_mm: formData.width_mm ? parseFloat(formData.width_mm) : null,
+                cover_type: formData.cover_type || null,
+                binding_name: referenceData.bindings.find(b => b.id === formData.binding_id)?.name || null,
+                format_name: referenceData.bookFormats.find(f => f.id === formData.format_id)?.name || null,
+                format_abbreviation: referenceData.bookFormats.find(f => f.id === formData.format_id)?.abbreviation || null,
+                has_dust_jacket: formData.has_dust_jacket,
+                is_signed: formData.is_signed,
+                condition_name: referenceData.conditions.find(c => c.id === formData.condition_id)?.name || null,
+                condition_notes: formData.condition_notes || null,
+                bibliography: formData.bibliography || null,
+                illustrations_description: formData.illustrations_description || null,
+                signatures_description: formData.signatures_description || null,
+                isbn_13: formData.isbn_13 || null,
+                isbn_10: formData.isbn_10 || null,
+                oclc_number: formData.oclc_number || null,
+                lccn: formData.lccn || null,
+                contributors: contributorsForCatalog,
+                provenanceEntries: provenanceEntries.filter(e => !e.isDeleted && e.ownerName.trim()).sort((a, b) => a.position - b.position),
+              }}
+              onGenerate={(entry) => handleChange('catalog_entry', entry)}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Full Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
+            <textarea value={formData.catalog_entry} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
+          </div>
+          </div>}
+        </section>
+
+        {/* 3. Collections */}
+        {availableCollections.length > 0 && (
+          <section>
+            <SectionHeader title="Collections" />
+          {openSections.has('Collections') && <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-3">Choose which collections this book belongs to.</p>
+            <div className="flex flex-wrap gap-2">
+              {availableCollections.map(col => (
+                <label key={col.id} className={`flex items-center gap-2 px-3 py-1.5 text-sm border cursor-pointer transition-colors ${
+                  selectedCollectionIds.has(col.id)
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'border-gray-300 dark:border-gray-600 bg-muted/30 hover:border-foreground'
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={selectedCollectionIds.has(col.id)}
+                    onChange={() => {
+                      setSelectedCollectionIds(prev => {
+                        const next = new Set(prev)
+                        if (next.has(col.id)) next.delete(col.id)
+                        else next.add(col.id)
+                        return next
+                      })
+                      setIsDirty(true)
+                    }}
+                    className="sr-only"
+                  />
+                  {col.name}
+                  {col.is_default && <span className="text-xs opacity-60">(default)</span>}
+                </label>
+              ))}
+            </div>
+            </div>}
+        </section>
+        )}
+
+        {/* 4. Tags */}
+        <section>
+          <SectionHeader title="Tags" />
+          {openSections.has('Tags') && <div className="mt-4">
+          <p className="text-sm text-muted-foreground mb-3">Add tags to categorize this book. Type to search or create new tags.</p>
+          <TagInput
+            selectedTags={selectedTags}
+            onTagsChange={(tags) => { setSelectedTags(tags); setIsDirty(true) }}
+          />
+          </div>}
+        </section>
+
         {/* 12. Storage */}
         <section>
           <SectionHeader title="Storage" />
@@ -1367,35 +1450,6 @@ export default function BookAddForm({ referenceData }: Props) {
               </select>
             </div>
           </div>
-          </div>}
-        </section>
-
-        {/* 14. Provenance */}
-        <section>
-          <SectionHeader title="Provenance" />
-          {openSections.has('Provenance') && <div className="mt-4">
-          <ProvenanceEditor
-            entries={provenanceEntries}
-            onChange={(updated) => {
-              setProvenanceEntries(updated)
-              setIsDirty(true)
-            }}
-          />
-          </div>}
-        </section>
-
-        {/* 15. Condition History */}
-        <section>
-          <SectionHeader title="Condition History" />
-          {openSections.has('Condition History') && <div className="mt-4">
-          <ConditionHistoryEditor
-            entries={conditionHistoryEntries}
-            conditions={referenceData.conditions}
-            onChange={(updated) => {
-              setConditionHistoryEntries(updated)
-              setIsDirty(true)
-            }}
-          />
           </div>}
         </section>
 
@@ -1513,60 +1567,6 @@ export default function BookAddForm({ referenceData }: Props) {
             <Plus className="w-4 h-4" />
             Add Link
           </button>
-          </div>}
-        </section>
-
-        {/* 15. Catalog Entry */}
-        <section>
-          <SectionHeader title="Catalog Entry" />
-          {openSections.has('Catalog Entry') && <div className="mt-4">
-          <div className="mb-4">
-            <CatalogEntryGenerator
-              book={{
-                title: formData.title,
-                subtitle: formData.subtitle || null,
-                original_title: formData.original_title || null,
-                series: formData.series || null,
-                series_number: formData.series_number || null,
-                publisher_name: formData.publisher_name || null,
-                publication_place: formData.publication_place || null,
-                publication_year: formData.publication_year || null,
-                printer: formData.printer || null,
-                printing_place: formData.printing_place || null,
-                edition: formData.edition || null,
-                impression: formData.impression || null,
-                issue_state: formData.issue_state || null,
-                edition_notes: formData.edition_notes || null,
-                pagination_description: formData.pagination_description || null,
-                page_count: formData.page_count ? parseInt(formData.page_count) : null,
-                volumes: formData.volumes || null,
-                height_mm: formData.height_mm ? parseFloat(formData.height_mm) : null,
-                width_mm: formData.width_mm ? parseFloat(formData.width_mm) : null,
-                cover_type: formData.cover_type || null,
-                binding_name: referenceData.bindings.find(b => b.id === formData.binding_id)?.name || null,
-                format_name: referenceData.bookFormats.find(f => f.id === formData.format_id)?.name || null,
-                format_abbreviation: referenceData.bookFormats.find(f => f.id === formData.format_id)?.abbreviation || null,
-                has_dust_jacket: formData.has_dust_jacket,
-                is_signed: formData.is_signed,
-                condition_name: referenceData.conditions.find(c => c.id === formData.condition_id)?.name || null,
-                condition_notes: formData.condition_notes || null,
-                bibliography: formData.bibliography || null,
-                illustrations_description: formData.illustrations_description || null,
-                signatures_description: formData.signatures_description || null,
-                isbn_13: formData.isbn_13 || null,
-                isbn_10: formData.isbn_10 || null,
-                oclc_number: formData.oclc_number || null,
-                lccn: formData.lccn || null,
-                contributors: contributorsForCatalog,
-                provenanceEntries: provenanceEntries.filter(e => !e.isDeleted && e.ownerName.trim()).sort((a, b) => a.position - b.position),
-              }}
-              onGenerate={(entry) => handleChange('catalog_entry', entry)}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Full Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
-            <textarea value={formData.catalog_entry} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
-          </div>
           </div>}
         </section>
 
