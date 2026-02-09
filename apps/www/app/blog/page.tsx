@@ -11,11 +11,11 @@ import {
 } from '@/lib/blog'
 
 export const metadata = {
-  title: 'Blog — Shelvd',
+  title: 'Marginalia — The Shelvd Blog',
   description:
     'Essays on book collecting, cataloging, and the antiquarian trade. By Bruno van Branden.',
   openGraph: {
-    title: 'Blog — Shelvd',
+    title: 'Marginalia — The Shelvd Blog',
     description:
       'Essays on book collecting, cataloging, and the antiquarian trade. By Bruno van Branden.',
     type: 'website',
@@ -81,7 +81,7 @@ export default function BlogPage() {
             <div className="w-10 h-10 bg-primary/10 flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Blog</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Marginalia</h1>
           </div>
 
           <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mb-8">
