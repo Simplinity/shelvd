@@ -39,12 +39,17 @@
 | 8b | Knowledge base (`/help`) | Medium | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
 | 9 | Mobile responsiveness | High | High | Hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice today. |
 
+### Growth & Marketing
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| G1 | Invite codes | High | Medium | Marketing & attribution tool. Admin creates codes per channel (`BOOKFAIR2026`, `INSTAGRAM`, `CATAWIKI`), partnership (`ANTIQUARIAAT-X`), campaign (`MARGINALIA`), or referral (per-user codes). Signup requires a valid code → tracks which channels bring users. Dashboard: signups per code, conversion rates, top channels. Creates exclusivity ("invitation-only for serious collectors") + measurable growth. DB: `invite_codes` table (code, label, source_type, max_uses, used_count, expires_at, created_by). Signup flow gets code input field. Admin gets code generator + analytics. |
+
 ### Admin Enhancements
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
 | ~~A1~~ | ~~System stats dashboard~~ | ~~High~~ | ~~Medium~~ | ~~DONE — /admin/stats with metrics, distributions, growth charts~~ |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action, date, entity. Depends on #4. |
-| A4 | User management | Medium | Medium | Invite codes, approve registrations, user details view. |
+| A4 | User detail view | Low | Medium | Click user in admin table → full profile: books count, collections, last active, features used, support tickets. |
 | A6 | Data health checks | Low | Medium | Orphaned records, missing fields, import errors, DB consistency. |
 
 ### Completed
