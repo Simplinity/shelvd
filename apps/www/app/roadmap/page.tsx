@@ -1,4 +1,4 @@
-import { ArrowLeft, Map, CheckCircle2, Hammer, Compass } from 'lucide-react'
+import { ArrowLeft, Map, CheckCircle2, Compass } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
@@ -23,7 +23,7 @@ const laneConfig: Record<RoadmapStatus, {
   building: { 
     title: 'Building', 
     subtitle: 'Currently being argued about.',
-    icon: Hammer,
+    icon: CheckCircle2,
     accent: 'text-amber-600',
     cardBorder: 'border-l-amber-500',
   },
@@ -74,7 +74,9 @@ export default function RoadmapPage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-wrap gap-6">
             <StatBadge count={shipped.length} label="shipped" color="text-emerald-600" />
-            <StatBadge count={building.length} label="building" color="text-amber-600" />
+            {building.length > 0 && (
+              <StatBadge count={building.length} label="building" color="text-amber-600" />
+            )}
             <StatBadge count={planned.length} label="planned" color="text-blue-600" />
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>·</span>
@@ -84,12 +86,14 @@ export default function RoadmapPage() {
         </div>
       </section>
 
-      {/* Roadmap lanes */}
+      {/* Planned — show first, it's what people care about */}
       <article className="px-6 pb-24">
         <div className="max-w-5xl mx-auto space-y-20">
-          <RoadmapLane status="shipped" items={shipped} />
-          <RoadmapLane status="building" items={building} />
           <RoadmapLane status="planned" items={planned} />
+          {building.length > 0 && (
+            <RoadmapLane status="building" items={building} />
+          )}
+          <RoadmapLane status="shipped" items={shipped} />
         </div>
 
         {/* Closing */}
@@ -98,9 +102,10 @@ export default function RoadmapPage() {
             <h3 className="font-bold mb-2">Missing something?</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               This roadmap is shaped by what collectors actually need — which is to say, by the problems 
-              we encounter while cataloging our own 28,000 books. If you have a feature request, a complaint, 
-              or a strong opinion about metadata standards, we&apos;d love to hear it. Email{' '}
-              <strong>hello@shelvd.app</strong> and we&apos;ll read it. We read everything. It&apos;s a compulsion.
+              we encounter while cataloging our own books. If you have a feature request, a complaint, 
+              or a strong opinion about metadata standards, we&apos;d love to hear it via our{' '}
+              <Link href="/support" className="text-primary hover:underline">support page</Link>.
+              We read everything. It&apos;s a compulsion.
             </p>
           </div>
           <p className="text-xs text-muted-foreground italic mt-8">

@@ -6,7 +6,7 @@
  */
 
 export type RoadmapStatus = 'shipped' | 'building' | 'planned'
-export type RoadmapCategory = 'cataloging' | 'search' | 'data' | 'provenance' | 'admin' | 'website' | 'platform'
+export type RoadmapCategory = 'cataloging' | 'search' | 'data' | 'provenance' | 'admin' | 'website' | 'platform' | 'growth' | 'marketplace'
 
 export interface RoadmapItem {
   title: string
@@ -24,10 +24,14 @@ export const categoryConfig: Record<RoadmapCategory, { label: string; color: str
   admin: { label: 'Admin', color: 'bg-slate-100 text-slate-700' },
   website: { label: 'Website', color: 'bg-rose-100 text-rose-700' },
   platform: { label: 'Platform', color: 'bg-cyan-100 text-cyan-700' },
+  growth: { label: 'Growth', color: 'bg-orange-100 text-orange-700' },
+  marketplace: { label: 'Marketplace', color: 'bg-fuchsia-100 text-fuchsia-700' },
 }
 
 export const ROADMAP: RoadmapItem[] = [
-  // ═══ SHIPPED ═══
+  // ═══════════════════════════════
+  // SHIPPED
+  // ═══════════════════════════════
   {
     title: 'Bibliographic Cataloging',
     description: '76 formats, 45 cover types, 65 bindings, BISAC subjects, pagination, collation. Everything Excel couldn\'t handle.',
@@ -140,8 +144,6 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'shipped',
     version: '0.9.0',
   },
-
-  // ═══ BUILDING ═══
   {
     title: 'Locale & Number Formatting',
     description: 'Single locale setting drives number format (1,234.56 vs 1.234,56) and date display. Because Belgium alone has three official languages.',
@@ -149,14 +151,33 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'shipped',
     version: '0.9.0',
   },
-
-  // ═══ PLANNED ═══
   {
-    title: 'Image Upload',
-    description: 'Cover photos, spine shots, damage documentation. A gallery for every book. Your insurance company will thank you.',
-    category: 'cataloging',
-    status: 'planned',
+    title: 'Feedback & Bug Reporting',
+    description: 'Bug reports, contact requests, callback requests — with admin queue, email alerts, and status tracking. Because "it doesn\'t work" is not a bug report.',
+    category: 'platform',
+    status: 'shipped',
+    version: '0.9.0',
   },
+  {
+    title: 'Marginalia Blog',
+    description: '22 articles on condition grading, ISBD, provenance, ISBN history, book formats. Authority content for collectors and excellent procrastination material.',
+    category: 'website',
+    status: 'shipped',
+    version: '0.9.0',
+  },
+  {
+    title: 'Admin System Stats',
+    description: 'Growth charts, feature adoption, user activation funnel, data health. Dashboards for knowing what\'s actually happening on the platform.',
+    category: 'admin',
+    status: 'shipped',
+    version: '0.9.0',
+  },
+
+  // ═══════════════════════════════
+  // PLANNED
+  // ═══════════════════════════════
+
+  // Core Product
   {
     title: 'Activity Logging',
     description: 'Who changed what, when, and why. JSON diffs for every edit. The provenance of your provenance.',
@@ -164,10 +185,10 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
   {
-    title: 'Feedback & Bug Reporting',
-    description: 'Bug reports, contact requests, callback requests — with admin queue, email alerts, and status tracking. Because "it doesn\'t work" is not a bug report.',
-    category: 'platform',
-    status: 'shipped',
+    title: 'Image Upload',
+    description: 'Cover photos, spine shots, damage documentation. A gallery for every book. Your insurance company will thank you.',
+    category: 'cataloging',
+    status: 'planned',
   },
   {
     title: 'Sharing & Public Catalog',
@@ -187,21 +208,47 @@ export const ROADMAP: RoadmapItem[] = [
     category: 'website',
     status: 'planned',
   },
+
+  // Growth & Marketing
   {
-    title: 'Blog',
-    description: 'Articles on condition grading, ISBD, provenance, book formats. Authority content for collectors and excellent procrastination material.',
-    category: 'website',
+    title: 'Invite Codes',
+    description: 'Channel attribution, partnership codes, campaign tracking, personal referrals. Know where your users come from. Also: "invitation-only" sounds very antiquarian.',
+    category: 'growth',
+    status: 'planned',
+  },
+
+  // Book Data Features
+  {
+    title: 'Insurance & Valuation Reports',
+    description: 'Generate timestamped PDF reports for insurance: book list with photos, estimated values, total collection value. Export per collection or full library.',
+    category: 'data',
     status: 'planned',
   },
   {
-    title: 'Admin System Stats',
-    description: 'Total books, users, storage, growth trends. Dashboards for the person running this one-person operation.',
-    category: 'admin',
+    title: 'Valuation History',
+    description: 'Track market value over time without ownership changes. Appraisals, auction estimates, dealer quotes. A price chart for every book.',
+    category: 'data',
     status: 'planned',
   },
   {
-    title: 'User Management',
-    description: 'Invite codes, registration approval, user detail views. Because letting everyone in without checking is how you end up with a book fair in your living room.',
+    title: 'Condition History',
+    description: 'The physical life of a book: restorations, rebindings, repairs, damage events, assessments. Separate from provenance, because ownership and wear are different stories.',
+    category: 'cataloging',
+    status: 'planned',
+  },
+
+  // Dealer & Marketplace
+  {
+    title: 'Dealer Directory & Messaging',
+    description: 'Dealers register with a business profile. Collectors browse the directory, send wishlists or collections with a message. Connecting buyers and sellers, the old-fashioned way.',
+    category: 'marketplace',
+    status: 'planned',
+  },
+
+  // Admin
+  {
+    title: 'Admin Impersonation',
+    description: '"View as user" mode for debugging. See exactly what a user sees — their books, collections, settings. With a big red banner so you don\'t forget whose life you\'re living.',
     category: 'admin',
     status: 'planned',
   },
