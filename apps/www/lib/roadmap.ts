@@ -165,9 +165,9 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'Feedback & Bug Reporting',
-    description: 'In-app feedback form with auto-attached browser info. Because "it doesn\'t work" is not a bug report.',
+    description: 'Bug reports, contact requests, callback requests — with admin queue, email alerts, and status tracking. Because "it doesn\'t work" is not a bug report.',
     category: 'platform',
-    status: 'planned',
+    status: 'shipped',
   },
   {
     title: 'Sharing & Public Catalog',
