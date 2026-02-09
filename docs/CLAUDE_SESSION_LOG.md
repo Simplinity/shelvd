@@ -59,11 +59,19 @@
 | A1 | System stats dashboard | 2026-02-09 |
 | 5 + A2 | Feedback & Support + Admin queue | 2026-02-09 |
 
+### Book Data Features
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| B1 | Insurance & valuation PDF reports | Medium | Medium | Generate PDF reports for insurance: book list with photos, estimated values, total collection value. Timestamped, signed, official-looking. Export per collection or full library. |
+| B2 | Valuation history | Medium | Medium | Separate from provenance. Track market value over time without ownership changes: appraisals, auction estimates, dealer quotes. `valuation_history` table: book_id, date, value, currency, source (appraisal/auction_result/dealer_quote/self_estimate), appraiser, notes. Chart on book detail showing value trend over time. |
+| B3 | Condition history | Medium | Medium | Physical life of the book, separate from provenance (who owned it). `condition_history` table: book_id, date, event_type (restoration/rebinding/repair/damage/cleaning/deacidification/assessment), description, performed_by (restorer/workshop), cost, currency, before_condition_id, after_condition_id, notes. Chronological log on book detail. Current `condition_id` always reflects latest state. |
+
+### Dealer & Marketplace
+| # | Feature | Priority | Effort | Description |
+|---|---------|----------|--------|-------------|
+| D1 | Dealer directory & messaging | Medium | High | Two-tier system. **Dealer account (paid tier):** dealers register with business profile (name, type, location, phone, email, website, description, specialties). Visible in public dealer directory. **Regular users:** browse dealer directory, view dealer profiles, send a message to any dealer with their wishlist or any collection attached. Dealers receive messages in their account + email notification. DB: `dealer_profiles` table linked to user account, `dealer_messages` table (from_user, to_dealer, subject, message, attached_collection_id, attached_wishlist). No CRM, no transaction history, no ratings — keep it simple. |
+
 ### Under Consideration
-- Insurance & valuation PDF reports
-- Price history field (auction results, dealer quotes)
-- Condition history (restorations, reports)
-- Dealer & contact management
 - Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
 - Templates system
