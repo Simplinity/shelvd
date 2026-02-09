@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { sendFeedbackNotification } from '@/lib/email'
 
 export type FeedbackResult = {
   error?: string
@@ -83,6 +84,40 @@ export async function submitFeedback(formData: FormData): Promise<FeedbackResult
     .single()
 
   if (error) return { error: 'Failed to submit feedback. Please try again.' }
+
+  // Send email notification to admin users (non-blocking)
+  try {
+    const { data: adminProfiles } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('is_admin', true)
+
+    if (adminProfiles && adminProfiles.length > 0) {
+      // Get admin emails via auth
+      const { data: authUsers } = await supabase.rpc('get_users_for_admin')
+      const adminIds = new Set(adminProfiles.map(p => p.id))
+      const adminEmails = (authUsers || [])
+        .filter((u: any) => adminIds.has(u.id) && u.email)
+        .map((u: any) => u.email)
+
+      if (adminEmails.length > 0) {
+        sendFeedbackNotification({
+          type: type as 'bug' | 'contact' | 'callback',
+          subject: subject || undefined,
+          message: message || undefined,
+          severity: record.severity,
+          urgency: record.urgency,
+          category: record.category,
+          phone: record.phone,
+          preferredTime: record.preferred_time,
+          userEmail: user.email || 'unknown',
+          feedbackId: data.id,
+        }, adminEmails)
+      }
+    }
+  } catch {
+    // Email failure should never block submission
+  }
 
   revalidatePath('/support')
   return { 

@@ -69,6 +69,12 @@ export default async function AdminPage({
     })
   } catch {}
 
+  // New feedback count for badge
+  const { count: newFeedbackCount } = await supabase
+    .from('feedback')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'new')
+
   // Announcements
   const { data: announcements } = await supabase
     .from('announcements')
@@ -111,6 +117,11 @@ export default async function AdminPage({
         >
           <MessageSquare className="w-4 h-4 text-red-600" />
           Support Queue
+          {(newFeedbackCount ?? 0) > 0 && (
+            <span className="ml-1 min-w-[20px] h-5 flex items-center justify-center bg-red-600 text-white text-[11px] font-bold px-1.5">
+              {newFeedbackCount}
+            </span>
+          )}
         </a>
       </div>
 

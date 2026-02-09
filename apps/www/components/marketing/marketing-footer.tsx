@@ -30,6 +30,7 @@ export function MarketingFooter() {
               <FooterLink href="/#features">Features</FooterLink>
               <FooterLink href="/signup">Get Started</FooterLink>
               <FooterLink href="/login">Sign In</FooterLink>
+              <FooterLink href="/support">Support</FooterLink>
             </div>
           </div>
 
