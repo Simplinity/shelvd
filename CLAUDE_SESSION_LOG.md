@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-08)
 
-**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. Collections, Tags, Enrich Mode, Contributor Names, Provenance, Currency & Valuation — all shipped. Marketing site: Landing page, Privacy Policy, Terms of Service, About, Changelog, Roadmap — all live with shared header/footer. App versioning system with `lib/changelog.ts` as single source of truth. Only Blog and Knowledge Base remain for content pages.
+**App version: v0.9.0.** All core features and marketing site complete. 9 lookup providers active. Collections, Tags, Enrich Mode, Contributor Names, Provenance, Currency & Valuation — all shipped. Marketing site: Landing page, Privacy Policy, Terms of Service, About, Changelog, Roadmap — all live with shared header/footer. App versioning system with `lib/changelog.ts` as single source of truth. Blog content complete (22 articles in `content/blog/`), blog page code still needed. Only Knowledge Base remains for content pages.
 
 ---
 
@@ -104,7 +104,7 @@
 | 8e | About / Story (`/about`) | ✅ Done | — | Origin story, 28k books, literary wit, pull quotes. |
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases, data-driven, timeline design, version badge in app. |
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board, 26 items, category badges, witty descriptions. |
-| 8h | Blog (`/blog`) | Low | Medium | Authority + SEO articles on collecting, ISBD, provenance. |
+| 8h | Blog (`/blog`) | ✅ Content done | Medium | 22 articles by Bruno van Branden in `content/blog/`. Blog page code still needed. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit: hamburger nav (currently invisible <768px), touch targets, single-column forms, card-based lists, responsive charts. Desktop-only in practice today. |
 
 ### Todo — Admin Section Enhancements

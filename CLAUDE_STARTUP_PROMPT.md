@@ -69,6 +69,7 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 - `apps/www/lib/format.ts` — Locale-aware formatters (formatInteger, formatDecimal, formatCurrency, formatDate)
 - `apps/www/lib/currencies.ts` — 29 ISO 4217 currencies
 - `apps/www/lib/name-utils.ts` — Contributor name parser
+- `content/blog/` — 22 blog articles by Bruno van Branden (.md files, 01–22)
 - `apps/www/components/marketing/` — MarketingHeader, MarketingFooter (shared across all public pages)
 - `apps/www/components/` — Reusable components (collection-chips, tag-input, collection-nav, announcement-banner, etc.)
 - `supabase/migrations/` — DB migrations (001–024)
@@ -119,7 +120,7 @@ All marketing pages: Swiss design, literary wit, tongue-in-cheek humor throughou
 | Feedback & bug reporting | 🔴 Todo |
 | Sharing & Public Catalog | 🔴 Todo |
 | Mobile responsiveness | 🔴 Todo |
-| Blog (`/blog`) | 🔴 Todo |
+| Blog (`/blog`) | 🟡 Content done, page code needed |
 | Knowledge base (`/help`) | 🔴 Todo |
 
 ---
