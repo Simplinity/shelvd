@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.9.0'
+export const APP_VERSION = '0.10.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed' | 'removed'
 
@@ -23,6 +23,25 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.10.0',
+    date: '2026-02-09',
+    title: 'Admin Intelligence & Navigation',
+    description: 'The update where Shelvd learned to look at itself in the mirror. And navigate properly.',
+    changes: [
+      { type: 'added', text: 'Feedback & Support system — bug reports, contact requests, callback requests with admin queue, priority levels, status workflow, admin notes and responses' },
+      { type: 'added', text: 'Email notifications — admin users receive email alerts on new support submissions via Resend integration' },
+      { type: 'added', text: 'Admin system stats dashboard — growth charts, feature adoption rates, user activation funnel, data health metrics, books per user breakdown' },
+      { type: 'added', text: 'Marginalia blog — 22 articles on ISBN history, ISBD standards, condition grading, provenance, book formats, and other things you didn\'t know you needed to know' },
+      { type: 'added', text: 'Public roadmap page — planned features first, shipped features as proof of execution, with new Growth and Marketplace categories' },
+      { type: 'added', text: 'User menu dropdown — Settings, Support, Marginalia, Roadmap, Changelog, Admin, and Sign Out behind a clean user icon' },
+      { type: 'improved', text: 'Header redesign — core navigation left-aligned, user menu pushed right, no more overflow with 10+ nav items' },
+      { type: 'improved', text: 'Marketing pages now accessible when logged in — blog, roadmap, changelog, about all reachable from the app' },
+      { type: 'improved', text: 'Marketing header detects auth state — shows "Go to Collection" for logged-in users instead of Sign In / Get Started' },
+      { type: 'improved', text: 'Admin quick links restyled as proper cards matching the dashboard design' },
+      { type: 'added', text: '7 new database RPC functions for admin analytics (bypassing RLS for platform-wide statistics)' },
+    ],
+  },
   {
     version: '0.9.0',
     date: '2026-02-08',

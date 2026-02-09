@@ -2,7 +2,7 @@
 
 ## Current State (2026-02-09)
 
-**App version: v0.9.0.** All core features, marketing site, and feedback system complete. 9 lookup providers active. 26 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live. Only Knowledge Base remains for content pages.
+**App version: v0.10.0.** All core features, marketing site, and feedback system complete. 9 lookup providers active. 26 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live. Only Knowledge Base remains for content pages.
 
 **Recent session work:**
 - **Admin system stats dashboard (A1) — COMPLETE**
