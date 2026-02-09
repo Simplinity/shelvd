@@ -260,9 +260,15 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
   {
-    title: 'Data Health Checks',
-    description: 'Orphaned records, missing required fields, import error log. Hygiene for your database, because not all messes are on the shelves.',
+    title: 'Platform Health Checks',
+    description: 'Orphaned records, cross-user inconsistencies, import error log, duplicate publishers. The janitor\'s dashboard for keeping 10,000 collections clean.',
     category: 'admin',
+    status: 'planned',
+  },
+  {
+    title: 'Collection Audit',
+    description: 'Your library, scored. Missing contributors, books without identifiers, provenance gaps, incomplete fields — all surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention."',
+    category: 'cataloging',
     status: 'planned',
   },
 ]

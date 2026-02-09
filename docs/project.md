@@ -345,6 +345,7 @@ status, action_needed, internal_notes
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board (Shipped/Building/Planned), data-driven from lib/roadmap.ts, 26 items with category badges, 2-col card grid, stats bar, witty descriptions. |
 | 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
 | 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
+| 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 
 #### #9 Mobile Responsiveness — Detail
 Currently the app is desktop-only in practice. Key issues:
@@ -383,7 +384,7 @@ Currently the app is desktop-only in practice. Key issues:
 | A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. |
 | A4 | User management improvements | Medium | Medium | Invite codes, approve registrations, user details view. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
-| A6 | Data health checks | Low | Medium | Orphaned records, missing required fields, import error log. |
+| A6 | Platform health checks | Low | Medium | Orphaned records, cross-user inconsistencies, import error log, duplicate publishers. The janitor's dashboard for 10,000 collections. |
 
 ### Under Consideration (Future)
 - Insurance & valuation PDF reports
