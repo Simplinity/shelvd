@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock, MessageSquare } from 'lucide-react'
+import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock, MessageSquare, BarChart3 } from 'lucide-react'
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './users/user-actions'
 import { AnnouncementManager } from './announcements/announcement-manager'
@@ -111,6 +111,13 @@ export default async function AdminPage({
 
       {/* Quick links */}
       <div className="flex gap-3 mb-8">
+        <a
+          href="/admin/stats"
+          className="flex items-center gap-2 px-4 py-2.5 border hover:border-foreground/50 transition-colors text-sm"
+        >
+          <BarChart3 className="w-4 h-4 text-red-600" />
+          System Stats
+        </a>
         <a
           href="/admin/support"
           className="flex items-center gap-2 px-4 py-2.5 border hover:border-foreground/50 transition-colors text-sm"
