@@ -87,6 +87,7 @@ type BookListItem = {
   isbn_10: string | null
   series: string | null
   user_catalog_id: string | null
+  cover_image_url: string | null
   contributors: { name: string; role: string }[]
 }
 
@@ -669,6 +670,7 @@ export default function BooksPage() {
         isbn_10: book.isbn_10,
         series: book.series,
         user_catalog_id: book.user_catalog_id,
+        cover_image_url: book.cover_image_url,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
@@ -795,6 +797,7 @@ export default function BooksPage() {
         isbn_10: book.isbn_10,
         series: book.series,
         user_catalog_id: book.user_catalog_id,
+        cover_image_url: book.cover_image_url,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
@@ -1029,6 +1032,7 @@ export default function BooksPage() {
       isbn_10: book.isbn_10,
       series: book.series,
       user_catalog_id: book.user_catalog_id,
+      cover_image_url: book.cover_image_url,
       contributors: (book.book_contributors || []).map((bc: any) => ({
         name: bc.contributor?.canonical_name || 'Unknown',
         role: bc.role?.name || 'Contributor'
@@ -1983,8 +1987,13 @@ export default function BooksPage() {
                 href={`/books/${book.id}`}
                 className="grid grid-cols-12 gap-4"
               >
-                <div className="col-span-4 text-muted-foreground line-clamp-2">
-                  {book.title}
+                <div className="col-span-4 text-muted-foreground line-clamp-2 flex items-center gap-2">
+                  {book.cover_image_url ? (
+                    <img src={book.cover_image_url} alt="" className="w-6 h-9 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                  ) : (
+                    <div className="w-6 h-9 bg-muted/50 flex-shrink-0 rounded-sm" />
+                  )}
+                  <span>{book.title}</span>
                 </div>
                 <div className="col-span-2 text-muted-foreground truncate">
                   {getAuthors(book.contributors) || '—'}
