@@ -412,6 +412,12 @@ export default async function BookDetailPage({ params }: PageProps) {
 
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
+        {bookData.cover_image_url && (
+          <div className="flex-shrink-0 mr-6 w-24 sm:w-32 h-36 sm:h-48 bg-muted rounded overflow-hidden shadow-md">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={bookData.cover_image_url} alt={`Cover of ${bookData.title}`} className="w-full h-full object-cover" />
+          </div>
+        )}
         <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight mb-2">{bookData.title}</h1>
           {bookData.subtitle && (
