@@ -30,6 +30,7 @@ const ENRICHABLE_FIELDS: {
   { key: 'summary', label: 'Description', bookField: 'summary', lookupField: 'description' },
   { key: 'topic', label: 'Subjects', bookField: 'topic', lookupField: 'subjects' },
   { key: 'bibliography', label: 'Notes', bookField: 'bibliography', lookupField: 'notes' },
+  { key: 'cover_image_url', label: 'Cover Image', bookField: 'cover_image_url', lookupField: 'cover_url' },
 ]
 
 type ComparisonRow = {
@@ -224,7 +225,14 @@ export function EnrichDropdown({
                     {row.status === 'different' && <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 font-medium">DIFFERENT</span>}
                   </div>
                   {row.status === 'different' && row.currentValue && <div className="text-xs text-muted-foreground truncate">Current: {row.currentValue}</div>}
-                  <div className="text-sm truncate">{row.newValue}</div>
+                  {row.key === 'cover_image_url' ? (
+                    <div className="flex items-center gap-2 mt-1">
+                      <img src={row.newValue} alt="" className="w-8 h-12 object-cover bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                      <span className="text-xs text-muted-foreground truncate">{row.newValue}</span>
+                    </div>
+                  ) : (
+                    <div className="text-sm truncate">{row.newValue}</div>
+                  )}
                 </div>
               </label>
             ))}
