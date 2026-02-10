@@ -411,11 +411,12 @@ export function LookupForm({ activeProviders }: Props) {
       {/* Results List */}
       {view === 'results' && (
         <div>
-          {searchError && results.length === 0 && (
+          {results.length === 0 && (
             <div className="border border-border p-6 text-center">
               <X className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
               <p className="font-medium">No results found</p>
-              <p className="text-sm text-muted-foreground mt-1">{searchError}</p>
+              {searchError && <p className="text-sm text-muted-foreground mt-1">{searchError}</p>}
+              {!searchError && <p className="text-sm text-muted-foreground mt-1">Try different search terms or add the book manually.</p>}
               <div className="mt-4">
                 <Link
                   href="/books/add"
