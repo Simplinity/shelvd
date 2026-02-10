@@ -334,7 +334,7 @@ status, action_needed, internal_notes
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
-| 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
+| 6 | Image upload | Medium | High | Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
@@ -347,6 +347,88 @@ status, action_needed, internal_notes
 | 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
+
+#### #6 Image Upload — Detail
+
+**Two-tier approach:**
+
+**Gratis tier: URL-referenties only (€0 kosten)**
+- Store only a URL as text in `books.cover_image_url`
+- During enrichment (OpenLibrary, Google Books), offer to save the cover URL
+- User can also paste a URL manually on the edit form
+- Display via `<img src={url}>`, placeholder on broken URL
+- No storage, no bandwidth, no cost
+
+**Betaald tier: Vercel Blob uploads**
+- Real file uploads (cover, spine, damage, binding, pages)
+- Three versions generated server-side with `sharp`: thumbnail (200px, ~20KB WebP), medium (600px, ~80KB WebP), original (as-is)
+- Gallery component on detail page
+- Quota tracking per user + enforcement
+- Upload button only visible for Pro/Dealer accounts
+
+**Storage: Vercel Blob** (not Supabase Storage, not Cloudflare R2)
+- Native `@vercel/blob` SDK — one npm install + one env var, zero config
+- Built-in CDN caching (~70% hit rate = most views served from cache)
+- S3-backed, 99.999999999% durability
+- Pricing: $0.023/GB storage + $0.05/GB transfer
+
+**Why Vercel Blob over alternatives:**
+
+| | Vercel Blob | Cloudflare R2 | Supabase Storage |
+|---|---|---|---|
+| Opslag/GB/mo | $0.023 | $0.015 | $0.021 |
+| Bandbreedte/GB | $0.050 | GRATIS | $0.090 💀 |
+| Gratis opslag | 1 GB | 10 GB | 1 GB |
+| Integratie | Native SDK | Aparte account + API | Supabase client |
+| CDN cache | Automatisch | Zelf configureren | Geen |
+
+R2 is goedkoper, maar vereist aparte Cloudflare account, CORS config, custom CDN proxy. Vercel Blob is zero-config en de kosten zijn verwaarloosbaar vs revenue. Wisselen naar R2 is pas zinvol boven 1.000+ actieve betalende gebruikers.
+
+**Tier limieten & kostanalyse:**
+
+| Tier | Limiet | Opslag/user/mo | Transfer/user/mo | Totaal/user/mo | Revenue | Marge |
+|---|---|---|---|---|---|---|
+| Gratis | 0 (URL only) | $0 | $0 | $0 | €0 | — |
+| Pro €9.99/mo | 1 GB | $0.023 | $0.011 | $0.034 | €9.99 | 99.7% |
+| Dealer €49/mo | 25 GB | $0.575 | $0.075 | $0.650 | €49 | 98.7% |
+
+Transfer aanname: ~225MB effectief per Pro user/mo, ~1.5GB per Dealer/mo (na 70% cache hit rate).
+
+**Worst case scenario (alles vol + heavy usage):**
+
+| Scenario | Opslag | Transfer | Kosten/mo | Revenue/mo | Marge |
+|---|---|---|---|---|---|
+| 500 Pro × 1GB vol | 500 GB | 112 GB | $17 | €4.995 | 99.7% |
+| 200 Dealer × 25GB vol | 5 TB | 300 GB | $130 | €9.800 | 98.7% |
+| **Samen** | **5.5 TB** | **412 GB** | **~$147** | **€14.795** | **99.0%** |
+
+**Conclusie:** zelfs worst case kost het <1% van de omzet. Image upload is pure winst.
+
+**Database schema:**
+```
+-- Gratis tier: kolom op books tabel
+books.cover_image_url  TEXT  -- externe URL
+
+-- Betaald tier: aparte tabel
+book_images (
+  id              UUID PRIMARY KEY,
+  book_id         UUID REFERENCES books,
+  user_id         UUID REFERENCES auth.users,
+  type            TEXT,  -- 'cover', 'spine', 'damage', 'page', 'binding'
+  storage_key     TEXT,  -- Vercel Blob key
+  thumbnail_key   TEXT,
+  medium_key      TEXT,
+  original_name   TEXT,
+  size_bytes      INTEGER,
+  sort_order      INTEGER DEFAULT 0,
+  created_at      TIMESTAMPTZ DEFAULT now()
+)
+```
+
+**Fasering:**
+- **Fase 1:** URL-only (gratis tier). `cover_image_url` kolom, tonen op detail + lijst, auto-invullen tijdens enrichment. Nul kosten, nul infra.
+- **Fase 2:** Vercel Blob uploads (betaald tier). Upload UI, sharp pipeline, gallery component, quota tracking, paywall check.
+- **Fase 3:** Polish. Foto volgorde drag-and-drop, bulk upload, camera capture op mobile, image zoom/lightbox.
 
 #### #11 Catalog Generator — Detail
 
