@@ -395,6 +395,7 @@ export default function BookAddForm({ referenceData }: Props) {
         if (data.description) updates.summary = data.description
         if (data.subjects && data.subjects.length > 0) updates.topic = data.subjects.join(', ')
         if (data.notes) updates.bibliography = data.notes
+        if (data.cover_url) updates.cover_image_url = data.cover_url
         
         setFormData(prev => ({ ...prev, ...updates }))
         
