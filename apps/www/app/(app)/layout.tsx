@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { BookOpen, Plus, Upload, Search, BarChart3 } from 'lucide-react'
+import { BookOpen, Plus, Upload, Search, ScanBarcode, BarChart3 } from 'lucide-react'
 import { APP_VERSION } from '@/lib/changelog'
 import Link from 'next/link'
 import { getCollectionsWithCounts } from '@/lib/actions/collections'
@@ -89,6 +89,13 @@ export default async function AppLayout({
               >
                 <Search className="w-3.5 h-3.5" />
                 Search
+              </Link>
+              <Link 
+                href="/books/lookup" 
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors flex items-center gap-1.5"
+              >
+                <ScanBarcode className="w-3.5 h-3.5" />
+                Lookup
               </Link>
               <Link 
                 href="/stats" 
