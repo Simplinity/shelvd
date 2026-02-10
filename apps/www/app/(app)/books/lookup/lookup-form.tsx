@@ -199,6 +199,8 @@ export function LookupForm({ activeProviders }: Props) {
       if (item.edition_key) {
         const result = await lookupDetails(item.edition_key, selectedProvider)
         if (result.success && result.data) {
+          // Carry forward cover_url from search result if detail doesn't have one
+          if (!result.data.cover_url && item.cover_url) result.data.cover_url = item.cover_url
           setDetail(result.data)
           setDetailProvider(result.provider)
           setDetailSourceUrl(result.source_url || null)
@@ -212,6 +214,8 @@ export function LookupForm({ activeProviders }: Props) {
       if (isbn) {
         const response = await lookupIsbn(isbn)
         if (response.result?.success && response.result.data) {
+          // Carry forward cover_url from search result if lookup doesn't have one
+          if (!response.result.data.cover_url && item.cover_url) response.result.data.cover_url = item.cover_url
           setDetail(response.result.data)
           setDetailProvider(response.result.provider)
           setDetailSourceUrl(response.result.source_url || null)
