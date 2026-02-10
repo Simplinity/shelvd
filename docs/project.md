@@ -334,7 +334,7 @@ status, action_needed, internal_notes
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
-| 6 | Image upload | Medium | High | Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
+| 6 | Image upload | Medium | High | **Fase 1 in progress (step 2/7).** Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | Medium | Medium | Getting started guide, FAQ, feature documentation, tips. |
@@ -429,6 +429,18 @@ book_images (
 - **Fase 1:** URL-only (gratis tier). `cover_image_url` kolom, tonen op detail + lijst, auto-invullen tijdens enrichment. Nul kosten, nul infra.
 - **Fase 2:** Vercel Blob uploads (betaald tier). Upload UI, sharp pipeline, gallery component, quota tracking, paywall check.
 - **Fase 3:** Polish. Foto volgorde drag-and-drop, bulk upload, camera capture op mobile, image zoom/lightbox.
+
+**Current progress (Fase 1):**
+- ✅ Step 1: Migration 030 — `cover_image_url` TEXT column on books table
+- ✅ Step 2: Types + CRUD — database.types.ts, add form (type + initial state + insert), edit form (update payload)
+- ⏳ Step 3: Add URL input field to edit + add forms
+- Step 4: Display cover on book detail page
+- Step 5: Thumbnail in list view
+- Step 6: Cover in grid view
+- Step 7: Auto-fill cover URL during enrichment (`cover_url` already in BookData type, needs ENRICHABLE_FIELDS entry)
+
+**Infra done:**
+- Vercel Blob store: `shelvd-images` in FRA1, linked to shelvd-www, `BLOB_READ_WRITE_TOKEN` in .env.local + production
 
 #### #11 Catalog Generator — Detail
 
