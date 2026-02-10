@@ -8,6 +8,7 @@ import { lookupByFields, lookupDetails, lookupIsbn } from '@/lib/actions/isbn-lo
 import { createClient } from '@/lib/supabase/client'
 import { isProviderImplemented, supportsFieldSearch } from '@/lib/isbn-providers'
 import type { BookData, ActiveProvider, SearchResultItem, SearchParams } from '@/lib/isbn-providers'
+import { ClickableImage } from '@/components/image-lightbox'
 
 interface Props {
   activeProviders: ActiveProvider[]
@@ -544,9 +545,9 @@ export function LookupForm({ activeProviders }: Props) {
             <div className="flex gap-4">
               {detail.cover_url && (
                 <div className="flex-shrink-0 text-center">
-                  <img
+                  <ClickableImage
                     src={detail.cover_url}
-                    alt={detail.title}
+                    alt={detail.title || 'Cover'}
                     className="w-24 h-auto border border-border"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                   />

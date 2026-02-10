@@ -7,6 +7,7 @@ import { lookupIsbn, lookupByFields, lookupDetails, getActiveProviders } from '@
 import type { BookData, ActiveProvider, SearchResultItem } from '@/lib/isbn-providers/types'
 import { isProviderImplemented, supportsFieldSearch } from '@/lib/isbn-providers'
 import { isSameAuthor, toCatalogFormat } from '@/lib/name-utils'
+import { ClickableImage } from '@/components/image-lightbox'
 
 const ENRICHABLE_FIELDS: {
   key: string; label: string; bookField: string; lookupField: keyof BookData
@@ -227,7 +228,7 @@ export function EnrichDropdown({
                   {row.status === 'different' && row.currentValue && <div className="text-xs text-muted-foreground truncate">Current: {row.currentValue}</div>}
                   {row.key === 'cover_image_url' ? (
                     <div className="flex items-center gap-2 mt-1">
-                      <img src={row.newValue} alt="" className="w-8 h-12 object-cover bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                      <ClickableImage src={row.newValue} alt="" className="w-8 h-12 object-cover bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
                       <span className="text-xs text-muted-foreground truncate">{row.newValue}</span>
                     </div>
                   ) : (

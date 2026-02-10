@@ -5,6 +5,7 @@ import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLin
 import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
+import { ClickableImage } from '@/components/image-lightbox'
 import BookPdfButton from '@/components/book-pdf-button'
 import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
@@ -414,8 +415,7 @@ export default async function BookDetailPage({ params }: PageProps) {
       <div className="flex justify-between items-start mb-8">
         {bookData.cover_image_url && (
           <div className="flex-shrink-0 mr-6 w-24 sm:w-32 h-36 sm:h-48 bg-muted rounded overflow-hidden shadow-md">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={bookData.cover_image_url} alt={`Cover of ${bookData.title}`} className="w-full h-full object-cover" />
+            <ClickableImage src={bookData.cover_image_url} alt={`Cover of ${bookData.title}`} className="w-full h-full object-cover" />
           </div>
         )}
         <div className="flex-1">
