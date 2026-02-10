@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.11.0'
+export const APP_VERSION = '0.12.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,24 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.12.0',
+    date: '2026-02-11',
+    title: 'Cover Images & Enrich Everywhere',
+    description: 'The update where your books finally got their portraits. Also: Enrich escaped from the edit form and is now everywhere it should be.',
+    changes: [
+      { type: 'added', text: 'Cover images — paste a URL or let Enrich find one from Google Books or Open Library. Displayed on detail pages, list view thumbnails, and grid view cards' },
+      { type: 'added', text: 'Image lightbox — click any cover image to view it full-size in a dark overlay. Works on detail page, lookup, and enrich views' },
+      { type: 'added', text: 'Enrich on Add form — no longer limited to editing existing books. Enrich data from external sources while adding a new book' },
+      { type: 'added', text: 'Enrich button on book detail page — one click takes you to edit mode with Enrich auto-triggered. No more hunting through collapsed sections' },
+      { type: 'added', text: 'Lookup in header navigation — always accessible from anywhere in the app, not buried on the books list page' },
+      { type: 'improved', text: 'Cover images auto-fill through the entire lookup flow: search → select → detail → Add to Library. No covers lost in transit' },
+      { type: 'improved', text: 'Sticky header — navigation stays visible while scrolling. Because scrolling back to the top is so 2024' },
+      { type: 'improved', text: 'Cover preview shown prominently at top of add and edit forms, not hidden inside a collapsed section' },
+      { type: 'fixed', text: 'Lookup returning zero results showed a blank page instead of "No results found" message' },
+      { type: 'fixed', text: 'OpenLibrary cover images were lost when navigating from search results to detail view' },
+    ],
+  },
   {
     version: '0.11.0',
     date: '2026-02-09',

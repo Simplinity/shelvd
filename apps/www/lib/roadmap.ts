@@ -199,10 +199,31 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
   {
-    title: 'Image Upload',
-    description: 'Cover photos, spine shots, damage documentation. A gallery for every book. Your insurance company will thank you.',
+    title: 'Image Upload (Phase 2)',
+    description: 'Direct file uploads via Vercel Blob: spine shots, damage photos, multiple images per book. Drag-and-drop, thumbnails, gallery view. Phase 1 (cover URLs) shipped in 0.12.0.',
     category: 'cataloging',
     status: 'planned',
+  },
+  {
+    title: 'Cover Images',
+    description: 'Paste a URL or let Enrich find one. Covers on detail pages, list thumbnails, grid cards. Click to view full-size in a lightbox. Phase 1 of image upload.',
+    category: 'cataloging',
+    status: 'shipped',
+    version: '0.12.0',
+  },
+  {
+    title: 'Enrich Everywhere',
+    description: 'Enrich on add form, one-click from detail page, auto-trigger via URL parameter. Lookup promoted to main navigation. Data enrichment is now a first-class citizen.',
+    category: 'data',
+    status: 'shipped',
+    version: '0.12.0',
+  },
+  {
+    title: 'Sticky Navigation',
+    description: 'Header stays fixed while scrolling. Always one click away from your collection, lookup, or search.',
+    category: 'platform',
+    status: 'shipped',
+    version: '0.12.0',
   },
   {
     title: 'Sharing & Public Catalog',

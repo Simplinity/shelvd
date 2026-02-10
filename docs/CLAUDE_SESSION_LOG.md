@@ -73,6 +73,8 @@
   - Books list page: Lookup button removed (now in nav)
 - **Bug fix: Lookup no results**
   - "No results found" message now shows even when API returns 0 results without error
+- **Sticky header** — app header now stays fixed at top while scrolling (`sticky top-0 z-40`)
+- **Version bump to v0.12.0** — changelog, roadmap, project.md all updated
 
 **Previous session (v0.10.0):**
 - Admin system stats dashboard (A1)
