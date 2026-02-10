@@ -24,26 +24,24 @@ export function ArticleBody({ contentHtml, author, date, readingTime }: ArticleB
       {/* Metadata line with font size control */}
       <div className="px-6">
         <div className="max-w-2xl mx-auto text-sm text-muted-foreground font-mono pb-8 border-b border-border/50">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span>By {author}</span>
-              <span className="text-border">·</span>
-              <time dateTime={date}>
-                {new Date(date + 'T12:00:00').toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </time>
-              <span className="text-border">·</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {readingTime} min
-              </span>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+            <span>By {author}</span>
+            <span className="hidden sm:inline text-border">·</span>
+            <time dateTime={date}>
+              {new Date(date + 'T12:00:00').toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </time>
+            <span className="hidden sm:inline text-border">·</span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {readingTime} min
+            </span>
 
             {/* Font size control */}
-            <div className="flex items-center gap-0 sm:ml-auto">
+            <div className="flex items-center gap-0 mt-2 sm:mt-0 sm:ml-auto">
               <button
                 onClick={() => setSizeIndex(Math.max(0, sizeIndex - 1))}
                 disabled={sizeIndex === 0}
