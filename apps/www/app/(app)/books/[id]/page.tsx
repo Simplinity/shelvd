@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, ScanBarcode } from 'lucide-react'
+import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, Sparkles } from 'lucide-react'
 import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
@@ -467,9 +467,9 @@ export default async function BookDetailPage({ params }: PageProps) {
             />
           )}
           <Button variant="outline" asChild>
-            <Link href="/books/lookup" className="gap-2">
-              <ScanBarcode className="w-4 h-4" />
-              Lookup
+            <Link href={`/books/${id}/edit?enrich=true`} className="gap-2">
+              <Sparkles className="w-4 h-4" />
+              Enrich
             </Link>
           </Button>
           <Button variant="outline" asChild>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
@@ -202,6 +202,7 @@ const textareaClass = "w-full px-3 py-2 text-sm border border-gray-300 dark:bord
 
 export default function BookEditForm({ book, referenceData }: Props) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -276,6 +277,18 @@ export default function BookEditForm({ book, referenceData }: Props) {
       setIsDirty(true)
     },
   )
+
+  // Auto-trigger enrich when navigated with ?enrich=true
+  useEffect(() => {
+    if (searchParams.get('enrich') === 'true') {
+      if (enrich.isbn) {
+        enrich.handleEnrichIsbn()
+      } else {
+        enrich.handleOpenSearch()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Collections state
   type CollectionOption = { id: string; name: string; is_default: boolean }
