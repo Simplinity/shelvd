@@ -394,6 +394,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           width_mm: formData.width_mm || null,
           depth_mm: formData.depth_mm || null,
           weight_grams: formData.weight_grams || null,
+          cover_image_url: formData.cover_image_url || null,
           cover_type: formData.cover_type || null,
           binding_id: formData.binding_id || null,
           format_id: formData.format_id || null,

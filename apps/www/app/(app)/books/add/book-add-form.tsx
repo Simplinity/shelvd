@@ -74,6 +74,7 @@ type FormData = {
   width_mm: string
   depth_mm: string
   weight_grams: string
+  cover_image_url: string
   cover_type: string
   binding_id: string
   format_id: string
@@ -144,6 +145,7 @@ const initialFormData: FormData = {
   width_mm: '',
   depth_mm: '',
   weight_grams: '',
+  cover_image_url: '',
   cover_type: '',
   binding_id: '',
   format_id: '',
@@ -570,6 +572,7 @@ export default function BookAddForm({ referenceData }: Props) {
           width_mm: formData.width_mm ? parseFloat(formData.width_mm) : null,
           depth_mm: formData.depth_mm ? parseFloat(formData.depth_mm) : null,
           weight_grams: formData.weight_grams ? parseFloat(formData.weight_grams) : null,
+          cover_image_url: formData.cover_image_url || null,
           cover_type: formData.cover_type || null,
           binding_id: formData.binding_id || null,
           format_id: formData.format_id || null,
