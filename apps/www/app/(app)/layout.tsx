@@ -54,7 +54,7 @@ export default async function AppLayout({
       )}
 
       {/* Header - Swiss Design */}
-      <header className="bg-white border-b-4 border-red-600">
+      <header className="bg-white border-b-4 border-red-600 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
             {/* Logo */}
