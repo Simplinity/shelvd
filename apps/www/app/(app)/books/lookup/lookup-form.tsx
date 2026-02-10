@@ -542,13 +542,14 @@ export function LookupForm({ activeProviders }: Props) {
           <div className="p-4 space-y-4">
             <div className="flex gap-4">
               {detail.cover_url && (
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 text-center">
                   <img
                     src={detail.cover_url}
                     alt={detail.title}
                     className="w-24 h-auto border border-border"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                   />
+                  <p className="text-[10px] text-green-600 font-medium mt-1">✓ Cover found</p>
                 </div>
               )}
               
