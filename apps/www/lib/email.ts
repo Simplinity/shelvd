@@ -73,6 +73,41 @@ export async function sendAdminResponseEmail(userEmail: string, subject: string,
   }
 }
 
+// ─── Send direct admin email to a user ───
+
+export async function sendAdminEmail(userEmail: string, subject: string, body: string) {
+  console.log('[Email] Sending admin email to:', userEmail)
+  if (!resend) { console.log('[Email] No RESEND_API_KEY configured'); return }
+
+  const html = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;">
+      <div style="border-bottom:3px solid #dc2626;padding:16px 0;">
+        <span style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">SHELVD</span>
+      </div>
+      <div style="padding:24px 0;">
+        <p style="font-size:15px;font-weight:600;margin:0 0 16px;">${subject}</p>
+        <div style="font-size:14px;line-height:1.6;white-space:pre-wrap;">${body}</div>
+      </div>
+      <div style="border-top:1px solid #e5e7eb;padding:12px 0;font-size:11px;color:#9ca3af;">
+        Shelvd &middot; <a href="https://shelvd.org" style="color:#dc2626;">shelvd.org</a>
+      </div>
+    </div>
+  `
+
+  try {
+    const result = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'Shelvd <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: `[Shelvd] ${subject}`,
+      html,
+    })
+    console.log('[Email] Admin email send result:', JSON.stringify(result))
+  } catch (err) {
+    console.error('[Email] Failed to send admin email:', err)
+    throw err
+  }
+}
+
 // ─── Send feedback notification to admins ───
 
 export async function sendFeedbackNotification(data: FeedbackEmailData, adminEmails: string[]) {

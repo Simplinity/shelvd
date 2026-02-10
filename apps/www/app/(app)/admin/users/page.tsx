@@ -135,6 +135,7 @@ export default async function AdminUsersPage({
               <th className="text-left p-3 font-medium">Membership</th>
               <th className="text-left p-3 font-medium">Books</th>
               <th className="text-left p-3 font-medium">Joined</th>
+              <th className="text-left p-3 font-medium">Last Active</th>
               <th className="text-right p-3 font-medium">Actions</th>
             </tr>
           </thead>
@@ -147,12 +148,12 @@ export default async function AdminUsersPage({
                 <tr key={profile.id} className="border-b last:border-b-0 hover:bg-muted/30">
                   <td className="p-3">
                     <div>
-                      <div className="font-medium flex items-center gap-2">
+                      <Link href={`/admin/users/${profile.id}`} className="font-medium flex items-center gap-2 hover:underline">
                         {auth?.email || profile.display_name || 'Unknown'}
                         {profile.is_admin && (
                           <span title="Admin"><Shield className="w-4 h-4 text-primary" /></span>
                         )}
-                      </div>
+                      </Link>
                       {profile.display_name && auth?.email && (
                         <div className="text-xs text-muted-foreground">{profile.display_name}</div>
                       )}
@@ -176,6 +177,21 @@ export default async function AdminUsersPage({
                   </td>
                   <td className="p-3 text-muted-foreground">
                     {formatDate(profile.created_at) || '—'}
+                  </td>
+                  <td className="p-3">
+                    {(() => {
+                      const lastLogin = auth?.last_sign_in_at ? new Date(auth.last_sign_in_at) : null
+                      const days = lastLogin ? Math.floor((Date.now() - lastLogin.getTime()) / 86400000) : null
+                      const color = days === null ? 'bg-gray-400' : days <= 7 ? 'bg-green-500' : days <= 30 ? 'bg-amber-500' : 'bg-red-500'
+                      return (
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${color}`} />
+                          <span className="text-sm text-muted-foreground">
+                            {lastLogin ? formatDate(auth.last_sign_in_at) : 'Never'}
+                          </span>
+                        </div>
+                      )
+                    })()}
                   </td>
                   <td className="p-3 text-right">
                     <UserActions 
