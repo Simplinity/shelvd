@@ -908,6 +908,18 @@ export default function BookAddForm({ referenceData }: Props) {
         </div>
       )}
 
+      {formData.cover_image_url && (
+        <div className="mb-6 flex items-start gap-4 p-4 border border-border bg-muted/20">
+          <div className="flex-shrink-0 w-20 h-28 bg-muted rounded overflow-hidden shadow-sm">
+            <img src={formData.cover_image_url} alt="Cover preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Cover image found</p>
+            <p className="mt-1 truncate max-w-md">{formData.cover_image_url}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button type="button" onClick={toggleAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <ChevronsUpDown className="w-3.5 h-3.5" />
