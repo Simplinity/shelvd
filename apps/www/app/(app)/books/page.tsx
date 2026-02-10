@@ -2069,8 +2069,11 @@ export default function BooksPage() {
               )}
               
               <Link href={`/books/${book.id}`}>
-                <div className="aspect-[3/4] bg-muted flex items-center justify-center p-4">
-                  <div className="text-center">
+                <div className="aspect-[3/4] bg-muted flex items-center justify-center overflow-hidden">
+                  {book.cover_image_url ? (
+                    <img src={book.cover_image_url} alt="" className="w-full h-full object-cover" onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                  ) : null}
+                  <div className={`text-center ${book.cover_image_url ? 'hidden' : ''}`}>
                     <BookOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wide">No cover</p>
                   </div>
