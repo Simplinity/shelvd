@@ -39,6 +39,13 @@
 - **Roadmap**: split "Data Health Checks" into two features:
   - Platform Health Checks (admin) — orphaned records, cross-user inconsistencies
   - Collection Audit (user-facing) — per-user library health score with one-click fixes
+- **Catalog Generator** — new planned feature #11 in roadmap + project.md (full spec)
+- **Support forms simplified** — removed Callback type, renamed Contact → Message, 2-col grid
+- **Auth pages** — added "← Back to website" link
+- **Mobile audit (website/marketing pages)**:
+  - Header: Info dropdown responsive width, "Sign In" hidden on xs
+  - Changelog: version badge flex-wrap, simplified content
+  - All other pages already mobile-ready: responsive grids (md:/sm: breakpoints), prose max-w containers, responsive text sizes
 
 **Previous session (v0.10.0):**
 - Admin system stats dashboard (A1)

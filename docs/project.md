@@ -385,7 +385,11 @@ status, action_needed, internal_notes
 - Main effort is the selection/ordering UI, not the generation itself
 
 #### #9 Mobile Responsiveness — Detail
-Currently the app is desktop-only in practice. Key issues:
+
+**Website/marketing pages: ✅ AUDITED & MOBILE-READY (v0.11.0)**
+All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth) use responsive grids (`md:`/`sm:` breakpoints), max-width prose containers, and responsive text sizes. Fixed: header dropdown width on xs, "Sign In" hidden on xs, changelog badge flex-wrap.
+
+**App pages: NOT yet mobile-ready.** Currently the app is desktop-only in practice. Key issues:
 
 **Critical (app is unusable on mobile without these):**
 - **No mobile navigation**: entire `<nav>` is `hidden md:flex` — below 768px users see only logo + sign out. Need hamburger menu / slide-out drawer with all nav items.
