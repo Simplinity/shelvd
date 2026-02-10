@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, Search, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { EnrichButton, EnrichDropdown, useEnrich } from '@/components/enrich-panel'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -447,6 +448,29 @@ export default function BookAddForm({ referenceData }: Props) {
     }
   }, [referenceData.contributorRoles])
 
+  // Enrich panel
+  const enrichAuthorName = contributors[0]?.contributorName || ''
+  const enrichContributorNames = contributors.map(c => c.contributorName)
+  const enrich = useEnrich(
+    formData,
+    enrichAuthorName,
+    enrichContributorNames,
+    (updates) => {
+      setFormData(prev => ({ ...prev, ...updates } as any))
+    },
+    (authorNames) => {
+      const authorRole = referenceData.contributorRoles.find(r => r.name.toLowerCase() === 'author')
+      if (!authorRole) return
+      const newContribs: LocalContributor[] = authorNames.map((name, i) => ({
+        tempId: `enrich-${Date.now()}-${i}`,
+        contributorName: name,
+        roleId: authorRole.id,
+        roleName: authorRole.name,
+      }))
+      setContributors(prev => [...prev, ...newContribs])
+    },
+  )
+
   // Fetch collections for multi-select
   useEffect(() => {
     const fetchCollections = async () => {
@@ -878,9 +902,7 @@ export default function BookAddForm({ referenceData }: Props) {
           <h1 className="text-2xl font-bold">Add Book</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" asChild>
-            <Link href="/books/lookup"><Search className="w-4 h-4 mr-2" />Lookup</Link>
-          </Button>
+          <EnrichButton isbn={enrich.isbn} loading={enrich.loading} onEnrichIsbn={enrich.handleEnrichIsbn} onOpenSearch={enrich.handleOpenSearch} />
           <Button type="button" variant="outline" asChild>
             <Link href="/books" onClick={handleCancel}>Cancel</Link>
           </Button>
@@ -893,6 +915,22 @@ export default function BookAddForm({ referenceData }: Props) {
           </Button>
         </div>
       </div>
+
+      {/* Enrich dropdown panel */}
+      <EnrichDropdown
+        showPanel={enrich.showPanel} mode={enrich.mode} loading={enrich.loading}
+        error={enrich.error} applied={enrich.applied} provider={enrich.provider}
+        rows={enrich.rows} newCount={enrich.newCount} diffCount={enrich.diffCount} checkedCount={enrich.checkedCount}
+        searchTitle={enrich.searchTitle} setSearchTitle={enrich.setSearchTitle}
+        searchAuthor={enrich.searchAuthor} setSearchAuthor={enrich.setSearchAuthor}
+        selectedProvider={enrich.selectedProvider} setSelectedProvider={enrich.setSelectedProvider}
+        providers={enrich.providers}
+        searching={enrich.searching} searchResults={enrich.searchResults} loadingDetail={enrich.loadingDetail}
+        onClose={enrich.handleClose} onFieldSearch={enrich.handleFieldSearch}
+        onPickResult={enrich.handlePickResult} onToggleRow={enrich.toggleRow}
+        onSelectAllNew={enrich.selectAllNew} onApply={enrich.handleApply}
+        onSwitchToSearch={enrich.handleSwitchToSearch}
+      />
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">
