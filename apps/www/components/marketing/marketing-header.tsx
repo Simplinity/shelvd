@@ -62,7 +62,7 @@ export function MarketingHeader() {
 
           {/* Dropdown Panel */}
           {open && (
-            <div className="absolute right-0 top-full mt-2 w-72 bg-background border shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-72 max-w-72 bg-background border shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="p-2">
                 {infoPages.map((page) => {
                   const Icon = page.icon
@@ -98,7 +98,7 @@ export function MarketingHeader() {
           <>
             <Link 
               href="/login" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:inline text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Sign In
             </Link>

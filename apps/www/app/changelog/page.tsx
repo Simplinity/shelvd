@@ -53,13 +53,11 @@ export default function ChangelogPage() {
       {/* Current version badge */}
       <section className="px-6 pb-8">
         <div className="max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-3 px-5 py-3 bg-muted/30 border">
+          <div className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 bg-muted/30 border">
             <span className="text-xs uppercase tracking-wide text-muted-foreground">Current version</span>
             <span className="font-mono font-bold text-primary">{APP_VERSION}</span>
-            <span className="text-xs text-muted-foreground">·</span>
-            <span className="text-xs text-muted-foreground">{CHANGELOG.length} releases in 12 days</span>
-            <span className="text-xs text-muted-foreground">·</span>
-            <span className="text-xs text-muted-foreground">325 commits</span>
+            <span className="hidden sm:inline text-xs text-muted-foreground">·</span>
+            <span className="text-xs text-muted-foreground">{CHANGELOG.length} releases</span>
           </div>
         </div>
       </section>
