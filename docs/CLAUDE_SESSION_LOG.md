@@ -45,7 +45,9 @@
 - **Mobile audit (website/marketing pages)**:
   - Header: Info dropdown responsive width, "Sign In" hidden on xs
   - Changelog: version badge flex-wrap, simplified content
+  - Blog article: metadata stacks vertically on mobile (author / date / time each on own line)
   - All other pages already mobile-ready: responsive grids (md:/sm: breakpoints), prose max-w containers, responsive text sizes
+  - **Result: all website/marketing pages are now mobile-ready ✅**
 
 **Previous session (v0.10.0):**
 - Admin system stats dashboard (A1)

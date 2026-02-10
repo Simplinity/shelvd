@@ -344,7 +344,7 @@ status, action_needed, internal_notes
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases (0.1.0–0.9.0), data-driven from lib/changelog.ts, timeline design, color-coded change types, version badge in app header. |
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board (Shipped/Building/Planned), data-driven from lib/roadmap.ts, 26 items with category badges, 2-col card grid, stats bar, witty descriptions. |
 | 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
-| 9 | Mobile responsiveness | High | High | Full mobile audit and rework. See details below. |
+| 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 
@@ -387,7 +387,7 @@ status, action_needed, internal_notes
 #### #9 Mobile Responsiveness — Detail
 
 **Website/marketing pages: ✅ AUDITED & MOBILE-READY (v0.11.0)**
-All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth) use responsive grids (`md:`/`sm:` breakpoints), max-width prose containers, and responsive text sizes. Fixed: header dropdown width on xs, "Sign In" hidden on xs, changelog badge flex-wrap.
+All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth) are mobile-ready. Responsive grids (`md:`/`sm:` breakpoints), max-width prose containers, responsive text sizes. Fixes applied: header dropdown width on xs, "Sign In" hidden on xs, changelog badge flex-wrap, blog article metadata stacks vertically on mobile (author / date / reading time each on own line).
 
 **App pages: NOT yet mobile-ready.** Currently the app is desktop-only in practice. Key issues:
 
