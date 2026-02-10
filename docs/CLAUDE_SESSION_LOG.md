@@ -48,18 +48,31 @@
   - Blog article: metadata stacks vertically on mobile (author / date / time each on own line)
   - All other pages already mobile-ready: responsive grids (md:/sm: breakpoints), prose max-w containers, responsive text sizes
   - **Result: all website/marketing pages are now mobile-ready ✅**
-- **Image Upload (#6) — IN PROGRESS (Fase 1: URL-only)**
+- **Image Upload (#6) — Fase 1 COMPLETE ✅**
   - Vercel Blob store created: `shelvd-images` in FRA1 (Frankfurt), linked to shelvd-www project
   - `BLOB_READ_WRITE_TOKEN` set in `.env.local` + auto-injected in production
   - `@vercel/blob` SDK installed
   - Full spec written in project.md (two-tier approach, cost analysis, DB schema, phasing)
   - Step 1 ✅: Migration 030 — `cover_image_url` TEXT column on books table
   - Step 2 ✅: Types + CRUD — database.types.ts, add form (type + initial state + insert), edit form (update payload)
-  - Step 3 ⏳ NEXT: Add URL input field to edit form (and add form)
-  - Step 4: Display cover on book detail page
-  - Step 5: Thumbnail in list view
-  - Step 6: Cover in grid view
-  - Step 7: Auto-fill cover URL during enrichment (cover_url already in BookData type + ENRICHABLE_FIELDS needs entry)
+  - Step 3 ✅: URL input field on edit + add forms (with live thumbnail preview)
+  - Step 4 ✅: Cover image on book detail page (left of title, responsive)
+  - Step 5 ✅: Thumbnail in list view (24×36px next to title, placeholder when empty)
+  - Step 6 ✅: Cover in grid view (fills card, fallback to BookOpen icon)
+  - Step 7 ✅: Auto-fill cover URL during enrichment (ENRICHABLE_FIELDS + cover_url)
+  - Extra fixes:
+    - Lookup→Add: cover_url from sessionStorage now mapped to cover_image_url
+    - Lookup detail: cover_url preserved from search results (fallback when editions API lacks covers)
+    - Cover preview shown prominently at top of add + edit forms (not hidden in collapsed section)
+    - "✓ Cover found" label in lookup detail view
+    - Clickable covers with lightbox overlay (detail page, lookup, enrich)
+- **Lookup/Enrich UX reorganisation**
+  - Lookup moved to header nav (between Search and Stats)
+  - Book detail page: Lookup button → Enrich button (links to `/edit?enrich=true`, auto-triggers)
+  - Add form: Lookup link → full Enrich panel (button + dropdown, same as edit form)
+  - Books list page: Lookup button removed (now in nav)
+- **Bug fix: Lookup no results**
+  - "No results found" message now shows even when API returns 0 results without error
 
 **Previous session (v0.10.0):**
 - Admin system stats dashboard (A1)
