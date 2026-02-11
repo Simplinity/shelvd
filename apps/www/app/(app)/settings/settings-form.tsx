@@ -258,15 +258,16 @@ function AddressSection({ profile }: { profile: any }) {
 
 // --- 4. SUBSCRIPTION ---
 function SubscriptionSection({ profile }: { profile: any }) {
-  const tier = profile?.membership_tier || 'free'
+  const tier = profile?.membership_tier || 'collector'
   const isLifetime = profile?.is_lifetime_free
+  const tierDisplay: Record<string, string> = { collector: 'Collector', collector_pro: 'Collector Pro', dealer: 'Dealer' }
 
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Subscription</h2>
       <div className="flex items-center gap-3">
-        <span className="h-10 px-4 bg-foreground text-background text-sm font-medium inline-flex items-center capitalize">
-          {tier}
+        <span className="h-10 px-4 bg-foreground text-background text-sm font-medium inline-flex items-center">
+          {tierDisplay[tier] || tier}
         </span>
         {isLifetime && (
           <span className="h-10 px-3 bg-green-50 text-green-700 text-sm font-medium border border-green-200 inline-flex items-center">

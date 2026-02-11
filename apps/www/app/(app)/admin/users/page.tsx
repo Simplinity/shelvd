@@ -186,7 +186,7 @@ export default async function AdminUsersPage({
                   </td>
                   <td className="p-3">
                     <div className="flex items-center gap-2">
-                      <span className="capitalize">{profile.membership_tier}</span>
+                      <span>{{ collector: 'Collector', collector_pro: 'Collector Pro', dealer: 'Dealer' }[profile.membership_tier as string] || profile.membership_tier}</span>
                       {profile.is_lifetime_free && (
                         <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5">
                           Lifetime Pro

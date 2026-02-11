@@ -787,7 +787,7 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 | 1 | Migration 040: `tier_features` + `tier_limits` tables, seed data, rename membership_tier values | ✅ Done |
 | 2 | `hasFeature()` server + `useFeature()`/`useTierLimit()`/`useTier()` client hooks + TierProvider | ✅ Done |
 | 3 | ~~Migration: rename membership_tier values~~ | ✅ Done (merged into step 1) |
-| 4 | UI gating: upgrade hints on locked features (component + styling) | Medium |
+| 4 | UI gating: FeatureGate, UpgradeHint, LimitGate components + tier display names | ✅ Done |
 | 5 | Landing page + pricing: update tier names, feature lists | ✅ Done |
 | 6 | Admin: tier management UI (view/edit feature assignments per tier) | Medium |
 | 7 | Stripe integration (separate feature, depends on this) | High |

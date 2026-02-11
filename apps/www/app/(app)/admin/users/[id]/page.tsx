@@ -178,8 +178,8 @@ export default async function AdminUserDetailPage({
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">Membership</span>
-                <p className="font-medium capitalize mt-0.5">
-                  {profile.membership_tier}
+                <p className="font-medium mt-0.5">
+                  {{ collector: 'Collector', collector_pro: 'Collector Pro', dealer: 'Dealer' }[profile.membership_tier as string] || profile.membership_tier}
                   {profile.is_lifetime_free && (
                     <span className="ml-2 text-xs bg-green-100 text-green-700 px-1.5 py-0.5">Lifetime Pro</span>
                   )}
@@ -333,7 +333,7 @@ export default async function AdminUserDetailPage({
             email={authData.email || ''}
             currentStatus={profile.status || 'active'}
             currentNotes={profile.notes || ''}
-            membershipTier={profile.membership_tier || 'free'}
+            membershipTier={profile.membership_tier || 'collector'}
             isLifetimeFree={profile.is_lifetime_free || false}
             isAdmin={profile.is_admin || false}
           />
