@@ -13,6 +13,7 @@
 - ✅ Landing page pricing updated (3 real tiers + early access banner)
 - ✅ "Lifetime free" → "Lifetime Collector Pro" everywhere (11 files)
 - ✅ Step 1: Migration 040 — tier_features table (19 features × 3 tiers), tier_limits table (books/tags/storage/bandwidth), rename membership_tier (free→collector, pro→collector_pro)
+- ✅ Step 2: hasFeature() server + useFeature()/useTierLimit()/useTier() client hooks + TierProvider in app layout
 
 **Previous task: User profile expansion ✅**
 - ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles

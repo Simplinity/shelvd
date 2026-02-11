@@ -7,6 +7,8 @@ import { getCollectionsWithCounts } from '@/lib/actions/collections'
 import { CollectionNav } from '@/components/collection-nav'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { UserMenu } from '@/components/user-menu'
+import { getUserTierData } from '@/lib/tier'
+import { TierProviderWrapper } from '@/components/tier-provider-wrapper'
 
 export default async function AppLayout({
   children,
@@ -36,6 +38,9 @@ export default async function AppLayout({
     .from('books')
     .select('*', { count: 'exact', head: true })
 
+  // Tier data for feature gating
+  const tierData = await getUserTierData(user.id)
+
   // Active announcements
   const now = new Date().toISOString()
   const { data: announcements } = await supabase
@@ -47,6 +52,7 @@ export default async function AppLayout({
     .order('created_at', { ascending: false })
 
   return (
+    <TierProviderWrapper tierData={tierData}>
     <div className="min-h-screen bg-background">
       {/* Announcements */}
       {announcements && announcements.length > 0 && (
@@ -126,5 +132,6 @@ export default async function AppLayout({
         {children}
       </main>
     </div>
+    </TierProviderWrapper>
   )
 }
