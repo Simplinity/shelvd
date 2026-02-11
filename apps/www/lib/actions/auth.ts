@@ -48,7 +48,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
     return { error: 'Password must be at least 8 characters' }
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -64,6 +64,19 @@ export async function signup(formData: FormData): Promise<AuthResult> {
       return { error: 'This email is already registered' }
     }
     return { error: 'Something went wrong. Please try again.' }
+  }
+
+  // Redeem invite code if provided (non-blocking — signup succeeds regardless)
+  const inviteCode = (formData.get('inviteCode') as string)?.trim()
+  if (inviteCode && data?.user?.id) {
+    try {
+      await supabase.rpc('redeem_invite_code', {
+        p_code: inviteCode,
+        p_user_id: data.user.id,
+      })
+    } catch {
+      // Silent — code redemption should never block signup
+    }
   }
 
   return { success: true }

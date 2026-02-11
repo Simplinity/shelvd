@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { signup } from '@/lib/actions/auth'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,8 @@ function SubmitButton() {
 }
 
 export default function SignupPage() {
+  const searchParams = useSearchParams()
+  const prefillCode = searchParams.get('code') || ''
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
@@ -124,6 +127,21 @@ export default function SignupPage() {
             className="h-11"
           />
           <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="inviteCode" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Invite Code <span className="font-normal normal-case tracking-normal">(optional)</span>
+          </Label>
+          <Input
+            id="inviteCode"
+            name="inviteCode"
+            type="text"
+            placeholder="e.g. EARLYBIRD"
+            defaultValue={prefillCode}
+            autoComplete="off"
+            className="h-11 uppercase"
+          />
         </div>
 
         <SubmitButton />
