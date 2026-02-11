@@ -111,10 +111,12 @@ export default async function AdminUserDetailPage({
   }
 
   const initials = (profile.display_name || authData.email || '?')
-    .split(/[\s@]/)
+    .replace(/[^a-zA-Z\s@]/g, '')
+    .split(/[\s@]+/)
+    .filter(Boolean)
     .slice(0, 2)
     .map(s => s[0]?.toUpperCase() || '')
-    .join('')
+    .join('') || '?'
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
