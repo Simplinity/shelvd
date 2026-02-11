@@ -784,11 +784,11 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 
 | Step | Description | Effort |
 |------|-------------|--------|
-| 1 | Migration: `tier_features` table + seed with initial feature assignments | Low |
+| 1 | Migration 040: `tier_features` + `tier_limits` tables, seed data, rename membership_tier values | ✅ Done |
 | 2 | `hasFeature()` server utility + `useFeature()` client hook | Low |
-| 3 | Migration: rename `membership_tier` values (`free`→`collector`, `pro`→`collector_pro`) | Low |
+| 3 | ~~Migration: rename membership_tier values~~ | ✅ Done (merged into step 1) |
 | 4 | UI gating: upgrade hints on locked features (component + styling) | Medium |
-| 5 | Landing page + pricing: update tier names, feature lists | Low |
+| 5 | Landing page + pricing: update tier names, feature lists | ✅ Done |
 | 6 | Admin: tier management UI (view/edit feature assignments per tier) | Medium |
 | 7 | Stripe integration (separate feature, depends on this) | High |
 

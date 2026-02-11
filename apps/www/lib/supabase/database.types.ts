@@ -1506,6 +1506,51 @@ export type Database = {
         }
         Relationships: []
       }
+      tier_features: {
+        Row: {
+          created_at: string | null
+          enabled: boolean
+          feature: string
+          id: string
+          tier: string
+        }
+        Insert: {
+          created_at?: string | null
+          enabled?: boolean
+          feature: string
+          id?: string
+          tier: string
+        }
+        Update: {
+          created_at?: string | null
+          enabled?: boolean
+          feature?: string
+          id?: string
+          tier?: string
+        }
+        Relationships: []
+      }
+      tier_limits: {
+        Row: {
+          id: string
+          limit_key: string
+          limit_value: number
+          tier: string
+        }
+        Insert: {
+          id?: string
+          limit_key: string
+          limit_value: number
+          tier: string
+        }
+        Update: {
+          id?: string
+          limit_key?: string
+          limit_value?: number
+          tier?: string
+        }
+        Relationships: []
+      }
       user_active_link_types: {
         Row: {
           created_at: string | null

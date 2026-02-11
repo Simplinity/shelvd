@@ -6,10 +6,13 @@
 
 **App version: v0.13.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, and invite codes complete. 9 lookup providers active. 37 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
-**Current task: #14 Tier System & Feature Gating — documentation only (planning)**
-- ✅ Docs: project.md feature #14 entry + full detail section (tiers, feature table, distribution matrix, 7-step plan), roadmap.ts (planned)
-- ✅ Feature distribution finalized: tier overview (limits, storage, bandwidth, support), feature matrix (19 features), cost analysis, infrastructure safeguards
+**Current task: #14 Tier System & Feature Gating — implementation**
+- ✅ Docs: project.md feature #14 entry + full detail section, roadmap.ts
+- ✅ Feature distribution finalized (19 features, 3 tiers, cost analysis)
 - ✅ #15 Community added to feature table (scope TBD)
+- ✅ Landing page pricing updated (3 real tiers + early access banner)
+- ✅ "Lifetime free" → "Lifetime Collector Pro" everywhere (11 files)
+- ✅ Step 1: Migration 040 — tier_features table (19 features × 3 tiers), tier_limits table (books/tags/storage/bandwidth), rename membership_tier (free→collector, pro→collector_pro)
 
 **Previous task: User profile expansion ✅**
 - ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles
