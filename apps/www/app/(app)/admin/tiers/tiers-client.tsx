@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { toggleTierFeature, updateTierLimit } from '@/lib/actions/tiers'
+import { toggleTierFeature, addTierFeature, removeTierFeature, updateTierLimit } from '@/lib/actions/tiers'
 import { TIER_NAMES, FEATURE_LABELS } from '@/lib/tier-config'
 import { Check, X, Loader2 } from 'lucide-react'
 
@@ -65,24 +65,32 @@ export function TiersClient({
 
   const allLimitKeys = [...new Set(limits.map(l => l.limit_key))].sort()
 
-  function handleToggle(tier: string, feature: string) {
+  function handleCellClick(tier: string, feature: string) {
     const key = `${tier}:${feature}`
-    const current = featureMap.get(key)
-    if (current === undefined) return // feature not assigned to this tier
+    const exists = featureMap.has(key)
+    const enabled = featureMap.get(key) ?? false
 
-    const newEnabled = !current
     setLoadingCell(key)
 
     startTransition(async () => {
-      const result = await toggleTierFeature(tier, feature, newEnabled)
-      if (result.success) {
-        setFeatures(prev =>
-          prev.map(f =>
-            f.tier === tier && f.feature === feature
-              ? { ...f, enabled: newEnabled }
-              : f
-          )
-        )
+      if (!exists) {
+        // — → ✓ (add feature to tier)
+        const result = await addTierFeature(tier, feature)
+        if (result.success) {
+          setFeatures(prev => [...prev, { id: `${tier}-${feature}`, tier, feature, enabled: true }])
+        }
+      } else if (enabled) {
+        // ✓ → ✕ (disable)
+        const result = await toggleTierFeature(tier, feature, false)
+        if (result.success) {
+          setFeatures(prev => prev.map(f => f.tier === tier && f.feature === feature ? { ...f, enabled: false } : f))
+        }
+      } else {
+        // ✕ → — (remove from tier)
+        const result = await removeTierFeature(tier, feature)
+        if (result.success) {
+          setFeatures(prev => prev.filter(f => !(f.tier === tier && f.feature === feature)))
+        }
       }
       setLoadingCell(null)
     })
@@ -145,21 +153,22 @@ export function TiersClient({
 
                     return (
                       <td key={tier} className="p-3 text-center">
-                        {!exists ? (
-                          <span className="text-muted-foreground/30">—</span>
-                        ) : loading ? (
+                        {loading ? (
                           <Loader2 className="w-4 h-4 animate-spin mx-auto text-muted-foreground" />
                         ) : (
                           <button
                             type="button"
-                            onClick={() => handleToggle(tier, feature)}
+                            onClick={() => handleCellClick(tier, feature)}
                             className={`inline-flex items-center justify-center w-8 h-8 transition-colors ${
-                              enabled
-                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                : 'bg-red-50 text-red-400 hover:bg-red-100'
+                              !exists
+                                ? 'text-muted-foreground/30 hover:bg-green-50 hover:text-green-400'
+                                : enabled
+                                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                  : 'bg-red-50 text-red-400 hover:bg-red-100'
                             }`}
+                            title={!exists ? 'Click to add' : enabled ? 'Click to disable' : 'Click to remove'}
                           >
-                            {enabled ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                            {!exists ? <span className="text-sm">—</span> : enabled ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
                           </button>
                         )}
                       </td>
@@ -171,7 +180,7 @@ export function TiersClient({
           </table>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Click a cell to toggle. <span className="text-green-700">✓</span> = enabled, <span className="text-red-400">✕</span> = disabled, — = not assigned to tier.
+          Click to cycle: <span className="text-muted-foreground">—</span> → <span className="text-green-700">✓</span> → <span className="text-red-400">✕</span> → <span className="text-muted-foreground">—</span>
         </p>
       </section>
 
