@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, Loader2, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LimitGate } from '@/components/feature-gate'
 import { createClient } from '@/lib/supabase/client'
 
 const TAG_COLORS = [
@@ -127,10 +128,12 @@ export function TagsManager() {
           <h2 className="text-3xl font-bold tracking-tight mb-2">Manage Tags</h2>
           <p className="text-muted-foreground">Create, rename, recolor, or delete tags. Deleting a tag removes it from all books.</p>
         </div>
-        <Button onClick={() => setShowCreate(true)} disabled={showCreate}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Tag
-        </Button>
+        <LimitGate limitKey="max_tags" currentCount={tags.length}>
+          <Button onClick={() => setShowCreate(true)} disabled={showCreate}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Tag
+          </Button>
+        </LimitGate>
       </div>
 
       {/* Create form */}
