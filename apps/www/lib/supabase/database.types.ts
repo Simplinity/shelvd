@@ -1197,6 +1197,83 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_code_redemptions: {
+        Row: {
+          code_id: string
+          id: string
+          redeemed_at: string
+          user_id: string
+        }
+        Insert: {
+          code_id: string
+          id?: string
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          code_id?: string
+          id?: string
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invite_code_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invite_codes: {
+        Row: {
+          benefit_days: number | null
+          benefit_type: string
+          code: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          label: string | null
+          max_uses: number | null
+          source_name: string | null
+          source_type: string
+          times_used: number
+        }
+        Insert: {
+          benefit_days?: number | null
+          benefit_type?: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          max_uses?: number | null
+          source_name?: string | null
+          source_type?: string
+          times_used?: number
+        }
+        Update: {
+          benefit_days?: number | null
+          benefit_type?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          max_uses?: number | null
+          source_name?: string | null
+          source_type?: string
+          times_used?: number
+        }
+        Relationships: []
+      }
       isbn_providers: {
         Row: {
           base_url: string | null
@@ -1518,6 +1595,7 @@ export type Database = {
         Row: {
           admin_role: string | null
           avatar_url: string | null
+          benefit_expires_at: string | null
           city: string | null
           country: string | null
           created_at: string | null
@@ -1526,6 +1604,7 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          invite_code_id: string | null
           is_admin: boolean | null
           is_lifetime_free: boolean | null
           items_per_page_grid: number | null
@@ -1544,6 +1623,7 @@ export type Database = {
         Insert: {
           admin_role?: string | null
           avatar_url?: string | null
+          benefit_expires_at?: string | null
           city?: string | null
           country?: string | null
           created_at?: string | null
@@ -1552,6 +1632,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
+          invite_code_id?: string | null
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
           items_per_page_grid?: number | null
@@ -1570,6 +1651,7 @@ export type Database = {
         Update: {
           admin_role?: string | null
           avatar_url?: string | null
+          benefit_expires_at?: string | null
           city?: string | null
           country?: string | null
           created_at?: string | null
@@ -1578,6 +1660,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          invite_code_id?: string | null
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
           items_per_page_grid?: number | null
@@ -1593,7 +1676,15 @@ export type Database = {
           updated_at?: string | null
           vat_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_invite_code_id_fkey"
+            columns: ["invite_code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_stats: {
         Row: {
@@ -1724,6 +1815,33 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_code_redemptions_for_admin: {
+        Args: { p_code_id: string }
+        Returns: {
+          book_count: number
+          redeemed_at: string
+          user_email: string
+          user_id: string
+          user_status: string
+        }[]
+      }
+      get_invite_codes_for_admin: {
+        Args: never
+        Returns: {
+          benefit_days: number
+          benefit_type: string
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          label: string
+          max_uses: number
+          source_name: string
+          source_type: string
+          times_used: number
+        }[]
+      }
       get_platform_stats_for_admin: {
         Args: never
         Returns: {
@@ -1824,6 +1942,10 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      redeem_invite_code: {
+        Args: { p_code: string; p_user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       book_status:
