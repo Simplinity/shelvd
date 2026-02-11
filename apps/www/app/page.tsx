@@ -541,39 +541,57 @@ export default function Home() {
             We’re in early access. The first 100 users get lifetime Collector Pro — no credit card, no catch.
           </p>
 
+          {/* Early Access Banner */}
+          <div className="border-2 border-primary bg-primary/5 p-6 mb-10 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-bold uppercase tracking-wider text-primary">Early Access</span>
+              <Sparkles className="w-4 h-4 text-primary" />
+            </div>
+            <p className="text-sm">
+              The first 100 users get <span className="font-semibold">lifetime Collector Pro</span> — all Pro features, forever, no credit card.
+            </p>
+            <Button asChild className="h-10 px-8 text-sm font-semibold uppercase tracking-wide mt-4">
+              <Link href="/signup">
+                Claim Your Spot <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto items-stretch">
-            {/* Free tier */}
-            <div className="border-2 border-primary bg-background p-8 text-left relative flex flex-col">
-              <div className="absolute -top-3 left-6 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1">
-                Now available
-              </div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Early Access</p>
+            {/* Collector */}
+            <div className="border bg-background p-8 text-left flex flex-col">
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Collector</p>
               <p className="text-4xl font-bold mb-1">Free</p>
-              <p className="text-xs text-muted-foreground mb-6">Lifetime Collector Pro for the first 100 users</p>
+              <p className="text-xs text-muted-foreground mb-6">For every book lover</p>
               <ul className="space-y-3 flex-1">
-                <PricingItem>5.000 books, unlimited tags</PricingItem>
-                <PricingItem>All Collector Pro features</PricingItem>
-                <PricingItem>Image uploads (5 GB)</PricingItem>
-                <PricingItem>No credit card required</PricingItem>
+                <PricingItem>Up to 500 books</PricingItem>
+                <PricingItem>Full cataloging &amp; provenance</PricingItem>
+                <PricingItem>Book lookup &amp; Library Enrich</PricingItem>
+                <PricingItem>CSV import &amp; export</PricingItem>
+                <PricingItem>20 custom tags</PricingItem>
               </ul>
-              <Button asChild className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8">
+              <Button asChild variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8">
                 <Link href="/signup">
-                  Claim Your Spot <ArrowRight className="ml-2 w-4 h-4" />
+                  Get Started <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </Button>
             </div>
 
             {/* Collector Pro */}
-            <div className="border bg-background p-8 text-left flex flex-col">
-              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Collector Pro</p>
-              <p className="text-4xl font-bold mb-1">€9.99<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
+            <div className="border-2 border-primary bg-background p-8 text-left relative flex flex-col">
+              <div className="absolute -top-3 left-6 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1">
+                Most popular
+              </div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Collector Pro</p>
+              <p className="text-4xl font-bold mb-1">&euro;9.99<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For serious collectors</p>
               <ul className="space-y-3 flex-1">
-                <PricingItem muted>5.000 books, unlimited tags</PricingItem>
-                <PricingItem muted>5 GB image storage</PricingItem>
-                <PricingItem muted>PDF inserts &amp; public sharing</PricingItem>
-                <PricingItem muted>Collection Audit &amp; advanced stats</PricingItem>
-                <PricingItem muted>Standard support</PricingItem>
+                <PricingItem>Up to 5.000 books</PricingItem>
+                <PricingItem>Unlimited tags</PricingItem>
+                <PricingItem>5 GB image uploads</PricingItem>
+                <PricingItem>PDF inserts &amp; public sharing</PricingItem>
+                <PricingItem>Collection Audit &amp; advanced stats</PricingItem>
               </ul>
               <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon
@@ -583,7 +601,7 @@ export default function Home() {
             {/* Dealer */}
             <div className="border bg-background p-8 text-left flex flex-col">
               <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">Dealer</p>
-              <p className="text-4xl font-bold mb-1">€49<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
+              <p className="text-4xl font-bold mb-1">&euro;49<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For professional dealers</p>
               <ul className="space-y-3 flex-1">
                 <PricingItem muted>Unlimited books</PricingItem>
