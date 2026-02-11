@@ -129,7 +129,7 @@
 ### 🔴 Urgent — Do Next
 | # | Feature | Effort | Description |
 |---|---------|--------|-------------|
-| 14.g1 | Book limit enforcement | Low | `LimitGate` op Add Book — Collector stopt bij 500, Pro bij 5000. Check book count vs tier limit. |
+| ~~14.g1~~ | ~~Book limit enforcement~~ | ~~Low~~ | ✅ Done — LimitGate op Add Book knop + server-side redirect op /books/add |
 | 14.g2 | Tag limit enforcement | Low | Collector max 20 tags. Blokkeer aanmaken nieuwe tags boven limiet. |
 | 14.g3 | PDF inserts gating | Low | `FeatureGate` rond PDF knoppen op book detail. Collector ziet upgrade hint. |
 | 9 | Mobile responsiveness (app) | High | Website ✅. App: hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice. |
