@@ -151,3 +151,74 @@ export async function getActivityPageForAdmin(options?: {
     return { data: [], total: 0, error: 'Failed to fetch activity' }
   }
 }
+
+// ─── User: fetch own activity (RLS-scoped) ───
+
+export async function getMyActivity(options?: {
+  limit?: number
+  offset?: number
+  category?: string
+  search?: string
+}): Promise<{ data: ActivityLogEntry[]; total: number; error?: string }> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { data: [], total: 0, error: 'Not authenticated' }
+
+    const limit = options?.limit ?? 50
+    const offset = options?.offset ?? 0
+
+    let query = supabase
+      .from('activity_log')
+      .select('*', { count: 'exact' })
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (options?.category) query = query.eq('category', options.category)
+    if (options?.search) query = query.ilike('entity_label', `%${options.search}%`)
+
+    const { data, count, error } = await query
+
+    if (error) return { data: [], total: 0, error: error.message }
+
+    const entries: ActivityLogEntry[] = (data ?? []).map(row => ({
+      ...row,
+      user_email: null,
+      metadata: (row.metadata as Record<string, unknown>) ?? {},
+    }))
+
+    return { data: entries, total: count ?? 0 }
+  } catch {
+    return { data: [], total: 0, error: 'Failed to fetch activity' }
+  }
+}
+
+// ─── User: fetch activity for a specific book ───
+
+export async function getBookActivity(bookId: string, options?: {
+  limit?: number
+}): Promise<{ data: ActivityLogEntry[]; error?: string }> {
+  try {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+      .from('activity_log')
+      .select('*')
+      .eq('entity_id', bookId)
+      .order('created_at', { ascending: false })
+      .limit(options?.limit ?? 20)
+
+    if (error) return { data: [], error: error.message }
+
+    const entries: ActivityLogEntry[] = (data ?? []).map(row => ({
+      ...row,
+      user_email: null,
+      metadata: (row.metadata as Record<string, unknown>) ?? {},
+    }))
+
+    return { data: entries }
+  } catch {
+    return { data: [], error: 'Failed to fetch book activity' }
+  }
+}

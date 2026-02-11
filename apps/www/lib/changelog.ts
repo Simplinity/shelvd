@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.12.0'
+export const APP_VERSION = '0.13.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,22 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.13.0',
+    date: '2026-02-11',
+    title: 'Activity Logging & Platform Pulse',
+    description: 'The update where Shelvd remembers everything. Every book added, every edit made, every enrichment applied — recorded with context, diffs, and timestamps. Your collection now has a memory.',
+    changes: [
+      { type: 'added', text: 'Activity logging — every meaningful action recorded: book edits with JSON diffs, enrichments with source attribution, imports with file summaries, collection changes, admin actions. 20 log points across the platform' },
+      { type: 'added', text: 'Personal activity page at /activity — your full history with category filters, entity search, and pagination. What you did, when, and to which book' },
+      { type: 'added', text: 'Recent activity on /stats — compact feed of your last 10 actions, with "View all" link. Your dashboard now has a pulse' },
+      { type: 'added', text: 'Book detail timeline — "Last modified" with expandable change history per book. See when you added it, enriched it, changed the price, moved it between collections' },
+      { type: 'added', text: 'Admin live feed on dashboard — real-time platform heartbeat showing who\'s doing what. The provenance of your provenance' },
+      { type: 'added', text: 'Admin activity log viewer at /admin/activity — full table with category filters, entity search, pagination. Filterable by Books, Collections, Account, Admin, Import' },
+      { type: 'added', text: 'Activity link in admin sidebar between Support and Statistics' },
+      { type: 'fixed', text: 'RLS security — re-enabled Row Level Security on languages, publishers, and contributor_aliases tables flagged by Supabase security advisor' },
+    ],
+  },
   {
     version: '0.12.0',
     date: '2026-02-11',

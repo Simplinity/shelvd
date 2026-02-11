@@ -397,9 +397,17 @@ Indices on (user_id, created_at DESC), (action, created_at DESC), (entity_type, 
 | 3 | Rest instrumentation: collections, provenance, contributors, tags, account, admin actions | Medium | ✅ Done |
 | 4 | Admin live feed on dashboard (A3 partial): RPC + compact chronological feed component | Low | ✅ Done |
 | 5 | Admin log viewer page (A3 complete): /admin/activity, full table, filters, pagination, sidebar link | Medium | ✅ Done |
-| 6 | User-facing activity (future): personal history, "last modified" on book detail, recent changes | Low-Medium | Future |
+| 6 | User-facing activity: /activity page, recent activity on /stats, book detail timeline | Low-Medium | Pending |
 
-Recommended order: 1 → 2 → 4 → 3 → 5 (get visible results on dashboard early, then complete instrumentation).
+Recommended order: 1 → 2 → 4 → 3 → 5 → 6 (get visible results on dashboard early, then complete instrumentation, then user-facing).
+
+**Step 6 detail — user-facing activity (3 parts):**
+
+**6a: `/activity` page** — Personal activity history. Full table (timestamp, action, entity, source), category filter tabs, entity search, pagination. Same style as admin viewer but simpler (no user column). Uses RLS-scoped direct query (no new RPC needed).
+
+**6b: Recent activity on `/stats`** — Compact feed (last 10 actions) at bottom of stats page. Uses same ActivityFeed component from admin dashboard. "View all →" link to /activity.
+
+**6c: Book detail timeline** — On book detail page: "Last modified X ago" + expandable mini-timeline showing all changes to that specific book. Actions: added, edited (with changed field names), enriched (with source), imported, status changed.
 
 #### #6 Image Upload — Detail
 
