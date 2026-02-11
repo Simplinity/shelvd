@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { ArrowLeft, Search, Shield, Check, X, Clock, ArrowUp, ArrowDown } from 'lucide-react'
+import { ArrowLeft, Search, Shield, Check, X, Clock, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react'
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './user-actions'
 
@@ -176,7 +176,7 @@ export default async function AdminUsersPage({
                 <tr key={profile.id} className="border-b last:border-b-0 hover:bg-muted/30">
                   <td className="p-3">
                     <div>
-                      <Link href={`/admin/users/${profile.id}`} className="font-medium flex items-center gap-2 hover:underline">
+                      <Link href={`/admin/users/${profile.id}`} className="font-medium flex items-center gap-2 underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-foreground">
                         {auth?.email || profile.display_name || 'Unknown'}
                         {profile.is_admin && (
                           <span title="Admin"><Shield className="w-4 h-4 text-primary" /></span>
@@ -222,11 +222,20 @@ export default async function AdminUsersPage({
                     })()}
                   </td>
                   <td className="p-3 text-right">
-                    <UserActions 
-                      userId={profile.id}
-                      currentStatus={profile.status || "unknown"}
-                      isAdmin={profile.is_admin ?? false}
-                    />
+                    <div className="flex items-center justify-end gap-1">
+                      <UserActions 
+                        userId={profile.id}
+                        currentStatus={profile.status || "unknown"}
+                        isAdmin={profile.is_admin ?? false}
+                      />
+                      <Link
+                        href={`/admin/users/${profile.id}`}
+                        className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                        title="View details"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               )
