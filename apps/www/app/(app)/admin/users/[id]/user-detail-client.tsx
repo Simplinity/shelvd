@@ -54,6 +54,8 @@ export function UserDetailClient({
       if (admin) {
         if ('status' in updates) {
           void logActivity({ userId: admin.id, action: 'admin.user_status_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { old_status: currentStatus, new_status: updates.status, reason: updates.status_reason }, source: 'admin' })
+        } else if ('membership_tier' in updates) {
+          void logActivity({ userId: admin.id, action: 'admin.membership_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { old_tier: membershipTier, new_tier: updates.membership_tier }, source: 'admin' })
         } else if ('is_lifetime_free' in updates) {
           void logActivity({ userId: admin.id, action: 'admin.membership_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { is_lifetime_free: updates.is_lifetime_free }, source: 'admin' })
         } else if ('is_admin' in updates) {
@@ -175,7 +177,31 @@ export function UserDetailClient({
 
           {/* Membership */}
           <div className="border-t border-border pt-3">
-            <p className="text-xs text-muted-foreground mb-2">Membership</p>
+            <p className="text-xs text-muted-foreground mb-2">Tier</p>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(['collector', 'collector_pro', 'dealer'] as const).map(tier => {
+                const labels: Record<string, string> = { collector: 'Collector', collector_pro: 'Collector Pro', dealer: 'Dealer' }
+                const isCurrent = membershipTier === tier
+                return (
+                  <button
+                    key={tier}
+                    onClick={() => {
+                      if (!isCurrent && confirm(`Change tier to ${labels[tier]}?`))
+                        updateProfile({ membership_tier: tier })
+                    }}
+                    disabled={actionLoading || isCurrent}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border transition-colors disabled:opacity-50 ${
+                      isCurrent
+                        ? 'bg-foreground text-background border-foreground cursor-default'
+                        : 'border-border hover:bg-muted/50'
+                    }`}
+                  >
+                    {labels[tier]}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground mb-2">Lifetime</p>
             <div className="flex flex-wrap gap-2">
               {!isLifetimeFree ? (
                 <ActionBtn
