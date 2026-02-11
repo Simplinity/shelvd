@@ -68,7 +68,12 @@ export function TiersClient({
     limitMap.set(`${l.tier}:${l.limit_key}`, Number(l.limit_value))
   }
 
-  const allLimitKeys = [...new Set(limits.map(l => l.limit_key))].sort()
+  const LIMIT_ORDER = ['max_books', 'max_tags', 'storage_bytes', 'bandwidth_bytes_mo']
+  const allLimitKeys = [...new Set(limits.map(l => l.limit_key))].sort((a, b) => {
+    const ia = LIMIT_ORDER.indexOf(a)
+    const ib = LIMIT_ORDER.indexOf(b)
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
+  })
 
   function handleToggle(tier: string, feature: string) {
     const key = `${tier}:${feature}`
