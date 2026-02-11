@@ -252,14 +252,6 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
 
-  // Growth & Marketing
-  {
-    title: 'Invite Codes',
-    description: 'Channel attribution, partnership codes, campaign tracking, personal referrals. Know where your users come from. Also: "invitation-only" sounds very antiquarian.',
-    category: 'growth',
-    status: 'planned',
-  },
-
   // Book Data Features
   {
     title: 'Insurance & Valuation Reports',

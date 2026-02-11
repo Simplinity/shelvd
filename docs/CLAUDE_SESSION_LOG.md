@@ -1,10 +1,30 @@
 # Claude Session Log
 
-## Current State (2026-02-09)
+## Current State (2026-02-11)
 
-**App version: v0.11.0.** All core features, marketing site, feedback system, and PDF print inserts complete. 9 lookup providers active. 26 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
+**App version: v0.13.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, and invite codes complete. 9 lookup providers active. 37 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
-**Recent session work (v0.11.0):**
+**Session work (v0.13.0 — 2026-02-11):**
+- **#4 Activity Logging — ALL 6 STEPS COMPLETE ✅**
+  - Step 1: Foundation — `activity_log` table, 5 indices, RLS, SECURITY DEFINER RPCs, `logActivity()` utility
+  - Step 2: Book instrumentation — book.created, book.updated (JSON diff of 12 fields), book.deleted, import.completed
+  - Step 3: Full platform instrumentation — collections (5 actions), account (3 actions), admin (7 actions). 20 logActivity() calls total
+  - Step 4: Admin live feed on dashboard — compact chronological feed, relative timestamps, category color dots, 15 recent entries
+  - Step 5: Admin `/admin/activity` log viewer — full table, category filter tabs, entity search, pagination (50/page), sidebar link
+  - Step 6: User-facing — `/activity` page (personal history, filters, pagination), recent feed on `/stats` (last 10, clickable book links), book detail timeline ("Last modified" + expandable history per book)
+  - A3 Activity log viewer: ✅ Done (steps 4-5)
+- **RLS Security Fix**
+  - Migration 035: re-enabled RLS on `languages`, `publishers`, `contributor_aliases` (flagged by Supabase security advisor)
+  - Ensured policies exist for all 3 tables
+- **#13 Invite Codes — ALL 5 STEPS COMPLETE ✅**
+  - Step 1: Migration 037 — `invite_codes` + `invite_code_redemptions` tables, `redeem_invite_code()` RPC, admin RPCs, RLS
+  - Step 2: Signup form — optional code field with validation, benefits applied on redemption
+  - Step 3: Admin `/admin/invite-codes` — list, create, toggle active/inactive
+  - Step 4: Code detail page — redemption list with user status + book counts
+  - Step 5: Activity logging (2 actions) + sidebar link + docs
+  - Codes are optional (signup stays open), for attribution + benefits only, no gated access
+
+**Previous session work (v0.12.0 + v0.11.0):**
 - **Printable PDF book inserts — COMPLETE**
   - Vintage catalog card (3×5"): authentic 1930s-50s library aesthetic
     - Courier typewriter font, red vertical line at first indentation, ruled lines, card border, punch hole
@@ -91,7 +111,7 @@
 ### Core Product
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
-| 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin gets filterable log viewer. Essential before multi-user beta. |
+| ~~4~~ | ~~Activity logging~~ | ~~High~~ | ~~Medium-High~~ | ✅ Done (2026-02-11). See Completed. |
 | 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8b | Knowledge base (`/help`) | Medium | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
@@ -102,13 +122,13 @@
 ### Growth & Marketing
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
-| G1 | Invite codes | High | Medium | Marketing & attribution tool. Admin creates codes per channel (`BOOKFAIR2026`, `INSTAGRAM`, `CATAWIKI`), partnership (`ANTIQUARIAAT-X`), campaign (`MARGINALIA`), or referral (per-user codes). Signup requires a valid code → tracks which channels bring users. Dashboard: signups per code, conversion rates, top channels. Creates exclusivity ("invitation-only for serious collectors") + measurable growth. DB: `invite_codes` table (code, label, source_type, max_uses, used_count, expires_at, created_by). Signup flow gets code input field. Admin gets code generator + analytics. |
+| ~~G1/13~~ | ~~Invite codes~~ | ~~High~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
 
 ### Admin Enhancements
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
 | ~~A1~~ | ~~System stats dashboard~~ | ~~High~~ | ~~Medium~~ | ~~DONE — /admin/stats with metrics, distributions, growth charts~~ |
-| A3 | Activity log viewer | High | Medium | Filterable by user, action, date, entity. Depends on #4. |
+| ~~A3~~ | ~~Activity log viewer~~ | ~~High~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
 | ~~A4~~ | ~~User management~~ | ~~Low~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
 | A5 | Admin impersonation | Medium | Medium | "View as user" button in admin user table. Admin temporarily sees the platform as that user — their books, collections, settings, everything. Essential for debugging reported issues. Banner at top showing impersonation mode + "Exit" button. Supabase approach: admin session stores target user_id, RLS queries use that instead of auth user. Audit logged. |
 | A6 | Platform health checks | Low | Medium | Orphaned records, cross-user inconsistencies, import errors, duplicate publishers. Admin-only platform hygiene dashboard. |
@@ -123,6 +143,10 @@
 | PDF | Printable PDF inserts (catalog card + catalog sheet) | 2026-02-09 |
 | AUTH | Auth page live stats + literary quotes | 2026-02-09 |
 | A4 | User management: detail page, sortable list, admin email | 2026-02-11 |
+| 4 | Activity logging: 6 steps, 20 log points, admin feed + viewer, user /activity + /stats feed + book timeline | 2026-02-11 |
+| A3 | Activity log viewer: admin live feed on dashboard + /admin/activity with filters/pagination | 2026-02-11 |
+| 13 | Invite codes: optional promo codes, attribution + benefits, admin management + detail pages | 2026-02-11 |
+| SEC | RLS security fix: re-enabled on languages, publishers, contributor_aliases | 2026-02-11 |
 
 ### Book Data Features
 | # | Feature | Priority | Effort | Description |
