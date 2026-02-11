@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Shield, Users, MessageSquare, BarChart3, Megaphone, ArrowLeft } from 'lucide-react'
+import { Shield, Users, MessageSquare, BarChart3, ArrowLeft } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Overview', icon: Shield, exact: true },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/support', label: 'Support', icon: MessageSquare, badgeKey: 'support' as const },
-  { href: '/admin/stats', label: 'Stats', icon: BarChart3 },
+  { href: '/admin/stats', label: 'Statistics', icon: BarChart3 },
 ]
 
 export function AdminSidebar({ badges }: { badges: { support?: number } }) {
@@ -20,34 +20,43 @@ export function AdminSidebar({ badges }: { badges: { support?: number } }) {
   }
 
   return (
-    <aside className="border-r border-border bg-background flex flex-col h-full">
-      {/* Nav items */}
-      <nav className="flex-1 py-4">
+    <aside className="w-[200px] border-r border-border bg-background flex flex-col h-full">
+      {/* Admin branding */}
+      <div className="px-6 pt-6 pb-5 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 bg-foreground flex items-center justify-center">
+            <Shield className="w-3.5 h-3.5 text-background" strokeWidth={2.5} />
+          </div>
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-foreground">Admin</span>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
         {NAV_ITEMS.map(item => {
           const active = isActive(item.href, item.exact)
           const badge = item.badgeKey ? badges[item.badgeKey] : undefined
+
           return (
             <Link
               key={item.href}
               href={item.href}
               className={`
-                flex items-center gap-3 px-5 py-2.5 text-sm transition-colors relative
+                flex items-center gap-3 px-3 py-2 text-[13px] transition-colors relative
                 ${active
-                  ? 'text-foreground font-medium before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[2px] before:bg-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-foreground text-background font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }
               `}
             >
               <item.icon className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">{item.label}</span>
+              <span>{item.label}</span>
               {badge !== undefined && badge > 0 && (
-                <span className="ml-auto hidden md:flex min-w-[20px] h-5 items-center justify-center bg-red-600 text-white text-[11px] font-bold px-1.5">
+                <span className={`ml-auto min-w-[20px] h-5 flex items-center justify-center text-[11px] font-bold px-1.5 ${
+                  active ? 'bg-red-500 text-white' : 'bg-red-600 text-white'
+                }`}>
                   {badge}
                 </span>
-              )}
-              {/* Mobile badge dot */}
-              {badge !== undefined && badge > 0 && (
-                <span className="md:hidden absolute top-1.5 right-3 w-2 h-2 bg-red-600 rounded-full" />
               )}
             </Link>
           )
@@ -55,13 +64,13 @@ export function AdminSidebar({ badges }: { badges: { support?: number } }) {
       </nav>
 
       {/* Back to app */}
-      <div className="border-t border-border p-4">
+      <div className="px-6 py-4 border-t border-border">
         <Link
           href="/books"
-          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="hidden md:inline">Back to App</span>
+          <span>Back to Library</span>
         </Link>
       </div>
     </aside>
