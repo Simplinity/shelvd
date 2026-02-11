@@ -542,7 +542,7 @@ export default function Home() {
           </p>
 
           {/* Early Access Banner */}
-          <div className="border-2 border-primary bg-primary/5 p-6 mb-16 max-w-2xl mx-auto">
+          <div className="border-2 border-primary bg-primary/5 p-6 mb-24 max-w-2xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-bold uppercase tracking-wider text-primary">Early Access</span>
