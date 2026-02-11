@@ -1,5 +1,7 @@
 # Claude Session Log
 
+> **RULE: This log is updated in real-time during every session. Each subtask is written here BEFORE committing code. Status: ⏳ doing / ✅ done / ❌ blocked. On connection loss, the next session reads this log first to know exactly where to resume. Every commit includes a log update. No exceptions.**
+
 ## Current State (2026-02-11)
 
 **App version: v0.13.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, and invite codes complete. 9 lookup providers active. 37 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
