@@ -348,6 +348,7 @@ status, action_needed, internal_notes
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
+| 13 | Invite Codes | High | Medium | Optional promo codes on signup for attribution + benefits. Blogger outreach, bookfair tracking, early adopter perks. Admin management + per-code usage stats. See details below. |
 
 #### #4 Activity Logging — Detail
 
@@ -616,6 +617,69 @@ Funnel steps:
 - **Phase 1 (quick wins):** Smart empty states + first-visit hints + admin funnel tracker. No migration needed for empty states. One migration for `seen_hints`.
 - **Phase 2 (the wizard):** Welcome wizard + getting started checklist + demo book. Migration for `user_type`, `collection_size_estimate`, `onboarding_completed`, `onboarding_checklist`.
 - **Phase 3 (personalization):** Feature highlights per user type. Engagement emails ("You haven't added a book in 2 weeks"). Collection completeness score on user's own stats page.
+
+#### #13 Invite Codes — Detail
+
+**What it is:** Optional promo codes that users can enter during signup. Registration stays open to everyone — codes are never required. When someone uses a code, two things happen: (1) attribution is recorded (which blogger/event/campaign brought this user), and (2) benefits are applied automatically (free trial days, lifetime free tier, etc.).
+
+**Why it matters:** Marketing without measurement is guesswork. Invite codes let you hand a blogger a unique code, print one on a bookfair flyer, or tweet one to followers — and know exactly which channel converted. The benefits attached to each code are the incentive for users to actually enter it.
+
+**Use cases:**
+- Book blogger outreach: "Share code JANEREADS with your audience — they get 3 months free"
+- Bookfair / events: QR code on a card with SHELVD-FIRSTEDITION, track signups per event
+- Early adopter perks: EARLYBIRD code grants lifetime free tier
+- Social media campaigns: unique code per platform (SHELVD-TWITTER, SHELVD-INSTA)
+- Personal referral: give a collector friend a code with 30 days free
+
+**Tables:**
+
+`invite_codes`:
+| Column | Type | Purpose |
+|--------|------|--------|
+| id | UUID | PK |
+| code | TEXT UNIQUE | The code itself, case-insensitive (stored uppercase) |
+| label | TEXT | Human description: "Jane's Book Blog - Feb 2026" |
+| source_type | TEXT | Category: `blogger`, `event`, `social`, `personal`, `campaign` |
+| source_name | TEXT | Specific source: "janereads.com", "London Antiquarian Bookfair" |
+| benefit_type | TEXT | `trial_days`, `lifetime_free`, `none` |
+| benefit_days | INT | Days of free premium (only for trial_days) |
+| max_uses | INT | NULL = unlimited |
+| times_used | INT | Counter, incremented on redemption |
+| is_active | BOOLEAN | Admin can deactivate |
+| expires_at | TIMESTAMPTZ | Optional expiry date |
+| created_by | UUID | Admin who created it |
+| created_at | TIMESTAMPTZ | |
+
+`invite_code_redemptions`:
+| Column | Type | Purpose |
+|--------|------|--------|
+| id | UUID | PK |
+| code_id | UUID | FK to invite_codes |
+| user_id | UUID | FK to auth.users |
+| redeemed_at | TIMESTAMPTZ | When they signed up |
+
+**Signup flow change:**
+- Add optional "Invite code" field below email/password on signup form
+- Validate code on submit: exists, active, not expired, not maxed out
+- On valid code: create user, record redemption, apply benefits (set `benefit_expires_at` or `is_lifetime_free` on user_profiles), increment counter
+- On invalid/empty code: sign up normally, no error (codes are never required)
+
+**Admin UI (`/admin/invite-codes`):**
+- List all codes: code, label, source, type, uses/max, status, created
+- Create new code form: code (auto-generate or manual), label, source type/name, benefit, max uses, expiry
+- Toggle active/inactive
+- Click into code detail: list of users who redeemed, when, their current status (active? how many books?)
+- Stats per code: total redemptions, active users, total books added by those users
+
+**Delivery plan:**
+
+| Step | Description | Effort |
+|------|-------------|--------|
+| 1 | Migration: `invite_codes` + `invite_code_redemptions` tables, RLS, indices | Low |
+| 2 | Signup form: optional code field + validation + redemption logic | Medium |
+| 3 | Admin `/admin/invite-codes` list + create + toggle | Medium |
+| 4 | Admin code detail page: redemption list + per-code stats | Medium |
+| 5 | Admin sidebar link + activity logging for code events | Low |
 
 #### #9 Mobile Responsiveness — Detail
 

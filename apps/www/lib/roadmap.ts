@@ -308,6 +308,14 @@ export const ROADMAP: RoadmapItem[] = [
     category: 'admin',
     status: 'planned',
   },
+  // Invite Codes
+  {
+    title: 'Invite Codes',
+    description: 'Optional promo codes on signup for attribution and benefits. Hand a blogger a unique code, print one on a bookfair flyer, track which channels convert. Codes can grant trial days or lifetime free tier. Admin dashboard shows per-code stats: redemptions, active users, books added. Marketing without measurement is guesswork.',
+    category: 'platform',
+    status: 'planned',
+  },
+
   {
     title: 'Admin Impersonation',
     description: '"View as user" mode for debugging. See exactly what a user sees — their books, collections, settings. With a big red banner so you don\'t forget whose life you\'re living.',
