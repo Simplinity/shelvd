@@ -35,6 +35,7 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Book detail timeline — "Last modified" with expandable change history per book. See when you added it, enriched it, changed the price, moved it between collections' },
       { type: 'added', text: 'Admin live feed on dashboard — real-time platform heartbeat showing who\'s doing what. The provenance of your provenance' },
       { type: 'added', text: 'Admin activity log viewer at /admin/activity — full table with category filters, entity search, pagination. Filterable by Books, Collections, Account, Admin, Import' },
+      { type: 'added', text: 'Activity link in main navigation — always accessible next to Stats' },
       { type: 'added', text: 'Activity link in admin sidebar between Support and Statistics' },
       { type: 'fixed', text: 'RLS security — re-enabled Row Level Security on languages, publishers, and contributor_aliases tables flagged by Supabase security advisor' },
     ],
