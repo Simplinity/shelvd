@@ -305,7 +305,7 @@ export const ROADMAP: RoadmapItem[] = [
     title: 'Tier System & Feature Gating',
     description: 'Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks in code. Reassigning a feature from one tier to another is a database update, not a deployment. Upgrade hints in UI: locked features are visible but gated. Foundation for Stripe integration.',
     category: 'platform',
-    status: 'planned',
+    status: 'shipped',
   },
 
   // Invite Codes

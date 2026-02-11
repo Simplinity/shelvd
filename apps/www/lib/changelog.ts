@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.13.0'
+export const APP_VERSION = '0.14.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,26 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.14.0',
+    date: '2026-02-11',
+    title: 'Tier System & Feature Gating',
+    description: 'The update where Shelvd learns to tell Collector from Collector Pro from Dealer. Three tiers, database-driven feature flags, admin controls, and a pricing page that finally tells the truth about what you get.',
+    changes: [
+      { type: 'added', text: 'Three-tier system: Collector (free), Collector Pro (€9.99/mo), Dealer (€49/mo). Each tier with distinct features, limits, and support levels' },
+      { type: 'added', text: 'tier_features table — 19 features across 3 tiers, toggled from admin UI. Reassigning a feature is a database update, not a deployment' },
+      { type: 'added', text: 'tier_limits table — book limits (500/5K/unlimited), tag limits (20/unlimited), storage (0/5GB/25GB), bandwidth quotas per tier' },
+      { type: 'added', text: 'Server utilities: hasFeature(), getTierLimit(), getEffectiveTier(), getUserTierData(). Handles lifetime Pro, trial benefits, tier resolution' },
+      { type: 'added', text: 'Client hooks: useFeature(), useTierLimit(), useTier(), useTierData(). TierProvider wraps every app page via layout' },
+      { type: 'added', text: 'UI gating components: FeatureGate (wrap content, show upgrade hint if locked), UpgradeHint (standalone upgrade prompt), LimitGate (block when limit reached), LimitReached (amber warning)' },
+      { type: 'added', text: 'Admin /admin/tiers — feature matrix grid (click to toggle ✓/✕) + tier limits editor (click to edit values). Changes take effect immediately' },
+      { type: 'added', text: 'Pricing page: 3 real tier cards with complete feature lists (9/9/10 items) + early access banner. Collector Pro highlighted as most popular' },
+      { type: 'added', text: 'User profile fields: phone, company name, website. Visible in settings form and admin detail page' },
+      { type: 'improved', text: 'Lifetime free clarified everywhere as "Lifetime Collector Pro" — not Dealer. Updated across 11 files: landing page, terms, admin UI, settings, invite codes, docs' },
+      { type: 'improved', text: 'Tier display names: collector_pro now shows as "Collector Pro" everywhere (settings, admin user detail, admin user list)' },
+      { type: 'fixed', text: 'Logo navigation: app header logo now links to / (website) instead of /books (same as Collection menu)' },
+    ],
+  },
   {
     version: '0.13.0',
     date: '2026-02-11',
