@@ -40,6 +40,8 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Invite codes — optional promo codes on signup for attribution and benefits. Create codes for bloggers, bookfairs, social campaigns. Each code can grant trial days or lifetime free tier' },
       { type: 'added', text: 'Admin invite code management at /admin/invite-codes — create codes, toggle active/inactive, view per-code stats: who redeemed, when, how many books they\'ve added' },
       { type: 'added', text: 'Invite code detail pages — click into any code to see the full redemption list with user status and book counts. Your marketing ROI at a glance' },
+      { type: 'added', text: 'User profile fields — phone, company name, and website columns on user profiles. Ready for settings form and admin display' },
+      { type: 'improved', text: 'Admin user detail page — now shows full profile: name, company, phone, website, address, VAT, locale, currency, invite code attribution, and benefit expiry. Previously only showed membership and status' },
       { type: 'fixed', text: 'RLS security — re-enabled Row Level Security on languages, publishers, and contributor_aliases tables flagged by Supabase security advisor' },
     ],
   },

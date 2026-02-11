@@ -8,7 +8,7 @@
 
 **Current task: User profile expansion**
 - ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles
-- ⏳ Step 2: Admin user detail — show all profile data (address, vat, company, phone, website, invite code, benefit, locale, currency)
+- ✅ Step 2: Admin user detail — show all profile data (address, vat, company, phone, website, invite code, benefit, locale, currency)
 
 **Session work (v0.13.0 — 2026-02-11):**
 - **#4 Activity Logging — ALL 6 STEPS COMPLETE ✅**

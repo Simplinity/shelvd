@@ -16,7 +16,7 @@ export default async function AdminUserDetailPage({
   // 1. User profile
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('id, display_name, membership_tier, is_lifetime_free, status, status_reason, is_admin, admin_role, signup_source, notes, created_at, updated_at')
+    .select('id, display_name, full_name, phone, company_name, website, street_address, city, postal_code, country, vat_number, locale, default_currency, membership_tier, is_lifetime_free, invite_code_id, benefit_expires_at, status, status_reason, is_admin, admin_role, signup_source, notes, created_at, updated_at')
     .eq('id', id)
     .single()
 
@@ -53,6 +53,17 @@ export default async function AdminUserDetailPage({
 
   // 6. Collections (SECURITY DEFINER RPC)
   const { data: collections } = await supabase.rpc('get_user_collections_for_admin', { target_user_id: id })
+
+  // 7. Invite code (if user has one)
+  let inviteCode: { code: string; label: string | null; source_type: string; source_name: string | null } | null = null
+  if (profile.invite_code_id) {
+    const { data: codeData } = await supabase
+      .from('invite_codes')
+      .select('code, label, source_type, source_name')
+      .eq('id', profile.invite_code_id)
+      .single()
+    if (codeData) inviteCode = codeData
+  }
 
   // Heat indicator
   const lastSignIn = authData.last_sign_in_at ? new Date(authData.last_sign_in_at) : null
@@ -123,6 +134,12 @@ export default async function AdminUserDetailPage({
           {profile.display_name && authData.email && (
             <p className="text-muted-foreground mt-0.5">{profile.display_name}</p>
           )}
+          {profile.full_name && profile.full_name !== profile.display_name && (
+            <p className="text-muted-foreground mt-0.5 text-sm">{profile.full_name}{profile.company_name ? ` · ${profile.company_name}` : ''}</p>
+          )}
+          {!profile.full_name && profile.company_name && (
+            <p className="text-muted-foreground mt-0.5 text-sm">{profile.company_name}</p>
+          )}
 
           <div className="flex flex-wrap gap-x-5 gap-y-1 mt-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
@@ -180,6 +197,96 @@ export default async function AdminUserDetailPage({
               )}
             </div>
           </Section>
+
+          {/* Profile & Contact */}
+          {(profile.full_name || profile.phone || profile.company_name || profile.website || profile.street_address || profile.vat_number || profile.locale || profile.default_currency) && (
+            <Section title="Profile & Contact">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                {profile.full_name && (
+                  <div>
+                    <span className="text-muted-foreground">Full name</span>
+                    <p className="font-medium mt-0.5">{profile.full_name}</p>
+                  </div>
+                )}
+                {profile.company_name && (
+                  <div>
+                    <span className="text-muted-foreground">Company</span>
+                    <p className="font-medium mt-0.5">{profile.company_name}</p>
+                  </div>
+                )}
+                {profile.phone && (
+                  <div>
+                    <span className="text-muted-foreground">Phone</span>
+                    <p className="font-medium mt-0.5">{profile.phone}</p>
+                  </div>
+                )}
+                {profile.website && (
+                  <div>
+                    <span className="text-muted-foreground">Website</span>
+                    <p className="font-medium mt-0.5"><a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener" className="underline hover:text-foreground">{profile.website}</a></p>
+                  </div>
+                )}
+                {profile.vat_number && (
+                  <div>
+                    <span className="text-muted-foreground">VAT number</span>
+                    <p className="font-medium mt-0.5">{profile.vat_number}</p>
+                  </div>
+                )}
+                {(profile.street_address || profile.city || profile.postal_code || profile.country) && (
+                  <div className="col-span-2">
+                    <span className="text-muted-foreground">Address</span>
+                    <p className="font-medium mt-0.5">
+                      {[profile.street_address, [profile.postal_code, profile.city].filter(Boolean).join(' '), profile.country].filter(Boolean).join(', ')}
+                    </p>
+                  </div>
+                )}
+                {(profile.locale || profile.default_currency) && (
+                  <>
+                    {profile.locale && (
+                      <div>
+                        <span className="text-muted-foreground">Locale</span>
+                        <p className="font-medium mt-0.5">{profile.locale}</p>
+                      </div>
+                    )}
+                    {profile.default_currency && (
+                      <div>
+                        <span className="text-muted-foreground">Currency</span>
+                        <p className="font-medium mt-0.5">{profile.default_currency}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </Section>
+          )}
+
+          {/* Invite Code & Attribution */}
+          {inviteCode && (
+            <Section title="Invite Code & Attribution">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Code used</span>
+                  <p className="font-medium mt-0.5 font-mono">{inviteCode.code}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Source</span>
+                  <p className="font-medium mt-0.5 capitalize">{inviteCode.source_type}{inviteCode.source_name ? ` — ${inviteCode.source_name}` : ''}</p>
+                </div>
+                {inviteCode.label && (
+                  <div className="col-span-2">
+                    <span className="text-muted-foreground">Label</span>
+                    <p className="font-medium mt-0.5">{inviteCode.label}</p>
+                  </div>
+                )}
+                {profile.benefit_expires_at && (
+                  <div>
+                    <span className="text-muted-foreground">Benefit expires</span>
+                    <p className="font-medium mt-0.5">{formatDate(profile.benefit_expires_at)}</p>
+                  </div>
+                )}
+              </div>
+            </Section>
+          )}
 
           {/* Collections */}
           {collections && collections.length > 0 && (
