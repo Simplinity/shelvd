@@ -12,7 +12,7 @@ import {
   bulkDeleteFeedback,
 } from '@/lib/actions/feedback'
 import {
-  MessageSquare, Bug, Mail, ChevronDown, ChevronUp,
+  Bug, Mail, ChevronDown, ChevronUp,
   Trash2, ArrowLeft, Monitor, Globe, ExternalLink,
 } from 'lucide-react'
 
@@ -134,15 +134,17 @@ export function AdminSupportClient({
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
+        <a
+          href="/admin"
+          className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+        </a>
         <div className="flex items-center gap-3">
-          <a href="/admin" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-          </a>
-          <MessageSquare className="w-5 h-5 text-red-600" />
-          <h1 className="text-xl font-bold">Support Queue</h1>
+          <h1 className="text-2xl font-bold">Support Queue</h1>
           {counts.new > 0 && (
-            <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5">
               {counts.new}
             </span>
           )}
