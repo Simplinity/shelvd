@@ -12,33 +12,47 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          category: string
+          created_at: string
+          entity_id: string | null
+          entity_label: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          source: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          category: string
+          created_at?: string
+          entity_id?: string | null
+          entity_label?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          source?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          category?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_label?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          source?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           created_at: string | null
@@ -1640,6 +1654,10 @@ export type Database = {
           title: string
         }[]
       }
+      get_activity_count_for_admin: {
+        Args: { since?: string }
+        Returns: number
+      }
       get_book_counts_for_admin: {
         Args: never
         Returns: {
@@ -1693,6 +1711,22 @@ export type Database = {
         }[]
       }
       get_public_stats: { Args: never; Returns: Json }
+      get_recent_activity_for_admin: {
+        Args: { category_filter?: string; lim?: number; user_filter?: string }
+        Returns: {
+          action: string
+          category: string
+          created_at: string
+          entity_id: string
+          entity_label: string
+          entity_type: string
+          id: string
+          metadata: Json
+          source: string
+          user_email: string
+          user_id: string
+        }[]
+      }
       get_signups_by_week_for_admin: {
         Args: never
         Returns: {
@@ -1895,9 +1929,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       book_status: [
