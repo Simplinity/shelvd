@@ -275,10 +275,18 @@ export const ROADMAP: RoadmapItem[] = [
 
   // Admin
   {
+    title: 'User Management & Detail Pages',
+    description: 'Full user profiles with stats, collections, recent books, support history. Admin notes, status actions, direct email. Sortable list with heat indicators.',
+    category: 'admin',
+    status: 'shipped',
+    version: '0.12.0',
+  },
+  {
     title: 'Admin Sidebar Navigation',
     description: 'Persistent sidebar with icon navigation across all admin pages. Badges for actionable items. No more "Back to Dashboard" ping-pong. Compact on mobile.',
     category: 'admin',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.12.0',
   },
   {
     title: 'Weekly Admin Digest',

@@ -520,7 +520,7 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 | ~~A4~~ | ~~User management~~ | ~~Medium~~ | ~~Medium~~ | ✅ Done. Detail page (/admin/users/[id]): avatar, stats, collections, recent books, support history, admin notes, status/membership/admin actions, send email. List: sortable columns (user/books/joined/last active), heat indicators, clickable rows. Invite codes still planned separately. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
 | A6 | Platform health score & checks | Medium | Medium | Health bar on dashboard (missing ISBNs, covers, conditions at a glance). Click through to orphaned records, inconsistencies, duplicate publishers. |
-| A7 | Admin sidebar navigation | High | Low | Persistent sidebar across all admin pages. Icon nav, badges for actionable items, compact on mobile. Replaces back-link ping-pong. |
+| ~~A7~~ | ~~Admin sidebar navigation~~ | ~~High~~ | ~~Low~~ | ✅ Done. Persistent sidebar: Overview, Users, Support (badge), Stats. Active state with left border accent. Sticky, icon-only on mobile. 'Back to App' link. Dashboard simplified with 'Needs Attention' alerts section. |
 | A8 | Weekly admin digest | Medium | Medium | Automated Monday email via Resend + Vercel Cron: signups, books added, open tickets, health delta, most active users. |
 | A9 | User onboarding funnel | Medium | Low | Visual journey on user detail: signed up → first book → 10 books → used enrich → collections → power user. Spot friction. |
 
