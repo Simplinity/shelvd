@@ -11,6 +11,8 @@ import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
 import ProvenanceTimeline from '@/components/provenance-timeline'
 import ConditionHistoryTimeline from '@/components/condition-history-timeline'
+import { getBookActivity } from '@/lib/actions/activity-log'
+import { BookTimeline } from '@/components/book-timeline'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -143,6 +145,9 @@ export default async function BookDetailPage({ params }: PageProps) {
       .eq('book_id', id)
       .order('position')
   ])
+
+  // Activity history for this book
+  const { data: bookActivityEntries } = await getBookActivity(id)
 
   const bookCollectionIds = new Set((bookCollections || []).map((bc: any) => bc.collection_id))
   const libraryCollection = (allCollections || []).find((c: any) => c.name === 'Library' && c.is_default)
@@ -742,11 +747,15 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Metadata */}
+        {/* Metadata + Activity Timeline */}
         <section className="text-xs text-muted-foreground pt-4 border-t">
           {bookData.created_at && <p>Created: {fmtDate(bookData.created_at)}</p>}
-          {bookData.updated_at && bookData.updated_at !== bookData.created_at && (
-            <p>Last updated: {fmtDate(bookData.updated_at)}</p>
+          {bookActivityEntries.length > 0 ? (
+            <BookTimeline entries={bookActivityEntries} />
+          ) : (
+            bookData.updated_at && bookData.updated_at !== bookData.created_at && (
+              <p>Last updated: {fmtDate(bookData.updated_at)}</p>
+            )
           )}
         </section>
 

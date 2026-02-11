@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
+import { RecentActivityFeed } from '@/components/recent-activity-feed'
 import { formatCurrency as fmtCurr, formatDateTime, formatInteger } from '@/lib/format'
 
 export default function StatsPage() {
@@ -529,6 +530,11 @@ export default function StatsPage() {
             )}
           </div>
 
+        </div>
+
+        {/* Recent Activity */}
+        <div className="mt-4">
+          <RecentActivityFeed />
         </div>
       </div>
     </div>

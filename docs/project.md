@@ -332,7 +332,7 @@ status, action_needed, internal_notes
 | 1 | Locale & number formatting | ✅ Done | — | Locale setting in user_profiles, shared `lib/format.ts` with formatInteger/formatDecimal/formatCurrency/formatDate, applied to all pages (detail, stats, books list, admin, duplicates, settings). Legacy date_format column dropped (migration 024). |
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
-| 4 | Activity logging | ✅ Done | — | Steps 1–5 complete: activity_log table, 20 log points across all actions, admin live feed on dashboard, full /admin/activity viewer with filters/pagination. Step 6 (user-facing) is future. See details below. |
+| 4 | Activity logging | ✅ Done | — | All 6 steps complete: activity_log table, 20 log points, admin live feed + /admin/activity viewer, user /activity page, recent feed on /stats, book detail timeline. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | **Fase 1 complete ✅ (URL-only).** Fase 2 pending (Blob uploads). Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
@@ -397,7 +397,7 @@ Indices on (user_id, created_at DESC), (action, created_at DESC), (entity_type, 
 | 3 | Rest instrumentation: collections, provenance, contributors, tags, account, admin actions | Medium | ✅ Done |
 | 4 | Admin live feed on dashboard (A3 partial): RPC + compact chronological feed component | Low | ✅ Done |
 | 5 | Admin log viewer page (A3 complete): /admin/activity, full table, filters, pagination, sidebar link | Medium | ✅ Done |
-| 6 | User-facing activity: /activity page, recent activity on /stats, book detail timeline | Low-Medium | Pending |
+| 6 | User-facing activity: /activity page, recent activity on /stats, book detail timeline | Low-Medium | ✅ Done |
 
 Recommended order: 1 → 2 → 4 → 3 → 5 → 6 (get visible results on dashboard early, then complete instrumentation, then user-facing).
 

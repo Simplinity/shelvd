@@ -182,12 +182,7 @@ export async function getMyActivity(options?: {
 
     if (error) return { data: [], total: 0, error: error.message }
 
-    const entries: ActivityLogEntry[] = (data ?? []).map(row => ({
-      ...row,
-      user_email: null,
-      metadata: (row.metadata as Record<string, unknown>) ?? {},
-    }))
-
+    const entries: ActivityLogEntry[] = (data ?? []).map(row => toEntry(row as unknown as Record<string, unknown>))
     return { data: entries, total: count ?? 0 }
   } catch {
     return { data: [], total: 0, error: 'Failed to fetch activity' }
@@ -211,14 +206,26 @@ export async function getBookActivity(bookId: string, options?: {
 
     if (error) return { data: [], error: error.message }
 
-    const entries: ActivityLogEntry[] = (data ?? []).map(row => ({
-      ...row,
-      user_email: null,
-      metadata: (row.metadata as Record<string, unknown>) ?? {},
-    }))
-
+    const entries: ActivityLogEntry[] = (data ?? []).map(row => toEntry(row as unknown as Record<string, unknown>))
     return { data: entries }
   } catch {
     return { data: [], error: 'Failed to fetch book activity' }
+  }
+}
+
+// Helper: map DB row to ActivityLogEntry
+function toEntry(row: Record<string, unknown>): ActivityLogEntry {
+  return {
+    id: String(row.id ?? ''),
+    created_at: String(row.created_at ?? ''),
+    user_id: row.user_id ? String(row.user_id) : null,
+    user_email: row.user_email ? String(row.user_email) : null,
+    action: String(row.action ?? ''),
+    category: String(row.category ?? ''),
+    entity_type: row.entity_type ? String(row.entity_type) : null,
+    entity_id: row.entity_id ? String(row.entity_id) : null,
+    entity_label: row.entity_label ? String(row.entity_label) : null,
+    metadata: (row.metadata as Record<string, unknown>) ?? {},
+    source: String(row.source ?? 'app'),
   }
 }
