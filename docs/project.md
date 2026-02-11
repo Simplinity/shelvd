@@ -517,7 +517,7 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 | A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
 | A2 | ~~Feedback/bug queue~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Admin support queue at `/admin/support` with full workflow. Part of #5. |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. |
-| A4 | User management improvements | Medium | Medium | Invite codes, approve registrations, user details view. |
+| ~~A4~~ | ~~User management~~ | ~~Medium~~ | ~~Medium~~ | ✅ Done. Detail page (/admin/users/[id]): avatar, stats, collections, recent books, support history, admin notes, status/membership/admin actions, send email. List: sortable columns (user/books/joined/last active), heat indicators, clickable rows. Invite codes still planned separately. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
 | A6 | Platform health checks | Low | Medium | Orphaned records, cross-user inconsistencies, import error log, duplicate publishers. The janitor's dashboard for 10,000 collections. |
 

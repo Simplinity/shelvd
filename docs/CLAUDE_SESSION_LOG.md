@@ -109,7 +109,7 @@
 |---|---------|----------|--------|-------------|
 | ~~A1~~ | ~~System stats dashboard~~ | ~~High~~ | ~~Medium~~ | ~~DONE — /admin/stats with metrics, distributions, growth charts~~ |
 | A3 | Activity log viewer | High | Medium | Filterable by user, action, date, entity. Depends on #4. |
-| A4 | User detail view | Low | Medium | Click user in admin table → full profile: books count, collections, last active, features used, support tickets. |
+| ~~A4~~ | ~~User management~~ | ~~Low~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
 | A5 | Admin impersonation | Medium | Medium | "View as user" button in admin user table. Admin temporarily sees the platform as that user — their books, collections, settings, everything. Essential for debugging reported issues. Banner at top showing impersonation mode + "Exit" button. Supabase approach: admin session stores target user_id, RLS queries use that instead of auth user. Audit logged. |
 | A6 | Platform health checks | Low | Medium | Orphaned records, cross-user inconsistencies, import errors, duplicate publishers. Admin-only platform hygiene dashboard. |
 
@@ -122,6 +122,7 @@
 | UX1 | Edit page UX/UI overhaul | 2026-02-09 |
 | PDF | Printable PDF inserts (catalog card + catalog sheet) | 2026-02-09 |
 | AUTH | Auth page live stats + literary quotes | 2026-02-09 |
+| A4 | User management: detail page, sortable list, admin email | 2026-02-11 |
 
 ### Book Data Features
 | # | Feature | Priority | Effort | Description |
