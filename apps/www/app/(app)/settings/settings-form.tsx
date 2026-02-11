@@ -141,6 +141,18 @@ function ProfileSection({ profile, email }: { profile: any; email: string }) {
             <label className={labelClass}>Full Name</label>
             <input type="text" name="full_name" defaultValue={profile?.full_name || ''} className={inputClass} placeholder="For invoices and correspondence" />
           </div>
+          <div>
+            <label className={labelClass}>Company</label>
+            <input type="text" name="company_name" defaultValue={profile?.company_name || ''} className={inputClass} placeholder="Business or organisation name" />
+          </div>
+          <div>
+            <label className={labelClass}>Phone</label>
+            <input type="tel" name="phone" defaultValue={profile?.phone || ''} className={inputClass} placeholder="+32 ..." />
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>Website</label>
+            <input type="url" name="website" defaultValue={profile?.website || ''} className={inputClass} placeholder="https://" />
+          </div>
         </div>
         <div className="flex items-center gap-4 mt-6">
           <SaveButton loading={loading} />

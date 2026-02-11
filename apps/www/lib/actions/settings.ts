@@ -17,19 +17,25 @@ export async function updateProfile(formData: FormData): Promise<SettingsResult>
 
   const display_name = formData.get('display_name') as string
   const full_name = formData.get('full_name') as string
+  const company_name = formData.get('company_name') as string
+  const phone = formData.get('phone') as string
+  const website = formData.get('website') as string
 
   const { error } = await supabase
     .from('user_profiles')
     .update({
       display_name: display_name || null,
       full_name: full_name || null,
+      company_name: company_name || null,
+      phone: phone || null,
+      website: website || null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', user.id)
 
   if (error) return { error: 'Failed to update profile' }
 
-  void logActivity({ userId: user.id, action: 'account.profile_updated', category: 'account', entityType: 'user_profile', entityId: user.id, metadata: { fields: ['display_name', 'full_name'] } })
+  void logActivity({ userId: user.id, action: 'account.profile_updated', category: 'account', entityType: 'user_profile', entityId: user.id, metadata: { fields: ['display_name', 'full_name', 'company_name', 'phone', 'website'] } })
 
   revalidatePath('/settings')
   return { success: true, message: 'Profile updated' }
