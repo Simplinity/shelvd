@@ -348,7 +348,7 @@ status, action_needed, internal_notes
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
-| 13 | Invite Codes | High | Medium | Optional promo codes on signup for attribution + benefits. Blogger outreach, bookfair tracking, early adopter perks. Admin management + per-code usage stats. See details below. |
+| 13 | Invite Codes | ✅ Done | — | Optional promo codes on signup for attribution + benefits. Tables: invite_codes + invite_code_redemptions. Signup form: optional code field with validation. Admin /admin/invite-codes: list, create, toggle, detail with per-code stats (users, books). Activity logging. Sidebar link. See details below. |
 
 #### #4 Activity Logging — Detail
 
@@ -675,11 +675,11 @@ Funnel steps:
 
 | Step | Description | Effort |
 |------|-------------|--------|
-| 1 | Migration: `invite_codes` + `invite_code_redemptions` tables, RLS, indices | Low |
-| 2 | Signup form: optional code field + validation + redemption logic | Medium |
-| 3 | Admin `/admin/invite-codes` list + create + toggle | Medium |
-| 4 | Admin code detail page: redemption list + per-code stats | Medium |
-| 5 | Admin sidebar link + activity logging for code events | Low |
+| 1 | Migration: `invite_codes` + `invite_code_redemptions` tables, RLS, indices | ✅ Done |
+| 2 | Signup form: optional code field + validation + redemption logic | ✅ Done |
+| 3 | Admin `/admin/invite-codes` list + create + toggle | ✅ Done |
+| 4 | Admin code detail page: redemption list + per-code stats | ✅ Done |
+| 5 | Admin sidebar link + activity logging for code events | ✅ Done |
 
 #### #9 Mobile Responsiveness — Detail
 

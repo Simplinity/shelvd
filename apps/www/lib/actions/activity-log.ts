@@ -42,6 +42,9 @@ export type ActivityAction =
   | 'admin.ticket_status_changed'
   // Import
   | 'import.completed'
+  // Invite codes
+  | 'admin.invite_code_created'
+  | 'admin.invite_code_toggled'
 
 export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'contributor' | 'tag' | 'account' | 'admin' | 'import'
 

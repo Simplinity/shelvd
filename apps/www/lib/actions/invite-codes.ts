@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { logActivity } from '@/lib/actions/activity-log'
 
 export type InviteCode = {
   id: string
@@ -83,6 +84,16 @@ export async function createInviteCode(formData: FormData): Promise<{ success: b
       return { success: false, error: error.message }
     }
 
+    logActivity({
+      userId: user.id,
+      action: 'admin.invite_code_created',
+      category: 'admin',
+      entityType: 'invite_code',
+      entityLabel: code,
+      metadata: { label, source_type: sourceType, source_name: sourceName, benefit_type: benefitType },
+      source: 'admin',
+    })
+
     return { success: true }
   } catch {
     return { success: false, error: 'Failed to create code' }
@@ -92,12 +103,27 @@ export async function createInviteCode(formData: FormData): Promise<{ success: b
 export async function toggleInviteCode(codeId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
     const { error } = await supabase
       .from('invite_codes')
       .update({ is_active: isActive })
       .eq('id', codeId)
 
     if (error) return { success: false, error: error.message }
+
+    if (user) {
+      logActivity({
+        userId: user.id,
+        action: 'admin.invite_code_toggled',
+        category: 'admin',
+        entityType: 'invite_code',
+        entityId: codeId,
+        metadata: { is_active: isActive },
+        source: 'admin',
+      })
+    }
+
     return { success: true }
   } catch {
     return { success: false, error: 'Failed to toggle code' }

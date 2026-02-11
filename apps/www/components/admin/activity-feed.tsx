@@ -25,6 +25,8 @@ const ACTION_LABELS: Record<string, string> = {
   'admin.announcement_toggled': 'toggled announcement',
   'admin.announcement_deleted': 'deleted announcement',
   'admin.ticket_status_changed': 'updated ticket',
+  'admin.invite_code_created': 'created invite code',
+  'admin.invite_code_toggled': 'toggled invite code',
   'import.completed': 'imported books',
 }
 
