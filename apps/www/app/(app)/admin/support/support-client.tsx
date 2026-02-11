@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   updateFeedbackStatus,
@@ -76,16 +76,26 @@ export function AdminSupportClient({
   emailMap,
   counts,
   filters,
+  initialTicketId,
 }: {
   feedback: FeedbackItem[]
   emailMap: Record<string, string>
   counts: Record<string, number>
   filters: { type?: string; status?: string; priority?: string }
+  initialTicketId?: string
 }) {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [expandedId, setExpandedId] = useState<string | null>(initialTicketId || null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+
+  // Scroll to ticket if linked from user detail
+  useEffect(() => {
+    if (initialTicketId) {
+      const el = document.getElementById(`ticket-${initialTicketId}`)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [initialTicketId])
 
   function toggleSelect(id: string) {
     const next = new Set(selectedIds)
@@ -323,7 +333,7 @@ function FeedbackRow({
   }
 
   return (
-    <div className={isPending ? 'opacity-50' : ''}>
+    <div id={`ticket-${item.id}`} className={isPending ? 'opacity-50' : ''}>
       {/* Row summary */}
       <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50/50 transition-colors">
         <input

@@ -225,7 +225,7 @@ export default async function AdminUserDetailPage({
                 {tickets.map(ticket => (
                   <Link
                     key={ticket.id}
-                    href="/admin/support"
+                    href={`/admin/support?ticket=${ticket.id}`}
                     className="flex items-center justify-between py-2 text-sm hover:bg-muted/30 -mx-1 px-1 transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0">

@@ -5,7 +5,7 @@ import { AdminSupportClient } from './support-client'
 export default async function AdminSupportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; status?: string; priority?: string }>
+  searchParams: Promise<{ type?: string; status?: string; priority?: string; ticket?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -43,6 +43,7 @@ export default async function AdminSupportPage({
       emailMap={emailMap}
       counts={counts}
       filters={params}
+      initialTicketId={params.ticket}
     />
   )
 }
