@@ -6,10 +6,13 @@
 
 **App version: v0.13.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, and invite codes complete. 9 lookup providers active. 37 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
-**Current task: User profile expansion**
+**Current task: #14 Tier System & Feature Gating — documentation only (planning)**
+- ✅ Docs: project.md feature #14 entry + full detail section (tiers, feature table, distribution matrix, 7-step plan), roadmap.ts (planned)
+
+**Previous task: User profile expansion ✅**
 - ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles
 - ✅ Step 2: Admin user detail — show all profile data (always visible, — for empty)
-- ✅ Step 3: Settings form + server action — add phone, company_name, website to Profile section so users can fill them in
+- ✅ Step 3: Settings form + server action — add phone, company_name, website to Profile section
 
 **Session work (v0.13.0 — 2026-02-11):**
 - **#4 Activity Logging — ALL 6 STEPS COMPLETE ✅**

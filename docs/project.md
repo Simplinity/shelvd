@@ -348,6 +348,7 @@ status, action_needed, internal_notes
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
+| 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
 | 13 | Invite Codes | ✅ Done | — | Optional promo codes on signup for attribution + benefits. Tables: invite_codes + invite_code_redemptions. Signup form: optional code field with validation. Admin /admin/invite-codes: list, create, toggle, detail with per-code stats (users, books). Activity logging. Sidebar link. See details below. |
 
 #### #4 Activity Logging — Detail
@@ -680,6 +681,93 @@ Funnel steps:
 | 3 | Admin `/admin/invite-codes` list + create + toggle | ✅ Done |
 | 4 | Admin code detail page: redemption list + per-code stats | ✅ Done |
 | 5 | Admin sidebar link + activity logging for code events | ✅ Done |
+
+#### #14 Tier System & Feature Gating — Detail
+
+**What it is:** A database-driven system that controls which features are available to which users, based on their subscription tier. No feature checks are hardcoded in the codebase — everything is driven by a `tier_features` table.
+
+**Why it matters:** Without this, every feature is available to everyone forever. That's fine for early access, but before monetization (Stripe), we need the infrastructure to gate features. More importantly: the system must be flexible enough that moving a feature from one tier to another is a database update, not a code deployment.
+
+**Tier names:**
+
+| Tier | Internal slug | Price | Target |
+|------|---------------|-------|--------|
+| Collector | `collector` | Free | Private collectors, hobbyists, explorers. The full cataloging experience. |
+| Collector Pro | `collector_pro` | €9.99/mo | Serious collectors who want image uploads, public sharing, advanced exports. |
+| Dealer | `dealer` | €49/mo | Professional dealers, auction houses. Business features, bulk operations, dedicated support. |
+
+Current `membership_tier` values in DB (`free`, `pro`) will be migrated to `collector`, `collector_pro`.
+
+**Architecture — feature flags, not tier checks:**
+
+```
+# BAD (hardcoded):
+if user.tier === 'dealer' { show catalog generator }
+
+# GOOD (feature-driven):
+if hasFeature(user, 'catalog_generator') { show it }
+```
+
+`tier_features` table:
+| Column | Type | Purpose |
+|--------|------|--------|
+| id | UUID | PK |
+| tier | TEXT | `collector`, `collector_pro`, `dealer` |
+| feature | TEXT | Feature slug: `image_upload`, `catalog_generator`, `public_sharing`, etc. |
+| enabled | BOOLEAN | Whether this tier has this feature |
+
+`hasFeature(userId, feature)` utility:
+1. Get user's tier from `user_profiles.membership_tier`
+2. Check `is_lifetime_free` — if true, treat as highest tier
+3. Check `benefit_expires_at` — if active trial, treat as that tier
+4. Look up `tier_features` for their tier + requested feature
+5. Return boolean
+
+**UI gating principle:** Gated features are **visible but locked**, never hidden. A Collector sees the Catalog Generator button, but clicking it shows: "Available on Collector Pro — Upgrade". This drives upgrades better than hiding features.
+
+**Initial feature distribution (draft — to be refined):**
+
+| Feature | Collector | Pro | Dealer |
+|---------|-----------|-----|--------|
+| Unlimited books | ✅ | ✅ | ✅ |
+| Full cataloging (all fields) | ✅ | ✅ | ✅ |
+| Collections & tags | ✅ | ✅ | ✅ |
+| Provenance tracking | ✅ | ✅ | ✅ |
+| Book lookup (9 providers) | ✅ | ✅ | ✅ |
+| Library Enrich | ✅ | ✅ | ✅ |
+| CSV import/export | ✅ | ✅ | ✅ |
+| PDF inserts (catalog card/sheet) | ✅ | ✅ | ✅ |
+| Activity log | ✅ | ✅ | ✅ |
+| External links | ✅ | ✅ | ✅ |
+| Condition tracking | ✅ | ✅ | ✅ |
+| Image upload (Blob) | ❌ | ✅ | ✅ |
+| Public catalog / sharing | ❌ | ✅ | ✅ |
+| Collection Audit | ❌ | ✅ | ✅ |
+| Advanced statistics | ❌ | ✅ | ✅ |
+| Catalog Generator (DOCX) | ❌ | ❌ | ✅ |
+| Bulk operations | ❌ | ❌ | ✅ |
+| Document storage (invoices, certs) | ❌ | ❌ | ✅ |
+| Dealer directory listing | ❌ | ❌ | ✅ |
+| Insurance/valuation reports | ❌ | ❌ | ✅ |
+| Priority/dedicated support | ❌ | ✅ | ✅ |
+
+*This distribution is a starting point. The whole point of the feature flags system is that it can be adjusted without code changes.*
+
+**Reassigning features later:** Change one row in `tier_features`. No migration, no deployment. Example: "Make Catalog Generator available to Pro" → `INSERT INTO tier_features (tier, feature, enabled) VALUES ('collector_pro', 'catalog_generator', true)`. Done.
+
+**Delivery plan:**
+
+| Step | Description | Effort |
+|------|-------------|--------|
+| 1 | Migration: `tier_features` table + seed with initial feature assignments | Low |
+| 2 | `hasFeature()` server utility + `useFeature()` client hook | Low |
+| 3 | Migration: rename `membership_tier` values (`free`→`collector`, `pro`→`collector_pro`) | Low |
+| 4 | UI gating: upgrade hints on locked features (component + styling) | Medium |
+| 5 | Landing page + pricing: update tier names, feature lists | Low |
+| 6 | Admin: tier management UI (view/edit feature assignments per tier) | Medium |
+| 7 | Stripe integration (separate feature, depends on this) | High |
+
+Steps 1–6 can be built without Stripe. Step 7 is a separate feature that plugs into this system.
 
 #### #9 Mobile Responsiveness — Detail
 
