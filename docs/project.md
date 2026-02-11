@@ -697,7 +697,7 @@ Funnel steps:
 | Collector Pro | `collector_pro` | €9.99/mo | Serious collectors who want image uploads, public sharing, advanced exports. |
 | Dealer | `dealer` | €49/mo | Professional dealers, auction houses. Business features, bulk operations, dedicated support. |
 
-Current `membership_tier` values in DB (`free`, `pro`) will be migrated to `collector`, `collector_pro`.
+Current `membership_tier` values in DB (`free`, `pro`) migrated to `collector`, `collector_pro` (migration 040).
 
 **Architecture — feature flags, not tier checks:**
 
@@ -732,11 +732,13 @@ if hasFeature(user, 'catalog_generator') { show it }
 
 | | Collector (free) | Collector Pro (€9.99/mo) | Dealer (€49/mo) |
 |--|-----------------|--------------------------|------------------|
-| Books | 500 | 5.000 | Unlimited |
-| Tags | 20 | Unlimited | Unlimited |
+| Books | 500 | 5,000 | 100,000 |
+| Tags | 20 | 1,000 | 1,000 |
 | Image storage | — (URL refs only) | 5 GB | 25 GB |
 | Image bandwidth | — | 25 GB/mo | 250 GB/mo |
 | Support | Community / best effort | Standard (ticket, no SLA) | Priority (24h SLA office hours) + 30 min onboarding call |
+
+All limits are concrete numbers (no "unlimited"). Configurable via admin UI at /admin/tiers.
 
 **Feature matrix:**
 
@@ -789,10 +791,12 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 | 3 | ~~Migration: rename membership_tier values~~ | ✅ Done (merged into step 1) |
 | 4 | UI gating: FeatureGate, UpgradeHint, LimitGate components + tier display names | ✅ Done |
 | 5 | Landing page + pricing: update tier names, feature lists | ✅ Done |
-| 6 | Admin: /admin/tiers — feature matrix + limits editor (migration 041 for admin RLS) | ✅ Done |
+| 6 | Admin: /admin/tiers — feature matrix (on/off toggles with confirmation) + limits editor (click to edit). Migration 041 for admin RLS | ✅ Done |
+| 6b | Admin: user detail — tier selector (Collector/Pro/Dealer buttons) with activity logging | ✅ Done |
+| 6c | Migration 042: replace unlimited (-1) with concrete maximums. All limits are real numbers, no edge cases | ✅ Done |
 | 7 | Stripe integration (separate feature, depends on this) | High |
 
-Steps 1–6 can be built without Stripe. Step 7 is a separate feature that plugs into this system.
+Steps 1–6 complete (42 migrations). Step 7 is a separate feature that plugs into this system.
 
 #### #9 Mobile Responsiveness — Detail
 
