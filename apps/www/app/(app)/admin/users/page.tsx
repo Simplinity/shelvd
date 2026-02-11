@@ -1,13 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { ArrowLeft, Search, Shield, Check, X, Clock } from 'lucide-react'
+import { ArrowLeft, Search, Shield, Check, X, Clock, ArrowUp, ArrowDown } from 'lucide-react'
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './user-actions'
 
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>
+  searchParams: Promise<{ q?: string; status?: string; sort?: string; dir?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -79,6 +79,34 @@ export default async function AdminUsersPage({
     })
   }
 
+  // Sort
+  const sortKey = params.sort || 'joined'
+  const sortDir = params.dir === 'asc' ? 1 : -1
+  filteredProfiles.sort((a, b) => {
+    let cmp = 0
+    switch (sortKey) {
+      case 'name': {
+        const nameA = (authMap.get(a.id)?.email || a.display_name || '').toLowerCase()
+        const nameB = (authMap.get(b.id)?.email || b.display_name || '').toLowerCase()
+        cmp = nameA.localeCompare(nameB)
+        break
+      }
+      case 'books': {
+        cmp = (bookCountMap.get(a.id) || 0) - (bookCountMap.get(b.id) || 0)
+        break
+      }
+      case 'last_active': {
+        const la = authMap.get(a.id)?.last_sign_in_at || ''
+        const lb = authMap.get(b.id)?.last_sign_in_at || ''
+        cmp = la.localeCompare(lb)
+        break
+      }
+      default: // joined
+        cmp = (a.created_at || '').localeCompare(b.created_at || '')
+    }
+    return cmp * sortDir
+  })
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -130,12 +158,12 @@ export default async function AdminUsersPage({
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b">
             <tr>
-              <th className="text-left p-3 font-medium">User</th>
+              <SortHeader label="User" field="name" current={sortKey} dir={sortDir} params={params} />
               <th className="text-left p-3 font-medium">Status</th>
               <th className="text-left p-3 font-medium">Membership</th>
-              <th className="text-left p-3 font-medium">Books</th>
-              <th className="text-left p-3 font-medium">Joined</th>
-              <th className="text-left p-3 font-medium">Last Active</th>
+              <SortHeader label="Books" field="books" current={sortKey} dir={sortDir} params={params} />
+              <SortHeader label="Joined" field="joined" current={sortKey} dir={sortDir} params={params} />
+              <SortHeader label="Last Active" field="last_active" current={sortKey} dir={sortDir} params={params} />
               <th className="text-right p-3 font-medium">Actions</th>
             </tr>
           </thead>
@@ -228,6 +256,33 @@ function FilterLink({ href, active, children }: { href: string, active: boolean,
     >
       {children}
     </Link>
+  )
+}
+
+function SortHeader({ label, field, current, dir, params }: {
+  label: string; field: string; current: string; dir: number
+  params: { q?: string; status?: string }
+}) {
+  const isActive = current === field
+  const nextDir = isActive && dir === -1 ? 'asc' : 'desc'
+  const urlParams = new URLSearchParams()
+  if (params.q) urlParams.set('q', params.q)
+  if (params.status) urlParams.set('status', params.status)
+  urlParams.set('sort', field)
+  urlParams.set('dir', nextDir)
+  
+  return (
+    <th className="text-left p-3 font-medium">
+      <Link
+        href={`/admin/users?${urlParams.toString()}`}
+        className="inline-flex items-center gap-1 hover:text-foreground"
+      >
+        {label}
+        {isActive && (
+          dir === -1 ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+        )}
+      </Link>
+    </th>
   )
 }
 
