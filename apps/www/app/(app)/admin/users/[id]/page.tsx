@@ -198,67 +198,41 @@ export default async function AdminUserDetailPage({
             </div>
           </Section>
 
-          {/* Profile & Contact */}
-          {(profile.full_name || profile.phone || profile.company_name || profile.website || profile.street_address || profile.vat_number || profile.locale || profile.default_currency) && (
-            <Section title="Profile & Contact">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                {profile.full_name && (
-                  <div>
-                    <span className="text-muted-foreground">Full name</span>
-                    <p className="font-medium mt-0.5">{profile.full_name}</p>
-                  </div>
-                )}
-                {profile.company_name && (
-                  <div>
-                    <span className="text-muted-foreground">Company</span>
-                    <p className="font-medium mt-0.5">{profile.company_name}</p>
-                  </div>
-                )}
-                {profile.phone && (
-                  <div>
-                    <span className="text-muted-foreground">Phone</span>
-                    <p className="font-medium mt-0.5">{profile.phone}</p>
-                  </div>
-                )}
-                {profile.website && (
-                  <div>
-                    <span className="text-muted-foreground">Website</span>
-                    <p className="font-medium mt-0.5"><a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener" className="underline hover:text-foreground">{profile.website}</a></p>
-                  </div>
-                )}
-                {profile.vat_number && (
-                  <div>
-                    <span className="text-muted-foreground">VAT number</span>
-                    <p className="font-medium mt-0.5">{profile.vat_number}</p>
-                  </div>
-                )}
-                {(profile.street_address || profile.city || profile.postal_code || profile.country) && (
-                  <div className="col-span-2">
-                    <span className="text-muted-foreground">Address</span>
-                    <p className="font-medium mt-0.5">
-                      {[profile.street_address, [profile.postal_code, profile.city].filter(Boolean).join(' '), profile.country].filter(Boolean).join(', ')}
-                    </p>
-                  </div>
-                )}
-                {(profile.locale || profile.default_currency) && (
-                  <>
-                    {profile.locale && (
-                      <div>
-                        <span className="text-muted-foreground">Locale</span>
-                        <p className="font-medium mt-0.5">{profile.locale}</p>
-                      </div>
-                    )}
-                    {profile.default_currency && (
-                      <div>
-                        <span className="text-muted-foreground">Currency</span>
-                        <p className="font-medium mt-0.5">{profile.default_currency}</p>
-                      </div>
-                    )}
-                  </>
-                )}
+          {/* Profile & Contact — always visible so admin sees what's missing */}
+          <Section title="Profile & Contact">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Full name</span>
+                <p className="font-medium mt-0.5">{profile.full_name || <span className="text-muted-foreground/50">—</span>}</p>
               </div>
-            </Section>
-          )}
+              <div>
+                <span className="text-muted-foreground">Company</span>
+                <p className="font-medium mt-0.5">{profile.company_name || <span className="text-muted-foreground/50">—</span>}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Phone</span>
+                <p className="font-medium mt-0.5">{profile.phone || <span className="text-muted-foreground/50">—</span>}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Website</span>
+                <p className="font-medium mt-0.5">{profile.website ? <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener" className="underline hover:text-foreground">{profile.website}</a> : <span className="text-muted-foreground/50">—</span>}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">VAT number</span>
+                <p className="font-medium mt-0.5">{profile.vat_number || <span className="text-muted-foreground/50">—</span>}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Locale / Currency</span>
+                <p className="font-medium mt-0.5">{[profile.locale, profile.default_currency].filter(Boolean).join(' / ') || <span className="text-muted-foreground/50">—</span>}</p>
+              </div>
+              <div className="col-span-2">
+                <span className="text-muted-foreground">Address</span>
+                <p className="font-medium mt-0.5">
+                  {[profile.street_address, [profile.postal_code, profile.city].filter(Boolean).join(' '), profile.country].filter(Boolean).join(', ') || <span className="text-muted-foreground/50">—</span>}
+                </p>
+              </div>
+            </div>
+          </Section>
 
           {/* Invite Code & Attribution */}
           {inviteCode && (
