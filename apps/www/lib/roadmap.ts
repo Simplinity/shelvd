@@ -193,8 +193,8 @@ export const ROADMAP: RoadmapItem[] = [
 
   // Core Product
   {
-    title: 'Activity Logging',
-    description: 'Who changed what, when, and why. JSON diffs for every edit. The provenance of your provenance.',
+    title: 'Activity Logging & Live Feed',
+    description: 'Who changed what, when, and why. JSON diffs for every edit. Live feed on the admin dashboard — the platform\'s heartbeat. The provenance of your provenance.',
     category: 'admin',
     status: 'planned',
   },
@@ -275,14 +275,32 @@ export const ROADMAP: RoadmapItem[] = [
 
   // Admin
   {
+    title: 'Admin Sidebar Navigation',
+    description: 'Persistent sidebar with icon navigation across all admin pages. Badges for actionable items. No more "Back to Dashboard" ping-pong. Compact on mobile.',
+    category: 'admin',
+    status: 'planned',
+  },
+  {
+    title: 'Weekly Admin Digest',
+    description: 'Automated email every Monday: new signups, books added, open tickets, health delta, most active users. Platform pulse without opening the dashboard.',
+    category: 'admin',
+    status: 'planned',
+  },
+  {
+    title: 'User Onboarding Funnel',
+    description: 'Visual journey tracker on each user profile: signed up → first book → 10 books → used enrich → collections → power user. Spot friction, identify who needs a nudge.',
+    category: 'admin',
+    status: 'planned',
+  },
+  {
     title: 'Admin Impersonation',
     description: '"View as user" mode for debugging. See exactly what a user sees — their books, collections, settings. With a big red banner so you don\'t forget whose life you\'re living.',
     category: 'admin',
     status: 'planned',
   },
   {
-    title: 'Platform Health Checks',
-    description: 'Orphaned records, cross-user inconsistencies, import error log, duplicate publishers. The janitor\'s dashboard for keeping 10,000 collections clean.',
+    title: 'Platform Health Score & Checks',
+    description: 'One glance: a health bar on the dashboard showing missing ISBNs, covers, conditions. Click through to orphaned records, inconsistencies, duplicate publishers. The janitor\'s dashboard with a report card.',
     category: 'admin',
     status: 'planned',
   },

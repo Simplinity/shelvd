@@ -516,10 +516,13 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 |---|---------|----------|--------|-------------|
 | A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
 | A2 | ~~Feedback/bug queue~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Admin support queue at `/admin/support` with full workflow. Part of #5. |
-| A3 | Activity log viewer | High | Medium | Filterable by user, action type, date range, entity. |
+| A3 | Activity log viewer + live feed | High | Medium | Filterable by user, action type, date range, entity. Live chronological feed on admin dashboard (platform heartbeat). |
 | ~~A4~~ | ~~User management~~ | ~~Medium~~ | ~~Medium~~ | ✅ Done. Detail page (/admin/users/[id]): avatar, stats, collections, recent books, support history, admin notes, status/membership/admin actions, send email. List: sortable columns (user/books/joined/last active), heat indicators, clickable rows. Invite codes still planned separately. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
-| A6 | Platform health checks | Low | Medium | Orphaned records, cross-user inconsistencies, import error log, duplicate publishers. The janitor's dashboard for 10,000 collections. |
+| A6 | Platform health score & checks | Medium | Medium | Health bar on dashboard (missing ISBNs, covers, conditions at a glance). Click through to orphaned records, inconsistencies, duplicate publishers. |
+| A7 | Admin sidebar navigation | High | Low | Persistent sidebar across all admin pages. Icon nav, badges for actionable items, compact on mobile. Replaces back-link ping-pong. |
+| A8 | Weekly admin digest | Medium | Medium | Automated Monday email via Resend + Vercel Cron: signups, books added, open tickets, health delta, most active users. |
+| A9 | User onboarding funnel | Medium | Low | Visual journey on user detail: signed up → first book → 10 books → used enrich → collections → power user. Spot friction. |
 
 ### Under Consideration (Future)
 - Insurance & valuation PDF reports
