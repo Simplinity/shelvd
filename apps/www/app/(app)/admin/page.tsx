@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock, MessageSquare, BarChart3 } from 'lucide-react'
+import Link from 'next/link'
+import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock, MessageSquare, BarChart3, ChevronRight } from 'lucide-react'
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './users/user-actions'
 import { AnnouncementManager } from './announcements/announcement-manager'
@@ -187,12 +188,12 @@ export default async function AdminPage({
                 <tr key={profile.id} className="border-b last:border-b-0 hover:bg-muted/30">
                   <td className="p-3">
                     <div>
-                      <div className="font-medium flex items-center gap-2">
+                      <Link href={`/admin/users/${profile.id}`} className="font-medium flex items-center gap-2 underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-foreground">
                         {auth?.email || profile.display_name || 'Unknown'}
                         {profile.is_admin && (
                           <span title="Admin"><Shield className="w-3.5 h-3.5 text-primary" /></span>
                         )}
-                      </div>
+                      </Link>
                       {profile.display_name && auth?.email && (
                         <div className="text-xs text-muted-foreground">{profile.display_name}</div>
                       )}
@@ -216,11 +217,20 @@ export default async function AdminPage({
                     {formatDate(profile.created_at)}
                   </td>
                   <td className="p-3 text-right">
-                    <UserActions
-                      userId={profile.id}
-                      currentStatus={profile.status || 'unknown'}
-                      isAdmin={profile.is_admin || false}
-                    />
+                    <div className="flex items-center justify-end gap-1">
+                      <UserActions
+                        userId={profile.id}
+                        currentStatus={profile.status || 'unknown'}
+                        isAdmin={profile.is_admin || false}
+                      />
+                      <Link
+                        href={`/admin/users/${profile.id}`}
+                        className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                        title="View details"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               )
