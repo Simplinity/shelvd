@@ -1692,6 +1692,7 @@ export type Database = {
           total_users: number
         }[]
       }
+      get_public_stats: { Args: never; Returns: Json }
       get_signups_by_week_for_admin: {
         Args: never
         Returns: {
@@ -1706,11 +1707,26 @@ export type Database = {
           publisher: string
         }[]
       }
-      get_public_stats: {
-        Args: Record<string, never>
-        Returns: Json
-      }
       get_total_books_for_admin: { Args: never; Returns: number }
+      get_user_collections_for_admin: {
+        Args: { target_user_id: string }
+        Returns: {
+          id: string
+          is_default: boolean
+          name: string
+        }[]
+      }
+      get_user_detail_for_admin: {
+        Args: { target_user_id: string }
+        Returns: {
+          book_count: number
+          collection_count: number
+          recent_book_count: number
+          ticket_count: number
+          unique_contributors: number
+          unique_tags: number
+        }[]
+      }
       get_user_isbn_providers: {
         Args: never
         Returns: {
@@ -1722,6 +1738,15 @@ export type Database = {
           priority: number
           provider_id: string
           provider_type: string
+        }[]
+      }
+      get_user_recent_books_for_admin: {
+        Args: { lim?: number; target_user_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          status: string
+          title: string
         }[]
       }
       get_users_for_admin: {

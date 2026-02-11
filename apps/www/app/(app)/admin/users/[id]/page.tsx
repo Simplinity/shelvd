@@ -31,8 +31,8 @@ export default async function AdminUserDetailPage({
   } catch { /* RPC may not exist */ }
 
   // 3. Quick stats (SECURITY DEFINER RPC — bypasses RLS)
-  const { data: statsRow } = await supabase.rpc('get_user_detail_for_admin' as any, { target_user_id: id })
-  const stats = (statsRow as any)?.[0] || { book_count: 0, collection_count: 0, unique_tags: 0, unique_contributors: 0, ticket_count: 0, recent_book_count: 0 }
+  const { data: statsRow } = await supabase.rpc('get_user_detail_for_admin', { target_user_id: id })
+  const stats = statsRow?.[0] || { book_count: 0, collection_count: 0, unique_tags: 0, unique_contributors: 0, ticket_count: 0, recent_book_count: 0 }
   const bookCount = Number(stats.book_count)
   const collectionCount = Number(stats.collection_count)
   const uniqueTags = Number(stats.unique_tags)
@@ -41,8 +41,7 @@ export default async function AdminUserDetailPage({
   const recentBookCount = Number(stats.recent_book_count)
 
   // 4. Recent books (SECURITY DEFINER RPC)
-  const { data: recentBooksRaw } = await supabase.rpc('get_user_recent_books_for_admin' as any, { target_user_id: id, lim: 10 })
-  const recentBooks = (recentBooksRaw || []) as { id: string; title: string; created_at: string; status: string }[]
+  const { data: recentBooks } = await supabase.rpc('get_user_recent_books_for_admin', { target_user_id: id, lim: 10 })
 
   // 5. Support tickets (feedback table already has admin RLS policies)
   const { data: tickets } = await supabase
@@ -53,8 +52,7 @@ export default async function AdminUserDetailPage({
     .limit(10)
 
   // 6. Collections (SECURITY DEFINER RPC)
-  const { data: collectionsRaw } = await supabase.rpc('get_user_collections_for_admin' as any, { target_user_id: id })
-  const collections = (collectionsRaw || []) as { id: string; name: string; is_default: boolean }[]
+  const { data: collections } = await supabase.rpc('get_user_collections_for_admin', { target_user_id: id })
 
   // Heat indicator
   const lastSignIn = authData.last_sign_in_at ? new Date(authData.last_sign_in_at) : null
