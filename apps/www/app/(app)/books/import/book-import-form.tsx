@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import * as XLSX from 'xlsx'
 
 import type { Database } from '@/lib/supabase/database.types'
+import { logActivity } from '@/lib/actions/activity-log'
 
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
@@ -505,6 +506,24 @@ export default function BookImportForm({ referenceData, userId }: Props) {
       }
 
       setImportResults({ success, failed })
+    }
+
+    // Activity log (fire-and-forget)
+    if (success > 0) {
+      void logActivity({
+        userId,
+        action: 'import.completed',
+        category: 'import',
+        entityType: 'book',
+        entityLabel: fileName || 'import',
+        metadata: {
+          filename: fileName,
+          books_imported: success,
+          books_failed: failed,
+          books_total: validBooks.length,
+        },
+        source: 'import',
+      })
     }
 
     setStatus('done')

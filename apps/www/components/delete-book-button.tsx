@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Trash2, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity } from '@/lib/actions/activity-log'
 
 type DeleteBookButtonProps = {
   bookId: string
@@ -45,6 +46,19 @@ export default function DeleteBookButton({ bookId, bookTitle }: DeleteBookButton
 
       if (bookError) {
         throw new Error(`Failed to delete book: ${bookError.message}`)
+      }
+
+      // Activity log (fire-and-forget)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        void logActivity({
+          userId: user.id,
+          action: 'book.deleted',
+          category: 'book',
+          entityType: 'book',
+          entityId: bookId,
+          entityLabel: bookTitle,
+        })
       }
 
       // Redirect to books list

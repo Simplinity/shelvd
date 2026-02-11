@@ -16,6 +16,8 @@ import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-
 import ConditionHistoryEditor, { type ConditionHistoryEntry } from '@/components/condition-history-editor'
 import FieldHelp from '@/components/field-help'
 import { FIELD_HELP } from '@/lib/field-help-texts'
+import { logActivity } from '@/lib/actions/activity-log'
+import { bookLabel } from '@/lib/activity-utils'
 
 type Language = { id: string; name_en: string }
 type Condition = { id: string; name: string }
@@ -801,6 +803,18 @@ export default function BookAddForm({ referenceData }: Props) {
           await supabase.from('books').update({ condition_id: latestWithCondition.afterConditionId }).eq('id', newBook.id)
         }
       }
+
+      // Activity log (fire-and-forget)
+      void logActivity({
+        userId: user.id,
+        action: 'book.created',
+        category: 'book',
+        entityType: 'book',
+        entityId: newBook.id,
+        entityLabel: bookLabel(formData.title, formData.publication_year),
+        metadata: { status: formData.status },
+        source: 'app',
+      })
 
       router.push(`/books/${newBook.id}`)
       router.refresh()

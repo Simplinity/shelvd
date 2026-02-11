@@ -17,6 +17,8 @@ import { parseName, isSameAuthor } from '@/lib/name-utils'
 import type { Tables } from '@/lib/supabase/database.types'
 import FieldHelp from '@/components/field-help'
 import { FIELD_HELP } from '@/lib/field-help-texts'
+import { logActivity } from '@/lib/actions/activity-log'
+import { bookLabel, computeDiff } from '@/lib/activity-utils'
 
 type Book = Tables<'books'>
 type Language = { id: string; name_en: string }
@@ -666,6 +668,31 @@ export default function BookEditForm({ book, referenceData }: Props) {
         const condName = referenceData.conditions.find(c => c.id === latestWithCondition.afterConditionId)?.name
         if (condName && window.confirm(`Update the book's general condition to "${condName}"?`)) {
           await supabase.from('books').update({ condition_id: latestWithCondition.afterConditionId }).eq('id', book.id)
+        }
+      }
+
+      // Activity log (fire-and-forget)
+      const diffFields = [
+        'title', 'subtitle', 'status', 'publisher_name', 'publication_year',
+        'condition_id', 'isbn_13', 'isbn_10', 'estimated_value', 'sales_price',
+        'storage_location', 'cover_image_url',
+      ]
+      const changes = computeDiff(
+        Object.fromEntries(diffFields.map(f => [f, (book as Record<string, unknown>)[f]])),
+        Object.fromEntries(diffFields.map(f => [f, (formData as Record<string, unknown>)[f]])),
+      )
+      if (Object.keys(changes).length > 0) {
+        const { data: { user: logUser } } = await supabase.auth.getUser()
+        if (logUser) {
+          void logActivity({
+            userId: logUser.id,
+            action: 'book.updated',
+            category: 'book',
+            entityType: 'book',
+            entityId: book.id,
+            entityLabel: bookLabel(formData.title, formData.publication_year),
+            metadata: { changes },
+          })
         }
       }
 
