@@ -530,7 +530,7 @@ export default function Home() {
           PRICING / EARLY ACCESS
       ═══════════════════════════════════════ */}
       <section className="py-24 px-6">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             Simple pricing. No surprises.
           </h2>
@@ -558,7 +558,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto items-stretch">
+          <div className="grid sm:grid-cols-3 gap-6 items-stretch">
             {/* Collector */}
             <div className="border bg-background p-8 text-left flex flex-col">
               <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Collector</p>
