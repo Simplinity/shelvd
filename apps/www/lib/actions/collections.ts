@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { logActivity } from '@/lib/actions/activity-log'
 
 export type CollectionRow = {
   id: string
@@ -120,6 +121,8 @@ export async function createCollection(formData: FormData): Promise<CollectionRe
 
   if (error) return { error: 'Failed to create collection' }
 
+  void logActivity({ userId: user.id, action: 'collection.created', category: 'collection', entityType: 'collection', entityLabel: name })
+
   revalidatePath('/books')
   return { success: true, message: 'Collection created' }
 }
@@ -147,6 +150,8 @@ export async function updateCollection(id: string, formData: FormData): Promise<
 
   if (error) return { error: 'Failed to update collection' }
 
+  void logActivity({ userId: user.id, action: 'collection.renamed', category: 'collection', entityType: 'collection', entityId: id, entityLabel: name })
+
   revalidatePath('/books')
   return { success: true, message: 'Collection updated' }
 }
@@ -161,7 +166,7 @@ export async function deleteCollection(id: string): Promise<CollectionResult> {
   // Check it's not the default
   const { data: collection } = await supabase
     .from('collections')
-    .select('is_default')
+    .select('is_default, name')
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
@@ -177,6 +182,8 @@ export async function deleteCollection(id: string): Promise<CollectionResult> {
     .eq('user_id', user.id)
 
   if (error) return { error: 'Failed to delete collection' }
+
+  void logActivity({ userId: user.id, action: 'collection.deleted', category: 'collection', entityType: 'collection', entityId: id, entityLabel: collection.name })
 
   revalidatePath('/books')
   return { success: true, message: 'Collection deleted' }
@@ -281,6 +288,10 @@ export async function addBooksToCollection(bookIds: string[], collectionId: stri
     }
   }
 
+  if (newIds.length > 0) {
+    void logActivity({ userId: user.id, action: 'collection.book_added', category: 'collection', entityType: 'collection', entityId: collectionId, metadata: { book_count: newIds.length } })
+  }
+
   revalidatePath('/books')
   return { success: true, message: `${newIds.length} book(s) added to collection` }
 }
@@ -304,6 +315,8 @@ export async function removeBooksFromCollection(bookIds: string[], collectionId:
 
     if (error) return { error: 'Failed to remove books from collection' }
   }
+
+  void logActivity({ userId: user.id, action: 'collection.book_removed', category: 'collection', entityType: 'collection', entityId: collectionId, metadata: { book_count: bookIds.length } })
 
   revalidatePath('/books')
   return { success: true, message: `${bookIds.length} book(s) removed from collection` }

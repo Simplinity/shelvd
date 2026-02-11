@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { sendFeedbackNotification, sendAdminResponseEmail } from '@/lib/email'
+import { logActivity } from '@/lib/actions/activity-log'
 
 export type FeedbackResult = {
   error?: string
@@ -196,6 +197,9 @@ export async function updateFeedbackStatus(
     .eq('id', feedbackId)
 
   if (error) return { error: 'Failed to update status' }
+
+  void logActivity({ userId: user.id, action: 'admin.ticket_status_changed', category: 'admin', entityType: 'feedback', entityId: feedbackId, metadata: { new_status: status }, source: 'admin' })
+
   revalidatePath('/admin/support')
   return { success: true, message: `Status updated to ${status}` }
 }

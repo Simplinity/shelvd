@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Save, Loader2, CheckCircle, Clock, Ban, Shield, ShieldOff, Gift, CreditCard, Send, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { logActivity } from '@/lib/actions/activity-log'
 
 interface Props {
   userId: string
@@ -30,6 +31,8 @@ export function UserDetailClient({
   const saveNotes = async () => {
     setSavingNotes(true)
     await supabase.from('user_profiles').update({ notes, updated_at: new Date().toISOString() }).eq('id', userId)
+    const { data: { user: admin } } = await supabase.auth.getUser()
+    if (admin) void logActivity({ userId: admin.id, action: 'admin.note_added', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, source: 'admin' })
     setSavingNotes(false)
     setNotesSaved(true)
     setTimeout(() => setNotesSaved(false), 2000)
@@ -44,8 +47,21 @@ export function UserDetailClient({
       .from('user_profiles')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', userId)
-    if (error) alert('Error: ' + error.message)
-    else router.refresh()
+    if (error) {
+      alert('Error: ' + error.message)
+    } else {
+      const { data: { user: admin } } = await supabase.auth.getUser()
+      if (admin) {
+        if ('status' in updates) {
+          void logActivity({ userId: admin.id, action: 'admin.user_status_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { old_status: currentStatus, new_status: updates.status, reason: updates.status_reason }, source: 'admin' })
+        } else if ('is_lifetime_free' in updates) {
+          void logActivity({ userId: admin.id, action: 'admin.membership_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { is_lifetime_free: updates.is_lifetime_free }, source: 'admin' })
+        } else if ('is_admin' in updates) {
+          void logActivity({ userId: admin.id, action: 'admin.membership_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { is_admin: updates.is_admin }, source: 'admin' })
+        }
+      }
+      router.refresh()
+    }
     setActionLoading(false)
   }
 

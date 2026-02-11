@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { logActivity } from '@/lib/actions/activity-log'
 
 export type SettingsResult = {
   error?: string
@@ -27,6 +28,8 @@ export async function updateProfile(formData: FormData): Promise<SettingsResult>
     .eq('id', user.id)
 
   if (error) return { error: 'Failed to update profile' }
+
+  void logActivity({ userId: user.id, action: 'account.profile_updated', category: 'account', entityType: 'user_profile', entityId: user.id, metadata: { fields: ['display_name', 'full_name'] } })
 
   revalidatePath('/settings')
   return { success: true, message: 'Profile updated' }
@@ -78,6 +81,8 @@ export async function updatePreferences(formData: FormData): Promise<SettingsRes
 
   if (error) return { error: 'Failed to update preferences' }
 
+  void logActivity({ userId: user.id, action: 'account.settings_changed', category: 'account', entityType: 'user_profile', entityId: user.id, metadata: { fields: ['default_currency', 'locale', 'items_per_page'] } })
+
   revalidatePath('/settings')
   return { success: true, message: 'Preferences updated' }
 }
@@ -100,6 +105,8 @@ export async function updateAddress(formData: FormData): Promise<SettingsResult>
     .eq('id', user.id)
 
   if (error) return { error: 'Failed to update address' }
+
+  void logActivity({ userId: user.id, action: 'account.settings_changed', category: 'account', entityType: 'user_profile', entityId: user.id, metadata: { fields: ['address'] } })
 
   revalidatePath('/settings')
   return { success: true, message: 'Address updated' }

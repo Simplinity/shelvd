@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { logActivity } from '@/lib/actions/activity-log'
 import { Plus, Trash2, Eye, EyeOff, Megaphone } from 'lucide-react'
 import { formatDate } from '@/lib/format'
 
@@ -52,6 +53,8 @@ export function AnnouncementManager({ announcements: initial }: { announcements:
 
     if (!error && data) {
       setAnnouncements([data, ...announcements])
+      const { data: { user: admin } } = await supabase.auth.getUser()
+      if (admin) void logActivity({ userId: admin.id, action: 'admin.announcement_created', category: 'admin', entityType: 'announcement', entityId: data.id, entityLabel: title.trim(), source: 'admin' })
       setTitle('')
       setMessage('')
       setType('info')
@@ -70,6 +73,9 @@ export function AnnouncementManager({ announcements: initial }: { announcements:
       .eq('id', id)
 
     if (!error) {
+      const ann = announcements.find(a => a.id === id)
+      const { data: { user: admin } } = await supabase.auth.getUser()
+      if (admin) void logActivity({ userId: admin.id, action: 'admin.announcement_toggled', category: 'admin', entityType: 'announcement', entityId: id, entityLabel: ann?.title, metadata: { is_active: !currentActive }, source: 'admin' })
       setAnnouncements(announcements.map(a =>
         a.id === id ? { ...a, is_active: !currentActive } : a
       ))
@@ -79,6 +85,7 @@ export function AnnouncementManager({ announcements: initial }: { announcements:
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this announcement permanently?')) return
+    const ann = announcements.find(a => a.id === id)
     const supabase = createClient()
     const { error } = await supabase
       .from('announcements')
@@ -86,6 +93,8 @@ export function AnnouncementManager({ announcements: initial }: { announcements:
       .eq('id', id)
 
     if (!error) {
+      const { data: { user: admin } } = await supabase.auth.getUser()
+      if (admin) void logActivity({ userId: admin.id, action: 'admin.announcement_deleted', category: 'admin', entityType: 'announcement', entityLabel: ann?.title, source: 'admin' })
       setAnnouncements(announcements.filter(a => a.id !== id))
       router.refresh()
     }

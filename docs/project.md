@@ -394,7 +394,7 @@ Indices on (user_id, created_at DESC), (action, created_at DESC), (entity_type, 
 |------|------|--------|--------|
 | 1 | Foundation: `activity_log` table + indices + RLS + `logActivity()` utility | Low | ✅ Done |
 | 2 | Book instrumentation: createBook, updateBook, deleteBook, enrichBook, status changes, import | Medium | ✅ Done |
-| 3 | Rest instrumentation: collections, provenance, contributors, tags, account, admin actions | Medium | Pending |
+| 3 | Rest instrumentation: collections, provenance, contributors, tags, account, admin actions | Medium | ✅ Done |
 | 4 | Admin live feed on dashboard (A3 partial): RPC + compact chronological feed component | Low | Pending |
 | 5 | Admin log viewer page (A3 complete): /admin/activity, full table, filters, pagination, sidebar link | Medium | Pending |
 | 6 | User-facing activity (future): personal history, "last modified" on book detail, recent changes | Low-Medium | Future |
