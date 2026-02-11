@@ -542,7 +542,7 @@ export default function Home() {
           </p>
 
           {/* Early Access Banner */}
-          <div className="border-2 border-primary bg-primary/5 p-6 mb-10 max-w-2xl mx-auto">
+          <div className="border-2 border-primary bg-primary/5 p-6 mb-16 max-w-2xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-bold uppercase tracking-wider text-primary">Early Access</span>
@@ -566,10 +566,14 @@ export default function Home() {
               <p className="text-xs text-muted-foreground mb-6">For every book lover</p>
               <ul className="space-y-3 flex-1">
                 <PricingItem>Up to 500 books</PricingItem>
-                <PricingItem>Full cataloging &amp; provenance</PricingItem>
-                <PricingItem>Book lookup &amp; Library Enrich</PricingItem>
+                <PricingItem>Full cataloging (76+ fields)</PricingItem>
+                <PricingItem>Collections &amp; 20 custom tags</PricingItem>
+                <PricingItem>Provenance &amp; condition tracking</PricingItem>
+                <PricingItem>Book lookup (9 providers)</PricingItem>
+                <PricingItem>Library Enrich</PricingItem>
                 <PricingItem>CSV import &amp; export</PricingItem>
-                <PricingItem>20 custom tags</PricingItem>
+                <PricingItem>External links &amp; activity log</PricingItem>
+                <PricingItem>Community support</PricingItem>
               </ul>
               <Button asChild variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8">
                 <Link href="/signup">
@@ -587,11 +591,15 @@ export default function Home() {
               <p className="text-4xl font-bold mb-1">&euro;9.99<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For serious collectors</p>
               <ul className="space-y-3 flex-1">
+                <PricingItem>Everything in Collector</PricingItem>
                 <PricingItem>Up to 5.000 books</PricingItem>
                 <PricingItem>Unlimited tags</PricingItem>
                 <PricingItem>5 GB image uploads</PricingItem>
-                <PricingItem>PDF inserts &amp; public sharing</PricingItem>
-                <PricingItem>Collection Audit &amp; advanced stats</PricingItem>
+                <PricingItem>PDF inserts (catalog card &amp; sheet)</PricingItem>
+                <PricingItem>Public catalog &amp; sharing</PricingItem>
+                <PricingItem>Collection Audit</PricingItem>
+                <PricingItem>Advanced statistics</PricingItem>
+                <PricingItem>Standard support</PricingItem>
               </ul>
               <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon
@@ -604,11 +612,16 @@ export default function Home() {
               <p className="text-4xl font-bold mb-1">&euro;49<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For professional dealers</p>
               <ul className="space-y-3 flex-1">
+                <PricingItem muted>Everything in Collector Pro</PricingItem>
                 <PricingItem muted>Unlimited books</PricingItem>
-                <PricingItem muted>25 GB storage + catalog generator</PricingItem>
-                <PricingItem muted>Bulk operations &amp; document storage</PricingItem>
+                <PricingItem muted>25 GB image storage</PricingItem>
+                <PricingItem muted>Catalog generator (DOCX)</PricingItem>
+                <PricingItem muted>Bulk operations</PricingItem>
+                <PricingItem muted>Document storage (invoices, certs)</PricingItem>
+                <PricingItem muted>Insurance &amp; valuation reports</PricingItem>
                 <PricingItem muted>Dealer directory listing</PricingItem>
-                <PricingItem muted>Priority support + onboarding call</PricingItem>
+                <PricingItem muted>Priority support (24h SLA)</PricingItem>
+                <PricingItem muted>30 min onboarding call</PricingItem>
               </ul>
               <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon
