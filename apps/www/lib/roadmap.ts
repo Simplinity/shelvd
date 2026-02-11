@@ -194,8 +194,8 @@ export const ROADMAP: RoadmapItem[] = [
   // Core Product
   {
     title: 'Activity Logging & Live Feed',
-    description: 'Who changed what, when, and why. JSON diffs for every edit. Live feed on the admin dashboard — the platform\'s heartbeat. The provenance of your provenance.',
-    category: 'admin',
+    description: 'Every meaningful action recorded: book edits with JSON diffs, enrichments with source attribution, imports with summaries, admin actions with context. Six-step rollout from foundation to admin live feed to full log viewer. The provenance of your provenance.',
+    category: 'platform',
     status: 'planned',
   },
   {

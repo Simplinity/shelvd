@@ -332,7 +332,7 @@ status, action_needed, internal_notes
 | 1 | Locale & number formatting | ✅ Done | — | Locale setting in user_profiles, shared `lib/format.ts` with formatInteger/formatDecimal/formatCurrency/formatDate, applied to all pages (detail, stats, books list, admin, duplicates, settings). Legacy date_format column dropped (migration 024). |
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
-| 4 | Activity logging | High | Medium-High | `user_activity_log` table: user_id, action, entity_type, entity_id, details (JSON diff), timestamp. Admin filterable log viewer. |
+| 4 | Activity logging | High | Medium-High | Platform-wide activity log. 6 steps: foundation → book instrumentation → rest instrumentation → admin live feed → admin log viewer → user-facing activity. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | **Fase 1 complete ✅ (URL-only).** Fase 2 pending (Blob uploads). Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
@@ -348,6 +348,58 @@ status, action_needed, internal_notes
 | 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
+
+#### #4 Activity Logging — Detail
+
+**What it is:** Every meaningful action in Shelvd gets recorded. Not for analytics — for context. The backbone for the admin live feed (A3), weekly digest (A8), future audit trails, and eventually personal activity history per user.
+
+**Table: `activity_log`**
+
+```sql
+CREATE TABLE activity_log (
+  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at  TIMESTAMPTZ DEFAULT now(),
+  user_id     UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  action      TEXT NOT NULL,        -- 'book.created', 'book.updated', 'collection.renamed'
+  category    TEXT NOT NULL,        -- 'book', 'collection', 'provenance', 'account', 'admin'
+  entity_type TEXT,                 -- 'book', 'collection', 'provenance_entry', 'user_profile'
+  entity_id   UUID,
+  entity_label TEXT,               -- Human-readable: "Gutenberg Bible (1455)" (avoids joins)
+  metadata    JSONB DEFAULT '{}',  -- Diff, source, old/new values
+  source      TEXT DEFAULT 'app'   -- 'app', 'import', 'api', 'admin', 'system'
+);
+```
+
+Indices on (user_id, created_at DESC), (action, created_at DESC), (entity_type, entity_id), (created_at DESC).
+
+**Actions logged:**
+- Books: created (manual/import/lookup), updated (JSON diff of changed fields), deleted, enriched (source + fields updated), status changed, cover uploaded/removed
+- Collections: created/renamed/deleted, book added/removed
+- Provenance: entry added/updated/removed, source added
+- Contributors & tags: added/removed (with role)
+- Account: signup, profile updated, settings changed
+- Admin: user status changed, membership changed, admin note added, announcement created/toggled/deleted, ticket status changed
+
+**Approach:** Server actions (not database triggers). Each existing server action gets a `logActivity()` call. Full control over labeling, metadata, and source context.
+
+**Metadata examples:**
+- Book updated: `{"changes": {"condition": {"old": "good", "new": "fine"}, "price": {"old": null, "new": "250.00"}}}`
+- Book enriched: `{"source": "loc", "fields_updated": ["publisher", "year", "pages", "isbn"]}`
+- Import: `{"filename": "bibliotheek-2024.csv", "books_imported": 347, "books_skipped": 12}`
+- Admin status change: `{"target_user_id": "abc", "old_status": "active", "new_status": "suspended"}`
+
+**6-step delivery (each step = separate PR, wait for approval):**
+
+| Step | What | Effort | Status |
+|------|------|--------|--------|
+| 1 | Foundation: `activity_log` table + indices + RLS + `logActivity()` utility | Low | Pending |
+| 2 | Book instrumentation: createBook, updateBook, deleteBook, enrichBook, status changes, import | Medium | Pending |
+| 3 | Rest instrumentation: collections, provenance, contributors, tags, account, admin actions | Medium | Pending |
+| 4 | Admin live feed on dashboard (A3 partial): RPC + compact chronological feed component | Low | Pending |
+| 5 | Admin log viewer page (A3 complete): /admin/activity, full table, filters, pagination, sidebar link | Medium | Pending |
+| 6 | User-facing activity (future): personal history, "last modified" on book detail, recent changes | Low-Medium | Future |
+
+Recommended order: 1 → 2 → 4 → 3 → 5 (get visible results on dashboard early, then complete instrumentation).
 
 #### #6 Image Upload — Detail
 
@@ -595,7 +647,7 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 |---|---------|----------|--------|-------------|
 | A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
 | A2 | ~~Feedback/bug queue~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Admin support queue at `/admin/support` with full workflow. Part of #5. |
-| A3 | Activity log viewer + live feed | High | Medium | Filterable by user, action type, date range, entity. Live chronological feed on admin dashboard (platform heartbeat). |
+| A3 | Activity log viewer + live feed | High | Medium | Steps 4–5 of #4. Live feed on dashboard + full /admin/activity page with filters. Depends on #4 foundation (steps 1–3). |
 | ~~A4~~ | ~~User management~~ | ~~Medium~~ | ~~Medium~~ | ✅ Done. Detail page (/admin/users/[id]): avatar, stats, collections, recent books, support history, admin notes, status/membership/admin actions, send email. List: sortable columns (user/books/joined/last active), heat indicators, clickable rows. Invite codes still planned separately. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
 | A6 | Platform health score & checks | Medium | Medium | Health bar on dashboard (missing ISBNs, covers, conditions at a glance). Click through to orphaned records, inconsistencies, duplicate publishers. |
