@@ -153,6 +153,9 @@
 | A6 | Platform health checks | Medium | Orphaned records, cross-user inconsistencies, import errors, duplicate publishers. |
 | A8 | Weekly admin digest | Medium | Automated Monday email via Resend + Vercel Cron: signups, books added, open tickets, health delta. |
 | A9 | Onboarding funnel (admin view) | Low | Visual journey tracker on user detail. Aggregated funnel on dashboard. |
+| S1 | WooCommerce integration | Medium | Sync boeken naar WooCommerce webshop als producten. REST API v3, API key auth. Book → product mapping (titel, prijs, foto's, conditie). Push vanuit Shelvd, sync status tracking. Dealer only. |
+| S2 | Catawiki integration | High | Veiling-upload vanuit Shelvd. Geen publieke API — waarschijnlijk CSV/XML export in Catawiki-formaat, of scraping. Lot beschrijving genereren uit boekdata. Dealer only. |
+| S3 | AbeBooks integration | Medium-High | XML feed systeem voor AbeBooks/ZVAB dealer inventory. Ouderwets protocol (HomeBase-compatibel). Vaste velden: auteur, titel, prijs, conditie, beschrijving. Dealer only. |
 
 ### Completed
 | # | Feature | Date |
@@ -176,7 +179,7 @@
 |---|---------|----------|--------|-------------|
 | B1 | Insurance & valuation PDF reports | Medium | Medium | Generate PDF reports for insurance: book list with photos, estimated values, total collection value. Timestamped, signed, official-looking. Export per collection or full library. |
 | B2 | Valuation history | Medium | Medium | Separate from provenance. Track market value over time without ownership changes: appraisals, auction estimates, dealer quotes. `valuation_history` table: book_id, date, value, currency, source (appraisal/auction_result/dealer_quote/self_estimate), appraiser, notes. Chart on book detail showing value trend over time. |
-| B3 | Condition history | Medium | Medium | Physical life of the book, separate from provenance (who owned it). `condition_history` table: book_id, date, event_type (restoration/rebinding/repair/damage/cleaning/deacidification/assessment), description, performed_by (restorer/workshop), cost, currency, before_condition_id, after_condition_id, notes. Chronological log on book detail. Current `condition_id` always reflects latest state. |
+| ~~B3~~ | ~~Condition history~~ | — | — | ✅ Done (2026-02-09) |
 
 ### Dealer & Marketplace
 | # | Feature | Priority | Effort | Description |
@@ -184,6 +187,5 @@
 | D1 | Dealer directory & messaging | Medium | High | Two-tier system. **Dealer account (paid tier):** dealers register with business profile (name, type, location, phone, email, website, description, specialties). Visible in public dealer directory. **Regular users:** browse dealer directory, view dealer profiles, send a message to any dealer with their wishlist or any collection attached. Dealers receive messages in their account + email notification. DB: `dealer_profiles` table linked to user account, `dealer_messages` table (from_user, to_dealer, subject, message, attached_collection_id, attached_wishlist). No CRM, no transaction history, no ratings — keep it simple. |
 
 ### Under Consideration
-- Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - PDF catalog export
 - Templates system
