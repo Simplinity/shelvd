@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { AdminSidebar } from './admin-sidebar'
 
 export default async function AdminLayout({
   children,
@@ -24,6 +25,25 @@ export default async function AdminLayout({
   if (!profile?.is_admin) {
     redirect('/books')
   }
-  
-  return <>{children}</>
+
+  // Badge counts for sidebar
+  const { count: newTickets } = await supabase
+    .from('feedback')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'new')
+
+  const badges = {
+    support: newTickets ?? 0,
+  }
+
+  return (
+    <div className="flex">
+      <div className="sticky top-[68px] h-[calc(100vh-68px)]">
+        <AdminSidebar badges={badges} />
+      </div>
+      <main className="flex-1 min-w-0 min-h-[calc(100vh-68px)]">
+        {children}
+      </main>
+    </div>
+  )
 }

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { ArrowLeft, Search, Shield, Check, X, Clock, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react'
+import { Search, Shield, Check, X, Clock, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react'
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './user-actions'
 
@@ -111,12 +111,6 @@ export default async function AdminUsersPage({
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <Link 
-          href="/admin" 
-          className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-        </Link>
         <h1 className="text-2xl font-bold">User Management</h1>
         <p className="text-muted-foreground">
           {filteredProfiles.length} users
