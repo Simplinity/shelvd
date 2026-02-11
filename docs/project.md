@@ -789,7 +789,7 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 | 3 | ~~Migration: rename membership_tier values~~ | ✅ Done (merged into step 1) |
 | 4 | UI gating: FeatureGate, UpgradeHint, LimitGate components + tier display names | ✅ Done |
 | 5 | Landing page + pricing: update tier names, feature lists | ✅ Done |
-| 6 | Admin: tier management UI (view/edit feature assignments per tier) | Medium |
+| 6 | Admin: /admin/tiers — feature matrix + limits editor (migration 041 for admin RLS) | ✅ Done |
 | 7 | Stripe integration (separate feature, depends on this) | High |
 
 Steps 1–6 can be built without Stripe. Step 7 is a separate feature that plugs into this system.

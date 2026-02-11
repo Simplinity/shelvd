@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Shield, Users, MessageSquare, Activity, Ticket, BarChart3, ArrowLeft } from 'lucide-react'
+import { Shield, Users, MessageSquare, Activity, Ticket, BarChart3, Layers, ArrowLeft } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Overview', icon: Shield, exact: true },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/support', label: 'Support', icon: MessageSquare, badgeKey: 'support' as const },
   { href: '/admin/invite-codes', label: 'Invite Codes', icon: Ticket },
+  { href: '/admin/tiers', label: 'Tiers', icon: Layers },
   { href: '/admin/activity', label: 'Activity', icon: Activity },
   { href: '/admin/stats', label: 'Statistics', icon: BarChart3 },
 ]

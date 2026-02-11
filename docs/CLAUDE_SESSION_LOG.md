@@ -15,6 +15,7 @@
 - ✅ Step 1: Migration 040 — tier_features table (19 features × 3 tiers), tier_limits table (books/tags/storage/bandwidth), rename membership_tier (free→collector, pro→collector_pro)
 - ✅ Step 2: hasFeature() server + useFeature()/useTierLimit()/useTier() client hooks + TierProvider in app layout
 - ✅ Step 4: UI gating — FeatureGate, UpgradeHint, UpgradeHintInline, LimitGate, LimitReached + tier display names fixed
+- ✅ Step 6: Admin tier management UI — /admin/tiers with feature matrix + limits editor (migration 041 for admin RLS)
 
 **Previous task: User profile expansion ✅**
 - ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles
