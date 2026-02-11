@@ -794,7 +794,9 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 | 6 | Admin: /admin/tiers — feature matrix (on/off toggles with confirmation) + limits editor (click to edit). Migration 041 for admin RLS | ✅ Done |
 | 6b | Admin: user detail — tier selector (Collector/Pro/Dealer buttons) with activity logging | ✅ Done |
 | 6c | Migration 042: replace unlimited (-1) with concrete maximums. All limits are real numbers, no edge cases | ✅ Done |
-| 7 | Stripe integration (separate feature, depends on this) | High |
+| 7 | Stripe integration + upgrade flow (separate feature, depends on this) | High |
+
+**⚠️ Temporary:** All upgrade links (FeatureGate, LimitGate, UpgradeHint, pricing page CTAs) currently point to `/#pricing` as placeholder. Must be wired to Stripe checkout when payments are implemented. Tier changes should happen automatically on payment success via Stripe webhooks.
 
 Steps 1–6 complete (42 migrations). Step 7 is a separate feature that plugs into this system.
 

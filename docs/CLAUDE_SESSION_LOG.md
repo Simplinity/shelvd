@@ -142,7 +142,7 @@
 | 7 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Pro+ only. |
 | 10 | Collection Audit | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps. One-click fixes. Pro+ only. |
 | 8b | Knowledge base (`/help`) | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
-| 14.7 | Stripe integration | High | Payment processing for Pro + Dealer tiers. Plugs into existing tier system. |
+| 14.7 | Payments & Upgrade Flow | High | Stripe integration, checkout flow, upgrade/downgrade, billing portal. All upgrade links (FeatureGate, LimitGate, pricing page CTAs) currently point to `/#pricing` as placeholder — must be wired to Stripe checkout. Tier changes on payment success via webhooks. |
 
 ### 🟢 Planned — Post-Launch
 | # | Feature | Effort | Description |

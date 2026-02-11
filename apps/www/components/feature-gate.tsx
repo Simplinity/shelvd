@@ -1,5 +1,8 @@
 'use client'
 
+// TODO: All upgrade links point to /#pricing as placeholder.
+// Wire to Stripe checkout when payments are implemented.
+
 import { useFeature, useTierLimit } from '@/lib/hooks/use-tier'
 import { FEATURE_MIN_TIER, TIER_NAMES, TIER_PRICES, FEATURE_LABELS } from '@/lib/tier-config'
 import { Lock, ArrowRight } from 'lucide-react'
