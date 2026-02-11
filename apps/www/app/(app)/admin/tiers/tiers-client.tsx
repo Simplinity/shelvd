@@ -51,10 +51,16 @@ export function TiersClient({
   // Get all unique feature slugs, sorted
   const allFeatures = [...new Set(features.map(f => f.feature))].sort()
 
-  // Build lookup: tier+feature → enabled
-  const featureMap = new Map<string, boolean>()
+  // Build lookup: tier+feature → enabled (true) or not present (false)
+  const featureOn = new Set<string>()
   for (const f of features) {
-    featureMap.set(`${f.tier}:${f.feature}`, f.enabled)
+    if (f.enabled) featureOn.add(`${f.tier}:${f.feature}`)
+  }
+
+  // Build lookup: does a row exist in DB?
+  const featureExists = new Set<string>()
+  for (const f of features) {
+    featureExists.add(`${f.tier}:${f.feature}`)
   }
 
   // Build lookup: tier+limit_key → limit_value
@@ -65,31 +71,40 @@ export function TiersClient({
 
   const allLimitKeys = [...new Set(limits.map(l => l.limit_key))].sort()
 
-  function handleCellClick(tier: string, feature: string) {
+  function handleToggle(tier: string, feature: string) {
     const key = `${tier}:${feature}`
-    const exists = featureMap.has(key)
-    const enabled = featureMap.get(key) ?? false
+    const isOn = featureOn.has(key)
+    const exists = featureExists.has(key)
+    const tierName = TIER_NAMES[tier]
+    const featureName = FEATURE_LABELS[feature] || feature
+
+    const action = isOn ? 'disable' : 'enable'
+    if (!confirm(`${action === 'enable' ? 'Enable' : 'Disable'} "${featureName}" for all ${tierName} users?\n\nThis takes effect immediately.`)) return
 
     setLoadingCell(key)
 
     startTransition(async () => {
-      if (!exists) {
-        // — → ✓ (add feature to tier)
+      if (isOn) {
+        // On → Off: disable (or remove if it was added)
+        const result = await toggleTierFeature(tier, feature, false)
+        if (result.success) {
+          setFeatures(prev => prev.map(f =>
+            f.tier === tier && f.feature === feature ? { ...f, enabled: false } : f
+          ))
+        }
+      } else if (exists) {
+        // Off → On: re-enable existing row
+        const result = await toggleTierFeature(tier, feature, true)
+        if (result.success) {
+          setFeatures(prev => prev.map(f =>
+            f.tier === tier && f.feature === feature ? { ...f, enabled: true } : f
+          ))
+        }
+      } else {
+        // Not in DB → add as enabled
         const result = await addTierFeature(tier, feature)
         if (result.success) {
           setFeatures(prev => [...prev, { id: `${tier}-${feature}`, tier, feature, enabled: true }])
-        }
-      } else if (enabled) {
-        // ✓ → ✕ (disable)
-        const result = await toggleTierFeature(tier, feature, false)
-        if (result.success) {
-          setFeatures(prev => prev.map(f => f.tier === tier && f.feature === feature ? { ...f, enabled: false } : f))
-        }
-      } else {
-        // ✕ → — (remove from tier)
-        const result = await removeTierFeature(tier, feature)
-        if (result.success) {
-          setFeatures(prev => prev.filter(f => !(f.tier === tier && f.feature === feature)))
         }
       }
       setLoadingCell(null)
@@ -99,11 +114,19 @@ export function TiersClient({
   function handleLimitEdit(tier: string, limitKey: string) {
     const key = `${tier}:${limitKey}`
     const current = limitMap.get(key) ?? 0
-    const input = prompt(`New value for ${limitKey} (${TIER_NAMES[tier]}).\n-1 = unlimited, 0 = none.\nCurrent: ${formatLimit(limitKey, current)}`, String(current))
+    const tierName = TIER_NAMES[tier]
+    const input = prompt(
+      `New value for "${limitKey.replace(/_/g, ' ')}" (${tierName}).\n\n` +
+      `-1 = unlimited, 0 = none.\n` +
+      `Current: ${formatLimit(limitKey, current)}\n\n` +
+      `This affects all ${tierName} users immediately.`,
+      String(current)
+    )
     if (input === null) return
 
     const newValue = parseInt(input, 10)
     if (isNaN(newValue)) return
+    if (newValue === current) return
 
     setLoadingCell(`limit:${key}`)
     startTransition(async () => {
@@ -147,8 +170,7 @@ export function TiersClient({
                   </td>
                   {TIERS.map(tier => {
                     const key = `${tier}:${feature}`
-                    const exists = featureMap.has(key)
-                    const enabled = featureMap.get(key) ?? false
+                    const isOn = featureOn.has(key)
                     const loading = loadingCell === key
 
                     return (
@@ -158,17 +180,14 @@ export function TiersClient({
                         ) : (
                           <button
                             type="button"
-                            onClick={() => handleCellClick(tier, feature)}
+                            onClick={() => handleToggle(tier, feature)}
                             className={`inline-flex items-center justify-center w-8 h-8 transition-colors ${
-                              !exists
-                                ? 'text-muted-foreground/30 hover:bg-green-50 hover:text-green-400'
-                                : enabled
-                                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                  : 'bg-red-50 text-red-400 hover:bg-red-100'
+                              isOn
+                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                : 'bg-red-50 text-red-400 hover:bg-red-100'
                             }`}
-                            title={!exists ? 'Click to add' : enabled ? 'Click to disable' : 'Click to remove'}
                           >
-                            {!exists ? <span className="text-sm">—</span> : enabled ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                            {isOn ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
                           </button>
                         )}
                       </td>
@@ -180,7 +199,7 @@ export function TiersClient({
           </table>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Click to cycle: <span className="text-muted-foreground">—</span> → <span className="text-green-700">✓</span> → <span className="text-red-400">✕</span> → <span className="text-muted-foreground">—</span>
+          Click to toggle. Changes require confirmation and take effect immediately for all users on that tier.
         </p>
       </section>
 
@@ -234,7 +253,7 @@ export function TiersClient({
           </table>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Click a value to edit. Use -1 for unlimited, 0 for none.
+          Click a value to edit. Use -1 for unlimited, 0 for none. Changes require confirmation.
         </p>
       </section>
     </div>
