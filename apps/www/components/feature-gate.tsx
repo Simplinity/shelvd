@@ -50,7 +50,7 @@ export function UpgradeHint({ feature }: { feature: string }) {
         Available on <span className="font-semibold text-foreground">{tierName}</span> ({tierPrice})
       </p>
       <Link
-        href="/settings#membership"
+        href="/#pricing"
         className="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-primary hover:underline"
       >
         Upgrade <ArrowRight className="ml-1 w-3 h-3" />
@@ -130,7 +130,7 @@ export function LimitReached({
         Upgrade to add more.
       </p>
       <Link
-        href="/settings#membership"
+        href="/#pricing"
         className="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-primary hover:underline"
       >
         Upgrade <ArrowRight className="ml-1 w-3 h-3" />
