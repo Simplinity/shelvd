@@ -130,7 +130,7 @@
 | # | Feature | Effort | Description |
 |---|---------|--------|-------------|
 | ~~14.g1~~ | ~~Book limit enforcement~~ | ~~Low~~ | ✅ Done — LimitGate op Add Book knop + server-side redirect op /books/add |
-| 14.g2 | Tag limit enforcement | Low | Collector max 20 tags. Blokkeer aanmaken nieuwe tags boven limiet. |
+| ~~14.g2~~ | ~~Tag limit enforcement~~ | ~~Low~~ | ✅ Done — LimitGate op New Tag knop in tags manager |
 | 14.g3 | PDF inserts gating | Low | `FeatureGate` rond PDF knoppen op book detail. Collector ziet upgrade hint. |
 | 9 | Mobile responsiveness (app) | High | Website ✅. App: hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice. |
 | 12 | User Onboarding | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. |
