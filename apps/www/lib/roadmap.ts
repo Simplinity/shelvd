@@ -244,6 +244,14 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
 
+  // User Onboarding
+  {
+    title: 'User Onboarding',
+    description: 'Five components across three phases. Welcome wizard ("How do you collect?" — collector, dealer, librarian, explorer — personalized first step based on collection size). Smart empty states that teach instead of dead-ending. Getting Started checklist (6 steps showcasing core value: add a book, try Library Lookup, create a collection, add provenance, export). Contextual first-visit hints on key screens. Optional demo book — a fully cataloged entry showing what a complete bibliographic record looks like. Because a collector who sees a book with full provenance wants that for their own library.',
+    category: 'platform',
+    status: 'planned',
+  },
+
   // Growth & Marketing
   {
     title: 'Invite Codes',
@@ -295,8 +303,8 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
   {
-    title: 'User Onboarding Funnel',
-    description: 'Visual journey tracker on each user profile: signed up → first book → 10 books → used enrich → collections → power user. Spot friction, identify who needs a nudge.',
+    title: 'User Onboarding Funnel (Admin View)',
+    description: 'Visual 6-step journey tracker on each user detail page: signed up → first book → 10 books → used enrich → collections → rich metadata. Aggregated funnel on admin dashboard showing conversion at each step. Identifies friction points at a glance.',
     category: 'admin',
     status: 'planned',
   },
