@@ -65,7 +65,7 @@ export default async function InviteCodeDetailPage({
         <Stat
           label="Benefit"
           text={
-            code.benefit_type === 'lifetime_free' ? 'Lifetime free' :
+            code.benefit_type === 'lifetime_free' ? 'Lifetime Pro' :
             code.benefit_type === 'trial_days' ? `${code.benefit_days}d trial` :
             'None'
           }

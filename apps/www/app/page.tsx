@@ -72,7 +72,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <p className="text-sm md:text-base font-medium uppercase tracking-wide">
             <Sparkles className="inline w-4 h-4 mr-2 mb-0.5" />
-            Early Access — First 100 users get lifetime free access
+            Early Access — First 100 users get lifetime Collector Pro
             <Sparkles className="inline w-4 h-4 ml-2 mb-0.5" />
           </p>
         </div>
@@ -538,7 +538,7 @@ export default function Home() {
             Unlike that "mint condition" book with the hidden foxing on page 47.
           </p>
           <p className="text-sm text-muted-foreground mb-12">
-            We’re in early access. The first 100 users get lifetime free access — no credit card, no catch.
+            We’re in early access. The first 100 users get lifetime Collector Pro — no credit card, no catch.
           </p>
 
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto items-stretch">
@@ -549,11 +549,11 @@ export default function Home() {
               </div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Early Access</p>
               <p className="text-4xl font-bold mb-1">Free</p>
-              <p className="text-xs text-muted-foreground mb-6">Forever, for the first 100 users</p>
+              <p className="text-xs text-muted-foreground mb-6">Lifetime Collector Pro for the first 100 users</p>
               <ul className="space-y-3 flex-1">
-                <PricingItem>Unlimited books</PricingItem>
-                <PricingItem>All features included</PricingItem>
-                <PricingItem>Full export anytime</PricingItem>
+                <PricingItem>5.000 books, unlimited tags</PricingItem>
+                <PricingItem>All Collector Pro features</PricingItem>
+                <PricingItem>Image uploads (5 GB)</PricingItem>
                 <PricingItem>No credit card required</PricingItem>
               </ul>
               <Button asChild className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8">
@@ -569,11 +569,11 @@ export default function Home() {
               <p className="text-4xl font-bold mb-1">€9.99<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For serious collectors</p>
               <ul className="space-y-3 flex-1">
-                <PricingItem muted>Everything in Free</PricingItem>
-                <PricingItem muted>1 GB image storage</PricingItem>
-                <PricingItem muted>High-quality photo uploads</PricingItem>
-                <PricingItem muted>Public catalog sharing</PricingItem>
-                <PricingItem muted>Priority support</PricingItem>
+                <PricingItem muted>5.000 books, unlimited tags</PricingItem>
+                <PricingItem muted>5 GB image storage</PricingItem>
+                <PricingItem muted>PDF inserts &amp; public sharing</PricingItem>
+                <PricingItem muted>Collection Audit &amp; advanced stats</PricingItem>
+                <PricingItem muted>Standard support</PricingItem>
               </ul>
               <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon
@@ -586,11 +586,11 @@ export default function Home() {
               <p className="text-4xl font-bold mb-1">€49<span className="text-lg font-normal text-muted-foreground">/mo</span></p>
               <p className="text-xs text-muted-foreground mb-6">For professional dealers</p>
               <ul className="space-y-3 flex-1">
-                <PricingItem muted>Everything in Pro</PricingItem>
-                <PricingItem muted>25 GB storage</PricingItem>
-                <PricingItem muted>Document storage (invoices, certificates)</PricingItem>
-                <PricingItem muted>Bulk operations</PricingItem>
-                <PricingItem muted>Dedicated support</PricingItem>
+                <PricingItem muted>Unlimited books</PricingItem>
+                <PricingItem muted>25 GB storage + catalog generator</PricingItem>
+                <PricingItem muted>Bulk operations &amp; document storage</PricingItem>
+                <PricingItem muted>Dealer directory listing</PricingItem>
+                <PricingItem muted>Priority support + onboarding call</PricingItem>
               </ul>
               <Button variant="outline" className="w-full h-11 text-sm font-semibold uppercase tracking-wide mt-8" disabled>
                 Coming Soon

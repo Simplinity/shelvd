@@ -179,18 +179,18 @@ export function UserDetailClient({
             <div className="flex flex-wrap gap-2">
               {!isLifetimeFree ? (
                 <ActionBtn
-                  icon={Gift} label="Grant Lifetime Free" color="text-green-600"
+                  icon={Gift} label="Grant Lifetime Pro" color="text-green-600"
                   loading={actionLoading}
                   onClick={() => {
-                    if (confirm('Grant lifetime free access?')) updateProfile({ is_lifetime_free: true })
+                    if (confirm('Grant lifetime Collector Pro access?')) updateProfile({ is_lifetime_free: true })
                   }}
                 />
               ) : (
                 <ActionBtn
-                  icon={CreditCard} label="Remove Lifetime Free" color="text-muted-foreground"
+                  icon={CreditCard} label="Remove Lifetime Pro" color="text-muted-foreground"
                   loading={actionLoading}
                   onClick={() => {
-                    if (confirm('Remove lifetime free access?')) updateProfile({ is_lifetime_free: false })
+                    if (confirm('Remove lifetime Collector Pro access?')) updateProfile({ is_lifetime_free: false })
                   }}
                 />
               )}

@@ -189,7 +189,7 @@ export default async function AdminUsersPage({
                       <span className="capitalize">{profile.membership_tier}</span>
                       {profile.is_lifetime_free && (
                         <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5">
-                          Lifetime
+                          Lifetime Pro
                         </span>
                       )}
                     </div>

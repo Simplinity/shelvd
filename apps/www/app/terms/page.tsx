@@ -242,7 +242,7 @@ export default function TermsPage() {
               <CheckItem>Refund policy will be published with the paid tiers</CheckItem>
             </div>
             <p>
-              Early Access users who signed up during the first 100 will retain lifetime free access. 
+              Early Access users who signed up during the first 100 will retain lifetime Collector Pro access. 
               That&apos;s a promise, not a marketing gimmick.
             </p>
           </TermsSection>

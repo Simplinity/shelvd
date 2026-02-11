@@ -270,7 +270,7 @@ function SubscriptionSection({ profile }: { profile: any }) {
         </span>
         {isLifetime && (
           <span className="h-10 px-3 bg-green-50 text-green-700 text-sm font-medium border border-green-200 inline-flex items-center">
-            Lifetime Free
+            Lifetime Pro
           </span>
         )}
       </div>

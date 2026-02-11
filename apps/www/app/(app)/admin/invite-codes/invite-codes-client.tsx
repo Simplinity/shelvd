@@ -18,7 +18,7 @@ const SOURCE_TYPES = [
 const BENEFIT_TYPES = [
   { value: 'none', label: 'None (attribution only)' },
   { value: 'trial_days', label: 'Free trial (days)' },
-  { value: 'lifetime_free', label: 'Lifetime free' },
+  { value: 'lifetime_free', label: 'Lifetime Pro' },
 ]
 
 function relativeDate(dateStr: string): string {
@@ -247,7 +247,7 @@ export function InviteCodesClient({ initialCodes }: { initialCodes: InviteCode[]
                   </td>
                   <td className="px-3 py-2 text-xs">
                     {code.benefit_type === 'none' && <span className="text-muted-foreground">—</span>}
-                    {code.benefit_type === 'lifetime_free' && <span className="text-green-700 font-medium">Lifetime free</span>}
+                    {code.benefit_type === 'lifetime_free' && <span className="text-green-700 font-medium">Lifetime Pro</span>}
                     {code.benefit_type === 'trial_days' && <span className="text-blue-700 font-medium">{code.benefit_days}d trial</span>}
                   </td>
                   <td className="px-3 py-2 text-xs tabular-nums">

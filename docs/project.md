@@ -622,14 +622,14 @@ Funnel steps:
 
 #### #13 Invite Codes — Detail
 
-**What it is:** Optional promo codes that users can enter during signup. Registration stays open to everyone — codes are never required. When someone uses a code, two things happen: (1) attribution is recorded (which blogger/event/campaign brought this user), and (2) benefits are applied automatically (free trial days, lifetime free tier, etc.).
+**What it is:** Optional promo codes that users can enter during signup. Registration stays open to everyone — codes are never required. When someone uses a code, two things happen: (1) attribution is recorded (which blogger/event/campaign brought this user), and (2) benefits are applied automatically (free trial days, lifetime Collector Pro, etc.).
 
 **Why it matters:** Marketing without measurement is guesswork. Invite codes let you hand a blogger a unique code, print one on a bookfair flyer, or tweet one to followers — and know exactly which channel converted. The benefits attached to each code are the incentive for users to actually enter it.
 
 **Use cases:**
 - Book blogger outreach: "Share code JANEREADS with your audience — they get 3 months free"
 - Bookfair / events: QR code on a card with SHELVD-FIRSTEDITION, track signups per event
-- Early adopter perks: EARLYBIRD code grants lifetime free tier
+- Early adopter perks: EARLYBIRD code grants lifetime Collector Pro
 - Social media campaigns: unique code per platform (SHELVD-TWITTER, SHELVD-INSTA)
 - Personal referral: give a collector friend a code with 30 days free
 
@@ -719,7 +719,7 @@ if hasFeature(user, 'catalog_generator') { show it }
 
 `hasFeature(userId, feature)` utility:
 1. Get user's tier from `user_profiles.membership_tier`
-2. Check `is_lifetime_free` — if true, treat as highest tier
+2. Check `is_lifetime_free` — if true, treat as Collector Pro tier (NOT Dealer)
 3. Check `benefit_expires_at` — if active trial, treat as that tier
 4. Look up `tier_features` for their tier + requested feature
 5. Return boolean
