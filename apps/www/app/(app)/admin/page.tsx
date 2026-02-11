@@ -1,19 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Shield, Users, BookOpen, TrendingUp, Search, Check, X, Clock, MessageSquare, BarChart3, ChevronRight } from 'lucide-react'
-import { formatInteger, formatDate } from '@/lib/format'
-import { UserActions } from './users/user-actions'
+import { Shield, Users, BookOpen, TrendingUp, Check, MessageSquare, BarChart3, ChevronRight } from 'lucide-react'
+import { formatInteger } from '@/lib/format'
 import { AnnouncementManager } from './announcements/announcement-manager'
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; status?: string }>
-}) {
-  const params = await searchParams
+export default async function AdminPage() {
   const supabase = await createClient()
 
-  // --- STATS ---
+  // Stats
   const { count: totalUsers } = await supabase
     .from('user_profiles')
     .select('*', { count: 'exact', head: true })
@@ -23,14 +17,12 @@ export default async function AdminPage({
     .select('*', { count: 'exact', head: true })
     .eq('status', 'active')
 
-  // Total books via RPC (bypasses RLS)
   let totalBooks = 0
   try {
     const { data } = await supabase.rpc('get_total_books_for_admin')
     totalBooks = Number(data) || 0
   } catch {}
 
-  // Recent signups (7d)
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
   const { count: recentSignups } = await supabase
@@ -38,43 +30,21 @@ export default async function AdminPage({
     .select('*', { count: 'exact', head: true })
     .gte('created_at', sevenDaysAgo.toISOString())
 
-  // --- USERS ---
-  let query = supabase
-    .from('user_profiles')
-    .select(`
-      id, display_name, membership_tier, is_lifetime_free,
-      status, status_reason, is_admin, admin_role, created_at
-    `)
-    .order('created_at', { ascending: false })
-
-  if (params.status && params.status !== 'all') {
-    query = query.eq('status', params.status)
-  }
-
-  const { data: profiles } = await query
-
-  // Auth data (emails) via RPC
-  let authUsers: any[] | null = null
-  try {
-    const { data } = await supabase.rpc('get_users_for_admin')
-    authUsers = data
-  } catch {}
-  const authMap = new Map(authUsers?.map((u: any) => [u.id, u]) || [])
-
-  // Book counts via RPC (bypasses RLS)
-  let bookCountMap = new Map<string, number>()
-  try {
-    const { data } = await supabase.rpc('get_book_counts_for_admin')
-    data?.forEach((row: any) => {
-      bookCountMap.set(row.user_id, Number(row.book_count))
-    })
-  } catch {}
-
-  // New feedback count for badge
+  // Feedback stats
   const { count: newFeedbackCount } = await supabase
     .from('feedback')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'new')
+
+  const { count: totalFeedbackCount } = await supabase
+    .from('feedback')
+    .select('*', { count: 'exact', head: true })
+
+  // Suspended/banned count
+  const { count: suspendedCount } = await supabase
+    .from('user_profiles')
+    .select('*', { count: 'exact', head: true })
+    .in('status', ['suspended', 'banned'])
 
   // Announcements
   const { data: announcements } = await supabase
@@ -82,215 +52,105 @@ export default async function AdminPage({
     .select('id, title, message, type, is_active, starts_at, ends_at, created_at')
     .order('created_at', { ascending: false })
 
-  // Search filter
-  let filteredProfiles = profiles || []
-  if (params.q) {
-    const q = params.q.toLowerCase()
-    filteredProfiles = filteredProfiles.filter(p => {
-      const auth = authMap.get(p.id)
-      const email = auth?.email?.toLowerCase() || ''
-      const name = p.display_name?.toLowerCase() || ''
-      return email.includes(q) || name.includes(q)
-    })
-  }
-
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-10">
         <Shield className="w-5 h-5 text-primary" />
         <h1 className="text-xl font-bold">Admin</h1>
       </div>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Users" value={totalUsers ?? 0} icon={<Users className="w-4 h-4" />} />
-        <StatCard label="Active" value={activeUsers ?? 0} icon={<Check className="w-4 h-4" />} />
-        <StatCard label="Books" value={totalBooks} icon={<BookOpen className="w-4 h-4" />} />
-        <StatCard label="Signups (7d)" value={recentSignups ?? 0} icon={<TrendingUp className="w-4 h-4" />} />
+      {/* Key Metrics */}
+      <div className="grid grid-cols-4 gap-px bg-border mb-12">
+        <Metric label="Users" value={totalUsers ?? 0} />
+        <Metric label="Active" value={activeUsers ?? 0} />
+        <Metric label="Books" value={totalBooks} />
+        <Metric label="Signups 7d" value={recentSignups ?? 0} />
       </div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <a href="/admin/stats" className="p-4 border hover:border-foreground/30 transition-colors group">
-          <div className="flex items-center gap-2 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
-            <BarChart3 className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-wide">System Stats</span>
-          </div>
-          <p className="text-sm text-muted-foreground">Growth, adoption, health</p>
-        </a>
-        <a href="/admin/support" className="p-4 border hover:border-foreground/30 transition-colors group">
-          <div className="flex items-center gap-2 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
-            <MessageSquare className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-wide">Support Queue</span>
-            {(newFeedbackCount ?? 0) > 0 && (
-              <span className="min-w-[20px] h-5 flex items-center justify-center bg-red-600 text-white text-[11px] font-bold px-1.5">
-                {newFeedbackCount}
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">Bug reports, contacts</p>
-        </a>
+      {/* Navigation */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <NavCard
+          href="/admin/stats"
+          title="System Stats"
+          description="Growth, adoption, data health"
+          icon={<BarChart3 className="w-5 h-5" />}
+          stat={`${formatInteger(totalBooks)} books cataloged`}
+        />
+        <NavCard
+          href="/admin/support"
+          title="Support Queue"
+          description="Bug reports, contacts, callbacks"
+          icon={<MessageSquare className="w-5 h-5" />}
+          stat={`${totalFeedbackCount ?? 0} total`}
+          badge={newFeedbackCount && newFeedbackCount > 0 ? newFeedbackCount : undefined}
+        />
+        <NavCard
+          href="/admin/users"
+          title="User Management"
+          description="Profiles, status, membership"
+          icon={<Users className="w-5 h-5" />}
+          stat={`${totalUsers ?? 0} registered`}
+          badge={suspendedCount && suspendedCount > 0 ? suspendedCount : undefined}
+          badgeColor="amber"
+        />
       </div>
 
       {/* Announcements */}
-      <div className="mb-8">
-        <AnnouncementManager announcements={announcements || []} />
-      </div>
+      <AnnouncementManager announcements={announcements || []} />
+    </div>
+  )
+}
 
-      {/* User Management Section */}
-      <div className="mb-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
-          User Management
-        </h2>
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-background p-5">
+      <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">{label}</p>
+      <p className="text-3xl font-light tabular-nums">{formatInteger(value)}</p>
+    </div>
+  )
+}
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <form className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                name="q"
-                defaultValue={params.q}
-                placeholder="Search by email or name..."
-                className="w-full pl-10 pr-4 py-2 border text-sm"
-              />
-            </div>
-          </form>
-          <div className="flex gap-1">
-            <FilterLink href="/admin" active={!params.status || params.status === 'all'}>All</FilterLink>
-            <FilterLink href="/admin?status=active" active={params.status === 'active'}>Active</FilterLink>
-            <FilterLink href="/admin?status=suspended" active={params.status === 'suspended'}>Suspended</FilterLink>
-            <FilterLink href="/admin?status=banned" active={params.status === 'banned'}>Banned</FilterLink>
+function NavCard({ href, title, description, icon, stat, badge, badgeColor = 'red' }: {
+  href: string
+  title: string
+  description: string
+  icon: React.ReactNode
+  stat: string
+  badge?: number
+  badgeColor?: 'red' | 'amber'
+}) {
+  const badgeBg = badgeColor === 'amber' 
+    ? 'bg-amber-600 text-white' 
+    : 'bg-red-600 text-white'
+  
+  return (
+    <Link
+      href={href}
+      className="group border border-border hover:border-foreground/40 transition-all duration-200 flex flex-col"
+    >
+      {/* Top section */}
+      <div className="p-5 flex-1">
+        <div className="flex items-start justify-between mb-4">
+          <div className="text-muted-foreground group-hover:text-foreground transition-colors">
+            {icon}
+          </div>
+          <div className="flex items-center gap-2">
+            {badge !== undefined && (
+              <span className={`text-[11px] font-bold px-1.5 py-0.5 min-w-[20px] text-center ${badgeBg}`}>
+                {badge}
+              </span>
+            )}
+            <ChevronRight className="w-4 h-4 text-muted-foreground/0 group-hover:text-muted-foreground transition-colors" />
           </div>
         </div>
+        <h2 className="text-sm font-semibold mb-1">{title}</h2>
+        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
       </div>
-
-      {/* Users Table */}
-      <div className="border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 border-b">
-            <tr>
-              <th className="text-left p-3 font-medium">User</th>
-              <th className="text-left p-3 font-medium">Status</th>
-              <th className="text-left p-3 font-medium">Tier</th>
-              <th className="text-right p-3 font-medium">Books</th>
-              <th className="text-left p-3 font-medium">Joined</th>
-              <th className="text-right p-3 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProfiles.map((profile) => {
-              const auth = authMap.get(profile.id)
-              const bookCount = bookCountMap.get(profile.id) || 0
-              return (
-                <tr key={profile.id} className="border-b last:border-b-0 hover:bg-muted/30">
-                  <td className="p-3">
-                    <div>
-                      <Link href={`/admin/users/${profile.id}`} className="font-medium flex items-center gap-2 underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-foreground">
-                        {auth?.email || profile.display_name || 'Unknown'}
-                        {profile.is_admin && (
-                          <span title="Admin"><Shield className="w-3.5 h-3.5 text-primary" /></span>
-                        )}
-                      </Link>
-                      {profile.display_name && auth?.email && (
-                        <div className="text-xs text-muted-foreground">{profile.display_name}</div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <StatusBadge status={profile.status || 'unknown'} />
-                  </td>
-                  <td className="p-3">
-                    <div className="flex items-center gap-2">
-                      <span className="capitalize text-xs">{profile.membership_tier}</span>
-                      {profile.is_lifetime_free && (
-                        <span className="text-[10px] bg-green-100 text-green-700 px-1 py-0.5">Lifetime</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-3 text-right font-mono">
-                    {formatInteger(bookCount)}
-                  </td>
-                  <td className="p-3 text-muted-foreground">
-                    {formatDate(profile.created_at)}
-                  </td>
-                  <td className="p-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <UserActions
-                        userId={profile.id}
-                        currentStatus={profile.status || 'unknown'}
-                        isAdmin={profile.is_admin || false}
-                      />
-                      <Link
-                        href={`/admin/users/${profile.id}`}
-                        className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
-                        title="View details"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-        {filteredProfiles.length === 0 && (
-          <div className="p-8 text-center text-muted-foreground">No users found.</div>
-        )}
+      {/* Bottom stat */}
+      <div className="px-5 py-3 border-t border-border bg-muted/30">
+        <p className="text-[11px] text-muted-foreground tabular-nums">{stat}</p>
       </div>
-    </div>
+    </Link>
   )
-}
-
-function StatCard({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
-  return (
-    <div className="p-4 border">
-      <div className="flex items-center gap-2 text-muted-foreground mb-1">
-        {icon}
-        <span className="text-xs uppercase tracking-wide">{label}</span>
-      </div>
-      <p className="text-2xl font-bold">{formatInteger(value)}</p>
-    </div>
-  )
-}
-
-function FilterLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      className={`px-3 py-2 text-xs border ${
-        active ? 'bg-foreground text-background border-foreground' : 'hover:border-foreground/50'
-      }`}
-    >
-      {children}
-    </a>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  switch (status) {
-    case 'active':
-      return (
-        <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5">
-          <Check className="w-3 h-3" /> Active
-        </span>
-      )
-    case 'suspended':
-      return (
-        <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5">
-          <Clock className="w-3 h-3" /> Suspended
-        </span>
-      )
-    case 'banned':
-      return (
-        <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5">
-          <X className="w-3 h-3" /> Banned
-        </span>
-      )
-    default:
-      return <span className="text-xs text-muted-foreground">{status}</span>
-  }
 }
