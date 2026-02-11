@@ -126,30 +126,33 @@
 
 ## Feature Backlog — TODO
 
-### Core Product
-| # | Feature | Priority | Effort | Description |
-|---|---------|----------|--------|-------------|
-| ~~4~~ | ~~Activity logging~~ | ~~High~~ | ~~Medium-High~~ | ✅ Done (2026-02-11). See Completed. |
-| 6 | Image upload | Medium | High | Cover images, spine, damage photos. Supabase Storage. Gallery on detail page. |
-| 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
-| 8b | Knowledge base (`/help`) | Medium | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
-| 9 | Mobile responsiveness | High | High | Hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice today. |
-| 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. Gamification that drives data quality and return visits. |
-| 11 | Catalog Generator | Medium | Medium-High | Select books → generate professional DOCX catalog. Numbered entries (Lot N / #N), author/title/year/condition/provenance/price, image placeholders, title page, TOC, colophon. Editable in Word. For dealers, auction houses, serious collectors. Phased: v1 one template + basic config, v2 multiple templates + drag-drop ordering, v3 PDF + custom branding. |
+### 🔴 Urgent — Do Next
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| 14.g1 | Book limit enforcement | Low | `LimitGate` op Add Book — Collector stopt bij 500, Pro bij 5000. Check book count vs tier limit. |
+| 14.g2 | Tag limit enforcement | Low | Collector max 20 tags. Blokkeer aanmaken nieuwe tags boven limiet. |
+| 14.g3 | PDF inserts gating | Low | `FeatureGate` rond PDF knoppen op book detail. Collector ziet upgrade hint. |
+| 9 | Mobile responsiveness (app) | High | Website ✅. App: hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice. |
+| 12 | User Onboarding | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. |
 
-### Growth & Marketing
-| # | Feature | Priority | Effort | Description |
-|---|---------|----------|--------|-------------|
-| ~~G1/13~~ | ~~Invite codes~~ | ~~High~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
+### 🟡 Important — Before Launch
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| 6 | Image Upload (fase 2 — Blob) | High | Cover images, spine, damage photos. Vercel Blob Storage. Gallery on detail page. Tier-gated (Pro: 5GB, Dealer: 25GB). |
+| 7 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Pro+ only. |
+| 10 | Collection Audit | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps. One-click fixes. Pro+ only. |
+| 8b | Knowledge base (`/help`) | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
+| 14.7 | Stripe integration | High | Payment processing for Pro + Dealer tiers. Plugs into existing tier system. |
 
-### Admin Enhancements
-| # | Feature | Priority | Effort | Description |
-|---|---------|----------|--------|-------------|
-| ~~A1~~ | ~~System stats dashboard~~ | ~~High~~ | ~~Medium~~ | ~~DONE — /admin/stats with metrics, distributions, growth charts~~ |
-| ~~A3~~ | ~~Activity log viewer~~ | ~~High~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
-| ~~A4~~ | ~~User management~~ | ~~Low~~ | ~~Medium~~ | ✅ Done (2026-02-11). See Completed. |
-| A5 | Admin impersonation | Medium | Medium | "View as user" button in admin user table. Admin temporarily sees the platform as that user — their books, collections, settings, everything. Essential for debugging reported issues. Banner at top showing impersonation mode + "Exit" button. Supabase approach: admin session stores target user_id, RLS queries use that instead of auth user. Audit logged. |
-| A6 | Platform health checks | Low | Medium | Orphaned records, cross-user inconsistencies, import errors, duplicate publishers. Admin-only platform hygiene dashboard. |
+### 🟢 Planned — Post-Launch
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| 11 | Catalog Generator (DOCX) | Medium-High | Select books → professional DOCX catalog. Numbered entries, title page, TOC. Dealer only. |
+| 15 | Community | Medium-High | Forum/discussion for collectors and dealers. Knowledge sharing, book ID help, trade discussions. |
+| A5 | Admin impersonation | Medium | "View as user" for debugging. Admin sees platform as that user. Audit logged. |
+| A6 | Platform health checks | Medium | Orphaned records, cross-user inconsistencies, import errors, duplicate publishers. |
+| A8 | Weekly admin digest | Medium | Automated Monday email via Resend + Vercel Cron: signups, books added, open tickets, health delta. |
+| A9 | Onboarding funnel (admin view) | Low | Visual journey tracker on user detail. Aggregated funnel on dashboard. |
 
 ### Completed
 | # | Feature | Date |
@@ -165,6 +168,8 @@
 | A3 | Activity log viewer: admin live feed on dashboard + /admin/activity with filters/pagination | 2026-02-11 |
 | 13 | Invite codes: optional promo codes, attribution + benefits, admin management + detail pages | 2026-02-11 |
 | SEC | RLS security fix: re-enabled on languages, publishers, contributor_aliases | 2026-02-11 |
+| UP | User profile expansion: phone, company, website + admin detail + settings form | 2026-02-11 |
+| 14 | Tier System & Feature Gating: 2 tables, 41 migrations, server+client utilities, UI gate components, admin /admin/tiers, pricing page, tier names | 2026-02-11 |
 
 ### Book Data Features
 | # | Feature | Priority | Effort | Description |
