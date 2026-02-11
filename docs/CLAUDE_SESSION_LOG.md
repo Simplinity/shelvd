@@ -8,6 +8,8 @@
 
 **Current task: #14 Tier System & Feature Gating — documentation only (planning)**
 - ✅ Docs: project.md feature #14 entry + full detail section (tiers, feature table, distribution matrix, 7-step plan), roadmap.ts (planned)
+- ✅ Feature distribution finalized: tier overview (limits, storage, bandwidth, support), feature matrix (19 features), cost analysis, infrastructure safeguards
+- ✅ #15 Community added to feature table (scope TBD)
 
 **Previous task: User profile expansion ✅**
 - ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles

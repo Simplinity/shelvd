@@ -349,6 +349,7 @@ status, action_needed, internal_notes
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
 | 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
+| 15 | Community | Medium | Medium-High | Community forum/discussion space for collectors and dealers. Collector tier support channel (best effort). Knowledge sharing, book identification help, trade discussions. Scope TBD. |
 | 13 | Invite Codes | ✅ Done | — | Optional promo codes on signup for attribution + benefits. Tables: invite_codes + invite_code_redemptions. Signup form: optional code field with validation. Admin /admin/invite-codes: list, create, toggle, detail with per-code stats (users, books). Activity logging. Sidebar link. See details below. |
 
 #### #4 Activity Logging — Detail
@@ -725,22 +726,33 @@ if hasFeature(user, 'catalog_generator') { show it }
 
 **UI gating principle:** Gated features are **visible but locked**, never hidden. A Collector sees the Catalog Generator button, but clicking it shows: "Available on Collector Pro — Upgrade". This drives upgrades better than hiding features.
 
-**Initial feature distribution (draft — to be refined):**
+**Feature distribution (finalized 2026-02-11):**
+
+**Tier overview:**
+
+| | Collector (free) | Collector Pro (€9.99/mo) | Dealer (€49/mo) |
+|--|-----------------|--------------------------|------------------|
+| Books | 500 | 5.000 | Unlimited |
+| Tags | 20 | Unlimited | Unlimited |
+| Image storage | — (URL refs only) | 5 GB | 25 GB |
+| Image bandwidth | — | 25 GB/mo | 250 GB/mo |
+| Support | Community / best effort | Standard (ticket, no SLA) | Priority (24h SLA office hours) + 30 min onboarding call |
+
+**Feature matrix:**
 
 | Feature | Collector | Pro | Dealer |
 |---------|-----------|-----|--------|
-| Unlimited books | ✅ | ✅ | ✅ |
 | Full cataloging (all fields) | ✅ | ✅ | ✅ |
-| Collections & tags | ✅ | ✅ | ✅ |
+| Collections | ✅ | ✅ | ✅ |
 | Provenance tracking | ✅ | ✅ | ✅ |
+| Condition tracking | ✅ | ✅ | ✅ |
 | Book lookup (9 providers) | ✅ | ✅ | ✅ |
 | Library Enrich | ✅ | ✅ | ✅ |
 | CSV import/export | ✅ | ✅ | ✅ |
-| PDF inserts (catalog card/sheet) | ✅ | ✅ | ✅ |
 | Activity log | ✅ | ✅ | ✅ |
 | External links | ✅ | ✅ | ✅ |
-| Condition tracking | ✅ | ✅ | ✅ |
-| Image upload (Blob) | ❌ | ✅ | ✅ |
+| Image upload (Vercel Blob) | ❌ | ✅ | ✅ |
+| PDF inserts (catalog card/sheet) | ❌ | ✅ | ✅ |
 | Public catalog / sharing | ❌ | ✅ | ✅ |
 | Collection Audit | ❌ | ✅ | ✅ |
 | Advanced statistics | ❌ | ✅ | ✅ |
@@ -749,9 +761,22 @@ if hasFeature(user, 'catalog_generator') { show it }
 | Document storage (invoices, certs) | ❌ | ❌ | ✅ |
 | Dealer directory listing | ❌ | ❌ | ✅ |
 | Insurance/valuation reports | ❌ | ❌ | ✅ |
-| Priority/dedicated support | ❌ | ✅ | ✅ |
 
-*This distribution is a starting point. The whole point of the feature flags system is that it can be adjusted without code changes.*
+**Cost analysis (worst case — all limits fully used):**
+
+| Tier | Storage cost | Bandwidth cost | Total cost | Revenue | Marge |
+|------|-------------|----------------|-----------|---------|-------|
+| Collector | $0 | $0 | $0 | $0 | ∞ |
+| Collector Pro | $0.115 | $1.25 | $1.365/mo | €9.99 | ~86% |
+| Dealer | $0.575 | $12.50 | $13.075/mo | €49 | ~73% |
+
+Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
+
+**Infrastructure safeguards (to implement):**
+- Bandwidth quota enforcement per tier (soft limit → warning, hard limit → CDN-cache-only fallback)
+- Hotlink protection (prevent external sites from embedding Blob images and consuming bandwidth)
+
+*The whole point of the feature flags system is that this distribution can be adjusted without code changes — one row in `tier_features`, no deployment needed.*
 
 **Reassigning features later:** Change one row in `tier_features`. No migration, no deployment. Example: "Make Catalog Generator available to Pro" → `INSERT INTO tier_features (tier, feature, enabled) VALUES ('collector_pro', 'catalog_generator', true)`. Done.
 
