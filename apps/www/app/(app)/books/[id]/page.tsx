@@ -1,12 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, Sparkles } from 'lucide-react'
+import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, Sparkles, Lock } from 'lucide-react'
 import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
 import { ClickableImage } from '@/components/image-lightbox'
 import BookPdfButton from '@/components/book-pdf-button'
+import { hasFeature } from '@/lib/tier'
 import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
 import ProvenanceTimeline from '@/components/provenance-timeline'
@@ -41,6 +42,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     .select('locale, default_currency')
     .eq('id', user.id)
     .single() : { data: null }
+  const canPrintPdf = user ? await hasFeature(user.id, 'pdf_inserts') : false
 
   // Cast to any to avoid TypeScript issues with dynamic data
   const bookRecord = book as any
@@ -483,7 +485,15 @@ export default async function BookDetailPage({ params }: PageProps) {
               Edit
             </Link>
           </Button>
-          <BookPdfButton bookId={id} />
+          {canPrintPdf ? (
+            <BookPdfButton bookId={id} />
+          ) : (
+            <Link href="/#pricing" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border text-muted-foreground hover:text-foreground transition-colors">
+              <Lock className="w-3 h-3" />
+              Print Insert
+              <span className="text-[10px] opacity-60">— Collector Pro</span>
+            </Link>
+          )}
           <DeleteBookButton bookId={id} bookTitle={bookData.title} />
         </div>
       </div>
