@@ -101,9 +101,6 @@ export function LimitGate({
 }) {
   const limit = useTierLimit(limitKey)
 
-  // -1 = unlimited
-  if (limit === -1) return <>{children}</>
-
   // Under limit — show children
   if (currentCount < limit) return <>{children}</>
 

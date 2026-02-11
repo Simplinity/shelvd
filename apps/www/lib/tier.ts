@@ -46,7 +46,7 @@ export async function hasFeature(userId: string, feature: string): Promise<boole
 
 /**
  * Get a tier limit value for a user.
- * Returns -1 for unlimited, 0 for none, or the actual limit.
+ * Returns the numeric limit (0 = none).
  */
 export async function getTierLimit(userId: string, limitKey: string): Promise<number> {
   const tier = await getEffectiveTier(userId)

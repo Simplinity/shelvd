@@ -26,7 +26,7 @@ export function useFeature(feature: string): boolean {
 
 /**
  * Get a specific limit for the current user.
- * Returns -1 for unlimited, 0 for none.
+ * Returns the numeric limit (0 = none).
  */
 export function useTierLimit(limitKey: string): number {
   const { limits } = useContext(TierContext)

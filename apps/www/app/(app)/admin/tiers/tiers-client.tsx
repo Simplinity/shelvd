@@ -31,7 +31,6 @@ function formatBytes(bytes: number): string {
 }
 
 function formatLimit(key: string, value: number): string {
-  if (value === -1) return '∞'
   if (key === 'storage_bytes' || key === 'bandwidth_bytes_mo') return formatBytes(value)
   return value.toLocaleString()
 }
@@ -117,7 +116,7 @@ export function TiersClient({
     const tierName = TIER_NAMES[tier]
     const input = prompt(
       `New value for "${limitKey.replace(/_/g, ' ')}" (${tierName}).\n\n` +
-      `-1 = unlimited, 0 = none.\n` +
+      `0 = none.\n` +
       `Current: ${formatLimit(limitKey, current)}\n\n` +
       `This affects all ${tierName} users immediately.`,
       String(current)
@@ -253,7 +252,7 @@ export function TiersClient({
           </table>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Click a value to edit. Use -1 for unlimited, 0 for none. Changes require confirmation.
+          Click a value to edit. Changes require confirmation and take effect immediately.
         </p>
       </section>
     </div>
