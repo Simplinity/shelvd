@@ -117,3 +117,37 @@ export async function getRecentActivityForAdmin(options?: {
     return { data: [], error: 'Failed to fetch activity' }
   }
 }
+
+export async function getActivityPageForAdmin(options?: {
+  limit?: number
+  offset?: number
+  category?: string
+  userId?: string
+  search?: string
+}): Promise<{ data: ActivityLogEntry[]; total: number; error?: string }> {
+  try {
+    const supabase = await createClient()
+
+    // Fetch page
+    const pageParams: Record<string, unknown> = {
+      lim: options?.limit ?? 50,
+      off_set: options?.offset ?? 0,
+    }
+    if (options?.category) pageParams.category_filter = options.category
+    if (options?.userId) pageParams.user_filter = options.userId
+    if (options?.search) pageParams.search_filter = options.search
+    const { data, error } = await supabase.rpc('get_activity_page_for_admin', pageParams as any)
+
+    // Fetch count
+    const countParams: Record<string, unknown> = {}
+    if (options?.category) countParams.category_filter = options.category
+    if (options?.userId) countParams.user_filter = options.userId
+    if (options?.search) countParams.search_filter = options.search
+    const { data: countData } = await supabase.rpc('get_activity_count_filtered', countParams as any)
+
+    if (error) return { data: [], total: 0, error: error.message }
+    return { data: (data ?? []) as ActivityLogEntry[], total: Number(countData) || 0 }
+  } catch {
+    return { data: [], total: 0, error: 'Failed to fetch activity' }
+  }
+}

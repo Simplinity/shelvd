@@ -194,9 +194,9 @@ export const ROADMAP: RoadmapItem[] = [
   // Core Product
   {
     title: 'Activity Logging & Live Feed',
-    description: 'Every meaningful action recorded: book edits with JSON diffs, enrichments with source attribution, imports with summaries, admin actions with context. Six-step rollout from foundation to admin live feed to full log viewer. The provenance of your provenance.',
+    description: 'Every meaningful action recorded: book edits with JSON diffs, enrichments with source attribution, imports with summaries, admin actions with context. 20 log points, admin live feed on dashboard, full /admin/activity viewer with filters and pagination. The provenance of your provenance.',
     category: 'platform',
-    status: 'planned',
+    status: 'shipped',
   },
   {
     title: 'Image Upload (Phase 2)',

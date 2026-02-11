@@ -1654,9 +1654,39 @@ export type Database = {
           title: string
         }[]
       }
+      get_activity_count_filtered: {
+        Args: {
+          category_filter?: string
+          search_filter?: string
+          user_filter?: string
+        }
+        Returns: number
+      }
       get_activity_count_for_admin: {
         Args: { since?: string }
         Returns: number
+      }
+      get_activity_page_for_admin: {
+        Args: {
+          category_filter?: string
+          lim?: number
+          off_set?: number
+          search_filter?: string
+          user_filter?: string
+        }
+        Returns: {
+          action: string
+          category: string
+          created_at: string
+          entity_id: string
+          entity_label: string
+          entity_type: string
+          id: string
+          metadata: Json
+          source: string
+          user_email: string
+          user_id: string
+        }[]
       }
       get_book_counts_for_admin: {
         Args: never

@@ -114,7 +114,12 @@ export default async function AdminPage() {
 
       {/* Recent Activity */}
       <div className="mb-8">
-        <h2 className="text-[11px] uppercase tracking-widest text-muted-foreground mb-3">Recent Activity</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[11px] uppercase tracking-widest text-muted-foreground">Recent Activity</h2>
+          <Link href="/admin/activity" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+            View all &rarr;
+          </Link>
+        </div>
         <ActivityFeed entries={activityEntries} />
       </div>
 

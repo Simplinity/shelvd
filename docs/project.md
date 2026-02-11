@@ -332,7 +332,7 @@ status, action_needed, internal_notes
 | 1 | Locale & number formatting | ✅ Done | — | Locale setting in user_profiles, shared `lib/format.ts` with formatInteger/formatDecimal/formatCurrency/formatDate, applied to all pages (detail, stats, books list, admin, duplicates, settings). Legacy date_format column dropped (migration 024). |
 | 2 | ~~Admin button in header~~ | ~~High~~ | ~~Low~~ | ✅ Already existed — Shield icon, red styling, conditional on is_admin. |
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
-| 4 | Activity logging | High | Medium-High | Platform-wide activity log. 6 steps: foundation → book instrumentation → rest instrumentation → admin live feed → admin log viewer → user-facing activity. See details below. |
+| 4 | Activity logging | ✅ Done | — | Steps 1–5 complete: activity_log table, 20 log points across all actions, admin live feed on dashboard, full /admin/activity viewer with filters/pagination. Step 6 (user-facing) is future. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | **Fase 1 complete ✅ (URL-only).** Fase 2 pending (Blob uploads). Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
@@ -396,7 +396,7 @@ Indices on (user_id, created_at DESC), (action, created_at DESC), (entity_type, 
 | 2 | Book instrumentation: createBook, updateBook, deleteBook, enrichBook, status changes, import | Medium | ✅ Done |
 | 3 | Rest instrumentation: collections, provenance, contributors, tags, account, admin actions | Medium | ✅ Done |
 | 4 | Admin live feed on dashboard (A3 partial): RPC + compact chronological feed component | Low | ✅ Done |
-| 5 | Admin log viewer page (A3 complete): /admin/activity, full table, filters, pagination, sidebar link | Medium | Pending |
+| 5 | Admin log viewer page (A3 complete): /admin/activity, full table, filters, pagination, sidebar link | Medium | ✅ Done |
 | 6 | User-facing activity (future): personal history, "last modified" on book detail, recent changes | Low-Medium | Future |
 
 Recommended order: 1 → 2 → 4 → 3 → 5 (get visible results on dashboard early, then complete instrumentation).
@@ -647,7 +647,7 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 |---|---------|----------|--------|-------------|
 | A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
 | A2 | ~~Feedback/bug queue~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Admin support queue at `/admin/support` with full workflow. Part of #5. |
-| A3 | Activity log viewer + live feed | High | Medium | Steps 4–5 of #4. Live feed on dashboard + full /admin/activity page with filters. Depends on #4 foundation (steps 1–3). |
+| ~~A3~~ | ~~Activity log viewer + live feed~~ | ~~High~~ | ~~Medium~~ | ✅ Done. Steps 4–5 of #4. Live feed on dashboard (15 recent entries) + full /admin/activity page with table, category filters, search, pagination. Sidebar link added. |
 | ~~A4~~ | ~~User management~~ | ~~Medium~~ | ~~Medium~~ | ✅ Done. Detail page (/admin/users/[id]): avatar, stats, collections, recent books, support history, admin notes, status/membership/admin actions, send email. List: sortable columns (user/books/joined/last active), heat indicators, clickable rows. Invite codes still planned separately. |
 | A5 | ~~Announcement system~~ | ~~Low~~ | ~~Low~~ | ✅ Done — Colored banners (info/warning/success/maintenance), admin create/toggle/delete, dismissible by users, optional expiry. |
 | A6 | Platform health score & checks | Medium | Medium | Health bar on dashboard (missing ISBNs, covers, conditions at a glance). Click through to orphaned records, inconsistencies, duplicate publishers. |
