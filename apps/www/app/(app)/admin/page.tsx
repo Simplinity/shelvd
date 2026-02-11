@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { formatInteger } from '@/lib/format'
 import { AnnouncementManager } from './announcements/announcement-manager'
+import { getRecentActivityForAdmin } from '@/lib/actions/activity-log'
+import { ActivityFeed } from '@/components/admin/activity-feed'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -53,6 +55,9 @@ export default async function AdminPage() {
     .from('announcements')
     .select('id, title, message, type, is_active, starts_at, ends_at, created_at')
     .order('created_at', { ascending: false })
+
+  // Activity feed
+  const { data: activityEntries } = await getRecentActivityForAdmin({ limit: 15 })
 
   // Build attention items
   const attentionItems: { label: string; value: number; href: string; color: 'red' | 'amber' | 'muted' }[] = []
@@ -106,6 +111,12 @@ export default async function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* Recent Activity */}
+      <div className="mb-8">
+        <h2 className="text-[11px] uppercase tracking-widest text-muted-foreground mb-3">Recent Activity</h2>
+        <ActivityFeed entries={activityEntries} />
+      </div>
 
       {/* Announcements */}
       <AnnouncementManager announcements={announcements || []} />

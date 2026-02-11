@@ -82,3 +82,38 @@ export async function logActivity(params: LogActivityParams): Promise<void> {
 }
 
 // Note: computeDiff and bookLabel are in @/lib/activity-utils (non-server, for client use)
+
+// ─── Admin: fetch recent activity ───
+
+export type ActivityLogEntry = {
+  id: string
+  created_at: string
+  user_id: string | null
+  user_email: string | null
+  action: string
+  category: string
+  entity_type: string | null
+  entity_id: string | null
+  entity_label: string | null
+  metadata: Record<string, unknown>
+  source: string
+}
+
+export async function getRecentActivityForAdmin(options?: {
+  limit?: number
+  category?: string
+  userId?: string
+}): Promise<{ data: ActivityLogEntry[]; error?: string }> {
+  try {
+    const supabase = await createClient()
+    const params: Record<string, unknown> = { lim: options?.limit ?? 20 }
+    if (options?.category) params.category_filter = options.category
+    if (options?.userId) params.user_filter = options.userId
+    const { data, error } = await supabase.rpc('get_recent_activity_for_admin', params as any)
+
+    if (error) return { data: [], error: error.message }
+    return { data: (data ?? []) as ActivityLogEntry[] }
+  } catch {
+    return { data: [], error: 'Failed to fetch activity' }
+  }
+}
