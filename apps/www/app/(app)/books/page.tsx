@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { formatInteger, formatCurrency as fmtCurr } from '@/lib/format'
 import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, FolderPlus, FolderMinus } from 'lucide-react'
+import { LimitGate } from '@/components/feature-gate'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -1543,12 +1544,14 @@ export default function BooksPage() {
               Duplicates
             </Link>
           </Button>
-          <Button asChild>
-            <Link href="/books/add" className="gap-2">
-              <Plus className="w-4 h-4" />
-              Add Book
-            </Link>
-          </Button>
+          <LimitGate limitKey="max_books" currentCount={totalCount}>
+            <Button asChild>
+              <Link href="/books/add" className="gap-2">
+                <Plus className="w-4 h-4" />
+                Add Book
+              </Link>
+            </Button>
+          </LimitGate>
         </div>
       </div>
 

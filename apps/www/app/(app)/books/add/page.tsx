@@ -1,11 +1,20 @@
 export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
+import { getTierLimit } from '@/lib/tier'
+import { redirect } from 'next/navigation'
 import BookAddForm from './book-add-form'
 
 export default async function BookAddPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  // Book limit check
+  if (user) {
+    const { count } = await supabase.from('books').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+    const limit = await getTierLimit(user.id, 'max_books')
+    if (limit > 0 && (count ?? 0) >= limit) redirect('/books?limit_reached=max_books')
+  }
 
   // Fetch BISAC codes in batches (Supabase has 1000 row default limit)
   const fetchAllBisacCodes = async () => {
