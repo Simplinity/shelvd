@@ -30,48 +30,21 @@ export default async function AdminUserDetailPage({
     if (match) authData = match
   } catch { /* RPC may not exist */ }
 
-  // 3. Quick stats
-  const [
-    { count: bookCount },
-    { count: collectionCount },
-    { count: ticketCount },
-  ] = await Promise.all([
-    supabase.from('books').select('*', { count: 'exact', head: true }).eq('user_id', id),
-    supabase.from('collections').select('*', { count: 'exact', head: true }).eq('user_id', id),
-    supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('user_id', id),
-  ])
+  // 3. Quick stats (SECURITY DEFINER RPC — bypasses RLS)
+  const { data: statsRow } = await supabase.rpc('get_user_detail_for_admin' as any, { target_user_id: id })
+  const stats = (statsRow as any)?.[0] || { book_count: 0, collection_count: 0, unique_tags: 0, unique_contributors: 0, ticket_count: 0, recent_book_count: 0 }
+  const bookCount = Number(stats.book_count)
+  const collectionCount = Number(stats.collection_count)
+  const uniqueTags = Number(stats.unique_tags)
+  const uniqueContributors = Number(stats.unique_contributors)
+  const ticketCount = Number(stats.ticket_count)
+  const recentBookCount = Number(stats.recent_book_count)
 
-  // Book contributor count (unique contributors used by this user's books)
-  const { data: contribData } = await supabase
-    .from('book_contributors')
-    .select('contributor_id, books!inner(user_id)')
-    .eq('books.user_id', id)
-  const uniqueContributors = new Set(contribData?.map(c => c.contributor_id) || []).size
+  // 4. Recent books (SECURITY DEFINER RPC)
+  const { data: recentBooksRaw } = await supabase.rpc('get_user_recent_books_for_admin' as any, { target_user_id: id, lim: 10 })
+  const recentBooks = (recentBooksRaw || []) as { id: string; title: string; created_at: string; status: string }[]
 
-  // Tag count
-  const { data: tagData } = await supabase
-    .from('book_tags')
-    .select('tag_id, books!inner(user_id)')
-    .eq('books.user_id', id)
-  const uniqueTags = new Set(tagData?.map(t => t.tag_id) || []).size
-
-  // Books added in last 30 days
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-  const { count: recentBookCount } = await supabase
-    .from('books')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', id)
-    .gte('created_at', thirtyDaysAgo)
-
-  // 4. Recent books (last 10)
-  const { data: recentBooks } = await supabase
-    .from('books')
-    .select('id, title, created_at, status')
-    .eq('user_id', id)
-    .order('created_at', { ascending: false })
-    .limit(10)
-
-  // 5. Support tickets
+  // 5. Support tickets (feedback table already has admin RLS policies)
   const { data: tickets } = await supabase
     .from('feedback')
     .select('id, type, subject, status, priority, created_at')
@@ -79,12 +52,9 @@ export default async function AdminUserDetailPage({
     .order('created_at', { ascending: false })
     .limit(10)
 
-  // 6. Collections
-  const { data: collections } = await supabase
-    .from('collections')
-    .select('id, name, is_default')
-    .eq('user_id', id)
-    .order('sort_order', { ascending: true })
+  // 6. Collections (SECURITY DEFINER RPC)
+  const { data: collectionsRaw } = await supabase.rpc('get_user_collections_for_admin' as any, { target_user_id: id })
+  const collections = (collectionsRaw || []) as { id: string; name: string; is_default: boolean }[]
 
   // Heat indicator
   const lastSignIn = authData.last_sign_in_at ? new Date(authData.last_sign_in_at) : null
