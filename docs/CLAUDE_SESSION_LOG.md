@@ -6,6 +6,10 @@
 
 **App version: v0.13.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, and invite codes complete. 9 lookup providers active. 37 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
+**Current task: User profile expansion**
+- ✅ Step 1: Migration 039 — add phone, company_name, website to user_profiles
+- ⏳ Step 2: Admin user detail — show all profile data (address, vat, company, phone, website, invite code, benefit, locale, currency)
+
 **Session work (v0.13.0 — 2026-02-11):**
 - **#4 Activity Logging — ALL 6 STEPS COMPLETE ✅**
   - Step 1: Foundation — `activity_log` table, 5 indices, RLS, SECURITY DEFINER RPCs, `logActivity()` utility

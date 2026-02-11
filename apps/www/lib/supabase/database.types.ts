@@ -1597,6 +1597,7 @@ export type Database = {
           avatar_url: string | null
           benefit_expires_at: string | null
           city: string | null
+          company_name: string | null
           country: string | null
           created_at: string | null
           default_currency: string | null
@@ -1612,6 +1613,7 @@ export type Database = {
           locale: string | null
           membership_tier: string | null
           notes: string | null
+          phone: string | null
           postal_code: string | null
           signup_source: string | null
           status: string | null
@@ -1619,12 +1621,14 @@ export type Database = {
           street_address: string | null
           updated_at: string | null
           vat_number: string | null
+          website: string | null
         }
         Insert: {
           admin_role?: string | null
           avatar_url?: string | null
           benefit_expires_at?: string | null
           city?: string | null
+          company_name?: string | null
           country?: string | null
           created_at?: string | null
           default_currency?: string | null
@@ -1640,6 +1644,7 @@ export type Database = {
           locale?: string | null
           membership_tier?: string | null
           notes?: string | null
+          phone?: string | null
           postal_code?: string | null
           signup_source?: string | null
           status?: string | null
@@ -1647,12 +1652,14 @@ export type Database = {
           street_address?: string | null
           updated_at?: string | null
           vat_number?: string | null
+          website?: string | null
         }
         Update: {
           admin_role?: string | null
           avatar_url?: string | null
           benefit_expires_at?: string | null
           city?: string | null
+          company_name?: string | null
           country?: string | null
           created_at?: string | null
           default_currency?: string | null
@@ -1668,6 +1675,7 @@ export type Database = {
           locale?: string | null
           membership_tier?: string | null
           notes?: string | null
+          phone?: string | null
           postal_code?: string | null
           signup_source?: string | null
           status?: string | null
@@ -1675,6 +1683,7 @@ export type Database = {
           street_address?: string | null
           updated_at?: string | null
           vat_number?: string | null
+          website?: string | null
         }
         Relationships: [
           {
