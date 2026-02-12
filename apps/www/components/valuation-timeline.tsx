@@ -1,6 +1,12 @@
+'use client'
+
 // Valuation history timeline display for book detail page
 // Vertical timeline showing value assessments (appraisals, auction results, purchases)
 // Mirrors condition-history-timeline.tsx structure and visual style exactly
+
+import dynamic from 'next/dynamic'
+
+const ValueTrendChart = dynamic(() => import('./value-trend-chart'), { ssr: false })
 
 const SOURCE_LABELS: Record<string, string> = {
   self_estimate: 'Self Estimate',
@@ -44,9 +50,23 @@ export default function ValuationTimeline({ entries, formatCurrency }: Props) {
 
   const sorted = [...entries].sort((a, b) => a.position - b.position)
 
+  // Build chart data from entries with dates, sorted chronologically
+  const chartData = sorted
+    .filter(e => e.valuation_date && e.value > 0)
+    .sort((a, b) => (a.valuation_date || '').localeCompare(b.valuation_date || ''))
+    .map(e => ({
+      date: e.valuation_date || '',
+      value: Number(e.value),
+      label: SOURCE_LABELS[e.source] || e.source,
+      currency: e.currency,
+    }))
+
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation History</h2>
+      {chartData.length >= 2 && (
+        <ValueTrendChart data={chartData} formatCurrency={formatCurrency} />
+      )}
       <div className="relative ml-4">
         {/* Vertical line */}
         <div className="absolute left-0 top-2 bottom-2 w-px bg-border" />
