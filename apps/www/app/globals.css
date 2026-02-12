@@ -71,7 +71,7 @@
   --destructive: 0 84% 60%;
   --border: 0 0% 90%;
   --input: 0 0% 90%;
-  --ring: 6 83% 47%;                  /* Swiss Red focus ring */
+  --ring: 0 0% 15%;                   /* Neutral focus ring */
   --chart-1: 6 83% 47%;
   --chart-2: 0 0% 20%;
   --chart-3: 0 0% 40%;
@@ -84,7 +84,7 @@
   --sidebar-accent: 0 0% 96%;
   --sidebar-accent-foreground: 0 0% 9%;
   --sidebar-border: 0 0% 90%;
-  --sidebar-ring: 6 83% 47%;
+  --sidebar-ring: 0 0% 15%;
 }
 
 .dark {
@@ -105,7 +105,7 @@
   --destructive: 0 62% 50%;
   --border: 0 0% 18%;
   --input: 0 0% 18%;
-  --ring: 6 83% 52%;
+  --ring: 0 0% 85%;                   /* Neutral focus ring (dark) */
   --sidebar: 0 0% 8%;
   --sidebar-foreground: 0 0% 98%;
   --sidebar-primary: 6 83% 52%;
@@ -113,7 +113,7 @@
   --sidebar-accent: 0 0% 15%;
   --sidebar-accent-foreground: 0 0% 98%;
   --sidebar-border: 0 0% 18%;
-  --sidebar-ring: 6 83% 52%;
+  --sidebar-ring: 0 0% 85%;
 }
 
 /* Typography */
@@ -155,9 +155,9 @@
   @apply bg-primary text-primary-foreground;
 }
 
-/* Focus visible - Swiss Red ring */
+/* Focus visible - subtle neutral ring */
 :focus-visible {
-  @apply outline-none ring-2 ring-ring ring-offset-2;
+  @apply outline-none ring-1 ring-ring;
 }
 
 /* ============================================
