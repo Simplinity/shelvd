@@ -333,7 +333,7 @@ export const ROADMAP: RoadmapItem[] = [
     title: 'Collection Audit',
     description: 'Your library, scored. Missing contributors, books without identifiers, provenance gaps, incomplete fields — all surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention."',
     category: 'cataloging',
-    status: 'planned',
+    status: 'shipped',
   },
   {
     title: 'Catalog Generator',

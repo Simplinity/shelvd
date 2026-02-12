@@ -6,13 +6,13 @@
 
 **App version: v0.15.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, invite codes, tier system, and valuation history complete. 9 lookup providers active. 45 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
-**Current task: #10 Collection Audit** — Plan written in project.md, starting implementation.
+**No task in progress.** #10 Collection Audit complete. Ready for next task.
 
 ---
 
 ## Recent Session Work (2026-02-12)
 
-### #10 Collection Audit — In Progress
+### #10 Collection Audit — Complete ✅
 
 **Step 0: Plan written in project.md ✅**
 - Full detail section added: 10 audit checks, health score formula, UI design, query strategy, 5-step delivery plan
@@ -35,17 +35,17 @@
 - Click to expand → book list (first 50), each with title link + Enrich/Edit fix link
 - FeatureGate wrapper (collection_audit) → UpgradeHint for Collector tier
 - Swiss design: monochrome + red accent for high severity
-- Build passes, compiles clean
-- Commit: pending
+- Commit: `d526653`
 
 **Step 4: Nav link + activity logging + FeatureGate ✅**
 - Nav: ClipboardCheck icon + "Audit" link between Stats and Activity in layout.tsx
 - Activity: `audit.viewed` action type + category added, logged on page load with score/totalBooks/totalIssues metadata
-- FeatureGate already in audit-client.tsx from step 2
-- Build passes
-- Commit: pending
+- Commit: `24e1ac4`
 
-**Step 5: Docs + session log + roadmap.ts — pending**
+**Step 5: Docs + session log + roadmap.ts ✅**
+- roadmap.ts: Collection Audit moved to `shipped`
+- project.md: #10 marked ✅ Done, delivery plan steps all ✅, added to Completed table
+- Session log: marked complete
 
 ---
 

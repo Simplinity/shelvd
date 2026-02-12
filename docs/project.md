@@ -355,6 +355,7 @@ status, action_needed, internal_notes
 | Custom Tags | ✅ Done |
 | Feedback & Support + Admin queue | ✅ Done |
 | Valuation History (8 steps) | ✅ Done |
+| Collection Audit (5 steps) | ✅ Done |
 
 ### Todo — Core Product
 | # | Feature | Priority | Effort | Description |
@@ -375,7 +376,7 @@ status, action_needed, internal_notes
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board (Shipped/Building/Planned), data-driven from lib/roadmap.ts, 26 items with category badges, 2-col card grid, stats bar, witty descriptions. |
 | 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
 | 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
-| 10 | Collection Audit | Medium | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps, incomplete fields — surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention." Gamification that drives data quality. |
+| 10 | Collection Audit | ✅ Done | — | Per-user library health score at `/audit`. 10 checks (identifiers, contributors, cover, condition, publisher, year, provenance, valuation, language, location), health score 0–100%, expandable book lists with fix links, FeatureGate (Pro+), nav link, activity logging. See details below. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
 | 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
@@ -958,7 +959,7 @@ SELECT b.id FROM books b WHERE b.user_id = $1
 | 2 | Audit page: `/audit` with health score + category cards | Medium | ✅ Done |
 | 3 | Expandable book lists per category with fix links | Low-Medium | ✅ Done (merged into step 2) |
 | 4 | Nav link + activity logging + FeatureGate | Low | ✅ Done |
-| 5 | Docs + session log + roadmap.ts update | Low | |
+| 5 | Docs + session log + roadmap.ts update | Low | ✅ Done |
 
 ### Todo — Admin Section Enhancements
 | # | Feature | Priority | Effort | Description |
