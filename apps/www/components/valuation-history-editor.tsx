@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, X, ChevronDown, ChevronUp, GripVertical, Link2 } from 'lucide-react'
+import { Plus, X, ChevronDown, ChevronUp, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CURRENCIES } from '@/lib/currencies'
 
@@ -34,17 +34,7 @@ const SOURCES = [
   { value: 'provenance_purchase', label: 'From Provenance' },
 ]
 
-const SOURCE_ICONS: Record<string, string> = {
-  self_estimate: '💭',
-  appraisal: '🏷️',
-  auction_result: '🔨',
-  dealer_quote: '🏪',
-  insurance: '🛡️',
-  market_research: '📊',
-  provenance_purchase: '🔗',
-}
-
-// ─── Styling ─────────────────────────────────────────────────────────
+// ─── Styling (matches condition-history-editor + provenance-editor) ──
 
 const inputClass = "w-full h-10 px-3 py-2 text-sm border border-border bg-background focus:outline-none focus:ring-1 focus:ring-foreground"
 const labelClass = "block text-xs uppercase tracking-wide text-muted-foreground mb-1"
@@ -134,24 +124,23 @@ export default function ValuationHistoryEditor({ entries, onChange }: Props) {
   }
 
   const renderSummary = (entry: ValuationHistoryEntry, idx: number) => {
-    const icon = SOURCE_ICONS[entry.source] || '📋'
     const sourceLabel = SOURCES.find(s => s.value === entry.source)?.label || ''
+    const isProvenance = !!entry.provenanceEntryId
 
     return (
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <span className="text-xs text-muted-foreground font-mono w-5 text-center shrink-0">{idx + 1}</span>
-        <span className="shrink-0">{icon}</span>
-        <span className="font-medium truncate">{sourceLabel}</span>
-        {entry.value && (
+        <span className="font-medium text-sm truncate">{sourceLabel}</span>
+        {entry.value != null && entry.value > 0 && (
           <span className="text-sm font-semibold shrink-0">{formatValue(entry.value, entry.currency)}</span>
         )}
         {entry.valuationDate && <span className="text-xs text-muted-foreground shrink-0">{entry.valuationDate}</span>}
         {entry.appraiser && (
           <span className="text-xs text-muted-foreground truncate">by {entry.appraiser}</span>
         )}
-        {entry.provenanceEntryId && (
-          <span className="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 shrink-0 flex items-center gap-0.5">
-            <Link2 className="w-3 h-3" /> Provenance
+        {isProvenance && (
+          <span className="text-xs px-1.5 py-0.5 bg-foreground text-background shrink-0">
+            Provenance
           </span>
         )}
       </div>
@@ -165,7 +154,7 @@ export default function ValuationHistoryEditor({ entries, onChange }: Props) {
         const isProvenance = !!entry.provenanceEntryId
 
         return (
-          <div key={entry.tempId} className={`border ${entry.isNew ? 'border-green-300 bg-green-50/30' : 'border-border'}`}>
+          <div key={entry.tempId} className={`border ${entry.isNew ? 'border-foreground/30' : 'border-border'}`}>
             {/* Summary row */}
             <div
               className="flex items-center gap-1 px-3 py-2 cursor-pointer hover:bg-muted/30 transition-colors"
@@ -195,7 +184,7 @@ export default function ValuationHistoryEditor({ entries, onChange }: Props) {
             {isExpanded && (
               <div className="px-3 pb-3 pt-1 border-t border-border/50 space-y-3">
                 {isProvenance && (
-                  <p className="text-xs text-blue-700 bg-blue-50 px-2 py-1.5">
+                  <p className="text-xs text-muted-foreground border border-border px-2 py-1.5">
                     Auto-created from provenance. Edit the price in the Provenance section to update this entry.
                   </p>
                 )}
