@@ -183,7 +183,7 @@
 | ~~B2.3~~ | ~~Valuation history: provenance auto-sync~~ | — | — | ✅ Done — Provenance save auto-creates/updates/deletes linked valuation entries |
 | ~~B2.4~~ | ~~Valuation history: detail page timeline~~ | — | — | ✅ Done — ValuationTimeline component on book detail page |
 | ~~B2.5~~ | ~~Valuation history: edit page CRUD~~ | — | — | ✅ Done — ValuationHistoryEditor replaces old 6-field grid. Sales price kept separate. |
-| B2.6 | Valuation history: value trend chart | — | Low | Recharts line chart on book detail showing value over time. |
+| ~~B2.6~~ | ~~Valuation history: value trend chart~~ | — | — | ✅ Done — Recharts line chart, dynamic import, shows when 2+ dated entries |
 | B2.7 | Valuation history: activity logging | — | Low | Log valuation changes to activity log. |
 | B2.8 | Valuation history: drop old flat fields | — | Low | Remove estimated_value, lowest/highest_price, valuation_date from books table. Keep sales_price. |
 | ~~B3~~ | ~~Condition history~~ | — | — | ✅ Done (2026-02-09) |

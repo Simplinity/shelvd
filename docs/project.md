@@ -994,7 +994,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | 3 | Provenance auto-sync in book edit save | ✅ Done |
 | 4 | Book detail: ValuationTimeline component | ✅ Done |
 | 5 | Book edit: ValuationHistoryEditor (replaces old 6-field grid) | ✅ Done |
-| 6 | Book detail: value trend chart | Low |
+| 6 | Book detail: value trend chart (Recharts) | ✅ Done |
 | 7 | Activity logging for valuation changes | Low |
 | 8 | Clean up: drop old flat fields from books table | Low |
 
