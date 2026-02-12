@@ -108,6 +108,29 @@ const sudocConfig: SruConfig = {
   sourceUrlPattern: 'https://www.sudoc.abes.fr/cbs/DB=2.1/CMD?ACT=SRCHA&IKT=7&TRM={isbn}',
 }
 
+// ===================== UNICAT (BELGIUM — UNION CATALOG) =====================
+// Unicat is the Belgian union catalog containing ~19.5M records from KBR (Royal Library),
+// Belgian university libraries, and three library networks: Anet, LIBIS-net and Boréal.
+// Powered by SemperTool. SRU endpoint returns MARCXML.
+// Docs: https://www.unicat.be/uniCat?func=help
+const unicatConfig: SruConfig = {
+  code: 'unicat',
+  name: 'Unicat (Belgium)',
+  country: 'BE',
+  baseUrl: 'https://www.unicat.be/sru',
+  recordSchema: 'marcxml',
+  version: '1.1',
+  indexes: {
+    isbn: 'isbn',
+    title: 'title',
+    author: 'author',
+    publisher: 'publisher',
+    year: 'year',
+    keyword: 'keyword',
+  },
+  sourceUrlPattern: 'https://www.unicat.be/uniCat?func=search&query=isbn:{isbn}',
+}
+
 // ===================== BNE (SPAIN — BIBLIOTECA NACIONAL DE ESPAÑA) =====================
 // BNE runs Ex Libris Alma, providing a standard SRU endpoint with alma.* indexes
 // ~15M records covering all Spanish publications (legal deposit since 1716)
@@ -157,9 +180,11 @@ export const bnf = createSruProvider(bnfConfig)
 export const dnb = createSruProvider(dnbConfig)
 export const k10plus = createSruProvider(k10plusConfig)
 export const sudoc = createSruProvider(sudocConfig)
+export const unicat = createSruProvider(unicatConfig)
 export const bne = createSruProvider(bneConfig)
 export const slsp = createSruProvider(slspConfig)
 
 // NOT IMPLEMENTED — no usable SRU endpoint:
-// KBR (Belgium): Z39.50 only at catalog.kbr.be:9001, no SRU
+// KBR (Belgium) direct: Z39.50 only at catalog.kbr.be:9001, no SRU
+//   → Use Unicat instead (Belgian union catalog that includes KBR)
 // KB NL: jsru.kb.nl returns Dublin Core (not MARCXML), ISBN search unreliable

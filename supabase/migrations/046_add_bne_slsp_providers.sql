@@ -1,8 +1,14 @@
--- Add BNE (Spain) and SLSP/Swisscovery (Switzerland) ISBN providers
--- Both use Ex Libris Alma SRU endpoints with alma.* index namespace
+-- Add BNE (Spain), SLSP/Swisscovery (Switzerland) and Unicat (Belgium) ISBN providers
+-- BNE and SLSP use Ex Libris Alma SRU endpoints with alma.* index namespace
+-- Unicat is the Belgian union catalog (KBR + university libraries) via SemperTool SRU
+
+-- Replace the old non-functional 'kbr' entry with Unicat (which includes KBR records)
+DELETE FROM user_isbn_providers WHERE provider_id IN (SELECT id FROM isbn_providers WHERE code = 'kbr');
+DELETE FROM isbn_providers WHERE code = 'kbr';
 
 INSERT INTO isbn_providers (code, name, country, provider_type, base_url, display_order) VALUES
-  ('bne', 'Biblioteca Nacional de España', 'ES', 'sru', 'https://catalogo.bne.es', 55),
+  ('unicat', 'Unicat (Belgium)', 'BE', 'sru', 'https://www.unicat.be', 55),
+  ('bne', 'Biblioteca Nacional de España', 'ES', 'sru', 'https://catalogo.bne.es', 56),
   ('slsp', 'Swisscovery (SLSP)', 'CH', 'sru', 'https://swisscovery.slsp.ch', 65);
 
 -- Also add provider_type 'xsearch' to the check constraint (for LIBRIS which uses it)
