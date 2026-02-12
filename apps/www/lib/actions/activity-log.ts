@@ -45,8 +45,10 @@ export type ActivityAction =
   // Invite codes
   | 'admin.invite_code_created'
   | 'admin.invite_code_toggled'
+  // Audit
+  | 'audit.viewed'
 
-export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'contributor' | 'tag' | 'account' | 'admin' | 'import'
+export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'contributor' | 'tag' | 'account' | 'admin' | 'import' | 'audit'
 
 export type ActivitySource = 'app' | 'import' | 'api' | 'admin' | 'system'
 

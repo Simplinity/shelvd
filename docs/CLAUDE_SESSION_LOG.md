@@ -38,7 +38,12 @@
 - Build passes, compiles clean
 - Commit: pending
 
-**Step 4: Nav link + activity logging + FeatureGate — pending**
+**Step 4: Nav link + activity logging + FeatureGate ✅**
+- Nav: ClipboardCheck icon + "Audit" link between Stats and Activity in layout.tsx
+- Activity: `audit.viewed` action type + category added, logged on page load with score/totalBooks/totalIssues metadata
+- FeatureGate already in audit-client.tsx from step 2
+- Build passes
+- Commit: pending
 
 **Step 5: Docs + session log + roadmap.ts — pending**
 

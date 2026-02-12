@@ -957,7 +957,7 @@ SELECT b.id FROM books b WHERE b.user_id = $1
 | 1 | Server action: `getCollectionAudit()` in `lib/actions/audit.ts` | Medium | ✅ Done |
 | 2 | Audit page: `/audit` with health score + category cards | Medium | ✅ Done |
 | 3 | Expandable book lists per category with fix links | Low-Medium | ✅ Done (merged into step 2) |
-| 4 | Nav link + activity logging + FeatureGate | Low | |
+| 4 | Nav link + activity logging + FeatureGate | Low | ✅ Done |
 | 5 | Docs + session log + roadmap.ts update | Low | |
 
 ### Todo — Admin Section Enhancements
