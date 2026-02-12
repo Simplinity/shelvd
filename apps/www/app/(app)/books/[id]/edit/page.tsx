@@ -68,6 +68,7 @@ export default async function BookEditPage({ params }: PageProps) {
     { data: bookExternalLinks },
     { data: provenanceData },
     { data: conditionHistoryData },
+    { data: valuationHistoryData },
   ] = await Promise.all([
     supabase.from('languages').select('id, name_en').order('name_en'),
     supabase.from('conditions').select('id, name').order('sort_order'),
@@ -109,6 +110,10 @@ export default async function BookEditPage({ params }: PageProps) {
     supabase.from('condition_history').select(`
       id, position, event_date, event_type, description, performed_by,
       cost, cost_currency, before_condition_id, after_condition_id, notes
+    `).eq('book_id', id).order('position'),
+    supabase.from('valuation_history').select(`
+      id, position, valuation_date, value, currency, source, appraiser,
+      provenance_entry_id, notes
     `).eq('book_id', id).order('position'),
   ])
 
@@ -205,6 +210,17 @@ export default async function BookEditPage({ params }: PageProps) {
       beforeConditionId: ch.before_condition_id || '',
       afterConditionId: ch.after_condition_id || '',
       notes: ch.notes || '',
+    })),
+    valuationHistoryEntries: (valuationHistoryData || []).map((vh: any) => ({
+      dbId: vh.id,
+      position: vh.position,
+      valuationDate: vh.valuation_date || '',
+      value: vh.value ? Number(vh.value) : null,
+      currency: vh.currency || 'EUR',
+      source: vh.source || 'self_estimate',
+      appraiser: vh.appraiser || '',
+      provenanceEntryId: vh.provenance_entry_id || null,
+      notes: vh.notes || '',
     })),
     provenanceEntries: (provenanceData || []).map((pe: any) => ({
       dbId: pe.id,

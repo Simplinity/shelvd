@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
 import ConditionHistoryEditor, { type ConditionHistoryEntry } from '@/components/condition-history-editor'
+import ValuationHistoryEditor, { type ValuationHistoryEntry } from '@/components/valuation-history-editor'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
 import CatalogEntryGenerator from '@/components/catalog-entry-generator'
@@ -60,6 +61,7 @@ type ReferenceData = {
   bookExternalLinks: ExternalLinkData[]
   provenanceEntries: Omit<ProvenanceEntry, 'tempId' | 'isNew' | 'isDeleted'>[]
   conditionHistoryEntries: Omit<ConditionHistoryEntry, 'tempId' | 'isNew' | 'isDeleted'>[]
+  valuationHistoryEntries: Omit<ValuationHistoryEntry, 'tempId' | 'isNew' | 'isDeleted'>[]
 }
 
 type Props = {
@@ -243,6 +245,16 @@ export default function BookEditForm({ book, referenceData }: Props) {
     (referenceData.conditionHistoryEntries || []).map((ch, i) => ({
       ...ch,
       tempId: `ch_existing_${i}`,
+      isNew: false,
+      isDeleted: false,
+    }))
+  )
+
+  // Valuation history state
+  const [valuationHistoryEntries, setValuationHistoryEntries] = useState<ValuationHistoryEntry[]>(
+    (referenceData.valuationHistoryEntries || []).map((vh, i) => ({
+      ...vh,
+      tempId: `vh_existing_${i}`,
       isNew: false,
       isDeleted: false,
     }))
@@ -709,6 +721,48 @@ export default function BookEditForm({ book, referenceData }: Props) {
         }
       }
 
+      // Save valuation history entries (standalone only — provenance-linked are managed by provenance sync)
+      // 1. Delete removed entries
+      const deletedValEntries = valuationHistoryEntries.filter(e => e.isDeleted && !e.isNew && e.dbId && !e.provenanceEntryId)
+      for (const de of deletedValEntries) {
+        await supabase.from('valuation_history').delete().eq('id', de.dbId!)
+      }
+
+      // 2. Upsert active standalone entries (skip entries without a value)
+      const activeValEntries = valuationHistoryEntries.filter(e => !e.isDeleted && !e.provenanceEntryId && e.value !== null && e.value > 0)
+      for (const entry of activeValEntries) {
+        const row = {
+          book_id: book.id,
+          position: entry.position,
+          valuation_date: entry.valuationDate || null,
+          value: entry.value as number,
+          currency: entry.currency || 'EUR',
+          source: entry.source,
+          appraiser: entry.appraiser || null,
+          provenance_entry_id: null as string | null,
+          notes: entry.notes || null,
+        }
+
+        if (entry.isNew) {
+          const { error: insertErr } = await supabase
+            .from('valuation_history')
+            .insert(row)
+          if (insertErr) throw insertErr
+        } else {
+          const { error: updateErr } = await supabase
+            .from('valuation_history')
+            .update(row)
+            .eq('id', entry.dbId!)
+          if (updateErr) throw updateErr
+        }
+      }
+
+      // 3. Update positions for provenance-linked entries (reordering only)
+      const activeProvValEntries = valuationHistoryEntries.filter(e => !e.isDeleted && e.provenanceEntryId && e.dbId)
+      for (const entry of activeProvValEntries) {
+        await supabase.from('valuation_history').update({ position: entry.position }).eq('id', entry.dbId!)
+      }
+
       // Activity log (fire-and-forget)
       const diffFields = [
         'title', 'subtitle', 'status', 'publisher_name', 'publication_year',
@@ -764,7 +818,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
     'Identifiers': ['isbn_13', 'isbn_10', 'oclc_number', 'lccn', 'user_catalog_id', 'ddc', 'lcc', 'udc', 'topic'],
     'BISAC Subject Codes': ['bisac_code', 'bisac_code_2', 'bisac_code_3'],
     'Storage': ['storage_location', 'shelf', 'shelf_section'],
-    'Valuation': ['lowest_price', 'highest_price', 'estimated_value', 'sales_price', 'price_currency', 'valuation_date'],
+    'Valuation': ['sales_price', 'price_currency'],
     'Notes': ['summary', 'dedication_text', 'colophon_text', 'bibliography', 'illustrations_description', 'signatures_description', 'internal_notes'],
   }
 
@@ -1429,20 +1483,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
         {/* 11. Valuation */}
         <section>
           <SectionHeader title="Valuation" />
-          {openSections.has('Valuation') && <div className="mt-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <label className={labelClass}>Lowest Price<FieldHelp text={FIELD_HELP.lowest_price} /></label>
-              <input type="number" step="0.01" value={formData.lowest_price ?? ''} onChange={e => handleChange('lowest_price', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Highest Price<FieldHelp text={FIELD_HELP.highest_price} /></label>
-              <input type="number" step="0.01" value={formData.highest_price ?? ''} onChange={e => handleChange('highest_price', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Estimated Value<FieldHelp text={FIELD_HELP.estimated_value} /></label>
-              <input type="number" step="0.01" value={formData.estimated_value ?? ''} onChange={e => handleChange('estimated_value', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
-            </div>
+          {openSections.has('Valuation') && <div className="mt-4 space-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Sales Price<FieldHelp text={FIELD_HELP.sales_price} /></label>
               <input type="number" step="0.01" value={formData.sales_price ?? ''} onChange={e => handleChange('sales_price', e.target.value ? parseFloat(e.target.value) : null)} className={inputClass} />
@@ -1454,10 +1496,17 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
               </select>
             </div>
-            <div>
-              <label className={labelClass}>Valuation Date<FieldHelp text={FIELD_HELP.valuation_date} /></label>
-              <input type="text" value={formData.valuation_date || ''} onChange={e => handleChange('valuation_date', e.target.value)} className={inputClass} />
-            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Valuation History</label>
+            <p className="text-xs text-muted-foreground mb-3">Track how this book's value changes over time. Entries linked to provenance are auto-managed.</p>
+            <ValuationHistoryEditor
+              entries={valuationHistoryEntries}
+              onChange={(updated: ValuationHistoryEntry[]) => {
+                setValuationHistoryEntries(updated)
+                setIsDirty(true)
+              }}
+            />
           </div>
           </div>}
         </section>
