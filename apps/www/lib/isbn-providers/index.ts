@@ -12,6 +12,8 @@ import { opacSbn } from './opac-sbn'
 import { ndl } from './ndl'
 import { trove } from './trove'
 import { kbNl } from './kb-netherlands'
+import { danbib } from './danbib'
+import { cerlHpb } from './cerl-hpb'
 
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
@@ -35,6 +37,8 @@ const providers: Record<string, IsbnProvider> = {
   'ndl': ndl,
   'trove': trove,
   'kb_nl': kbNl,
+  'danbib': danbib,
+  'cerl_hpb': cerlHpb,
 }
 
 /**

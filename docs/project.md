@@ -121,7 +121,7 @@ while (true) {
 | external_link_types | 54 | System defaults + user custom |
 | user_active_link_types | — | Which link types each user has activated |
 | book_external_links | — | External links per book |
-| isbn_providers | 20 | Book lookup providers (15 active + Trove pending) |
+| isbn_providers | 21 | Book lookup providers (16 active + Trove pending) |
 | user_isbn_providers | — | Per-user provider preferences |
 | collections | — | User collections (Library + Wishlist default, custom) |
 | book_collections | — | M:N books ↔ collections |
@@ -171,6 +171,7 @@ status, action_needed, internal_notes
 | ndl | NDL (National Diet Library) | 🇯🇵 | api |
 | trove | Trove / NLA | 🇦🇺 | api (⏸️ pending API key) |
 | kb_nl | KB (Koninklijke Bibliotheek) | 🇳🇱 | sru (Dublin Core) |
+| danbib | DanBib / bibliotek.dk | 🇩🇰 | api |
 
 ### Migrations (supabase/migrations/)
 | # | File | Description |
@@ -224,6 +225,7 @@ status, action_needed, internal_notes
 | 047 | add_bibsys_onb_libraryhub_providers | Add BIBSYS (NO), ÖNB (AT), Library Hub (GB); add sru-mods type |
 | 048 | add_finna_sbn_ndl_trove_kb_providers | Add Finna (FI), OPAC SBN (IT), NDL (JP), Trove (AU), KB NL; disable old kb |
 | 049 | disable_trove_pending_apikey | Disable Trove until API key approved |
+| 050 | add_danbib_provider | Add DanBib (DK) provider |
 
 ---
 
@@ -346,7 +348,7 @@ status, action_needed, internal_notes
 - Support link in app nav + marketing footer
 - Migration 025: `feedback` table with RLS, indexes, trigger
 
-### Book Lookup (20 providers, 18 countries)
+### Book Lookup (21 providers, 19 countries)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
 - Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
@@ -357,8 +359,20 @@ status, action_needed, internal_notes
 - Custom Dublin Core parser for KB Netherlands
 - Custom RSS/DC parser for NDL Japan (OpenSearch)
 - Custom JSON parsers for Finna (Finland) and OPAC SBN (Italy)
+- Custom DKABM/Dublin Core parser for DanBib (Denmark, OpenSearch SOAP/XML)
 - Provider-specific fixes: BnF CQL relations, SUDOC field 214, NSB/NSE cleanup, LoC keyword fallback
 - Trove (Australia) pending API key approval
+
+#### Provider Research — TODO
+| # | Provider | Country | Status | Notes |
+|---|----------|---------|--------|-------|
+| 21 | CERL HPB | 🇪🇺 | 🟢 TODO | Heritage of the Printed Book (6M+ records, 1455–1830). SRU at `sru.k10plus.de/hpb` — **confirmed public, no auth**. MARCXML output (reuse existing parser). Unique indexes: printer (`pica.dru`), provenance (`pica.prv`), former owner (`pica.fmo`/`pica.foc`), fingerprint (`pica.fpr`), dimensions (`pica.dim`). Ideal for antiquarian/rare book collectors. |
+| 22 | HathiTrust | 🇺🇸 | 🟢 TODO | 13M+ digitised volumes from 200+ research libraries. REST JSON at `catalog.hathitrust.org/api/volumes/` — **confirmed public, no auth**. ISBN/OCLC/LCCN lookup. Returns titles, ISBNs, publish dates, holding libraries, links to digitised versions. |
+| 23 | DanBib / bibliotek.dk | 🇩🇰 | ✅ DONE | 14M+ records, Danish union catalog. OpenSearch API (DKABM/Dublin Core XML). CQL search: `dkcclterm.is` (ISBN), `dkcclterm.ti` (title), `dkcclterm.fo` (author), `dkcclterm.år` (year). `term.type=bog` filter. Authors in "Last, First" via `oss:sort`. No auth. |
+| — | BNP / PORBASE | 🇵🇹 | 🔴 HARD | Z39.50 only (no SRU). Would need node-yaz or proxy. Open data via OAI-PMH (bulk, not real-time). Park for now. |
+| — | Korean NLK | 🇰🇷 | 🔴 HARD | No public REST/SRU API found. KOLIS-NET is closed. Park for now. |
+| — | Biblios.net | — | ❌ DEAD | LibLime project (2008–2009), defunct since PTFS acquisition 2010. |
+| — | OpenAlex | — | ❌ WRONG FIT | Academic citation DB (DOI-centric, no ISBN). Not for book collectors. |
 
 ---
 
@@ -1213,7 +1227,7 @@ shelvd/
 │       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
 │       ├── currencies.ts         # 29 ISO 4217 currencies for dropdowns
 │       ├── name-utils.ts         # Contributor name parsing (Last, First)
-│       └── isbn-providers/       # Book lookup providers (20)
+│       └── isbn-providers/       # Book lookup providers (21)
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
 │           ├── open-library.ts
@@ -1227,7 +1241,8 @@ shelvd/
 │           ├── opac-sbn.ts       # OPAC SBN (Italy, JSON)
 │           ├── ndl.ts            # NDL Japan (OpenSearch RSS/DC)
 │           ├── trove.ts          # Trove/NLA (Australia, REST JSON)
-│           └── kb-netherlands.ts # KB Netherlands (SRU Dublin Core)
+│           ├── kb-netherlands.ts # KB Netherlands (SRU Dublin Core)
+│           └── danbib.ts         # DanBib (Denmark, OpenSearch DKABM/DC)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
 ├── supabase/migrations/          # 001-025 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md

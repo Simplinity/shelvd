@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.18.0'
+export const APP_VERSION = '0.19.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,17 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.19.0',
+    date: '2026-02-12',
+    title: 'Rare Books & Scandinavian Libraries',
+    description: 'CERL HPB opens up 6 million records of European printed books from 1455–1830, with provenance, printer, and binding data. DanBib adds 14 million records from the Danish union catalog.',
+    changes: [
+      { type: 'added', text: 'CERL HPB (EU) — Heritage of the Printed Book. 6M+ records of European rare books (1455–1830) via SRU/MARCXML. Rich metadata: author life dates, printers, provenance, former owners, physical dimensions, and binding notes' },
+      { type: 'added', text: 'DanBib / bibliotek.dk (Denmark) — 14M+ records from the Danish union catalog via OpenSearch API. Custom DKABM/Dublin Core parser with CQL search, book-type filtering, and full edition detail' },
+      { type: 'improved', text: 'Book Lookup now spans 21 providers across 19 countries and 4 continents' },
+    ],
+  },
   {
     version: '0.18.0',
     date: '2026-02-12',
