@@ -89,8 +89,8 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.5.0',
   },
   {
-    title: 'Library Lookup (21 providers)',
-    description: 'Twenty-one sources across nineteen countries on four continents. From the Library of Congress to Japan\'s National Diet Library, from Denmark\'s 14M-record union catalog to Finland\'s open-data Finna service. One search, twenty-one libraries.',
+    title: 'Library Lookup (22 providers)',
+    description: 'Twenty-two sources across nineteen countries on four continents. From the Library of Congress to HathiTrust\'s 13M digitised volumes, from Denmark\'s 14M-record union catalog to Finland\'s open-data Finna service. One search, twenty-two libraries.',
     category: 'data',
     status: 'shipped',
     version: '0.19.0',

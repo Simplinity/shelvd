@@ -27,11 +27,12 @@ export const CHANGELOG: ChangelogRelease[] = [
     version: '0.19.0',
     date: '2026-02-12',
     title: 'Rare Books & Scandinavian Libraries',
-    description: 'CERL HPB opens up 6 million records of European printed books from 1455–1830, with provenance, printer, and binding data. DanBib adds 14 million records from the Danish union catalog.',
+    description: 'Three new providers: CERL HPB for European rare books (1455–1830), HathiTrust for 13M+ digitised volumes from 200+ research libraries, and DanBib for the Danish union catalog.',
     changes: [
       { type: 'added', text: 'CERL HPB (EU) — Heritage of the Printed Book. 6M+ records of European rare books (1455–1830) via SRU/MARCXML. Rich metadata: author life dates, printers, provenance, former owners, physical dimensions, and binding notes' },
+      { type: 'added', text: 'HathiTrust (US) — 13M+ digitised volumes from 200+ research libraries. ISBN/OCLC/LCCN lookup with full MARC-XML parsing. Unique: holding library info and links to digitised versions' },
       { type: 'added', text: 'DanBib / bibliotek.dk (Denmark) — 14M+ records from the Danish union catalog via OpenSearch API. Custom DKABM/Dublin Core parser with CQL search, book-type filtering, and full edition detail' },
-      { type: 'improved', text: 'Book Lookup now spans 21 providers across 19 countries and 4 continents' },
+      { type: 'improved', text: 'Book Lookup now spans 22 providers across 19 countries and 4 continents' },
     ],
   },
   {

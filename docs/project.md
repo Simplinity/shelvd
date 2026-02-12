@@ -366,8 +366,8 @@ status, action_needed, internal_notes
 #### Provider Research — TODO
 | # | Provider | Country | Status | Notes |
 |---|----------|---------|--------|-------|
-| 21 | CERL HPB | 🇪🇺 | 🟢 TODO | Heritage of the Printed Book (6M+ records, 1455–1830). SRU at `sru.k10plus.de/hpb` — **confirmed public, no auth**. MARCXML output (reuse existing parser). Unique indexes: printer (`pica.dru`), provenance (`pica.prv`), former owner (`pica.fmo`/`pica.foc`), fingerprint (`pica.fpr`), dimensions (`pica.dim`). Ideal for antiquarian/rare book collectors. |
-| 22 | HathiTrust | 🇺🇸 | 🟢 TODO | 13M+ digitised volumes from 200+ research libraries. REST JSON at `catalog.hathitrust.org/api/volumes/` — **confirmed public, no auth**. ISBN/OCLC/LCCN lookup. Returns titles, ISBNs, publish dates, holding libraries, links to digitised versions. |
+| 21 | CERL HPB | 🇪🇺 | ✅ DONE | Heritage of the Printed Book (6M+ records, 1455–1830). SRU at `sru.k10plus.de/hpb` — public, no auth. MARCXML parser with author life dates, printers, provenance, former owners, physical dimensions, binding notes. `pica.yop` for exact year search. |
+| 22 | HathiTrust | 🇺🇸 | ✅ DONE | 13M+ digitised volumes from 200+ research libraries. REST JSON at `catalog.hathitrust.org/api/volumes/` — public, no auth. ISBN/OCLC/LCCN lookup with full MARC-XML parsing. Holding library info, digitised version links, LCCN/OCLC/DDC/LCC identifiers. |
 | 23 | DanBib / bibliotek.dk | 🇩🇰 | ✅ DONE | 14M+ records, Danish union catalog. OpenSearch API (DKABM/Dublin Core XML). CQL search: `dkcclterm.is` (ISBN), `dkcclterm.ti` (title), `dkcclterm.fo` (author), `dkcclterm.år` (year). `term.type=bog` filter. Authors in "Last, First" via `oss:sort`. No auth. |
 | — | BNP / PORBASE | 🇵🇹 | 🔴 HARD | Z39.50 only (no SRU). Would need node-yaz or proxy. Open data via OAI-PMH (bulk, not real-time). Park for now. |
 | — | Korean NLK | 🇰🇷 | 🔴 HARD | No public REST/SRU API found. KOLIS-NET is closed. Park for now. |
