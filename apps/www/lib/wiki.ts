@@ -183,7 +183,7 @@ export const WIKI_ARTICLES: WikiArticle[] = [
     slug: 'the-isbd-entry',
     filename: 'the-isbd-entry.md',
     title: 'ISBD: The Catalog Entry Nobody Writes by Hand Anymore',
-    subtitle: 'What ISBD is, what the auto-generated entry means, and why Shelvd writes it in four languages.',
+    subtitle: 'The complete guide to ISBD catalog entries — every area, every punctuation rule, worked examples, and how Shelvd generates them in four languages.',
     category: 'cataloging',
     relatedBlog: ['what-is-isbd'],
     relatedWiki: ['the-title-page'],
