@@ -587,7 +587,7 @@ export default function BooksPage() {
 
       const bookSelect = `
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -699,7 +699,7 @@ export default function BooksPage() {
       const BATCH_SIZE = 1000
       const bookSelect = `
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -834,7 +834,7 @@ export default function BooksPage() {
       .from('books')
       .select(`
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -998,7 +998,7 @@ export default function BooksPage() {
           .from('books')
           .select(`
             id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-            status, cover_type, condition_id, language_id, user_catalog_id, series,
+            status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
             storage_location, shelf, isbn_13, isbn_10,
             book_contributors (
               contributor:contributors ( canonical_name ),
