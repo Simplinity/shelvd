@@ -369,8 +369,7 @@ status, action_needed, internal_notes
 | 21 | CERL HPB | 🇪🇺 | ✅ DONE | Heritage of the Printed Book (6M+ records, 1455–1830). SRU at `sru.k10plus.de/hpb` — public, no auth. MARCXML parser with author life dates, printers, provenance, former owners, physical dimensions, binding notes. `pica.yop` for exact year search. |
 | 22 | HathiTrust | 🇺🇸 | ✅ DONE | 13M+ digitised volumes from 200+ research libraries. REST JSON at `catalog.hathitrust.org/api/volumes/` — public, no auth. ISBN/OCLC/LCCN lookup with full MARC-XML parsing. Holding library info, digitised version links, LCCN/OCLC/DDC/LCC identifiers. |
 | 23 | DanBib / bibliotek.dk | 🇩🇰 | ✅ DONE | 14M+ records, Danish union catalog. OpenSearch API (DKABM/Dublin Core XML). CQL search: `dkcclterm.is` (ISBN), `dkcclterm.ti` (title), `dkcclterm.fo` (author), `dkcclterm.år` (year). `term.type=bog` filter. Authors in "Last, First" via `oss:sort`. No auth. |
-| — | BNP / PORBASE | 🇵🇹 | 🔴 HARD | Z39.50 only (no SRU). Would need node-yaz or proxy. Open data via OAI-PMH (bulk, not real-time). Park for now. |
-| — | Korean NLK | 🇰🇷 | 🔴 HARD | No public REST/SRU API found. KOLIS-NET is closed. Park for now. |
+
 | — | Biblios.net | — | ❌ DEAD | LibLime project (2008–2009), defunct since PTFS acquisition 2010. |
 | — | OpenAlex | — | ❌ WRONG FIT | Academic citation DB (DOI-centric, no ISBN). Not for book collectors. |
 
