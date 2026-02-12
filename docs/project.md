@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2026-02-09
+> **Last updated:** 2026-02-12
 
 ---
 
@@ -862,6 +862,103 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 4. Books list: mobile card view
 5. Tables: horizontal scroll wrappers or card alternatives
 6. Test on 375px (iPhone SE) and 390px (iPhone 14) widths |
+
+#### #10 Collection Audit — Detail
+
+**What it is:** A per-user data quality dashboard at `/audit`. Scans the user's entire library, calculates a health score, groups issues by category, and links each issue to a one-click fix (edit or enrich). Pro+ feature (gated via `collection_audit` in `tier_features`).
+
+**Why it matters:** Collectors import hundreds of books from spreadsheets — many with missing ISBNs, no contributors, no conditions. They don't know what's incomplete until they browse book by book. The audit turns "I should clean up my data someday" into "14 books need a contributor — click here." Gamification drives data quality without nagging.
+
+**No database migration needed.** All checks are read-only queries on existing tables (books, book_contributors, provenance_entries, valuation_history).
+
+**10 Audit Checks:**
+
+| # | Check | Query logic | Severity | One-click fix |
+|---|-------|------------|----------|---------------|
+| 1 | **No identifiers** | `isbn_10 IS NULL AND isbn_13 IS NULL AND oclc_number IS NULL AND lccn IS NULL` | 🔴 High | → Enrich (lookup by title) |
+| 2 | **No contributors** | `NOT EXISTS (SELECT 1 FROM book_contributors WHERE book_id = b.id)` | 🔴 High | → Edit page |
+| 3 | **No cover image** | `cover_image_url IS NULL` | 🟡 Medium | → Enrich |
+| 4 | **No condition** | `condition_id IS NULL` | 🟡 Medium | → Edit page |
+| 5 | **No publisher** | `publisher_name IS NULL AND publisher_id IS NULL` | 🟡 Medium | → Enrich |
+| 6 | **No publication year** | `publication_year IS NULL` | 🟡 Medium | → Enrich |
+| 7 | **No provenance** | `status IN ('in_collection','purchased') AND NOT EXISTS (provenance_entries)` | 🟢 Low | → Edit page (provenance) |
+| 8 | **No valuation** | `NOT EXISTS (valuation_history)` | 🟢 Low | → Edit page (valuation) |
+| 9 | **No language** | `language_id IS NULL` | 🟢 Low | → Edit page |
+| 10 | **No location** | `storage_location IS NULL` | 🟢 Low | → Edit page |
+
+**Health Score Calculation:**
+- Each book scores 0–10 (one point per check passed)
+- Overall score = (sum of all book scores / total books × 10) × 100%
+- Example: 250 books, average 8.7 checks passed → **"87% complete"**
+- Per-category score: e.g. "Identifiers: 92%" (= 8% of books have no identifier)
+
+**UI Design (Swiss):**
+
+**Top section — Health Score:**
+- Large percentage number (e.g. "87%") with circular progress ring or horizontal bar
+- Subtitle: "Your collection is 87% complete. 34 books need attention."
+- Monochrome + red accent for issues. No colors besides black/white/red.
+
+**Category cards — 2-column grid (5 rows):**
+- Per card: check name, icon, "X books" count, severity dot (red/yellow/green)
+- Cards with 0 issues: green checkmark, muted
+- Click card → expands to show affected books (title + link to edit/enrich)
+- Expandable list shows max 10 books with "Show all X →" link
+
+**Action links per book:**
+- "Enrich" → `/books/{id}/edit?enrich=true` (opens enrich panel)
+- "Edit" → `/books/{id}/edit` (scrolls to relevant section if possible)
+
+**Server-side approach:**
+- `lib/actions/audit.ts` — `getCollectionAudit()` server action
+- Single efficient query using conditional aggregation (COUNT + CASE WHEN) — NOT N+1
+- Returns: `{ totalBooks, score, categories: [{ key, label, severity, count, books }] }`
+- Book IDs limited to first 50 per category (pagination if needed later)
+
+**Query strategy (4 queries via Promise.all, not N+1):**
+
+Query 1 — book-level fields (one row per book with 7 boolean flags):
+```sql
+SELECT
+  b.id, b.title,
+  (b.isbn_10 IS NULL AND b.isbn_13 IS NULL AND b.oclc_number IS NULL AND b.lccn IS NULL) as no_identifiers,
+  (b.cover_image_url IS NULL) as no_cover,
+  (b.condition_id IS NULL) as no_condition,
+  (b.publisher_name IS NULL AND b.publisher_id IS NULL) as no_publisher,
+  (b.publication_year IS NULL) as no_year,
+  (b.language_id IS NULL) as no_language,
+  (b.storage_location IS NULL) as no_location
+FROM books b WHERE b.user_id = $1
+```
+
+Query 2–4 — related table checks (books without contributors / provenance / valuations):
+```sql
+SELECT b.id FROM books b WHERE b.user_id = $1
+  AND NOT EXISTS (SELECT 1 FROM book_contributors bc WHERE bc.book_id = b.id)
+```
+(Similar for provenance_entries and valuation_history)
+
+**Tier gating:**
+- Page wrapped in `FeatureGate feature="collection_audit"`
+- Collector tier: sees UpgradeHint ("Collection Audit — available on Collector Pro")
+- Already configured in `tier_features` table + `tier-config.ts`
+
+**Navigation:**
+- New nav item in `layout.tsx` sidebar: "Audit" between Stats and Activity
+- Icon: ClipboardCheck (lucide)
+
+**Activity logging:**
+- `logActivity('audit.viewed')` on page load
+
+**Delivery plan:**
+
+| Step | Description | Effort | Status |
+|------|-------------|--------|--------|
+| 1 | Server action: `getCollectionAudit()` in `lib/actions/audit.ts` | Medium | ⏳ |
+| 2 | Audit page: `/audit` with health score + category cards | Medium | |
+| 3 | Expandable book lists per category with fix links | Low-Medium | |
+| 4 | Nav link + activity logging + FeatureGate | Low | |
+| 5 | Docs + session log + roadmap.ts update | Low | |
 
 ### Todo — Admin Section Enhancements
 | # | Feature | Priority | Effort | Description |

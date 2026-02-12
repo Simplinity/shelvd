@@ -6,11 +6,32 @@
 
 **App version: v0.15.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, invite codes, tier system, and valuation history complete. 9 lookup providers active. 45 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
 
-**No task in progress.** Session ended cleanly. Ready for next task from backlog.
+**Current task: #10 Collection Audit** — Plan written in project.md, starting implementation.
 
 ---
 
 ## Recent Session Work (2026-02-12)
+
+### #10 Collection Audit — In Progress
+
+**Step 0: Plan written in project.md ✅**
+- Full detail section added: 10 audit checks, health score formula, UI design, query strategy, 5-step delivery plan
+- No DB migration needed (read-only queries on existing tables)
+- Pro+ gated via existing `collection_audit` feature in tier_features
+
+**Step 1: Server action `getCollectionAudit()` ⏳**
+- File: `lib/actions/audit.ts`
+- 4 queries via Promise.all (not N+1)
+
+**Step 2: Audit page `/audit` — pending**
+
+**Step 3: Expandable book lists + fix links — pending**
+
+**Step 4: Nav link + activity logging + FeatureGate — pending**
+
+**Step 5: Docs + session log + roadmap.ts — pending**
+
+---
 
 ### v0.15.0 — Valuation History + Bug Fixes + Landing Page
 
