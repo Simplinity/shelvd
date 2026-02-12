@@ -173,6 +173,49 @@ const slspConfig: SruConfig = {
   sourceUrlPattern: 'https://swisscovery.slsp.ch/search?query=any,contains,{isbn}',
 }
 
+// ===================== BIBSYS/ORIA (NORWAY — NATIONAL + ACADEMIC LIBRARIES) =====================
+// BIBSYS (now Sikt) runs Ex Libris Alma for the National Library of Norway +
+// all Norwegian universities, research institutions, and special libraries.
+// SRU is open and freely available. ~10M records.
+// Docs: https://data.norge.no/datasets/a2bff8ba-70aa-4eed-aedf-19eeab55e42a
+const bibsysConfig: SruConfig = {
+  code: 'bibsys',
+  name: 'BIBSYS/Oria (Norway)',
+  country: 'NO',
+  baseUrl: 'https://bibsys.alma.exlibrisgroup.com/view/sru/47BIBSYS_NETWORK',
+  recordSchema: 'marcxml',
+  version: '1.2',
+  indexes: {
+    isbn: 'alma.isbn',
+    title: 'alma.title',
+    author: 'alma.creator',
+    year: 'alma.main_pub_date',
+    keyword: 'alma.all_for_ui',
+  },
+  sourceUrlPattern: 'https://bibsys-almaprimo.hosted.exlibrisgroup.com/primo-explore/search?query=isbn,exact,{isbn}&vid=BIBSYS',
+}
+
+// ===================== ÖNB (AUSTRIA — ÖSTERREICHISCHE NATIONALBIBLIOTHEK) =====================
+// Austrian National Library runs Ex Libris Alma via the OBV (Österreichischer
+// Bibliothekenverbund) consortium. SRU endpoint freely available.
+// Docs: https://labs.onb.ac.at/en/datasets/catalogue/
+const onbConfig: SruConfig = {
+  code: 'onb',
+  name: 'Österreichische Nationalbibliothek',
+  country: 'AT',
+  baseUrl: 'https://obv-at-oenb.alma.exlibrisgroup.com/view/sru/43ACC_ONB',
+  recordSchema: 'marcxml',
+  version: '1.2',
+  indexes: {
+    isbn: 'alma.isbn',
+    title: 'alma.title',
+    author: 'alma.creator',
+    year: 'alma.main_pub_date',
+    keyword: 'alma.all_for_ui',
+  },
+  sourceUrlPattern: 'https://search.onb.ac.at/primo-explore/search?query=isbn,exact,{isbn}&vid=ONB',
+}
+
 // ===================== EXPORTS =====================
 
 export const loc = createSruProvider(locConfig)
@@ -183,8 +226,14 @@ export const sudoc = createSruProvider(sudocConfig)
 export const unicat = createSruProvider(unicatConfig)
 export const bne = createSruProvider(bneConfig)
 export const slsp = createSruProvider(slspConfig)
+export const bibsys = createSruProvider(bibsysConfig)
+export const onb = createSruProvider(onbConfig)
 
 // NOT IMPLEMENTED — no usable SRU endpoint:
 // KBR (Belgium) direct: Z39.50 only at catalog.kbr.be:9001, no SRU
 //   → Use Unicat instead (Belgian union catalog that includes KBR)
 // KB NL: jsru.kb.nl returns Dublin Core (not MARCXML), ISBN search unreliable
+// SBN/ICCU (Italy): Z39.50 only
+// BNP (Portugal): Z39.50 only
+// LAC/Aurora (Canada): No public SRU found
+// Det Kgl. Bibliotek (Denmark): Unclear if SRU is public

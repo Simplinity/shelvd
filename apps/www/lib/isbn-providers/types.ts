@@ -79,7 +79,7 @@ export interface IsbnProvider {
   code: string
   name: string
   country?: string  // ISO country code
-  type: 'api' | 'sru' | 'html' | 'xsearch'
+  type: 'api' | 'sru' | 'sru-mods' | 'html' | 'xsearch'
   
   // ISBN lookup (single result, full data)
   search(isbn: string): Promise<ProviderResult>
@@ -96,7 +96,7 @@ export interface ActiveProvider {
   code: string
   name: string
   country: string | null
-  provider_type: 'api' | 'sru' | 'html' | 'xsearch'
+  provider_type: 'api' | 'sru' | 'sru-mods' | 'html' | 'xsearch'
   base_url: string
   is_active: boolean
   priority: number
