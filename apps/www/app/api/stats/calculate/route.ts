@@ -18,7 +18,7 @@ export async function POST() {
     while (true) {
       const { data: booksPage, error: booksError } = await supabase
         .from('books')
-        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, estimated_value, sales_price, price_currency, action_needed, publication_year, isbn_13')
+        .select('id, title, status, condition_id, is_signed, has_dust_jacket, language_id, publisher_name, publication_place, cover_type, shelf, sales_price, price_currency, action_needed, publication_year, isbn_13')
         .eq('user_id', user.id)
         .range(bookOffset, bookOffset + 999)
       
@@ -38,6 +38,21 @@ export async function POST() {
     // ============================================
     // STEP 2: Fetch lookups
     // ============================================
+    // Fetch latest valuation per book (for collection value stats)
+    const { data: allValuations } = await supabase
+      .from('valuation_history')
+      .select('book_id, value, currency')
+      .in('book_id', bookIds.length > 0 ? bookIds : ['00000000-0000-0000-0000-000000000000'])
+      .order('position', { ascending: false })
+
+    // Build map: book_id → latest valuation { value, currency }
+    const latestValuation: Record<string, { value: number; currency: string }> = {}
+    for (const v of (allValuations || [])) {
+      if (!latestValuation[v.book_id]) {
+        latestValuation[v.book_id] = { value: Number(v.value), currency: v.currency }
+      }
+    }
+
     const [
       { data: conditionsLookup },
       { data: languagesLookup },
@@ -191,9 +206,10 @@ export async function POST() {
     const acquisitionYearCounts: Record<string, number> = {}
 
     allBooks.forEach(book => {
-      // Values
-      if (book.estimated_value) {
-        const value = convert(Number(book.estimated_value), book.price_currency)
+      // Values (from latest valuation_history entry)
+      const bookVal = latestValuation[book.id]
+      if (bookVal) {
+        const value = convert(bookVal.value, bookVal.currency)
         totalEstimatedValue += value
         booksWithValue++
         if (!mostExpensiveBook || value > mostExpensiveBook.value) {
@@ -287,8 +303,9 @@ export async function POST() {
     ]
     const valueDistribution = valueRanges.map(r => ({ label: r.label, count: 0 }))
     allBooks.forEach(book => {
-      if (book.estimated_value) {
-        const val = convert(Number(book.estimated_value), book.price_currency)
+      const bv = latestValuation[book.id]
+      if (bv) {
+        const val = convert(bv.value, bv.currency)
         for (let i = 0; i < valueRanges.length; i++) {
           if (val >= valueRanges[i].min && val < valueRanges[i].max) {
             valueDistribution[i].count++

@@ -421,9 +421,6 @@ export default function BookImportForm({ referenceData, userId }: Props) {
           storage_location: book.data.storage_location || null,
           shelf: book.data.shelf || null,
           shelf_section: book.data.shelf_section || null,
-          lowest_price: parseNumber(book.data.lowest_price),
-          highest_price: parseNumber(book.data.highest_price),
-          estimated_value: parseNumber(book.data.estimated_value),
           sales_price: parseNumber(book.data.sales_price),
           price_currency: book.data.price_currency || null,
           summary: book.data.summary || null,
@@ -442,6 +439,26 @@ export default function BookImportForm({ referenceData, userId }: Props) {
           .single()
 
         if (insertError) throw insertError
+
+        // Create valuation_history entries from imported price data
+        const valEntries: { book_id: string; position: number; value: number; currency: string; source: string; notes: string }[] = []
+        let vPos = 1
+        const impCurrency = book.data.price_currency || 'EUR'
+        const estVal = parseNumber(book.data.estimated_value)
+        if (estVal && estVal > 0) {
+          valEntries.push({ book_id: newBook.id, position: vPos++, value: estVal, currency: impCurrency, source: 'self_estimate', notes: 'Imported' })
+        }
+        const loVal = parseNumber(book.data.lowest_price)
+        if (loVal && loVal > 0) {
+          valEntries.push({ book_id: newBook.id, position: vPos++, value: loVal, currency: impCurrency, source: 'market_research', notes: 'Market low — imported' })
+        }
+        const hiVal = parseNumber(book.data.highest_price)
+        if (hiVal && hiVal > 0) {
+          valEntries.push({ book_id: newBook.id, position: vPos++, value: hiVal, currency: impCurrency, source: 'market_research', notes: 'Market high — imported' })
+        }
+        if (valEntries.length > 0) {
+          await supabase.from('valuation_history').insert(valEntries)
+        }
 
         // Handle contributors
         const contributors = parseContributors(book.data.contributors || '')

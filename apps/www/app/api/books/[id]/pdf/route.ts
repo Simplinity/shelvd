@@ -49,6 +49,7 @@ export async function GET(
     { data: bookTags },
     { data: provenanceData },
     { data: conditionHistoryData },
+    { data: valuationData },
     { data: profile },
   ] = await Promise.all([
     supabase
@@ -106,6 +107,11 @@ export async function GET(
       `)
       .eq('book_id', id)
       .order('position'),
+    supabase
+      .from('valuation_history')
+      .select('value, currency, source')
+      .eq('book_id', id)
+      .order('position', { ascending: false }),
     supabase.from('user_profiles').select('full_name').eq('id', user.id).single(),
   ])
   
@@ -175,11 +181,22 @@ export async function GET(
     shelf: b.shelf || undefined,
     shelf_section: b.shelf_section || undefined,
     
-    lowest_price: b.lowest_price || undefined,
-    highest_price: b.highest_price || undefined,
-    estimated_value: b.estimated_value || undefined,
+    estimated_value: (() => {
+      const latest = (valuationData || [])[0]
+      return latest?.value ? Number(latest.value) : undefined
+    })(),
+    lowest_price: (() => {
+      const mrs = (valuationData || []).filter((v: any) => v.source === 'market_research')
+      const vals = mrs.map((v: any) => Number(v.value)).filter((n: number) => n > 0)
+      return vals.length > 0 ? Math.min(...vals) : undefined
+    })(),
+    highest_price: (() => {
+      const mrs = (valuationData || []).filter((v: any) => v.source === 'market_research')
+      const vals = mrs.map((v: any) => Number(v.value)).filter((n: number) => n > 0)
+      return vals.length > 0 ? Math.max(...vals) : undefined
+    })(),
     sales_price: b.sales_price || undefined,
-    price_currency: b.price_currency || undefined,
+    price_currency: (valuationData || [])[0]?.currency || b.price_currency || undefined,
     
     provenance: (provenanceData || []).map((p: any) => ({
       owner_name: p.owner_name,

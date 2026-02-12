@@ -1156,7 +1156,7 @@ export default function BooksPage() {
           const batch = bookIds.slice(i, i + 500)
           const { data } = await supabase
             .from('books')
-            .select('id, estimated_value, price_currency')
+            .select('id')
             .eq('user_id', user.id)
             .in('id', batch)
           if (data) allBooks.push(...data)
@@ -1166,7 +1166,7 @@ export default function BooksPage() {
         while (true) {
           const { data } = await supabase
             .from('books')
-            .select('id, estimated_value, price_currency')
+            .select('id')
             .eq('user_id', user.id)
             .range(offset, offset + 999)
           if (!data || data.length === 0) break
@@ -1176,8 +1176,25 @@ export default function BooksPage() {
         }
       }
 
-      // Fetch acquisition prices from provenance "self" entries
       const allBookIds = allBooks.map((b: any) => b.id)
+
+      // Fetch latest valuation per book from valuation_history
+      const valMap = new Map<string, number>()
+      for (let i = 0; i < allBookIds.length; i += 500) {
+        const batch = allBookIds.slice(i, i + 500)
+        const { data } = await supabase
+          .from('valuation_history')
+          .select('book_id, value, currency')
+          .in('book_id', batch)
+          .order('position', { ascending: false })
+        data?.forEach((v: any) => {
+          if (!valMap.has(v.book_id)) {
+            valMap.set(v.book_id, Number(v.value))
+          }
+        })
+      }
+
+      // Fetch acquisition prices from provenance "self" entries
       const acqMap = new Map<string, number>()
       for (let i = 0; i < allBookIds.length; i += 500) {
         const batch = allBookIds.slice(i, i + 500)
@@ -1199,9 +1216,10 @@ export default function BooksPage() {
       let count = 0
       for (const b of allBooks) {
         const acqPrice = acqMap.get(b.id)
+        const estValue = valMap.get(b.id)
         if (acqPrice) totalAcquired += acqPrice
-        if (b.estimated_value) totalEstimated += Number(b.estimated_value)
-        if (acqPrice || b.estimated_value) count++
+        if (estValue) totalEstimated += estValue
+        if (acqPrice || estValue) count++
       }
 
       setValueSummary({ totalAcquired, totalEstimated, bookCount: count, currency: displayCur })

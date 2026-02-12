@@ -80,12 +80,8 @@ export const FIELD_HELP: Record<string, string> = {
   shelf_section: 'Section within the shelf, e.g. "Left", "Top row", "Bay 2".',
 
   // Valuation
-  lowest_price: 'Lowest price seen in the market for a comparable copy.',
-  highest_price: 'Highest price seen in the market for a comparable copy.',
-  estimated_value: 'Your estimated current market value for this specific copy in its current condition.',
   sales_price: 'The price you are asking if selling, or the price at which it was sold.',
-  price_currency: 'Currency for all price fields in this section.',
-  valuation_date: 'Date of the valuation or price research, in YYYY-MM-DD format.',
+  price_currency: 'Currency for the sales price.',
 
   // Notes
   summary: 'Brief description of the book\'s content, significance, or your personal notes about the work.',

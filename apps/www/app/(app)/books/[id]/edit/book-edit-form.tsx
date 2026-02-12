@@ -437,7 +437,6 @@ export default function BookEditForm({ book, referenceData }: Props) {
           text_block_condition: (formData as any).text_block_condition || null,
           dedication_text: (formData as any).dedication_text || null,
           colophon_text: (formData as any).colophon_text || null,
-          valuation_date: formData.valuation_date || null,
           isbn_13: formData.isbn_13 || null,
           isbn_10: formData.isbn_10 || null,
           oclc_number: formData.oclc_number || null,
@@ -453,9 +452,6 @@ export default function BookEditForm({ book, referenceData }: Props) {
           storage_location: formData.storage_location || null,
           shelf: formData.shelf || null,
           shelf_section: formData.shelf_section || null,
-          lowest_price: formData.lowest_price || null,
-          highest_price: formData.highest_price || null,
-          estimated_value: formData.estimated_value || null,
           sales_price: formData.sales_price || null,
           price_currency: formData.price_currency || null,
           illustrations_description: formData.illustrations_description || null,
@@ -766,7 +762,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
       // Activity log (fire-and-forget)
       const diffFields = [
         'title', 'subtitle', 'status', 'publisher_name', 'publication_year',
-        'condition_id', 'isbn_13', 'isbn_10', 'estimated_value', 'sales_price',
+        'condition_id', 'isbn_13', 'isbn_10', 'sales_price',
         'storage_location', 'cover_image_url',
       ]
       const changes = computeDiff(

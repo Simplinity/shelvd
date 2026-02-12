@@ -104,7 +104,8 @@ function transformBookData(
   bindingMap: Map<string, string>,
   formatMap: Map<string, string>,
   conditionMap: Map<string, string>,
-  locationMap: Map<string, string>
+  locationMap: Map<string, string>,
+  valByBook: Record<string, { estimated: number | null; lowest: number | null; highest: number | null; currency: string | null; date: string | null }>
 ): Record<string, any> {
   return {
     title: book.title,
@@ -159,12 +160,12 @@ function transformBookData(
     location: locationMap.get(book.location_id) || '',
     shelf: book.shelf,
     shelf_section: book.shelf_section,
-    lowest_price: book.lowest_price,
-    highest_price: book.highest_price,
-    estimated_value: book.estimated_value,
+    lowest_price: valByBook[book.id]?.lowest || '',
+    highest_price: valByBook[book.id]?.highest || '',
+    estimated_value: valByBook[book.id]?.estimated || '',
     sales_price: book.sales_price,
-    price_currency: book.price_currency,
-    valuation_date: book.valuation_date,
+    price_currency: valByBook[book.id]?.currency || book.price_currency,
+    valuation_date: valByBook[book.id]?.date || '',
     summary: book.summary,
     provenance: provenanceByBook[book.id] || '',
     bibliography: book.bibliography,
@@ -339,6 +340,34 @@ export async function GET(request: NextRequest) {
   const conditionMap = new Map<string, string>((conditionsRes.data || []).map(c => [c.id, c.name] as [string, string]))
   const locationMap = new Map<string, string>((locationsRes.data || []).map(l => [l.id, l.name] as [string, string]))
 
+  // Fetch valuation_history for all books
+  const allBookIds = books.map(b => b.id)
+  const valByBook: Record<string, { estimated: number | null; lowest: number | null; highest: number | null; currency: string | null; date: string | null }> = {}
+  for (let i = 0; i < allBookIds.length; i += 500) {
+    const batch = allBookIds.slice(i, i + 500)
+    const { data: vals } = await supabase
+      .from('valuation_history')
+      .select('book_id, value, currency, source, valuation_date')
+      .in('book_id', batch)
+      .order('position', { ascending: false })
+    for (const v of (vals || [])) {
+      if (!valByBook[v.book_id]) valByBook[v.book_id] = { estimated: null, lowest: null, highest: null, currency: null, date: null }
+      const entry = valByBook[v.book_id]
+      // First entry (highest position) = latest = estimated value
+      if (entry.estimated === null) {
+        entry.estimated = Number(v.value)
+        entry.currency = v.currency
+        entry.date = v.valuation_date
+      }
+      // Track market_research entries for low/high
+      if (v.source === 'market_research') {
+        const val = Number(v.value)
+        if (entry.lowest === null || val < entry.lowest) entry.lowest = val
+        if (entry.highest === null || val > entry.highest) entry.highest = val
+      }
+    }
+  }
+
   // Fetch contributors for user's books in batches (RLS + .in() limits)
   const bookIdArray = books.map(b => b.id)
   const allBookContributors: any[] = []
@@ -440,7 +469,8 @@ export async function GET(request: NextRequest) {
     bindingMap,
     formatMap,
     conditionMap,
-    locationMap
+    locationMap,
+    valByBook
   )) || []
 
   // Generate filename with date

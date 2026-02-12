@@ -108,9 +108,6 @@ type FormData = {
   storage_location: string
   shelf: string
   shelf_section: string
-  lowest_price: string
-  highest_price: string
-  estimated_value: string
   sales_price: string
   price_currency: string
   illustrations_description: string
@@ -179,9 +176,6 @@ const initialFormData: FormData = {
   storage_location: '',
   shelf: '',
   shelf_section: '',
-  lowest_price: '',
-  highest_price: '',
-  estimated_value: '',
   sales_price: '',
   price_currency: '',
   illustrations_description: '',
@@ -630,9 +624,6 @@ export default function BookAddForm({ referenceData }: Props) {
           storage_location: formData.storage_location || null,
           shelf: formData.shelf || null,
           shelf_section: formData.shelf_section || null,
-          lowest_price: formData.lowest_price ? parseFloat(formData.lowest_price) : null,
-          highest_price: formData.highest_price ? parseFloat(formData.highest_price) : null,
-          estimated_value: formData.estimated_value ? parseFloat(formData.estimated_value) : null,
           sales_price: formData.sales_price ? parseFloat(formData.sales_price) : null,
           price_currency: formData.price_currency || null,
           illustrations_description: formData.illustrations_description || null,
@@ -836,7 +827,7 @@ export default function BookAddForm({ referenceData }: Props) {
     'Identifiers': ['isbn_13', 'isbn_10', 'oclc_number', 'lccn', 'user_catalog_id', 'ddc', 'lcc', 'udc', 'topic'],
     'BISAC Subject Codes': ['bisac_code', 'bisac_code_2', 'bisac_code_3'],
     'Storage': ['storage_location', 'shelf', 'shelf_section'],
-    'Valuation': ['lowest_price', 'highest_price', 'estimated_value', 'sales_price', 'price_currency', 'valuation_date'],
+    'Valuation': ['sales_price', 'price_currency'],
     'Notes': ['summary', 'dedication_text', 'colophon_text', 'bibliography', 'illustrations_description', 'signatures_description', 'internal_notes'],
   }
 
@@ -1507,19 +1498,7 @@ export default function BookAddForm({ referenceData }: Props) {
         <section>
           <SectionHeader title="Valuation" />
           {openSections.has('Valuation') && <div className="mt-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <label className={labelClass}>Lowest Price<FieldHelp text={FIELD_HELP.lowest_price} /></label>
-              <input type="number" step="0.01" value={formData.lowest_price} onChange={e => handleChange('lowest_price', e.target.value)} className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Highest Price<FieldHelp text={FIELD_HELP.highest_price} /></label>
-              <input type="number" step="0.01" value={formData.highest_price} onChange={e => handleChange('highest_price', e.target.value)} className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Estimated Value<FieldHelp text={FIELD_HELP.estimated_value} /></label>
-              <input type="number" step="0.01" value={formData.estimated_value} onChange={e => handleChange('estimated_value', e.target.value)} className={inputClass} />
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Sales Price<FieldHelp text={FIELD_HELP.sales_price} /></label>
               <input type="number" step="0.01" value={formData.sales_price} onChange={e => handleChange('sales_price', e.target.value)} className={inputClass} />
@@ -1532,6 +1511,7 @@ export default function BookAddForm({ referenceData }: Props) {
               </select>
             </div>
           </div>
+          <p className="text-xs text-muted-foreground mt-3">Valuations (appraisals, estimates) can be added after saving the book.</p>
           </div>}
         </section>
 
