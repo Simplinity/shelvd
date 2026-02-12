@@ -769,6 +769,19 @@ export default function BookEditForm({ book, referenceData }: Props) {
         Object.fromEntries(diffFields.map(f => [f, (book as Record<string, unknown>)[f]])),
         Object.fromEntries(diffFields.map(f => [f, (formData as Record<string, unknown>)[f]])),
       )
+
+      // Track valuation history changes
+      const valAdded = valuationHistoryEntries.filter(e => e.isNew && !e.isDeleted && !e.provenanceEntryId && e.value).length
+      const valDeleted = deletedValEntries.length
+      const valModified = activeValEntries.filter(e => !e.isNew && e.dbId).length
+      if (valAdded || valDeleted || valModified) {
+        (changes as Record<string, unknown>).valuation_history = [
+          valAdded && `${valAdded} added`,
+          valModified && `${valModified} updated`,
+          valDeleted && `${valDeleted} removed`,
+        ].filter(Boolean).join(', ')
+      }
+
       if (Object.keys(changes).length > 0) {
         const { data: { user: logUser } } = await supabase.auth.getUser()
         if (logUser) {
