@@ -3,8 +3,22 @@ import { createClient } from '@/lib/supabase/server'
 type Tier = 'collector' | 'collector_pro' | 'dealer'
 
 /**
+ * Tier hierarchy (higher = more access).
+ */
+const TIER_RANK: Record<Tier, number> = {
+  collector: 0,
+  collector_pro: 1,
+  dealer: 2,
+}
+
+function highestTier(...tiers: Tier[]): Tier {
+  return tiers.reduce((a, b) => TIER_RANK[b] > TIER_RANK[a] ? b : a)
+}
+
+/**
  * Resolve the effective tier for a user.
- * Checks is_lifetime_free (→ collector_pro) and benefit_expires_at.
+ * Takes the HIGHEST of: membership_tier, lifetime pro, and active benefit.
+ * This ensures is_lifetime_free never downgrades a dealer to collector_pro.
  */
 export async function getEffectiveTier(userId: string): Promise<Tier> {
   const supabase = await createClient()
@@ -16,15 +30,17 @@ export async function getEffectiveTier(userId: string): Promise<Tier> {
 
   if (!data) return 'collector'
 
-  // Lifetime Pro overrides everything (but NOT to Dealer)
-  if (data.is_lifetime_free) return 'collector_pro'
+  const baseTier = (data.membership_tier as Tier) || 'collector'
 
-  // Active benefit trial → collector_pro
+  // Lifetime Pro grants at least collector_pro
+  if (data.is_lifetime_free) return highestTier(baseTier, 'collector_pro')
+
+  // Active benefit trial grants at least collector_pro
   if (data.benefit_expires_at && new Date(data.benefit_expires_at) > new Date()) {
-    return 'collector_pro'
+    return highestTier(baseTier, 'collector_pro')
   }
 
-  return (data.membership_tier as Tier) || 'collector'
+  return baseTier
 }
 
 /**

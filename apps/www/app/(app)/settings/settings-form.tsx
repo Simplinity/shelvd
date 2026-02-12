@@ -262,19 +262,28 @@ function SubscriptionSection({ profile }: { profile: any }) {
   const isLifetime = profile?.is_lifetime_free
   const tierDisplay: Record<string, string> = { collector: 'Collector', collector_pro: 'Collector Pro', dealer: 'Dealer' }
 
+  // Effective tier = highest of membership_tier and lifetime grant
+  const tierRank: Record<string, number> = { collector: 0, collector_pro: 1, dealer: 2 }
+  const effectiveTier = isLifetime && tierRank[tier] < tierRank['collector_pro'] ? 'collector_pro' : tier
+
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Subscription</h2>
       <div className="flex items-center gap-3">
         <span className="h-10 px-4 bg-foreground text-background text-sm font-medium inline-flex items-center">
-          {tierDisplay[tier] || tier}
+          {tierDisplay[effectiveTier] || effectiveTier}
         </span>
         {isLifetime && (
           <span className="h-10 px-3 bg-green-50 text-green-700 text-sm font-medium border border-green-200 inline-flex items-center">
-            Lifetime Pro
+            Lifetime Early Access
           </span>
         )}
       </div>
+      {isLifetime && tier !== effectiveTier && (
+        <p className="text-xs text-muted-foreground mt-2">
+          Your Lifetime Early Access includes Collector Pro benefits.
+        </p>
+      )}
       <p className="text-xs text-muted-foreground mt-4">
         Subscription management coming soon.
       </p>
