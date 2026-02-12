@@ -12,6 +12,7 @@ import MoveToLibraryButton from '@/components/move-to-library-button'
 import CollectionChips from '@/components/collection-chips'
 import ProvenanceTimeline from '@/components/provenance-timeline'
 import ConditionHistoryTimeline from '@/components/condition-history-timeline'
+import ValuationTimeline from '@/components/valuation-timeline'
 import { getBookActivity } from '@/lib/actions/activity-log'
 import { BookTimeline } from '@/components/book-timeline'
 
@@ -113,7 +114,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     .order('sort_order')
 
   // Fetch book's collection memberships, ALL user collections, and tags
-  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }, { data: provenanceData }, { data: conditionHistoryData }] = await Promise.all([
+  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }, { data: provenanceData }, { data: conditionHistoryData }, { data: valuationHistoryData }] = await Promise.all([
     supabase
       .from('book_collections')
       .select('collection_id')
@@ -144,6 +145,11 @@ export default async function BookDetailPage({ params }: PageProps) {
         before_condition:conditions!condition_history_before_condition_id_fkey ( name ),
         after_condition:conditions!condition_history_after_condition_id_fkey ( name )
       `)
+      .eq('book_id', id)
+      .order('position'),
+    supabase
+      .from('valuation_history')
+      .select('id, position, valuation_date, value, currency, source, appraiser, provenance_entry_id, notes')
       .eq('book_id', id)
       .order('position')
   ])
@@ -647,30 +653,29 @@ export default async function BookDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* 10. Valuation */}
-        {(bookData.lowest_price || bookData.highest_price || bookData.estimated_value || bookData.sales_price) && (
+        {/* 10. Valuation History */}
+        <ValuationTimeline entries={(valuationHistoryData || []) as any} formatCurrency={fmtCurrency as any} />
+
+        {/* Sales price (separate from valuation history) */}
+        {bookData.sales_price && (
           <section>
-            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation</h2>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Sale</h2>
             <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Lowest Price" value={fmtCurrency(bookData.lowest_price, bookData.price_currency)} />
-              <Field label="Highest Price" value={fmtCurrency(bookData.highest_price, bookData.price_currency)} />
-              <Field label="Estimated Value" value={fmtCurrency(bookData.estimated_value, bookData.price_currency)} />
               <Field label="Sales Price" value={fmtCurrency(bookData.sales_price, bookData.price_currency)} />
-              <Field label="Valuation Date" value={fmtDate(bookData.valuation_date)} />
             </dl>
             {(() => {
               const selfEntry = (provenanceData || []).find((e: any) => e.owner_type === 'self' && e.price_paid)
-              if (!selfEntry || !bookData.estimated_value) return null
+              if (!selfEntry) return null
               const paid = Number(selfEntry.price_paid)
-              const est = Number(bookData.estimated_value)
-              const diff = est - paid
+              const sold = Number(bookData.sales_price)
+              const diff = sold - paid
               const pct = paid > 0 ? ((diff / paid) * 100).toFixed(0) : null
               const isGain = diff >= 0
               const cur = bookData.price_currency || selfEntry.price_currency || 'EUR'
               return (
                 <div className={`mt-4 p-3 border text-sm ${isGain ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800'}`}>
                   <span className="font-medium">
-                    Bought for {cur}&nbsp;{paid.toFixed(2)} → Estimated {cur}&nbsp;{est.toFixed(2)}
+                    Bought for {cur}&nbsp;{paid.toFixed(2)} → Sold for {cur}&nbsp;{sold.toFixed(2)}
                   </span>
                   <span className="ml-2 font-bold">
                     {isGain ? '+' : ''}{cur}&nbsp;{diff.toFixed(2)}

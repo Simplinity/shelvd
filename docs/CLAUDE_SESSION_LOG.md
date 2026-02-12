@@ -177,8 +177,15 @@
 ### Book Data Features
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
-| B1 | Insurance & valuation PDF reports | Medium | Medium | Generate PDF reports for insurance: book list with photos, estimated values, total collection value. Timestamped, signed, official-looking. Export per collection or full library. |
-| B2 | Valuation history | Medium | Medium | Separate from provenance. Track market value over time without ownership changes: appraisals, auction estimates, dealer quotes. `valuation_history` table: book_id, date, value, currency, source (appraisal/auction_result/dealer_quote/self_estimate), appraiser, notes. Chart on book detail showing value trend over time. |
+| B1 | Insurance & valuation PDF reports | Medium | Medium | Generate PDF reports for insurance: book list with photos, estimated values, total collection value. Depends on B2. |
+| B2.1 | Valuation history: migration + table + RLS | — | Low | `valuation_history` table, indexes, RLS policies. See project.md for full schema. |
+| B2.2 | Valuation history: migrate flat fields | — | Low | Move existing estimated_value/lowest_price/highest_price into valuation_history entries. |
+| B2.3 | Valuation history: provenance auto-sync | — | Medium | Provenance save with price_paid → auto-create/update/delete linked valuation entry. |
+| B2.4 | Valuation history: detail page timeline | — | Medium | Timeline component on book detail (same pattern as condition history). |
+| B2.5 | Valuation history: edit page CRUD | — | Medium | Add/edit/delete/reorder in book edit (same pattern as condition history). |
+| B2.6 | Valuation history: value trend chart | — | Low | Recharts line chart on book detail showing value over time. |
+| B2.7 | Valuation history: activity logging | — | Low | Log valuation changes to activity log. |
+| B2.8 | Valuation history: drop old flat fields | — | Low | Remove estimated_value, lowest/highest_price, valuation_date from books table. Keep sales_price. |
 | ~~B3~~ | ~~Condition history~~ | — | — | ✅ Done (2026-02-09) |
 
 ### Dealer & Marketplace

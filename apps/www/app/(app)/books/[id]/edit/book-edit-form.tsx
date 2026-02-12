@@ -589,7 +589,45 @@ export default function BookEditForm({ book, referenceData }: Props) {
           if (updateErr) throw updateErr
         }
 
-        // 3. Handle sources for this entry
+        // 3. Sync valuation_history for provenance entries with a price
+        if (entry.pricePaid && Number(entry.pricePaid) > 0) {
+          // Check if a linked valuation entry already exists
+          const { data: existingVal } = await supabase
+            .from('valuation_history')
+            .select('id')
+            .eq('provenance_entry_id', entryId)
+            .single()
+
+          const valRow = {
+            book_id: book.id,
+            valuation_date: entry.dateFrom || entry.dateTo || null,
+            value: entry.pricePaid,
+            currency: entry.priceCurrency || 'EUR',
+            source: 'provenance_purchase' as const,
+            appraiser: entry.ownerName,
+            provenance_entry_id: entryId,
+            notes: `From provenance: ${entry.transactionType}`,
+          }
+
+          if (existingVal) {
+            await supabase.from('valuation_history').update(valRow).eq('id', existingVal.id)
+          } else {
+            // Get next position
+            const { data: maxPos } = await supabase
+              .from('valuation_history')
+              .select('position')
+              .eq('book_id', book.id)
+              .order('position', { ascending: false })
+              .limit(1)
+              .single()
+            await supabase.from('valuation_history').insert({ ...valRow, position: (maxPos?.position ?? 0) + 1 })
+          }
+        } else {
+          // Price removed — delete linked valuation entry if it exists
+          await supabase.from('valuation_history').delete().eq('provenance_entry_id', entryId)
+        }
+
+        // 4. Handle sources for this entry
         const deletedSources = entry.sources.filter(s => s.isDeleted && !s.isNew)
         for (const ds of deletedSources) {
           await supabase.from('provenance_sources').delete().eq('id', ds.id)

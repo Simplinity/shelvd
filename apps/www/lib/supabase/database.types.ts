@@ -1,3 +1,4 @@
+Initialising login role...
 export type Json =
   | string
   | number
@@ -11,6 +12,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.1"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -1764,6 +1790,66 @@ export type Database = {
         }
         Relationships: []
       }
+      valuation_history: {
+        Row: {
+          appraiser: string | null
+          book_id: string
+          created_at: string | null
+          currency: string
+          id: string
+          notes: string | null
+          position: number
+          provenance_entry_id: string | null
+          source: string
+          updated_at: string | null
+          valuation_date: string | null
+          value: number
+        }
+        Insert: {
+          appraiser?: string | null
+          book_id: string
+          created_at?: string | null
+          currency?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          provenance_entry_id?: string | null
+          source?: string
+          updated_at?: string | null
+          valuation_date?: string | null
+          value: number
+        }
+        Update: {
+          appraiser?: string | null
+          book_id?: string
+          created_at?: string | null
+          currency?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          provenance_entry_id?: string | null
+          source?: string
+          updated_at?: string | null
+          valuation_date?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "valuation_history_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "valuation_history_provenance_entry_id_fkey"
+            columns: ["provenance_entry_id"]
+            isOneToOne: false
+            referencedRelation: "provenance_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2135,6 +2221,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       book_status: [
@@ -2149,3 +2238,5 @@ export const Constants = {
     },
   },
 } as const
+A new version of Supabase CLI is available: v2.75.0 (currently installed v2.72.7)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
