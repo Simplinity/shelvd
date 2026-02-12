@@ -19,9 +19,12 @@
 - No DB migration needed (read-only queries on existing tables)
 - Pro+ gated via existing `collection_audit` feature in tier_features
 
-**Step 1: Server action `getCollectionAudit()` ⏳**
+**Step 1: Server action `getCollectionAudit()` ✅**
 - File: `lib/actions/audit.ts`
-- 4 queries via Promise.all (not N+1)
+- 4 queries via Promise.all (not N+1), batched .in() per 500, paginated books fetch
+- Types exported: AuditBook, AuditCategory, CollectionAuditResult
+- 10 checks, health score 0–100%, per-category counts + first 50 affected books
+- Commit: pending
 
 **Step 2: Audit page `/audit` — pending**
 
