@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.15.0'
+export const APP_VERSION = '0.16.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,19 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.16.0',
+    date: '2026-02-12',
+    title: 'European Library Expansion',
+    description: 'Three new library providers and a collection health dashboard. Your books now get enriched from twelve sources across ten countries.',
+    changes: [
+      { type: 'added', text: 'Unicat (Belgium) — the Belgian union catalog covering KBR, university libraries, and three major library networks. 19.5 million records' },
+      { type: 'added', text: 'BNE (Spain) — Biblioteca Nacional de España, the Spanish national library catalog' },
+      { type: 'added', text: 'Swisscovery (Switzerland) — SLSP network covering 500+ Swiss academic and research libraries' },
+      { type: 'added', text: 'Collection Audit — a per-user health score at /audit with 10 completeness checks, expandable book lists, and one-click fix links. Available on Collector Pro and Dealer tiers' },
+      { type: 'improved', text: 'Book Lookup now covers 12 providers across 10 countries: US, France, Germany, Belgium, Spain, Switzerland, Sweden, and three global sources' },
+    ],
+  },
   {
     version: '0.15.0',
     date: '2026-02-12',

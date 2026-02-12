@@ -59,7 +59,7 @@ export default function Home() {
       <section className="bg-foreground text-background py-12">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <NumberStat number="76" label="Historical book formats" sublabel="Because 'paperback' doesn't begin to cover it" />
-          <NumberStat number="9+" label="Lookup providers" sublabel="From Library of Congress to BnF" />
+          <NumberStat number="12" label="Lookup providers" sublabel="10 countries, from LoC to Unicat" />
           <NumberStat number="69" label="MARC contributor roles" sublabel="Author is just the beginning" />
           <NumberStat number="45+" label="Cover types & bindings" sublabel="Half-leather, marbled boards, vellum…" />
         </div>
@@ -663,7 +663,7 @@ export default function Home() {
                 <PricingItem>Full cataloging (76+ fields)</PricingItem>
                 <PricingItem>Collections &amp; 20 custom tags</PricingItem>
                 <PricingItem>Provenance &amp; condition tracking</PricingItem>
-                <PricingItem>Book lookup (9 providers)</PricingItem>
+                <PricingItem>Book lookup (12 providers)</PricingItem>
                 <PricingItem>Library Enrich</PricingItem>
                 <PricingItem>CSV import &amp; export</PricingItem>
                 <PricingItem>External links &amp; activity log</PricingItem>

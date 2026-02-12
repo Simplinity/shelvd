@@ -34,6 +34,9 @@ NEVER guess column names. ALWAYS verify.
 ### Rule 5: Session log
 Update `CLAUDE_SESSION_LOG.md` after every task.
 
+### Rule 6: Database migrations
+Use `supabase db push` (CLI) to apply migrations. The project is already linked (`supabase/.temp/project-ref`). NEVER open Supabase Dashboard in the browser to run SQL manually — the CLI does it in one command.
+
 ---
 
 ## Project Overview
@@ -118,7 +121,7 @@ while (true) {
 | external_link_types | 54 | System defaults + user custom |
 | user_active_link_types | — | Which link types each user has activated |
 | book_external_links | — | External links per book |
-| isbn_providers | 9 | Book lookup providers |
+| isbn_providers | 12 | Book lookup providers |
 | user_isbn_providers | — | Per-user provider preferences |
 | collections | — | User collections (Library + Wishlist default, custom) |
 | book_collections | — | M:N books ↔ collections |
@@ -155,6 +158,9 @@ status, action_needed, internal_notes
 | dnb | DNB | sru |
 | k10plus | K10plus (GBV/SWB) | sru |
 | sudoc | SUDOC (France) | sru |
+| unicat | Unicat (Belgium) | sru |
+| bne | Biblioteca Nacional de España | sru |
+| slsp | Swisscovery (SLSP) | sru |
 | libris | LIBRIS (Sweden) | xsearch |
 | standaard | Standaard Boekhandel | html |
 
@@ -206,6 +212,7 @@ status, action_needed, internal_notes
 | 043 | valuation_history | Valuation history table, RLS, indexes |
 | 044 | migrate_valuation_fields | Migrate old price fields to valuation_history |
 | 045 | drop_old_valuation_fields | Drop lowest_price, highest_price, estimated_value, valuation_date |
+| 046 | add_bne_slsp_providers | Add Unicat (BE), BNE (ES), SLSP (CH) providers; remove old KBR |
 
 ---
 
@@ -328,7 +335,7 @@ status, action_needed, internal_notes
 - Support link in app nav + marketing footer
 - Migration 025: `feedback` table with RLS, indexes, trigger
 
-### Book Lookup (9 providers)
+### Book Lookup (12 providers)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
 - Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
@@ -779,7 +786,7 @@ All limits are concrete numbers (no "unlimited"). Configurable via admin UI at /
 | Collections | ✅ | ✅ | ✅ |
 | Provenance tracking | ✅ | ✅ | ✅ |
 | Condition tracking | ✅ | ✅ | ✅ |
-| Book lookup (9 providers) | ✅ | ✅ | ✅ |
+| Book lookup (12 providers) | ✅ | ✅ | ✅ |
 | Library Enrich | ✅ | ✅ | ✅ |
 | CSV import/export | ✅ | ✅ | ✅ |
 | Activity log | ✅ | ✅ | ✅ |
@@ -1196,7 +1203,7 @@ shelvd/
 │           ├── open-library.ts
 │           ├── google-books.ts
 │           ├── sru-provider.ts   # SRU factory (MARC21 + UNIMARC)
-│           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC configs
+│           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC, Unicat, BNE, SLSP configs
 │           ├── libris.ts         # LIBRIS Xsearch
 │           └── standaard-boekhandel.ts
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)

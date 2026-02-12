@@ -89,8 +89,8 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.5.0',
   },
   {
-    title: 'Library Lookup (9+ providers)',
-    description: 'Library of Congress, BnF, DNB, K10plus, SUDOC, LIBRIS, Open Library, Google Books. One search, nine libraries.',
+    title: 'Library Lookup (12 providers)',
+    description: 'LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, BNE, Swisscovery, Unicat, Open Library, Google Books, Standaard Boekhandel. One search, twelve libraries across ten countries.',
     category: 'data',
     status: 'shipped',
     version: '0.6.0',
