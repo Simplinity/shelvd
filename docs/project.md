@@ -989,11 +989,11 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 
 | Step | Description | Effort |
 |------|-------------|--------|
-| 1 | Migration: `valuation_history` table + RLS + indexes | Low |
-| 2 | Migration: migrate existing flat fields to valuation entries | Low |
-| 3 | Provenance auto-sync: trigger/hook on provenance save | Medium |
-| 4 | Book detail: valuation timeline component | Medium |
-| 5 | Book edit: valuation CRUD (add/edit/delete/reorder) | Medium |
+| 1 | Migration 043: `valuation_history` table + RLS + indexes | ✅ Done |
+| 2 | Migration 044: migrate existing flat fields to valuation entries | ✅ Done |
+| 3 | Provenance auto-sync in book edit save | ✅ Done |
+| 4 | Book detail: ValuationTimeline component | ✅ Done |
+| 5 | Book edit: valuation CRUD (replace old 6-field grid with timeline) | Medium |
 | 6 | Book detail: value trend chart | Low |
 | 7 | Activity logging for valuation changes | Low |
 | 8 | Clean up: drop old flat fields from books table | Low |
