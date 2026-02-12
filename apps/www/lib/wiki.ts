@@ -466,7 +466,11 @@ export function getWikiArticlesByCategory(category: WikiCategory): WikiArticle[]
 
 export function getWikiContent(filename: string): string {
   const filePath = path.join(process.cwd(), 'content', 'wiki', filename)
-  return fs.readFileSync(filePath, 'utf-8')
+  const raw = fs.readFileSync(filePath, 'utf-8')
+  // Strip the H1 title line (already rendered by the page template)
+  const lines = raw.split('\n')
+  const startIndex = lines[0]?.startsWith('# ') ? 1 : 0
+  return lines.slice(startIndex).join('\n').trim()
 }
 
 export function getRelatedArticles(article: WikiArticle): WikiArticle[] {
