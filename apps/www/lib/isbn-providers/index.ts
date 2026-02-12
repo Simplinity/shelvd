@@ -7,6 +7,11 @@ import { loc, bnf, dnb, k10plus, sudoc, unicat, bne, slsp, bibsys, onb } from '.
 import { libraryHub } from './library-hub'
 import { libris } from './libris'
 import { standaardBoekhandel } from './standaard-boekhandel'
+import { finna } from './finna'
+import { opacSbn } from './opac-sbn'
+import { ndl } from './ndl'
+import { trove } from './trove'
+import { kbNl } from './kb-netherlands'
 
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
@@ -25,6 +30,11 @@ const providers: Record<string, IsbnProvider> = {
   'library_hub': libraryHub,
   'libris': libris,
   'standaard': standaardBoekhandel,
+  'finna': finna,
+  'opac_sbn': opacSbn,
+  'ndl': ndl,
+  'trove': trove,
+  'kb_nl': kbNl,
 }
 
 /**
