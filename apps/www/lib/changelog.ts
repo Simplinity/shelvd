@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.19.0'
+export const APP_VERSION = '0.20.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,21 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.20.0',
+    date: '2026-02-13',
+    title: 'The Shelvd Wiki',
+    description: 'A complete knowledge base: 35 articles across 8 categories, covering everything from your first book to the 69 MARC relator codes. Written with the same care we\'d give a first edition, and considerably more humor than the average user manual.',
+    changes: [
+      { type: 'added', text: 'Wiki / Knowledge Base — 35 articles across 8 categories: Getting Started, Cataloging, Provenance & History, Search & Discovery, Data & Export, Settings, Glossary & Reference, and For Dealers' },
+      { type: 'added', text: 'Comprehensive glossary with 150+ book collecting and cataloging terms' },
+      { type: 'added', text: 'Reference guides for all 76 book formats, 69 MARC relator codes, binding styles, and condition terminology' },
+      { type: 'added', text: '7 placeholder pages for upcoming features (image upload, sharing, catalog generator, insurance reports, dealer directory, bulk operations, mobile app)' },
+      { type: 'improved', text: 'Blog renamed from "Marginalia" to "Blog" across all navigation for clarity' },
+      { type: 'improved', text: 'Blog promoted to standalone nav link on marketing website (out of Info dropdown)' },
+      { type: 'added', text: 'Wiki linked in marketing header, footer, and app user menu' },
+    ],
+  },
   {
     version: '0.19.0',
     date: '2026-02-12',

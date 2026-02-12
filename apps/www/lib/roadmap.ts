@@ -238,10 +238,11 @@ export const ROADMAP: RoadmapItem[] = [
     status: 'planned',
   },
   {
-    title: 'Knowledge Base',
-    description: 'Getting started guide, FAQ, feature documentation. For people who read manuals. We respect you.',
+    title: 'Wiki / Knowledge Base',
+    description: '35 articles across 8 categories. Getting Started, Cataloging, Provenance, Search, Data, Settings, Glossary, and Dealers. 150+ term glossary, reference guides for all 76 formats and 69 MARC roles. Written for people who read manuals — and written well enough that people who don\'t might start.',
     category: 'website',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.20.0',
   },
 
   // User Onboarding

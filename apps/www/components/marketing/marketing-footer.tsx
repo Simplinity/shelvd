@@ -41,6 +41,7 @@ export function MarketingFooter() {
               <FooterLink href="/about">About</FooterLink>
               <FooterLink href="/changelog">Changelog</FooterLink>
               <FooterLink href="/roadmap">Roadmap</FooterLink>
+              <FooterLink href="/wiki">Wiki</FooterLink>
               <FooterLink href="/blog">Blog</FooterLink>
             </div>
           </div>

@@ -49,6 +49,14 @@ export function MarketingHeader() {
         </Link>
       </div>
       <nav className="flex items-center gap-1 sm:gap-4">
+        {/* Wiki link */}
+        <Link
+          href="/wiki"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+        >
+          Wiki
+        </Link>
+
         {/* Blog link */}
         <Link
           href="/blog"

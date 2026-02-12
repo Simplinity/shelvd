@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Settings, MessageSquare, Shield, LogOut, ChevronDown, User, PenLine, Map, Newspaper } from 'lucide-react'
+import { Settings, MessageSquare, Shield, LogOut, ChevronDown, User, PenLine, Map, Newspaper, BookOpenCheck } from 'lucide-react'
 import { logout } from '@/lib/actions/auth'
 
 interface UserMenuProps {
@@ -66,6 +66,9 @@ export function UserMenu({ email, isAdmin }: UserMenuProps) {
 
           {/* Info pages */}
           <div className="border-t py-1">
+            <MenuLink href="/wiki" icon={<BookOpenCheck className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
+              Wiki
+            </MenuLink>
             <MenuLink href="/blog" icon={<PenLine className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
               Blog
             </MenuLink>
