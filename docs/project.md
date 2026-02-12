@@ -905,9 +905,101 @@ Catawiki has no public API for lot submission. Options: (1) generate CSV/XML in 
 #### S3 AbeBooks — Notes
 AbeBooks uses the HomeBase XML upload system for dealer inventory. Fixed schema: author, title, publisher, year, price, condition (standard ABE condition codes), description, binding, keywords, quantity. XML file uploaded via FTP or their web interface. Shelvd can generate the XML, user uploads it. ZVAB (German sister site) uses the same system.
 
+#### B2 Valuation History — Detail
+
+**What it is:** A timeline of value assessments for each book, tracking how its market value changes over time. Works alongside provenance (who owned it) and condition history (physical state) to give a complete picture of a book's life.
+
+**Why it matters:** The current Valuation section on book edit has 6 flat fields (lowest_price, highest_price, estimated_value, sales_price, price_currency, valuation_date). These represent a single snapshot — every new appraisal overwrites the previous one. A rare book might be appraised at purchase, revalued after restoration, estimated for insurance, then sold at auction. All of those data points are valuable, especially for insurance claims and provenance research.
+
+**Key insight — provenance entries with prices ARE valuation events:**
+Provenance entries already have `price_paid` + `price_currency`. When someone records "bought at Christie's for £2,500 in 2019", that's both a provenance event AND a valuation data point. These must flow into the valuation timeline automatically.
+
+**Database schema:**
+
+```sql
+CREATE TABLE valuation_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+  position INT NOT NULL DEFAULT 1,
+  valuation_date TEXT,
+  value NUMERIC(12,2) NOT NULL,
+  currency VARCHAR(3) NOT NULL DEFAULT 'EUR',
+  source TEXT NOT NULL DEFAULT 'self_estimate'
+    CHECK (source IN (
+      'self_estimate',      -- owner's own guess
+      'appraisal',          -- professional appraiser
+      'auction_result',     -- actual auction hammer price
+      'dealer_quote',       -- dealer offered/quoted this
+      'insurance',          -- insurance valuation
+      'market_research',    -- based on comparable sales
+      'provenance_purchase' -- auto-created from provenance entry
+    )),
+  appraiser TEXT,           -- who did the valuation (person, firm, auction house)
+  provenance_entry_id UUID REFERENCES provenance_entries(id) ON DELETE CASCADE,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**Provenance ↔ Valuation auto-sync:**
+
+| Provenance event | → Valuation entry |
+|-----------------|--------------------|
+| `price_paid` | `value` |
+| `price_currency` | `currency` |
+| `date_from` or `date_to` | `valuation_date` |
+| `transaction_type` (purchase/auction/dealer) | `source` = `provenance_purchase` |
+| `owner_name` | `appraiser` |
+| `provenance_entry.id` | `provenance_entry_id` (FK for backlink) |
+
+Behavior:
+- **Save provenance entry with price** → auto-insert valuation entry (source = `provenance_purchase`)
+- **Update price on provenance** → auto-update linked valuation entry
+- **Delete provenance entry** → cascade-delete linked valuation entry (FK ON DELETE CASCADE)
+- **Manual valuation entries** (appraisals, insurance) → `provenance_entry_id` = NULL, stand alone
+- Provenance-linked entries shown in timeline with a link icon / "from provenance" badge
+
+**What happens to current flat fields:**
+
+| Current field | Migration plan |
+|--------------|----------------|
+| `estimated_value` | Migrated as a `self_estimate` valuation entry. Then: auto-populated from latest valuation entry. Eventually drop column. |
+| `lowest_price` | Migrated as `market_research` entry with note "market low". Then drop. |
+| `highest_price` | Migrated as `market_research` entry with note "market high". Then drop. |
+| `sales_price` | **Keep as-is** — this is a transaction fact ("I sold it for X"), not a valuation. Could later move to a "sold" status on the book. |
+| `price_currency` | Each valuation entry has its own currency. Keep on books for sales_price. |
+| `valuation_date` | Each entry has its own date. Drop after migration. |
+
+Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Phase 2** (after confirming data integrity) drops them.
+
+**UI on book detail page:**
+- Valuation timeline (same pattern as condition history): chronological entries with date, value, source badge, appraiser
+- Value trend chart: simple line chart showing value over time (Recharts)
+- Current estimated value: pulled from latest entry, shown prominently
+- Provenance-linked entries: link icon that scrolls to the provenance entry
+
+**UI on book edit page:**
+- Replace current 6-field grid with timeline CRUD (same as condition history)
+- Drag-to-reorder, add/edit/delete entries
+- Source dropdown, appraiser field, date, value, currency, notes
+- Provenance-linked entries: read-only in valuation timeline, editable from provenance section
+
+**Delivery plan:**
+
+| Step | Description | Effort |
+|------|-------------|--------|
+| 1 | Migration: `valuation_history` table + RLS + indexes | Low |
+| 2 | Migration: migrate existing flat fields to valuation entries | Low |
+| 3 | Provenance auto-sync: trigger/hook on provenance save | Medium |
+| 4 | Book detail: valuation timeline component | Medium |
+| 5 | Book edit: valuation CRUD (add/edit/delete/reorder) | Medium |
+| 6 | Book detail: value trend chart | Low |
+| 7 | Activity logging for valuation changes | Low |
+| 8 | Clean up: drop old flat fields from books table | Low |
+
 ### Under Consideration (Future)
-- Insurance & valuation PDF reports
-- Price history field (auction results, dealer quotes, previous sale prices)
+- Insurance & valuation PDF reports (B1 — depends on B2)
 - Dealer & contact management
 - Templates system
 
