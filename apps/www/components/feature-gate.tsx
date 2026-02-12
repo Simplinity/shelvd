@@ -35,7 +35,6 @@ export function FeatureGate({
 
 /**
  * Shows an upgrade prompt for a locked feature.
- * Can be used standalone or as the default fallback in FeatureGate.
  */
 export function UpgradeHint({ feature }: { feature: string }) {
   const minTier = FEATURE_MIN_TIER[feature]
@@ -44,19 +43,17 @@ export function UpgradeHint({ feature }: { feature: string }) {
   const featureLabel = FEATURE_LABELS[feature] || feature
 
   return (
-    <div className="border-2 border-dashed border-muted-foreground/25 bg-muted/30 p-6 text-center">
-      <div className="inline-flex items-center justify-center w-10 h-10 bg-muted rounded-full mb-3">
-        <Lock className="w-4 h-4 text-muted-foreground" />
-      </div>
+    <div className="border border-border p-6 text-center">
+      <Lock className="w-4 h-4 text-muted-foreground mx-auto mb-3" />
       <p className="font-semibold text-sm mb-1">{featureLabel}</p>
       <p className="text-xs text-muted-foreground mb-4">
-        Available on <span className="font-semibold text-foreground">{tierName}</span> ({tierPrice})
+        Available on {tierName} ({tierPrice})
       </p>
       <Link
         href="/#pricing"
-        className="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-primary hover:underline"
+        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide hover:underline"
       >
-        Upgrade <ArrowRight className="ml-1 w-3 h-3" />
+        View plans <ArrowRight className="w-3 h-3" />
       </Link>
     </div>
   )
@@ -64,7 +61,6 @@ export function UpgradeHint({ feature }: { feature: string }) {
 
 /**
  * Inline upgrade hint — smaller, for use inside buttons or rows.
- * Shows a lock icon + tier name on click.
  */
 export function UpgradeHintInline({
   feature,
@@ -91,7 +87,6 @@ export function UpgradeHintInline({
 
 /**
  * Limit gate — checks if user is at or near a numeric limit.
- * Shows a warning or blocks action when limit is reached.
  */
 export function LimitGate({
   limitKey,
@@ -104,10 +99,8 @@ export function LimitGate({
 }) {
   const limit = useTierLimit(limitKey)
 
-  // Under limit — show children
   if (currentCount < limit) return <>{children}</>
 
-  // At or over limit
   return <LimitReached limitKey={limitKey} limit={limit} currentCount={currentCount} />
 }
 
@@ -123,20 +116,22 @@ export function LimitReached({
   limit: number
   currentCount: number
 }) {
+  const label = limitKey === 'max_books' ? 'books' : limitKey === 'max_tags' ? 'tags' : 'items'
+
   return (
-    <div className="border-2 border-dashed border-amber-300 bg-amber-50 p-4 text-center">
-      <p className="font-semibold text-sm mb-1">
-        Limit reached
-      </p>
-      <p className="text-xs text-muted-foreground mb-3">
-        You've used {currentCount} of {limit.toLocaleString()} {limitKey === 'max_books' ? 'books' : limitKey === 'max_tags' ? 'tags' : 'items'}.
-        Upgrade to add more.
+    <div className="border border-border p-5 text-center">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Limit reached</p>
+      <p className="text-sm">
+        <span className="font-semibold">{currentCount.toLocaleString()}</span>
+        <span className="text-muted-foreground"> of </span>
+        <span className="font-semibold">{limit.toLocaleString()}</span>
+        <span className="text-muted-foreground"> {label}</span>
       </p>
       <Link
         href="/#pricing"
-        className="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-primary hover:underline"
+        className="inline-flex items-center gap-1 mt-3 text-xs font-semibold uppercase tracking-wide hover:underline"
       >
-        Upgrade <ArrowRight className="ml-1 w-3 h-3" />
+        View plans <ArrowRight className="w-3 h-3" />
       </Link>
     </div>
   )
