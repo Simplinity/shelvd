@@ -134,7 +134,6 @@ export default async function WikiArticlePage({ params }: { params: Promise<{ sl
         /* Article body — reuses blog ArticleBody component */
         <ArticleBody
           contentHtml={contentHtml}
-          author="Bruno van Branden"
           date="2026-02-12"
           readingTime={Math.ceil(contentHtml.split(/\s+/).length / 200)}
         />

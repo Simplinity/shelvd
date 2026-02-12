@@ -11,7 +11,7 @@ const FONT_SIZES = [
 
 interface ArticleBodyProps {
   contentHtml: string
-  author: string
+  author?: string
   date: string
   readingTime: number
 }
@@ -25,8 +25,7 @@ export function ArticleBody({ contentHtml, author, date, readingTime }: ArticleB
       <div className="px-6">
         <div className="max-w-2xl mx-auto text-sm text-muted-foreground font-mono pb-8 border-b border-border/50">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-            <span>By {author}</span>
-            <span className="hidden sm:inline text-border">·</span>
+            {author && <><span>By {author}</span><span className="hidden sm:inline text-border">·</span></>}
             <time dateTime={date}>
               {new Date(date + 'T12:00:00').toLocaleDateString('en-GB', {
                 day: 'numeric',
