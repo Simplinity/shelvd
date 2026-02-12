@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.16.0'
+export const APP_VERSION = '0.18.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,32 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.18.0',
+    date: '2026-02-12',
+    title: 'Global Library Expansion',
+    description: 'Five new library catalogs across four continents. From Helsinki to Tokyo, from Rome to Canberra — your books can now be enriched from twenty sources across eighteen countries.',
+    changes: [
+      { type: 'added', text: 'Finna (Finland) — REST JSON API aggregating 460+ Finnish archives, libraries, and museums. No authentication, CC0 licensed metadata' },
+      { type: 'added', text: 'OPAC SBN (Italy) — the Italian union catalog covering 6,300+ libraries with 17 million bibliographic records' },
+      { type: 'added', text: 'NDL (Japan) — National Diet Library, the largest library in Japan. First Asian coverage via OpenSearch API' },
+      { type: 'added', text: 'Trove (Australia) — National Library of Australia discovery service. First Oceania coverage (pending API key approval)' },
+      { type: 'added', text: 'KB Netherlands — Koninklijke Bibliotheek with a new Dublin Core XML parser. Complements Standaard Boekhandel for Dutch coverage' },
+      { type: 'improved', text: 'Book Lookup now spans 20 providers across 18 countries and 4 continents: Europe, North America, Asia, and Oceania' },
+    ],
+  },
+  {
+    version: '0.17.0',
+    date: '2026-02-12',
+    title: 'Nordic & British Libraries',
+    description: 'Three more national library catalogs, including a custom MODS parser for the UK. Fifteen providers, thirteen countries.',
+    changes: [
+      { type: 'added', text: 'BIBSYS/Oria (Norway) — Norwegian academic and research libraries via Alma SRU' },
+      { type: 'added', text: 'ÖNB (Austria) — Österreichische Nationalbibliothek, the Austrian national library catalog' },
+      { type: 'added', text: 'Library Hub Discover (UK) — aggregates 100+ British academic and research libraries. Custom MODS XML parser built for this provider' },
+      { type: 'improved', text: 'Book Lookup expanded to 15 providers across 13 countries' },
+    ],
+  },
   {
     version: '0.16.0',
     date: '2026-02-12',

@@ -121,7 +121,7 @@ while (true) {
 | external_link_types | 54 | System defaults + user custom |
 | user_active_link_types | — | Which link types each user has activated |
 | book_external_links | — | External links per book |
-| isbn_providers | 12 | Book lookup providers |
+| isbn_providers | 20 | Book lookup providers (15 active + Trove pending) |
 | user_isbn_providers | — | Per-user provider preferences |
 | collections | — | User collections (Library + Wishlist default, custom) |
 | book_collections | — | M:N books ↔ collections |
@@ -149,20 +149,28 @@ status, action_needed, internal_notes
 ```
 
 ### ISBN Providers (in DB)
-| code | name | type |
-|------|------|------|
-| open_library | Open Library | api |
-| google_books | Google Books | api |
-| loc | Library of Congress | sru |
-| bnf | BnF | sru |
-| dnb | DNB | sru |
-| k10plus | K10plus (GBV/SWB) | sru |
-| sudoc | SUDOC (France) | sru |
-| unicat | Unicat (Belgium) | sru |
-| bne | Biblioteca Nacional de España | sru |
-| slsp | Swisscovery (SLSP) | sru |
-| libris | LIBRIS (Sweden) | xsearch |
-| standaard | Standaard Boekhandel | html |
+| code | name | country | type |
+|------|------|---------|------|
+| open_library | Open Library | 🌍 | api |
+| google_books | Google Books | 🌍 | api |
+| loc | Library of Congress | 🇺🇸 | sru |
+| bnf | BnF | 🇫🇷 | sru |
+| dnb | DNB | 🇩🇪 | sru |
+| k10plus | K10plus (GBV/SWB) | 🇩🇪 | sru |
+| sudoc | SUDOC | 🇫🇷 | sru |
+| unicat | Unicat | 🇧🇪 | sru |
+| bne | Biblioteca Nacional de España | 🇪🇸 | sru |
+| slsp | Swisscovery (SLSP) | 🇨🇭 | sru |
+| bibsys | BIBSYS/Oria | 🇳🇴 | sru |
+| onb | Österreichische Nationalbibliothek | 🇦🇹 | sru |
+| library_hub | Library Hub Discover | 🇬🇧 | sru-mods |
+| libris | LIBRIS | 🇸🇪 | xsearch |
+| standaard | Standaard Boekhandel | 🇧🇪 | html |
+| finna | Finna | 🇫🇮 | api |
+| opac_sbn | OPAC SBN | 🇮🇹 | api |
+| ndl | NDL (National Diet Library) | 🇯🇵 | api |
+| trove | Trove / NLA | 🇦🇺 | api (⏸️ pending API key) |
+| kb_nl | KB (Koninklijke Bibliotheek) | 🇳🇱 | sru (Dublin Core) |
 
 ### Migrations (supabase/migrations/)
 | # | File | Description |
@@ -213,6 +221,9 @@ status, action_needed, internal_notes
 | 044 | migrate_valuation_fields | Migrate old price fields to valuation_history |
 | 045 | drop_old_valuation_fields | Drop lowest_price, highest_price, estimated_value, valuation_date |
 | 046 | add_bne_slsp_providers | Add Unicat (BE), BNE (ES), SLSP (CH) providers; remove old KBR |
+| 047 | add_bibsys_onb_libraryhub_providers | Add BIBSYS (NO), ÖNB (AT), Library Hub (GB); add sru-mods type |
+| 048 | add_finna_sbn_ndl_trove_kb_providers | Add Finna (FI), OPAC SBN (IT), NDL (JP), Trove (AU), KB NL; disable old kb |
+| 049 | disable_trove_pending_apikey | Disable Trove until API key approved |
 
 ---
 
@@ -335,14 +346,19 @@ status, action_needed, internal_notes
 - Support link in app nav + marketing footer
 - Migration 025: `feedback` table with RLS, indexes, trigger
 
-### Book Lookup (12 providers)
+### Book Lookup (20 providers, 18 countries)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
 - Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
 - 15s timeout on all SRU fetch requests
 - Auto-creates external link from lookup source URL
 - Shared SRU/MARCXML parser with factory pattern (MARC21 + UNIMARC)
+- Custom MODS parser for Library Hub Discover (UK)
+- Custom Dublin Core parser for KB Netherlands
+- Custom RSS/DC parser for NDL Japan (OpenSearch)
+- Custom JSON parsers for Finna (Finland) and OPAC SBN (Italy)
 - Provider-specific fixes: BnF CQL relations, SUDOC field 214, NSB/NSE cleanup, LoC keyword fallback
+- Trove (Australia) pending API key approval
 
 ---
 
@@ -1197,15 +1213,21 @@ shelvd/
 │       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
 │       ├── currencies.ts         # 29 ISO 4217 currencies for dropdowns
 │       ├── name-utils.ts         # Contributor name parsing (Last, First)
-│       └── isbn-providers/       # Book lookup providers
+│       └── isbn-providers/       # Book lookup providers (20)
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
 │           ├── open-library.ts
 │           ├── google-books.ts
 │           ├── sru-provider.ts   # SRU factory (MARC21 + UNIMARC)
-│           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC, Unicat, BNE, SLSP configs
+│           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC, Unicat, BNE, SLSP, BIBSYS, ÖNB
+│           ├── library-hub.ts    # Library Hub Discover (MODS parser)
 │           ├── libris.ts         # LIBRIS Xsearch
-│           └── standaard-boekhandel.ts
+│           ├── standaard-boekhandel.ts
+│           ├── finna.ts          # Finna (Finland, REST JSON)
+│           ├── opac-sbn.ts       # OPAC SBN (Italy, JSON)
+│           ├── ndl.ts            # NDL Japan (OpenSearch RSS/DC)
+│           ├── trove.ts          # Trove/NLA (Australia, REST JSON)
+│           └── kb-netherlands.ts # KB Netherlands (SRU Dublin Core)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
 ├── supabase/migrations/          # 001-025 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md

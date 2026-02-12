@@ -89,11 +89,11 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.5.0',
   },
   {
-    title: 'Library Lookup (12 providers)',
-    description: 'LoC, BnF, DNB, K10plus, SUDOC, LIBRIS, BNE, Swisscovery, Unicat, Open Library, Google Books, Standaard Boekhandel. One search, twelve libraries across ten countries.',
+    title: 'Library Lookup (20 providers)',
+    description: 'Twenty sources across eighteen countries on four continents. From the Library of Congress to Japan\'s National Diet Library, from Italy\'s 6,300-library union catalog to Finland\'s open-data Finna service. One search, twenty libraries.',
     category: 'data',
     status: 'shipped',
-    version: '0.6.0',
+    version: '0.18.0',
   },
   {
     title: 'Duplicate Detection',
