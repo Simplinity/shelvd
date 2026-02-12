@@ -24,11 +24,19 @@
 - 4 queries via Promise.all (not N+1), batched .in() per 500, paginated books fetch
 - Types exported: AuditBook, AuditCategory, CollectionAuditResult
 - 10 checks, health score 0–100%, per-category counts + first 50 affected books
+- Commit: `09eb480`
+
+**Step 2+3: Audit page `/audit` + expandable book lists ✅**
+- Server page: `app/(app)/audit/page.tsx` — calls getCollectionAudit(), passes to client
+- Client component: `app/(app)/audit/audit-client.tsx` — interactive UI
+- Health score: large percentage + progress bar + summary stats
+- 10 category cards in 2-column grid: icon, label, count, severity dot, % complete
+- Cards with 0 issues show green checkmark, muted
+- Click to expand → book list (first 50), each with title link + Enrich/Edit fix link
+- FeatureGate wrapper (collection_audit) → UpgradeHint for Collector tier
+- Swiss design: monochrome + red accent for high severity
+- Build passes, compiles clean
 - Commit: pending
-
-**Step 2: Audit page `/audit` — pending**
-
-**Step 3: Expandable book lists + fix links — pending**
 
 **Step 4: Nav link + activity logging + FeatureGate — pending**
 
