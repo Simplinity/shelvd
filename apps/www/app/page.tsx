@@ -1,4 +1,4 @@
-import { Check, Sparkles, Database, FileSpreadsheet, BarChart3, Search, Globe, Shield, Zap, ArrowRight, Tags, Layers, Users, Clock, Landmark, Import, Download, RefreshCw, BookMarked, Scale, PenTool, Eye, ChevronRight, Star, Megaphone } from 'lucide-react'
+import { Check, Sparkles, Database, FileSpreadsheet, BarChart3, Search, Globe, Shield, Zap, ArrowRight, Tags, Layers, Users, Clock, Landmark, Import, Download, RefreshCw, BookMarked, Scale, PenTool, Eye, ChevronRight, Star, Megaphone, Image, FileText, Activity, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
@@ -231,8 +231,8 @@ export default function Home() {
             />
             <FeatureCard
               icon={<Scale className="w-5 h-5" />}
-              title="Valuation & P/L"
-              description="Track acquisition price, estimated value, and profit/loss. Multi-currency with live ECB exchange rates. See your collection's worth at a glance."
+              title="Valuation History"
+              description="Full valuation timeline: appraisals, auction results, dealer quotes, insurance valuations — with provenance auto-sync and a value trend chart. Multi-currency with live ECB rates."
             />
             <FeatureCard
               icon={<BarChart3 className="w-5 h-5" />}
@@ -257,6 +257,25 @@ export default function Home() {
               icon={<Download className="w-5 h-5" />}
               title="Import & Export"
               description="Bulk import from Excel with smart templates. Export to Excel, CSV, or JSON anytime. Your data is yours. We mean it."
+            />
+          </FeatureCategory>
+
+          {/* Tracking & History */}
+          <FeatureCategory title="Tracking & History">
+            <FeatureCard
+              icon={<Image className="w-5 h-5" />}
+              title="Cover Images"
+              description="Found automatically via Library Enrich, or paste your own URL. Shown on detail pages, list view, and grid cards. Your books finally have faces."
+            />
+            <FeatureCard
+              icon={<FileText className="w-5 h-5" />}
+              title="PDF Inserts"
+              description="Vintage 3×5″ catalog cards and full catalog sheets in six paper sizes. Swiss typography meets library tradition. Print them, frame them, slip them into the book."
+            />
+            <FeatureCard
+              icon={<Activity className="w-5 h-5" />}
+              title="Activity Feed"
+              description="Every edit, every enrichment, every import — tracked and browsable. A timeline per book, a feed for your whole collection. Because provenance applies to data too."
             />
           </FeatureCategory>
         </div>
@@ -347,6 +366,10 @@ export default function Home() {
             <ComparisonRow 
               problem="Your collection data is trapped in proprietary apps"
               solution="Full Excel/CSV/JSON export anytime. No lock-in. No hostage negotiations with customer support."
+            />
+            <ComparisonRow 
+              problem="No way to track how a book's value changes over time"
+              solution="Full valuation history with seven source types. Appraisals, auction results, dealer quotes — all in a timeline with a trend chart. Provenance prices flow in automatically."
             />
             <ComparisonRow 
               problem="CLZ and LibraryThing feel like they were designed in 2005"
@@ -486,6 +509,10 @@ export default function Home() {
                 and dust jacket. Detailed notes for everything that matters to a buyer, an insurer, or 
                 your future self wondering why you paid that much.
               </p>
+              <p className="text-muted-foreground text-base mb-6 leading-relaxed">
+                And because condition changes — a rebinding, a restoration, a decade of sunlight — there’s
+                a full condition history timeline. Every event dated and described. Your book’s medical record.
+              </p>
               <p className="text-sm text-muted-foreground italic">
                 Because “Good” can mean anything from “read once” to “survived a flood and three house moves.”
               </p>
@@ -521,6 +548,73 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          VALUATION HISTORY SPOTLIGHT
+      ═══════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 border bg-background">
+              <div className="border-b p-4 bg-muted/30">
+                <p className="text-xs uppercase tracking-wide font-semibold text-muted-foreground">Valuation Timeline</p>
+              </div>
+              <div className="p-6 space-y-0">
+                <ValuationEntry
+                  source="Self Estimate"
+                  date="Jan 2020"
+                  value="€1,200"
+                  detail="Owner’s estimate at time of acquisition"
+                  isFirst
+                />
+                <ValuationEntry
+                  source="Professional Appraisal"
+                  date="Mar 2021"
+                  value="€1,850"
+                  detail="By: Van den Berg Antiquariaat"
+                />
+                <ValuationEntry
+                  source="Insurance Valuation"
+                  date="Sep 2023"
+                  value="€2,400"
+                  detail="Annual policy renewal"
+                />
+                <ValuationEntry
+                  source="Purchase"
+                  date="Jun 2019"
+                  value="€950"
+                  detail="From provenance — Christie’s, London"
+                  isSynced
+                  isLast
+                />
+              </div>
+              <div className="border-t p-4 bg-muted/20">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+                  <span className="text-xs font-medium text-green-600">+153% since acquisition</span>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-4">Valuation History</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+                Every book has a price.
+                <br />
+                <span className="text-muted-foreground">Now it has a price history.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Track how your book’s value changes over time. Professional appraisals, auction results,
+                dealer quotes, insurance valuations — each entry dated, sourced, and attributed.
+                When a provenance entry has a price, the valuation timeline picks it up automatically.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Seven source types. Trend chart when you have the data.
+                Because a book’s value is a story, not a snapshot.
+              </p>
             </div>
           </div>
         </div>
@@ -819,6 +913,32 @@ function SearchFilter({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
       <span className="text-xs text-muted-foreground">{label}</span>
       <span className="text-xs font-medium bg-background px-2.5 py-1 border">{value}</span>
+    </div>
+  )
+}
+
+function ValuationEntry({ source, date, value, detail, isSynced, isFirst, isLast }: {
+  source: string; date: string; value: string; detail: string; isSynced?: boolean; isFirst?: boolean; isLast?: boolean
+}) {
+  return (
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <div className={`w-2.5 h-2.5 border-2 flex-shrink-0 ${
+          isSynced ? 'bg-foreground border-foreground' : 'bg-background border-foreground'
+        }`} />
+        {!isLast && <div className="w-px h-full bg-border min-h-[2rem]" />}
+      </div>
+      <div className="pb-5">
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <span className="text-sm font-medium">{source}</span>
+          {isSynced && (
+            <span className="text-[10px] px-1.5 py-0.5 bg-foreground text-background">From provenance</span>
+          )}
+          <span className="text-xs text-muted-foreground">{date}</span>
+        </div>
+        <p className="text-sm font-semibold mt-0.5">{value}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{detail}</p>
+      </div>
     </div>
   )
 }
