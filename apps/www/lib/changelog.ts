@@ -26,7 +26,7 @@ export const CHANGELOG: ChangelogRelease[] = [
   {
     version: '0.19.0',
     date: '2026-02-12',
-    title: 'Rare Books & Scandinavian Libraries',
+    title: 'Rare Books, Digital Archives & Scandinavian Libraries',
     description: 'Three new providers: CERL HPB for European rare books (1455–1830), HathiTrust for 13M+ digitised volumes from 200+ research libraries, and DanBib for the Danish union catalog.',
     changes: [
       { type: 'added', text: 'CERL HPB (EU) — Heritage of the Printed Book. 6M+ records of European rare books (1455–1830) via SRU/MARCXML. Rich metadata: author life dates, printers, provenance, former owners, physical dimensions, and binding notes' },
