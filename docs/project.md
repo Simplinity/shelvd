@@ -118,10 +118,10 @@ while (true) {
 | book_contributors | ~5,152 | M:N books ↔ contributors |
 | contributors | ~4,097 | Shared between users |
 | user_stats | 1 | Cached statistics |
-| external_link_types | 54 | System defaults + user custom |
+| external_link_types | 64 | System defaults + user custom |
 | user_active_link_types | — | Which link types each user has activated |
 | book_external_links | — | External links per book |
-| isbn_providers | 21 | Book lookup providers (16 active + Trove pending) |
+| isbn_providers | 22 | Book lookup providers (21 active + Trove pending) |
 | user_isbn_providers | — | Per-user provider preferences |
 | collections | — | User collections (Library + Wishlist default, custom) |
 | book_collections | — | M:N books ↔ collections |
@@ -226,6 +226,9 @@ status, action_needed, internal_notes
 | 048 | add_finna_sbn_ndl_trove_kb_providers | Add Finna (FI), OPAC SBN (IT), NDL (JP), Trove (AU), KB NL; disable old kb |
 | 049 | disable_trove_pending_apikey | Disable Trove until API key approved |
 | 050 | add_danbib_provider | Add DanBib (DK) provider |
+| 051 | add_cerl_hpb_provider | Add CERL HPB (EU) rare books provider |
+| 052 | add_hathitrust_provider | Add HathiTrust (US) digital library provider |
+| 053 | add_missing_external_link_types | Add 10 missing library catalogs to external link types |
 
 ---
 
@@ -348,7 +351,7 @@ status, action_needed, internal_notes
 - Support link in app nav + marketing footer
 - Migration 025: `feedback` table with RLS, indexes, trigger
 
-### Book Lookup (21 providers, 19 countries)
+### Book Lookup (22 providers, 19 countries)
 - Multi-field search: title, author, publisher, year range, ISBN
 - Results list with cover thumbnails, click for full details
 - Load More pagination (SRU: 20/batch, OL: 50, Google: 40)
@@ -360,10 +363,12 @@ status, action_needed, internal_notes
 - Custom RSS/DC parser for NDL Japan (OpenSearch)
 - Custom JSON parsers for Finna (Finland) and OPAC SBN (Italy)
 - Custom DKABM/Dublin Core parser for DanBib (Denmark, OpenSearch SOAP/XML)
+- Custom MARCXML parser for CERL HPB (EU) with PICA indexes: provenance, printer, former owner, dimensions
+- HathiTrust (US) REST JSON + MARC-XML: holding library info, digitised version links, LCCN/OCLC/DDC/LCC
 - Provider-specific fixes: BnF CQL relations, SUDOC field 214, NSB/NSE cleanup, LoC keyword fallback
 - Trove (Australia) pending API key approval
 
-#### Provider Research — TODO
+#### Provider Research — Completed
 | # | Provider | Country | Status | Notes |
 |---|----------|---------|--------|-------|
 | 21 | CERL HPB | 🇪🇺 | ✅ DONE | Heritage of the Printed Book (6M+ records, 1455–1830). SRU at `sru.k10plus.de/hpb` — public, no auth. MARCXML parser with author life dates, printers, provenance, former owners, physical dimensions, binding notes. `pica.yop` for exact year search. |
