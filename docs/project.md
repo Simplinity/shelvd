@@ -846,11 +846,69 @@ All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth
 | A8 | Weekly admin digest | Medium | Medium | Automated Monday email via Resend + Vercel Cron: signups, books added, open tickets, health delta, most active users. |
 | A9 | User onboarding funnel (admin view) | Medium | Low | Visual journey tracker on user detail page: 6 steps from signup to power user. Aggregated funnel on dashboard. See #12 for the user-facing onboarding. |
 
+### Planned — Post-Launch: Sales Integrations (Dealer only)
+
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| S1 | WooCommerce integration | Medium | Sync boeken naar WooCommerce webshop als producten. Dealer only. |
+| S2 | Catawiki integration | High | Veiling-upload vanuit Shelvd. Geen publieke API — CSV/XML export in Catawiki-formaat. Dealer only. |
+| S3 | AbeBooks integration | Medium-High | XML feed voor AbeBooks/ZVAB dealer inventory. Legacy HomeBase-compatibel protocol. Dealer only. |
+
+#### S1 WooCommerce Integration — Detail
+
+**What it does:** Dealer selects books in Shelvd → publishes them as products in their WooCommerce webshop. Price, description, photos, condition — everything synced from Shelvd.
+
+**WooCommerce REST API v3:**
+- Mature, well-documented: `https://woocommerce.github.io/woocommerce-rest-api-docs/`
+- Auth: consumer key + consumer secret (user generates in WooCommerce → Settings → REST API)
+- HTTPS required, keys sent via query params or Basic Auth header
+- Rate limits: depends on hosting, typically 100+ req/min
+
+**Book → WC Product mapping:**
+
+| Shelvd field | WC Product field | Notes |
+|-------------|-----------------|-------|
+| title | name | |
+| catalog_entry or generated description | description | Rich text, can include condition + provenance |
+| purchase_price | regular_price | |
+| selling_price (if added) | sale_price | Optional |
+| cover_image_url | images[0].src | Multiple images when image upload is live |
+| user_catalog_id | sku | Unique product identifier |
+| condition.name | attributes["Condition"] | Custom attribute |
+| binding | attributes["Binding"] | Custom attribute |
+| language.name | attributes["Language"] | Custom attribute |
+| isbn_13 | meta_data["isbn"] | For search/SEO |
+| contributors | meta_data["author"] | Formatted string |
+
+**API calls involved:**
+- `POST /wp-json/wc/v3/products` — create product
+- `PUT /wp-json/wc/v3/products/{id}` — update existing
+- `DELETE /wp-json/wc/v3/products/{id}` — remove from shop
+- `POST /wp-json/wc/v3/products/batch` — bulk create/update/delete (up to 100)
+
+**Implementation scope:**
+1. **Settings UI:** WooCommerce shop URL + API keys opslaan per user (encrypted in DB)
+2. **Field mapping config:** welke Shelvd-velden → welke WC-velden (sensible defaults, customizable)
+3. **Publish flow:** per-boek "Publish to shop" button + bulk publish from selection
+4. **Sync status:** per-boek tracking (published/unpublished/synced/error, last sync timestamp, WC product ID)
+5. **Auto-sync option:** update WC product when book is edited in Shelvd (optional toggle)
+6. **Unpublish/delete:** remove from shop without deleting from Shelvd
+7. **Error handling:** shop offline, auth expired, product deleted externally, duplicate SKU
+
+**DB changes:** `woocommerce_connections` table (user_id, shop_url, consumer_key_encrypted, consumer_secret_encrypted) + `book_wc_sync` table (book_id, connection_id, wc_product_id, status, last_synced_at, last_error).
+
+**Security:** API keys stored encrypted. All API calls server-side (never expose keys to browser). Connection test endpoint to verify credentials before saving.
+
+#### S2 Catawiki — Notes
+Catawiki has no public API for lot submission. Options: (1) generate CSV/XML in Catawiki's bulk upload format, (2) investigate if they have a partner/dealer API. Most likely approach: export lot descriptions in their format, user uploads manually. Description generator can use Shelvd's rich book data to write compelling lot descriptions.
+
+#### S3 AbeBooks — Notes
+AbeBooks uses the HomeBase XML upload system for dealer inventory. Fixed schema: author, title, publisher, year, price, condition (standard ABE condition codes), description, binding, keywords, quantity. XML file uploaded via FTP or their web interface. Shelvd can generate the XML, user uploads it. ZVAB (German sister site) uses the same system.
+
 ### Under Consideration (Future)
 - Insurance & valuation PDF reports
 - Price history field (auction results, dealer quotes, previous sale prices)
 - Dealer & contact management
-- Sales platform integration (WooCommerce, Catawiki, AbeBooks)
 - Templates system
 
 ### Recently Completed
