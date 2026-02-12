@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, ChevronDown, Shield, FileText, User, Newspaper, Map, PenLine } from 'lucide-react'
+import { BookOpen, ChevronDown, Shield, FileText, User, Newspaper, Map } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/client'
 
 const infoPages = [
   { href: '/about', label: 'About Shelvd', icon: User, description: 'The story behind the shelves' },
-  { href: '/blog', label: 'Marginalia', icon: PenLine, description: 'Essays on books & collecting' },
   { href: '/privacy', label: 'Privacy Policy', icon: Shield, description: 'How we handle your data' },
   { href: '/terms', label: 'Terms of Service', icon: FileText, description: 'The fine print' },
   { href: '/changelog', label: 'Changelog', icon: Newspaper, description: 'What we\'ve been building' },
@@ -50,6 +49,14 @@ export function MarketingHeader() {
         </Link>
       </div>
       <nav className="flex items-center gap-1 sm:gap-4">
+        {/* Blog link */}
+        <Link
+          href="/blog"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+        >
+          Blog
+        </Link>
+
         {/* Info Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button

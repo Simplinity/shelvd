@@ -67,7 +67,7 @@ export function UserMenu({ email, isAdmin }: UserMenuProps) {
           {/* Info pages */}
           <div className="border-t py-1">
             <MenuLink href="/blog" icon={<PenLine className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
-              Marginalia
+              Blog
             </MenuLink>
             <MenuLink href="/roadmap" icon={<Map className="w-3.5 h-3.5" />} onClick={() => setOpen(false)}>
               Roadmap
