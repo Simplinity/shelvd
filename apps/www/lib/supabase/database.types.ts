@@ -471,13 +471,11 @@ export type Database = {
           edition: string | null
           edition_notes: string | null
           endpapers_type: string | null
-          estimated_value: number | null
           filemaker_id: string | null
           format_id: string | null
           has_dust_jacket: boolean | null
           height_cm: number | null
           height_mm: number | null
-          highest_price: number | null
           id: string
           illustrations: string | null
           illustrations_description: string | null
@@ -491,7 +489,6 @@ export type Database = {
           lcc: string | null
           lccn: string | null
           location_id: string | null
-          lowest_price: number | null
           oclc_number: string | null
           original_language_id: string | null
           original_title: string | null
@@ -531,7 +528,6 @@ export type Database = {
           updated_at: string | null
           user_catalog_id: string | null
           user_id: string
-          valuation_date: string | null
           volumes: string | null
           weight_g: number | null
           weight_grams: number | null
@@ -561,13 +557,11 @@ export type Database = {
           edition?: string | null
           edition_notes?: string | null
           endpapers_type?: string | null
-          estimated_value?: number | null
           filemaker_id?: string | null
           format_id?: string | null
           has_dust_jacket?: boolean | null
           height_cm?: number | null
           height_mm?: number | null
-          highest_price?: number | null
           id?: string
           illustrations?: string | null
           illustrations_description?: string | null
@@ -581,7 +575,6 @@ export type Database = {
           lcc?: string | null
           lccn?: string | null
           location_id?: string | null
-          lowest_price?: number | null
           oclc_number?: string | null
           original_language_id?: string | null
           original_title?: string | null
@@ -621,7 +614,6 @@ export type Database = {
           updated_at?: string | null
           user_catalog_id?: string | null
           user_id: string
-          valuation_date?: string | null
           volumes?: string | null
           weight_g?: number | null
           weight_grams?: number | null
@@ -651,13 +643,11 @@ export type Database = {
           edition?: string | null
           edition_notes?: string | null
           endpapers_type?: string | null
-          estimated_value?: number | null
           filemaker_id?: string | null
           format_id?: string | null
           has_dust_jacket?: boolean | null
           height_cm?: number | null
           height_mm?: number | null
-          highest_price?: number | null
           id?: string
           illustrations?: string | null
           illustrations_description?: string | null
@@ -671,7 +661,6 @@ export type Database = {
           lcc?: string | null
           lccn?: string | null
           location_id?: string | null
-          lowest_price?: number | null
           oclc_number?: string | null
           original_language_id?: string | null
           original_title?: string | null
@@ -711,7 +700,6 @@ export type Database = {
           updated_at?: string | null
           user_catalog_id?: string | null
           user_id?: string
-          valuation_date?: string | null
           volumes?: string | null
           weight_g?: number | null
           weight_grams?: number | null
