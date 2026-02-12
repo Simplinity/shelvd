@@ -1984,7 +1984,7 @@ export default function BooksPage() {
           {sortedBooks.map((book) => (
             <div
               key={book.id}
-              className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm ${
+              className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 items-center px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors text-sm ${
                 selectionMode && selectedIds.has(book.id) ? 'bg-muted/50' : ''
               }`}
             >
@@ -2000,7 +2000,7 @@ export default function BooksPage() {
               )}
               <Link
                 href={`/books/${book.id}`}
-                className="grid grid-cols-12 gap-4"
+                className="grid grid-cols-12 gap-4 items-center"
               >
                 <div className="col-span-4 text-muted-foreground line-clamp-2 flex items-center gap-2">
                   {book.cover_image_url ? (
