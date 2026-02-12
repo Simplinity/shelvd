@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, BookOpenCheck, Clock, PenLine } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpenCheck, PenLine } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
@@ -18,7 +18,7 @@ import { ArticleBody } from '@/app/blog/[slug]/article-body'
 
 // Generate all wiki pages at build time
 export function generateStaticParams() {
-  return WIKI_ARTICLES.map((article) => ({
+  return WIKI_ARTICLES.filter(a => !a.comingSoon).map((article) => ({
     slug: article.slug,
   }))
 }
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function WikiArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const article = getWikiArticle(slug)
-  if (!article) notFound()
+  if (!article || article.comingSoon) notFound()
 
   const categoryMeta = WIKI_CATEGORIES[article.category]
   const categoryArticles = getWikiArticlesByCategory(article.category)
@@ -60,13 +60,10 @@ export default async function WikiArticlePage({ params }: { params: Promise<{ sl
   const prev = categoryIndex > 0 ? categoryArticles[categoryIndex - 1] : null
   const next = categoryIndex < categoryArticles.length - 1 ? categoryArticles[categoryIndex + 1] : null
 
-  // Parse markdown (only for non-coming-soon articles)
-  let contentHtml = ''
-  if (!article.comingSoon) {
-    const markdown = getWikiContent(article.filename)
-    const result = await remark().use(remarkHtml, { sanitize: false }).process(markdown)
-    contentHtml = result.toString()
-  }
+  // Parse markdown
+  const markdown = getWikiContent(article.filename)
+  const result = await remark().use(remarkHtml, { sanitize: false }).process(markdown)
+  const contentHtml = result.toString()
 
   return (
     <main className="min-h-screen bg-background flex flex-col">
@@ -113,31 +110,12 @@ export default async function WikiArticlePage({ params }: { params: Promise<{ sl
         </div>
       </header>
 
-      {/* Coming Soon placeholder */}
-      {article.comingSoon ? (
-        <section className="px-6 pb-16">
-          <div className="max-w-2xl mx-auto">
-            <div className="border-2 border-dashed border-border p-12 text-center">
-              <Clock className="w-12 h-12 text-muted-foreground/30 mx-auto mb-6" />
-              <h2 className="text-xl font-bold mb-3">This Feature Is Still Being Built</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                We're working on it. The code is being written, the tests are being argued about, 
-                and this documentation will appear the moment the feature does.
-              </p>
-              <p className="text-sm text-muted-foreground/60 italic">
-                In the meantime, you could catalog another book. You know you want to.
-              </p>
-            </div>
-          </div>
-        </section>
-      ) : (
-        /* Article body — reuses blog ArticleBody component */
-        <ArticleBody
-          contentHtml={contentHtml}
-          date="2026-02-12"
-          readingTime={Math.ceil(contentHtml.split(/\s+/).length / 200)}
-        />
-      )}
+      {/* Article body — reuses blog ArticleBody component */}
+      <ArticleBody
+        contentHtml={contentHtml}
+        date="2026-02-12"
+        readingTime={Math.ceil(contentHtml.split(/\s+/).length / 200)}
+      />
 
       {/* Related wiki articles */}
       {relatedArticles.length > 0 && (

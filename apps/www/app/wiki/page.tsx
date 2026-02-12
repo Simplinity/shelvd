@@ -92,30 +92,32 @@ export default function WikiPage() {
 
                 {/* Article list */}
                 <div className="space-y-1 ml-11">
-                  {articles.map((article) => (
-                    <Link
-                      key={article.slug}
-                      href={`/wiki/${article.slug}`}
-                      className="group flex items-start gap-4 p-3 -ml-3 hover:bg-muted/50 transition-colors"
-                    >
-                      <span className="text-xs text-muted-foreground font-mono mt-1 w-6 text-right flex-shrink-0">
-                        {String(article.number).padStart(2, '0')}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium group-hover:text-primary transition-colors">
-                          {article.title}
-                          {article.comingSoon && (
-                            <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 align-middle">
-                              Coming Soon
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                          {article.subtitle}
-                        </p>
+                  {articles.map((article) => {
+                    const Wrapper = article.comingSoon ? 'div' : Link
+                    const wrapperProps = article.comingSoon
+                      ? { key: article.slug, className: 'flex items-start gap-4 p-3 -ml-3 opacity-50' }
+                      : { key: article.slug, href: `/wiki/${article.slug}`, className: 'group flex items-start gap-4 p-3 -ml-3 hover:bg-muted/50 transition-colors' }
+                    return (
+                      <Wrapper {...(wrapperProps as any)}>
+                        <span className="text-xs text-muted-foreground font-mono mt-1 w-6 text-right flex-shrink-0">
+                          {String(article.number).padStart(2, '0')}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium group-hover:text-primary transition-colors">
+                            {article.title}
+                            {article.comingSoon && (
+                              <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 align-middle">
+                                Coming Soon
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                            {article.subtitle}
+                          </p>
                       </div>
-                    </Link>
-                  ))}
+                      </Wrapper>
+                    )
+                  })}
                 </div>
               </section>
             )
