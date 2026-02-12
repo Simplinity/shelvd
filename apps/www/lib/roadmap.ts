@@ -261,9 +261,10 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'Valuation History',
-    description: 'Track market value over time without ownership changes. Appraisals, auction estimates, dealer quotes. A price chart for every book.',
+    description: 'Track market value over time. Appraisals, auction results, dealer quotes, insurance valuations — with provenance auto-sync and a value trend chart. A price memory for every book.',
     category: 'data',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.15.0',
   },
   // Dealer & Marketplace
   {

@@ -186,6 +186,26 @@ status, action_needed, internal_notes
 | 023 | add_locale | Add locale to user_profiles |
 | 024 | drop_date_format | Remove legacy date_format column |
 | 025 | feedback | Feedback & support table, RLS, indexes, trigger |
+| 026 | admin_stats | Admin dashboard statistics functions |
+| 027 | condition_history | Condition history table, RLS, indexes |
+| 028 | public_stats | Public signup stats for landing page |
+| 029 | update_public_stats | Refine public stats function |
+| 030 | cover_image_url | Cover image URL column on books |
+| 031 | admin_read_policies | Admin read-access RLS policies |
+| 032 | admin_user_detail_rpc | Admin user detail RPC function |
+| 033 | drop_admin_read_policies | Remove redundant admin RLS policies |
+| 034 | activity_log | Activity log table, indexes, RLS |
+| 035 | fix_rls_security | Tighten RLS policies |
+| 036 | activity_log_pagination | Activity log pagination indexes |
+| 037 | invite_codes | Invite codes + redemptions tables |
+| 038 | invite_codes_rls | Invite codes RLS policies |
+| 039 | user_profile_fields | Phone, company, website on user_profiles |
+| 040 | tier_features | Tier system: tiers, features, limits tables |
+| 041 | tier_admin_rls | Admin RLS for tier management |
+| 042 | tier_limits_no_unlimited | Replace unlimited with real numbers |
+| 043 | valuation_history | Valuation history table, RLS, indexes |
+| 044 | migrate_valuation_fields | Migrate old price fields to valuation_history |
+| 045 | drop_old_valuation_fields | Drop lowest_price, highest_price, estimated_value, valuation_date |
 
 ---
 
@@ -266,6 +286,15 @@ status, action_needed, internal_notes
 - Per-book gain/loss on detail page: "Bought €X → Estimated €Y (+Z%)" with green/red styling
 - Collection value summary bar on books list: total acquired / estimated / unrealized gain
 - Value distribution histogram on stats dashboard by price range
+- **Valuation history** (v0.15.0): `valuation_history` table tracks value over time per book
+  - Sources: self_estimate, appraisal, auction_result, dealer_quote, insurance, market_research, provenance_purchase
+  - Provenance auto-sync: provenance entries with `price_paid` auto-create valuation entries
+  - Timeline display on detail page (matches provenance/condition history style)
+  - Value trend chart (Recharts) when 2+ dated entries exist
+  - CRUD editor on edit page with drag-to-reorder
+  - Old flat fields (`lowest_price`, `highest_price`, `estimated_value`, `valuation_date`) dropped from books table
+  - Stats, export, and PDF now read from valuation_history instead of books columns
+  - Migrations: 043 (table), 044 (data migration), 045 (drop old columns)
 
 ### Enrich Mode
 - "Enrich" button in edit page header bar (next to Cancel/Save)
@@ -325,6 +354,7 @@ status, action_needed, internal_notes
 | Multiple Collections per user | ✅ Done |
 | Custom Tags | ✅ Done |
 | Feedback & Support + Admin queue | ✅ Done |
+| Valuation History (8 steps) | ✅ Done |
 
 ### Todo — Core Product
 | # | Feature | Priority | Effort | Description |
@@ -995,15 +1025,16 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | 4 | Book detail: ValuationTimeline component | ✅ Done |
 | 5 | Book edit: ValuationHistoryEditor (replaces old 6-field grid) | ✅ Done |
 | 6 | Book detail: value trend chart (Recharts) | ✅ Done |
-| 7 | Activity logging for valuation changes | Low |
-| 8 | Clean up: drop old flat fields from books table | Low |
+| 7 | Activity logging for valuation changes | ✅ Done |
+| 8 | Clean up: drop old flat fields from books table (migration 045) | ✅ Done |
 
 ### Under Consideration (Future)
-- Insurance & valuation PDF reports (B1 — depends on B2)
+- Insurance & valuation PDF reports (B1 — B2 now complete, this is unblocked)
 - Dealer & contact management
 - Templates system
 
 ### Recently Completed
+- ~~Valuation history~~ → v0.15.0: Valuation timeline, value trend chart, provenance auto-sync, CRUD editor, activity logging. Old flat fields dropped.
 - ~~PDF catalog export~~ → v0.11.0: Printable PDF inserts (catalog card + catalog sheet)
 - ~~Condition history~~ → v0.10.0: Condition history timeline + CRUD + auto-prompt
 

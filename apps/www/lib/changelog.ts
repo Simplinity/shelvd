@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.14.0'
+export const APP_VERSION = '0.15.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,22 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.15.0',
+    date: '2026-02-12',
+    title: 'Valuation History',
+    description: 'Every book now has a price memory. Track appraisals, auction results, dealer quotes, and market research over time — and see the trend.',
+    changes: [
+      { type: 'added', text: 'Valuation history timeline on every book detail page — see how value changed over time, with source and appraiser for each entry' },
+      { type: 'added', text: 'Value trend chart — a line chart appears automatically when a book has two or more dated valuations' },
+      { type: 'added', text: 'Seven valuation sources: self estimate, professional appraisal, auction result, dealer quote, insurance valuation, market research, and provenance purchase' },
+      { type: 'added', text: 'Provenance auto-sync — when a provenance entry has a price, a matching valuation entry is created automatically. Edit one, the other follows' },
+      { type: 'added', text: 'Full CRUD editor for valuations on the edit page — add, edit, delete, reorder. Provenance-linked entries are read-only with a clear explanation' },
+      { type: 'improved', text: 'Collection value and stats now calculated from valuation history instead of a single flat field — more accurate, more complete' },
+      { type: 'improved', text: 'PDF catalog sheets and Excel exports now pull pricing data from valuation history' },
+      { type: 'improved', text: 'Old pricing fields (lowest price, highest price, estimated value, valuation date) removed from the edit form and dropped from the database. Less clutter, same data' },
+    ],
+  },
   {
     version: '0.14.0',
     date: '2026-02-11',
