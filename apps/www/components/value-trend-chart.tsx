@@ -1,6 +1,7 @@
 'use client'
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { formatCurrency } from '@/lib/format'
 
 type DataPoint = {
   date: string
@@ -11,13 +12,15 @@ type DataPoint = {
 
 type Props = {
   data: DataPoint[]
-  formatCurrency: (amount: number, currency: string) => string
+  locale?: string
 }
 
-export default function ValueTrendChart({ data, formatCurrency }: Props) {
+export default function ValueTrendChart({ data, locale }: Props) {
   if (data.length < 2) return null
 
   const currency = data[0]?.currency || 'EUR'
+  const fmtCurrency = (amount: number, cur: string) =>
+    formatCurrency(amount, cur, locale)
 
   return (
     <div className="mb-6 border border-border">
@@ -44,7 +47,7 @@ export default function ValueTrendChart({ data, formatCurrency }: Props) {
               width={40}
             />
             <Tooltip
-              formatter={(value) => [formatCurrency(Number(value), currency), 'Value']}
+              formatter={(value) => [fmtCurrency(Number(value), currency), 'Value']}
               labelFormatter={(label) => String(label)}
               contentStyle={{
                 fontSize: 11,

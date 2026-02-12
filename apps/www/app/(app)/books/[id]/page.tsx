@@ -654,7 +654,7 @@ export default async function BookDetailPage({ params }: PageProps) {
         )}
 
         {/* 10. Valuation History */}
-        <ValuationTimeline entries={(valuationHistoryData || []) as any} formatCurrency={fmtCurrency as any} />
+        <ValuationTimeline entries={(valuationHistoryData || []) as any} locale={userLocale} />
 
         {/* Sales price (separate from valuation history) */}
         {bookData.sales_price && (

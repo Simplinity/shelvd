@@ -4,6 +4,7 @@
 // Vertical timeline — matches provenance-timeline.tsx and condition-history-timeline.tsx exactly
 
 import dynamic from 'next/dynamic'
+import { formatCurrency } from '@/lib/format'
 
 const ValueTrendChart = dynamic(() => import('./value-trend-chart'), { ssr: false })
 
@@ -31,11 +32,14 @@ type ValuationEntryData = {
 
 type Props = {
   entries: ValuationEntryData[]
-  formatCurrency: (amount: number, currency: string) => string
+  locale?: string
 }
 
-export default function ValuationTimeline({ entries, formatCurrency }: Props) {
+export default function ValuationTimeline({ entries, locale }: Props) {
   if (!entries || entries.length === 0) return null
+
+  const fmtCurrency = (amount: number, currency: string) =>
+    formatCurrency(amount, currency, locale)
 
   const sorted = [...entries].sort((a, b) => a.position - b.position)
 
@@ -54,7 +58,7 @@ export default function ValuationTimeline({ entries, formatCurrency }: Props) {
     <section>
       <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Valuation History</h2>
       {chartData.length >= 2 && (
-        <ValueTrendChart data={chartData} formatCurrency={formatCurrency} />
+        <ValueTrendChart data={chartData} locale={locale} />
       )}
       <div className="relative ml-4">
         {/* Vertical line */}
@@ -90,7 +94,7 @@ export default function ValuationTimeline({ entries, formatCurrency }: Props) {
 
                 {/* Value — prominent */}
                 <p className="text-sm font-semibold mt-1">
-                  {formatCurrency(Number(entry.value), entry.currency)}
+                  {fmtCurrency(Number(entry.value), entry.currency)}
                 </p>
 
                 {/* Appraiser */}
