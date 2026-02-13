@@ -439,7 +439,7 @@ status, action_needed, internal_notes, catalog_entry
 | 4 | Activity logging | ✅ Done | — | All 6 steps complete: activity_log table, 20 log points, admin live feed + /admin/activity viewer, user /activity page, recent feed on /stats, book detail timeline. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | **Fase 1 ✅ COMPLETE (URL-only, 7/7 steps).** Fase 2 pending (Blob uploads). Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
-| 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
+| 7 | ~~Sharing & Public Catalog~~ | — | — | Moved to post-launch. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | ✅ Done | — | Wiki at `/wiki` — 35 articles across 8 categories (Getting Started, Cataloging, Provenance & History, Search & Discovery, Data & Export, Settings, Glossary & Reference, For Dealers). 150+ term glossary, reference guides for 76 formats and 69 MARC roles. Same witty tone as blog and legal pages. |
 | 8c | Privacy Policy (`/privacy`) | ✅ Done | — | GDPR-compliant privacy policy with literary wit. 11 sections, third-party table, GDPR rights, contact. Accessible to visitors and logged-in users. |
@@ -450,7 +450,7 @@ status, action_needed, internal_notes, catalog_entry
 | 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
 | 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
 | 10 | Collection Audit | ✅ Done | — | Per-user library health score at `/audit`. 10 checks (identifiers, contributors, cover, condition, publisher, year, provenance, valuation, language, location), health score 0–100%, expandable book lists with fix links, FeatureGate (Pro+), nav link, activity logging. See details below. |
-| 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
+| 11 | ~~Catalog Generator~~ | — | — | Moved to post-launch. |
 | 12 | User Onboarding | ✅ Done | — | Welcome wizard (4 screens with humor), getting started checklist (4 base + 2 profile-driven), smart empty states (6 pages), returning user nudge, activity logging. See details below. |
 | 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
 | 15 | Community | Post-launch | — | Moved to post-launch. Discord link in footer/wiki as interim solution. |
@@ -1289,6 +1289,8 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | S7 | Admin Impersonation | Low | "View as user" mode for debugging. See their books, collections, settings. Big red banner. |
 | S8 | Community | Low | Discord link as interim. In-app forum only if community outgrows it. |
 | S9 | Data Cleanup Tools | Low-Medium | Orphaned records, inconsistencies, duplicate publishers. Admin-only. Build when scale demands it. |
+| S10 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
+| S11 | Catalog Generator (DOCX) | Medium-High | Professional DOCX catalogs from selected books. Numbered entries, condition, provenance, pricing. Dealer + Pro. |
 
 ### Recently Completed
 - ~~Performance optimizations~~ → Book detail parallelization, value summary RPC, collection count batching
