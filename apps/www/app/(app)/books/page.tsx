@@ -1139,8 +1139,8 @@ export default function BooksPage() {
 
       const { data, error } = await supabase.rpc('get_value_summary', {
         p_user_id: user.id,
-        p_collection_id: colId || null,
-        p_tag_id: tId || null,
+        p_collection_id: colId || undefined,
+        p_tag_id: tId || undefined,
       })
 
       if (error) {
