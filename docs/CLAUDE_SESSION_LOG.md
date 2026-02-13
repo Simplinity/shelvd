@@ -63,6 +63,20 @@ Safety tag: `pre-mobile-responsive` (git tag on current working state)
 - Synced package.json versions to 0.22.0, created git tag v0.22.0
 - Commit: `b8290a7`
 
+### Valuation Bug Fix ✅
+
+**Root cause:** Migration 044 inserted `provenance_purchase` entries into `valuation_history` with the highest position number. Every query that picked "latest valuation" by `ORDER BY position DESC` got the acquisition cost instead of the actual estimated value.
+
+**Fixed in 4 places:**
+- `get_value_summary` RPC — migration 067: `WHERE source != 'provenance_purchase'`
+- `/api/stats/calculate` — batched 5000+ UUIDs (was unbatched = silent failure) + exclude provenance_purchase
+- `/api/books/[id]/pdf` — `.find(v => source !== 'provenance_purchase')` instead of `[0]`
+- `/api/export` — same filter in estimated value logic
+
+Commits: `cd37c9a`, `ad04296`, `4bd5882`
+
+---
+
 ### #9 Mobile Responsiveness — Plan
 
 **Safety tag:** `pre-mobile-responsive`
