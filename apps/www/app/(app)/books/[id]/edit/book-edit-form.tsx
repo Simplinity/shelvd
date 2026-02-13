@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown, Trash2, ImageIcon } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
 import ConditionHistoryEditor, { type ConditionHistoryEntry } from '@/components/condition-history-editor'
 import ValuationHistoryEditor, { type ValuationHistoryEntry } from '@/components/valuation-history-editor'
@@ -19,6 +19,10 @@ import type { Tables } from '@/lib/supabase/database.types'
 import FieldHelp from '@/components/field-help'
 import { FIELD_HELP } from '@/lib/field-help-texts'
 import { logActivity } from '@/lib/actions/activity-log'
+import ImageUploadZone from '@/components/image-upload-zone'
+import { useFeature, useTier } from '@/lib/hooks/use-tier'
+import { UpgradeHint } from '@/components/feature-gate'
+import { getStorageQuota, formatBytes } from '@/lib/image-quota'
 import { bookLabel, computeDiff } from '@/lib/activity-utils'
 
 type Book = Tables<'books'>
@@ -327,6 +331,43 @@ export default function BookEditForm({ book, referenceData }: Props) {
   // Tags state
   type TagItem = { id: string; name: string; color: string }
   const [selectedTags, setSelectedTags] = useState<TagItem[]>([])
+
+  // Image uploads state
+  const canUpload = useFeature('image_upload')
+  const userTier = useTier()
+  type BookImage = { id: string; blob_url: string; thumb_blob_url: string; image_type: string; file_size_bytes: number; original_filename: string; sort_order: number }
+  const [bookImages, setBookImages] = useState<BookImage[]>([])
+  const [quotaRemaining, setQuotaRemaining] = useState<number | undefined>(undefined)
+  const [deletingImageId, setDeletingImageId] = useState<string | null>(null)
+
+  const loadImages = async () => {
+    const { data } = await supabase
+      .from('book_images')
+      .select('id, blob_url, thumb_blob_url, image_type, file_size_bytes, original_filename, sort_order')
+      .eq('book_id', book.id)
+      .order('sort_order')
+    if (data) setBookImages(data as BookImage[])
+    // Refresh quota
+    if (canUpload) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const quota = await getStorageQuota(supabase, user.id, userTier)
+        setQuotaRemaining(quota.remaining)
+      }
+    }
+  }
+
+  const deleteImage = async (imageId: string) => {
+    setDeletingImageId(imageId)
+    try {
+      const res = await fetch(`/api/images/${imageId}`, { method: 'DELETE' })
+      if (res.ok) await loadImages()
+    } finally {
+      setDeletingImageId(null)
+    }
+  }
+
+  useEffect(() => { loadImages() }, [])
 
   // Fetch collections, tags, and book's current memberships
   useEffect(() => {
@@ -1207,6 +1248,45 @@ export default function BookEditForm({ book, referenceData }: Props) {
             </div>
           </div>
 
+
+          {/* Sub-group: Uploaded Images */}
+          <div className="mt-6 pt-6 border-t border-dashed border-border">
+            <div className="flex items-center gap-2 mb-3">
+              <ImageIcon className="w-4 h-4 text-muted-foreground" />
+              <label className={labelClass}>Images{bookImages.length > 0 && <span className="text-muted-foreground font-normal ml-1">({bookImages.length})</span>}</label>
+            </div>
+
+            {/* Existing images grid */}
+            {bookImages.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4">
+                {bookImages.map(img => (
+                  <div key={img.id} className="relative group">
+                    <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
+                      <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover" />
+                    </div>
+                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.image_type}</span>
+                    {canUpload && (
+                      <button
+                        type="button"
+                        onClick={() => deleteImage(img.id)}
+                        disabled={deletingImageId === img.id}
+                        className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        {deletingImageId === img.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Upload zone (Pro+ only) */}
+            {canUpload ? (
+              <ImageUploadZone bookId={book.id} onUploadComplete={loadImages} quotaRemaining={quotaRemaining} />
+            ) : (
+              <UpgradeHint feature="image_upload" />
+            )}
+          </div>
           {/* Sub-group: Binding & Cover */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div className="col-span-2">
