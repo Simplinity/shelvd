@@ -6,16 +6,14 @@ const res = await fetch(`https://api.supabase.com/v1/projects/${REF}/config/auth
 })
 const data = await res.json()
 
-// Show ALL keys
-for (const k of Object.keys(data).sort()) {
-  if (k.includes('url') || k.includes('flow') || k.includes('pkce') || k.includes('path') || k.includes('otp') || k.includes('mailer_url')) {
-    console.log(`${k}: ${data[k]}`)
-  }
-}
+// Show full recovery template
+console.log('=== RECOVERY TEMPLATE ===')
+console.log(data.mailer_templates_recovery_content)
 
-console.log('\n--- All keys containing "mail" ---')
+// Check for flow type
+console.log('\n=== FLOW SETTINGS ===')
 for (const k of Object.keys(data).sort()) {
-  if (k.includes('mail') && !k.includes('template') && !k.includes('subject') && !k.includes('notification')) {
+  if (k.includes('flow') || k.includes('pkce') || k.includes('otp')) {
     console.log(`${k}: ${data[k]}`)
   }
 }
