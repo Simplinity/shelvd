@@ -579,9 +579,14 @@ export default function ProvenanceEditor({ entries, onChange }: Props) {
       </Button>
 
       {activeEntries.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-2">
-          No provenance entries yet. Add the chain of ownership for this book.
-        </p>
+        <div className="text-center py-6 border border-dashed border-border">
+          <p className="text-sm text-muted-foreground">
+            Where has this book been? A London bookshop in 1923? Your grandmother&apos;s attic?
+          </p>
+          <p className="text-xs text-muted-foreground/60 italic mt-1">
+            The story starts here.
+          </p>
+        </div>
       )}
     </div>
   )
