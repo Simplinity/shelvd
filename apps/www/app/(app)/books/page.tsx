@@ -90,6 +90,7 @@ type BookListItem = {
   series: string | null
   user_catalog_id: string | null
   cover_image_url: string | null
+  cover_thumb_url: string | null
   contributors: { name: string; role: string }[]
 }
 
@@ -588,7 +589,7 @@ export default function BooksPage() {
 
       const bookSelect = `
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -672,7 +673,7 @@ export default function BooksPage() {
         isbn_10: book.isbn_10,
         series: book.series,
         user_catalog_id: book.user_catalog_id,
-        cover_image_url: book.cover_image_url,
+        cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
@@ -700,7 +701,7 @@ export default function BooksPage() {
       const BATCH_SIZE = 1000
       const bookSelect = `
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -799,7 +800,7 @@ export default function BooksPage() {
         isbn_10: book.isbn_10,
         series: book.series,
         user_catalog_id: book.user_catalog_id,
-        cover_image_url: book.cover_image_url,
+        cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
@@ -835,7 +836,7 @@ export default function BooksPage() {
       .from('books')
       .select(`
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -999,7 +1000,7 @@ export default function BooksPage() {
           .from('books')
           .select(`
             id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-            status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url,
+            status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
             storage_location, shelf, isbn_13, isbn_10,
             book_contributors (
               contributor:contributors ( canonical_name ),
@@ -1034,7 +1035,7 @@ export default function BooksPage() {
       isbn_10: book.isbn_10,
       series: book.series,
       user_catalog_id: book.user_catalog_id,
-      cover_image_url: book.cover_image_url,
+      cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url,
       contributors: (book.book_contributors || []).map((bc: any) => ({
         name: bc.contributor?.canonical_name || 'Unknown',
         role: bc.role?.name || 'Contributor'
@@ -1957,8 +1958,8 @@ export default function BooksPage() {
               >
                 {/* Mobile card layout */}
                 <div className="sm:hidden flex items-center gap-3">
-                  {book.cover_image_url ? (
-                    <img src={book.cover_image_url} alt="" className="w-8 h-12 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                  {(book.cover_thumb_url || book.cover_image_url) ? (
+                    <img src={book.cover_thumb_url || book.cover_image_url!} alt="" className="w-8 h-12 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
                   ) : (
                     <div className="w-8 h-12 bg-muted/50 flex-shrink-0 rounded-sm" />
                   )}
@@ -1973,8 +1974,8 @@ export default function BooksPage() {
                 {/* Desktop grid layout */}
                 <div className="hidden sm:grid grid-cols-12 gap-4 items-center">
                 <div className="col-span-4 text-muted-foreground line-clamp-2 flex items-center gap-2">
-                  {book.cover_image_url ? (
-                    <img src={book.cover_image_url} alt="" className="w-6 h-9 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                  {(book.cover_thumb_url || book.cover_image_url) ? (
+                    <img src={book.cover_thumb_url || book.cover_image_url!} alt="" className="w-6 h-9 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
                   ) : (
                     <div className="w-6 h-9 bg-muted/50 flex-shrink-0 rounded-sm" />
                   )}
@@ -2056,10 +2057,10 @@ export default function BooksPage() {
               
               <Link href={`/books/${book.id}`}>
                 <div className="aspect-[3/4] bg-muted flex items-center justify-center overflow-hidden">
-                  {book.cover_image_url ? (
-                    <img src={book.cover_image_url} alt="" className="w-full h-full object-cover" onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                  {(book.cover_thumb_url || book.cover_image_url) ? (
+                    <img src={book.cover_thumb_url || book.cover_image_url!} alt="" className="w-full h-full object-cover" onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
                   ) : null}
-                  <div className={`text-center ${book.cover_image_url ? 'hidden' : ''}`}>
+                  <div className={`text-center ${(book.cover_thumb_url || book.cover_image_url) ? 'hidden' : ''}`}>
                     <BookOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wide">No cover</p>
                   </div>

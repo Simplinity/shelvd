@@ -52,7 +52,7 @@ export async function DELETE(
   if (image.image_type === 'cover') {
     const { data: nextCover } = await supabase
       .from('book_images')
-      .select('blob_url')
+      .select('blob_url, thumb_blob_url')
       .eq('book_id', image.book_id)
       .eq('image_type', 'cover')
       .order('sort_order')
@@ -61,7 +61,7 @@ export async function DELETE(
 
     await supabase
       .from('books')
-      .update({ cover_image_url: nextCover?.blob_url || null })
+      .update({ cover_image_url: nextCover?.blob_url || null, cover_thumb_url: nextCover?.thumb_blob_url || null })
       .eq('id', image.book_id)
   }
 

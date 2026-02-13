@@ -498,6 +498,7 @@ export type Database = {
           condition_id: string | null
           condition_notes: string | null
           cover_image_url: string | null
+          cover_thumb_url: string | null
           cover_type: string | null
           created_at: string | null
           ddc: string | null
@@ -584,6 +585,7 @@ export type Database = {
           condition_id?: string | null
           condition_notes?: string | null
           cover_image_url?: string | null
+          cover_thumb_url?: string | null
           cover_type?: string | null
           created_at?: string | null
           ddc?: string | null
@@ -670,6 +672,7 @@ export type Database = {
           condition_id?: string | null
           condition_notes?: string | null
           cover_image_url?: string | null
+          cover_thumb_url?: string | null
           cover_type?: string | null
           created_at?: string | null
           ddc?: string | null

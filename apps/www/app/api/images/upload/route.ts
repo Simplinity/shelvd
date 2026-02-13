@@ -173,7 +173,7 @@ export async function POST(request: Request) {
     if (imageType === 'cover') {
       await supabase
         .from('books')
-        .update({ cover_image_url: fullBlob.url })
+        .update({ cover_image_url: fullBlob.url, cover_thumb_url: thumbBlob.url })
         .eq('id', bookId)
     }
 
