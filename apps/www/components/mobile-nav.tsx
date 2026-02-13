@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Menu, X, BookOpen } from 'lucide-react'
+import { Menu, X, BookOpen, Plus, Upload, Search, ScanBarcode, BarChart3, Clock, ClipboardCheck } from 'lucide-react'
 import { APP_VERSION } from '@/lib/changelog'
+import Link from 'next/link'
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
@@ -50,11 +51,36 @@ export function MobileNav() {
           </button>
         </div>
 
-        {/* Content placeholder */}
-        <div className="p-4">
-          <p className="text-sm text-muted-foreground">Navigation links coming next</p>
-        </div>
+        {/* Nav links */}
+        <nav className="px-2 py-3 space-y-0.5 border-b border-border">
+          <MobileNavLink href="/books" icon={BookOpen} label="All Books" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/books/add" icon={Plus} label="Add Book" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/books/import" icon={Upload} label="Import" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/books/search" icon={Search} label="Search" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/books/lookup" icon={ScanBarcode} label="Lookup" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/stats" icon={BarChart3} label="Stats" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/audit" icon={ClipboardCheck} label="Audit" onClick={() => setOpen(false)} />
+          <MobileNavLink href="/activity" icon={Clock} label="Activity" onClick={() => setOpen(false)} />
+        </nav>
       </div>
     </div>
+  )
+}
+
+function MobileNavLink({ href, icon: Icon, label, onClick }: {
+  href: string
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  label: string
+  onClick: () => void
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="flex items-center gap-3 px-3 py-3 text-sm text-gray-700 hover:bg-muted/50 hover:text-black transition-colors"
+    >
+      <Icon className="w-4 h-4" strokeWidth={1.75} />
+      {label}
+    </Link>
   )
 }
