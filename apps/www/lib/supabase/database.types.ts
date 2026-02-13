@@ -1655,6 +1655,13 @@ export type Database = {
           updated_at: string | null
           vat_number: string | null
           website: string | null
+          user_type: string | null
+          collection_size_estimate: string | null
+          current_system: string | null
+          interests: string[] | null
+          onboarding_completed: boolean | null
+          onboarding_checklist: Record<string, unknown> | null
+          onboarding_dismissed_at: string | null
         }
         Insert: {
           admin_role?: string | null
@@ -1686,6 +1693,13 @@ export type Database = {
           updated_at?: string | null
           vat_number?: string | null
           website?: string | null
+          user_type?: string | null
+          collection_size_estimate?: string | null
+          current_system?: string | null
+          interests?: string[] | null
+          onboarding_completed?: boolean | null
+          onboarding_checklist?: Record<string, unknown> | null
+          onboarding_dismissed_at?: string | null
         }
         Update: {
           admin_role?: string | null
@@ -1717,6 +1731,13 @@ export type Database = {
           updated_at?: string | null
           vat_number?: string | null
           website?: string | null
+          user_type?: string | null
+          collection_size_estimate?: string | null
+          current_system?: string | null
+          interests?: string[] | null
+          onboarding_completed?: boolean | null
+          onboarding_checklist?: Record<string, unknown> | null
+          onboarding_dismissed_at?: string | null
         }
         Relationships: [
           {
