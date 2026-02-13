@@ -2,231 +2,122 @@
 
 > **RULE: This log is updated in real-time during every session. Each subtask is written here BEFORE committing code. Status: ⏳ doing / ✅ done / ❌ blocked. On connection loss, the next session reads this log first to know exactly where to resume. Every commit includes a log update. No exceptions.**
 
-## Current State (2026-02-12)
+## Current State (2026-02-13)
 
-**App version: v0.15.0.** All core features, marketing site, feedback system, PDF print inserts, cover images, activity logging, invite codes, tier system, and valuation history complete. 9 lookup providers active. 45 DB migrations applied. Marketing site: Landing, Privacy, Terms, About, Changelog, Roadmap, Marginalia (blog) — all live.
+**App version: v0.22.0.** 66 DB migrations applied. 22 lookup providers. All core features, marketing site, onboarding, activity logging, tier system complete. Pre-migration backup scripts in place.
 
-**No task in progress.** #10 Collection Audit complete. Ready for next task.
-
----
-
-## Recent Session Work (2026-02-12)
-
-### #10 Collection Audit — Complete ✅
-
-**Step 0: Plan written in project.md ✅**
-- Full detail section added: 10 audit checks, health score formula, UI design, query strategy, 5-step delivery plan
-- No DB migration needed (read-only queries on existing tables)
-- Pro+ gated via existing `collection_audit` feature in tier_features
-
-**Step 1: Server action `getCollectionAudit()` ✅**
-- File: `lib/actions/audit.ts`
-- 4 queries via Promise.all (not N+1), batched .in() per 500, paginated books fetch
-- Types exported: AuditBook, AuditCategory, CollectionAuditResult
-- 10 checks, health score 0–100%, per-category counts + first 50 affected books
-- Commit: `09eb480`
-
-**Step 2+3: Audit page `/audit` + expandable book lists ✅**
-- Server page: `app/(app)/audit/page.tsx` — calls getCollectionAudit(), passes to client
-- Client component: `app/(app)/audit/audit-client.tsx` — interactive UI
-- Health score: large percentage + progress bar + summary stats
-- 10 category cards in 2-column grid: icon, label, count, severity dot, % complete
-- Cards with 0 issues show green checkmark, muted
-- Click to expand → book list (first 50), each with title link + Enrich/Edit fix link
-- FeatureGate wrapper (collection_audit) → UpgradeHint for Collector tier
-- Swiss design: monochrome + red accent for high severity
-- Commit: `d526653`
-
-**Step 4: Nav link + activity logging + FeatureGate ✅**
-- Nav: ClipboardCheck icon + "Audit" link between Stats and Activity in layout.tsx
-- Activity: `audit.viewed` action type + category added, logged on page load with score/totalBooks/totalIssues metadata
-- Commit: `24e1ac4`
-
-**Step 5: Docs + session log + roadmap.ts ✅**
-- roadmap.ts: Collection Audit moved to `shipped`
-- project.md: #10 marked ✅ Done, delivery plan steps all ✅, added to Completed table
-- Session log: marked complete
+**Current task: #9 Mobile Responsiveness (app pages)**
 
 ---
 
-### v0.15.0 — Valuation History + Bug Fixes + Landing Page
+## Pre-Launch Features Remaining
 
-**B2 Valuation History — ALL 8 STEPS COMPLETE ✅**
-- B2.1: Migration 043 — valuation_history table + indexes + RLS ✅
-- B2.2: Migration 044 — migrate estimated_value/lowest/highest → valuation_history entries ✅
-- B2.3: Provenance auto-sync — price_paid → valuation entries (create/update/delete) ✅
-- B2.4: Detail page timeline — ValuationTimeline component ✅
-- B2.5: Edit page CRUD — ValuationHistoryEditor replaces old 6-field grid ✅
-- B2.6: Value trend chart — Recharts line chart, dynamic import, shows with 2+ dated entries ✅
-- B2.7: Activity logging — valuation changes logged ✅
-- B2.8: Migration 045 — drop old columns (estimated_value, lowest_price, highest_price, valuation_date) ✅
+| # | Feature | Status |
+|---|---------|--------|
+| 9 | Mobile Responsiveness (app pages) | ⏳ Starting |
+| 6.2 | Image Upload Fase 2 (Vercel Blob) | Queued |
+| 6.3 | Image Upload Fase 3 (drag-and-drop, bulk, camera, zoom) | Queued |
+| 14.7 | Stripe integratie + upgrade flow | Queued |
 
-**Documentation updates (v0.15.0):**
-- project.md: B2 steps 7-8 marked done, migrations 026-045 documented, valuation history section, completed roadmap
-- changelog.ts: APP_VERSION bumped to 0.15.0, full release entry
-- roadmap.ts: Valuation History moved to 'shipped' with version 0.15.0
-- Commit: `7df6dad`
-
-**Critical bug fix: Tier resolution downgrade ✅**
-- Problem: `is_lifetime_free` always returned `collector_pro`, downgrading dealer users (5,000 limit instead of 100,000)
-- Fix: Tier hierarchy in `lib/tier.ts` — `highestTier()` function, lifetime Pro grants *at least* collector_pro
-- Settings page: shows effective tier badge + "Lifetime Early Access" badge
-- Files: `lib/tier.ts`, `settings/settings-form.tsx`
-- Commit: `bd3ed2e`
-
-**Critical bug fix: Server crash on book detail ✅**
-- Problem: `formatCurrency` function passed as prop to client component (not serializable)
-- Fix: Client components import `formatCurrency` directly, receive only `locale` string
-- Files: `valuation-timeline.tsx`, `value-trend-chart.tsx`, `books/[id]/page.tsx`
-- Commit: `0b795c0`
-
-**UI fix: Feature gate Swiss design ✅**
-- LimitReached + UpgradeHint stripped of amber/colored styling → clean Swiss borders
-- Commit: `bcc8a6f`
-
-**UI fix: Focus ring neutral ✅**
-- Global `:focus-visible` changed from thick Swiss Red ring-2 to thin neutral ring-1
-- Commit: `65de772`
-
-**UI fix: Book list row vertical alignment ✅**
-- Cover thumbnail (h-9) caused title to sit lower than other columns
-- Added `items-center` to grid row + inner link grid
-- Commit: `3cdda55`
-
-**Bug fix: Cover images missing in list/grid view ✅**
-- `cover_image_url` was not in any of the 4 `bookSelect` queries — field was in type and JSX but never fetched
-- Added to all 4 select strings
-- Commit: `43cd76c`
-
-**Landing page update ✅**
-- New 5th feature category "Tracking & History": Cover Images, PDF Inserts, Activity Feed
-- Valuation card renamed → "Valuation History" with full description
-- New Valuation History Spotlight section (mock timeline, provenance badge, +153% trend)
-- Condition Spotlight: added condition history timeline paragraph
-- Comparison section: added "No way to track value over time" row
-- Commit: `4dd8eba`
+Safety tag: `pre-mobile-responsive` (git tag on current working state)
 
 ---
 
-## Previous Session Work (2026-02-11)
+## Session: 2026-02-13 (current)
 
-### v0.13.0 — Tier System, Activity Logging, Invite Codes
+### Performance Optimizations ✅
 
-**#14 Tier System & Feature Gating — COMPLETE ✅**
-- Migration 040: tier_features (19 features × 3 tiers) + tier_limits (books/tags/storage/bandwidth)
-- Migration 041: Admin RLS for tier tables
-- Migration 042: No unlimited in tier_limits
-- Server: hasFeature() + client hooks (useFeature, useTierLimit, useTier) + TierProvider
-- UI: FeatureGate, UpgradeHint, UpgradeHintInline, LimitGate, LimitReached
-- Admin: /admin/tiers with feature matrix + limits editor
-- Gating applied: book limit (add form), tag limit (tags manager), PDF inserts (detail page)
-- Landing page pricing updated (3 real tiers + early access banner)
-- "Lifetime free" → "Lifetime Collector Pro" (11 files)
+**Collection activity logging fix:**
+- Root cause: `CollectionsManager` client component directly inserted into Supabase, bypassing server actions that had `logActivity` calls (dead code)
+- Fix: Added `logActivity` calls to client component CRUD handlers (create, rename, delete)
+- Commit: `0508275`
 
-**#4 Activity Logging — ALL 6 STEPS COMPLETE ✅**
-- Foundation: activity_log table, 5 indices, RLS, SECURITY DEFINER RPCs, logActivity() utility
-- Book instrumentation: created/updated (JSON diff)/deleted, import.completed
-- Full platform: collections (5), account (3), admin (7) — 20 logActivity() calls
-- Admin: dashboard feed + /admin/activity log viewer (filters, pagination)
-- User-facing: /activity page, /stats recent feed, book detail timeline
+**Collection page N+1 fix:**
+- Sequential count queries per collection → `Promise.all` parallel batch
+- Fixed in both `collections-manager.tsx` and `getCollectionsWithCounts` server action
+- Commit: `b7d971b`
 
-**#13 Invite Codes — ALL 5 STEPS COMPLETE ✅**
-- Tables: invite_codes + invite_code_redemptions, redeem RPC, admin RPCs, RLS
-- Signup: optional code field with validation + benefits
-- Admin: /admin/invite-codes list/create/toggle + detail pages
-- Activity logging (2 actions)
+**Value summary RPC:**
+- `fetchValueSummary` did 5-10 sequential client queries (auth → profile → all book IDs → valuations → provenance)
+- Replaced with single `get_value_summary()` PostgreSQL RPC (migration 066)
+- Commit: `1aacb53`
 
-**User Profile Expansion ✅**
-- Migration 039: phone, company_name, website on user_profiles
-- Admin user detail: all profile fields displayed
-- Settings form: new fields in Profile section
+**Book detail page parallelization:**
+- 19 sequential queries → 1 book fetch + 1 `Promise.all` (19 parallel) + 2 chained (profile + feature check)
+- ~3 round-trips instead of ~16
+- Commit: `4bc25b2`
 
-**RLS Security Fix ✅**
-- Migration 035: re-enabled RLS on languages, publishers, contributor_aliases
+**Build fixes (type errors after migration 066):**
+- Regenerated database.types.ts (CLI output leaked into file)
+- Fixed `null` vs `undefined` for optional RPC params
+- Fixed `Record<string, unknown>` → `any` cast in onboarding.ts
+- Commits: `4ad6a92`, `becd2f2`, `41b338d`
 
----
+### Documentation & Planning ✅
 
-## Previous Session Work (2026-02-09 – 2026-02-10)
+- Updated `project.md`: performance section, image upload status, file structure, removed old pricing model, launch plan
+- Created `docs/staging.md`: full staging & production safety guide
+- Created `scripts/pre-migration-backup.sh` + `scripts/migrate.sh`
+- Added Rule 9 (version bumps = package deal) to project.md
+- Moved Sharing & Catalog Generator to post-launch
+- Synced package.json versions to 0.22.0, created git tag v0.22.0
+- Commit: `b8290a7`
 
-### v0.12.0 — Cover Images, PDF Inserts, Condition History
+### #9 Mobile Responsiveness — Plan
 
-**Image Upload (#6) — Fase 1 COMPLETE ✅** (URL-based)
-- Migration 030: cover_image_url on books table
-- URL input on add/edit forms with live thumbnail preview
-- Cover on detail page, list view (24×36px), grid view (fills card)
-- Auto-fill during enrichment
-- Lookup→Add: cover_url mapped from sessionStorage
-- Clickable covers with lightbox overlay
+**Safety tag:** `pre-mobile-responsive`
 
-**Printable PDF Book Inserts — COMPLETE ✅**
-- Vintage catalog card (3×5"): 1930s library aesthetic, Courier typewriter, red vertical line
-- Full catalog sheet: 6 paper sizes, Swiss typography, all sections, adaptive
-- API route + BookPdfButton dropdown on detail page
+**Approach:** Pure CSS/layout changes. No new features, no migrations, no API changes. Page by page, smallest first. Each subtask = one commit.
 
-**B3 Condition History — COMPLETE ✅**
-- Timeline + CRUD + auto-prompt on condition change
+**Subtasks:**
 
-**Lookup/Enrich UX Reorganisation ✅**
-- Lookup moved to header nav
-- Book detail: Lookup → Enrich button
-- Add form: full Enrich panel
-
----
-
-## Feature Backlog — TODO
-
-### 🔴 Urgent — Do Next
-| # | Feature | Effort | Description |
-|---|---------|--------|-------------|
-| 9 | Mobile responsiveness (app) | High | Website ✅. App: hamburger nav, touch targets, single-column forms, responsive cards/charts. Desktop-only in practice. |
-| 12 | User Onboarding | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. |
-
-### 🟡 Important — Before Launch
-| # | Feature | Effort | Description |
-|---|---------|--------|-------------|
-| 6 | Image Upload (fase 2 — Blob) | High | Cover images, spine, damage photos. Vercel Blob Storage. Gallery on detail page. Tier-gated (Pro: 5GB, Dealer: 25GB). |
-| 7 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Pro+ only. |
-| 10 | Collection Audit | Medium | Per-user library health score. Missing contributors, books without identifiers, provenance gaps. One-click fixes. Pro+ only. |
-| 8b | Knowledge base (`/help`) | Medium | Getting started guide, FAQ, feature docs, tips. Last marketing page. |
-| 14.7 | Payments & Upgrade Flow | High | Stripe integration, checkout flow, upgrade/downgrade, billing portal. All upgrade links currently point to `/#pricing` as placeholder. |
-
-### 🟢 Planned — Post-Launch
-| # | Feature | Effort | Description |
-|---|---------|--------|-------------|
-| 11 | Catalog Generator (DOCX) | Medium-High | Select books → professional DOCX catalog. Numbered entries, title page, TOC. Dealer only. |
-| B1 | Insurance & valuation PDF reports | Medium | PDF reports for insurance: book list with photos, estimated values, total collection value. Now unblocked (B2 complete). |
-| 15 | Community | Medium-High | Forum/discussion for collectors and dealers. |
-| A5 | Admin impersonation | Medium | "View as user" for debugging. Audit logged. |
-| A6 | Platform health checks | Medium | Orphaned records, cross-user inconsistencies, import errors. |
-| A8 | Weekly admin digest | Medium | Automated Monday email via Resend + Vercel Cron. |
-| A9 | Onboarding funnel (admin view) | Low | Visual journey tracker on user detail. |
-| S1 | WooCommerce integration | Medium | Sync books → WooCommerce products. Dealer only. |
-| S2 | Catawiki integration | High | Auction upload from Shelvd. Dealer only. |
-| S3 | AbeBooks integration | Medium-High | XML feed for AbeBooks/ZVAB dealer inventory. Dealer only. |
-| D1 | Dealer directory & messaging | High | Business profiles, public directory, messaging with collection attachment. |
-
-### Under Consideration
-- PDF catalog export
-- Templates system
+| # | Task | Scope | Status |
+|---|------|-------|--------|
+| 9.1 | Mobile navigation: hamburger menu + slide-out drawer | `layout.tsx` | ⏳ |
+| 9.2 | Touch target audit: buttons, links, inputs ≥ 44px | Global CSS / components | |
+| 9.3 | Book detail page responsive | `books/[id]/page.tsx` | |
+| 9.4 | Books list (list view) responsive | `books/page.tsx` list section | |
+| 9.5 | Books list (grid view) responsive | `books/page.tsx` grid section | |
+| 9.6 | Books list header/filters/toolbar responsive | `books/page.tsx` top section | |
+| 9.7 | Add book form responsive | `books/add/book-add-form.tsx` | |
+| 9.8 | Edit book form responsive | `books/[id]/edit/book-edit-form.tsx` | |
+| 9.9 | Settings pages responsive | `settings/` pages | |
+| 9.10 | Stats dashboard responsive | `stats/page.tsx` | |
+| 9.11 | Activity page responsive | `activity/activity-client.tsx` | |
+| 9.12 | Audit page responsive | `audit/audit-client.tsx` | |
+| 9.13 | Support page responsive | `support/support-client.tsx` | |
+| 9.14 | Admin pages responsive | `admin/` pages | |
+| 9.15 | Onboarding responsive (wizard, checklist, empty states) | `components/onboarding/` | |
+| 9.16 | Modals and dialogs responsive | Shared components | |
+| 9.17 | Final review: test all pages at 375px (iPhone SE) | Manual audit | |
 
 ---
 
-### Completed Features (chronological)
-| # | Feature | Date | Version |
-|---|---------|------|---------|
-| A1 | System stats dashboard | 2026-02-09 | v0.10.0 |
-| 5 + A2 | Feedback & Support + Admin queue | 2026-02-09 | v0.10.0 |
-| B3 | Condition history | 2026-02-09 | v0.11.0 |
-| UX1 | Edit page UX/UI overhaul | 2026-02-09 | v0.11.0 |
-| PDF | Printable PDF inserts | 2026-02-09 | v0.11.0 |
-| AUTH | Auth page live stats + literary quotes | 2026-02-09 | v0.11.0 |
-| 6.1 | Image Upload (fase 1 — URL) | 2026-02-10 | v0.12.0 |
-| A4 | User management | 2026-02-11 | v0.13.0 |
-| 4 | Activity logging (6 steps, 20 log points) | 2026-02-11 | v0.13.0 |
-| A3 | Activity log viewer | 2026-02-11 | v0.13.0 |
-| 13 | Invite codes | 2026-02-11 | v0.13.0 |
-| SEC | RLS security fix | 2026-02-11 | v0.13.0 |
-| UP | User profile expansion | 2026-02-11 | v0.13.0 |
-| 14 | Tier System & Feature Gating | 2026-02-11 | v0.13.0 |
-| B2 | Valuation History (8 steps) | 2026-02-12 | v0.15.0 |
-| — | Landing page update (new features) | 2026-02-12 | v0.15.0 |
+## Previous Sessions
+
+### 2026-02-13 — Onboarding (#12) ✅
+- Welcome wizard (4 screens), getting started checklist (4 base + 2 profile-driven)
+- Smart empty states (6 pages), returning user nudge
+- Migration 054 (onboarding columns), 055-065 (auth trigger fixes)
+- Email config (Resend SMTP), password reset fix
+- v0.22.0
+
+### 2026-02-12 — Providers, Wiki, Admin Stats, Valuation History
+- DanBib, CERL HPB, HathiTrust providers (v0.19.0)
+- Finna, OPAC SBN, NDL, Trove, KB NL providers (v0.18.0)
+- BIBSYS, ÖNB, Library Hub providers (v0.17.0)
+- Unicat, BNE, SLSP providers + Collection Audit (v0.16.0)
+- Valuation History (8 steps) + bug fixes (v0.15.0)
+- Wiki/Knowledge Base (v0.20.0), Admin System Stats (v0.21.0)
+
+### 2026-02-11 — Tier System, Activity Logging, Invite Codes
+- #14 Tier System & Feature Gating (migrations 040-042) (v0.13.0–v0.14.0)
+- #4 Activity Logging (6 steps, 20 log points) (v0.13.0)
+- #13 Invite Codes (5 steps) (v0.13.0)
+- User profile expansion, RLS security fix
+
+### 2026-02-09 – 2026-02-10 — Cover Images, PDF, Condition History
+- Image Upload Fase 1 (URL-based, 7 steps) (v0.12.0)
+- Printable PDF inserts (catalog card + sheet) (v0.11.0)
+- Condition History (timeline + CRUD) (v0.10.0)
+- Feedback & Support system (v0.10.0)
