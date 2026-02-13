@@ -46,7 +46,8 @@ export default async function SettingsPage({
       <h1 className="text-2xl font-bold mb-8">Settings</h1>
 
       {/* Tab navigation */}
-      <div className="flex gap-0 border-b mb-10">
+      <div className="border-b mb-10 overflow-x-auto">
+      <div className="flex gap-0 min-w-max">
         <a
           href="/settings?tab=account"
           className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
@@ -99,6 +100,7 @@ export default async function SettingsPage({
         >
           Tags
         </a>
+      </div>
       </div>
 
       <SettingsForm
