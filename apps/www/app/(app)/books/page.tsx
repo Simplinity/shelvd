@@ -1686,7 +1686,7 @@ export default function BooksPage() {
 
       {/* Selection action bar */}
       {selectionMode && (
-        <div className="mb-4 p-3 bg-muted border border-border flex items-center justify-between">
+        <div className="mb-4 p-3 bg-muted border border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium">
               {selectedCount === 0 
@@ -1703,7 +1703,7 @@ export default function BooksPage() {
               </button>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Add to Collection dropdown */}
             <div className="relative" ref={addToCollectionMenuRef}>
               <Button
@@ -1714,7 +1714,7 @@ export default function BooksPage() {
                 className="gap-2"
               >
                 {bulkActionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FolderPlus className="w-4 h-4" />}
-                Add to Collection
+                <span className="hidden sm:inline">Add to Collection</span>
                 <ChevronDown className="w-3 h-3" />
               </Button>
               {showAddToCollectionMenu && bulkCollections.length > 0 && (
@@ -1742,7 +1742,7 @@ export default function BooksPage() {
                 className="gap-2"
               >
                 <FolderMinus className="w-4 h-4" />
-                Remove from Collection
+                <span className="hidden sm:inline">Remove from Collection</span>
               </Button>
             )}
 
@@ -1754,7 +1754,7 @@ export default function BooksPage() {
               className="gap-2"
             >
               <Trash2 className="w-4 h-4" />
-              Delete Selected
+              <span className="hidden sm:inline">Delete Selected</span>
             </Button>
           </div>
         </div>
