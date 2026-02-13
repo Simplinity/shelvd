@@ -36,6 +36,19 @@ export default function SignupPage() {
 
   async function handleSubmit(formData: FormData) {
     setError(null)
+
+    // Client-side validation
+    const password = formData.get('password') as string
+    const email = formData.get('email') as string
+    if (!email) {
+      setError('Email is required.')
+      return
+    }
+    if (!password || password.length < 8) {
+      setError('Password must be at least 8 characters.')
+      return
+    }
+
     const result = await signup(formData)
     if (result?.error) {
       setError(result.error)

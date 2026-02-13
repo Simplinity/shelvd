@@ -60,10 +60,22 @@ export async function signup(formData: FormData): Promise<AuthResult> {
   })
 
   if (error) {
-    if (error.message.includes('already registered')) {
-      return { error: 'This email is already registered' }
+    const msg = error.message.toLowerCase()
+    if (msg.includes('already registered') || msg.includes('already been registered') || msg.includes('user already exists')) {
+      return { error: 'This email is already registered. Try signing in instead.' }
     }
-    return { error: 'Something went wrong. Please try again.' }
+    if (msg.includes('password') && (msg.includes('short') || msg.includes('least') || msg.includes('characters') || msg.includes('length'))) {
+      return { error: 'Password must be at least 8 characters.' }
+    }
+    if (msg.includes('valid email') || msg.includes('invalid email')) {
+      return { error: 'Please enter a valid email address.' }
+    }
+    if (msg.includes('rate limit') || msg.includes('too many')) {
+      return { error: 'Too many attempts. Please wait a moment and try again.' }
+    }
+    // Log unexpected errors for debugging, show user-friendly message
+    console.error('Signup error:', error.message)
+    return { error: `Signup failed: ${error.message}` }
   }
 
   // Redeem invite code if provided (non-blocking — signup succeeds regardless)
@@ -96,6 +108,11 @@ export async function forgotPassword(formData: FormData): Promise<AuthResult> {
   })
 
   if (error) {
+    const msg = error.message.toLowerCase()
+    if (msg.includes('rate limit') || msg.includes('too many')) {
+      return { error: 'Too many attempts. Please wait a moment and try again.' }
+    }
+    console.error('Password reset error:', error.message)
     return { error: 'Something went wrong. Please try again.' }
   }
 
@@ -121,6 +138,14 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
   })
 
   if (error) {
+    const msg = error.message.toLowerCase()
+    if (msg.includes('password') && (msg.includes('short') || msg.includes('least') || msg.includes('characters'))) {
+      return { error: 'Password must be at least 8 characters.' }
+    }
+    if (msg.includes('same password') || msg.includes('different')) {
+      return { error: 'New password must be different from your current password.' }
+    }
+    console.error('Reset password error:', error.message)
     return { error: 'Something went wrong. Please try again.' }
   }
 
