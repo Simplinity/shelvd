@@ -113,7 +113,7 @@ export async function forgotPassword(formData: FormData): Promise<AuthResult> {
       return { error: 'Too many attempts. Please wait a moment and try again.' }
     }
     console.error('Password reset error:', error.message)
-    return { error: 'Something went wrong. Please try again.' }
+    return { error: `Password reset failed: ${error.message}` }
   }
 
   // Always show success (security: no hint if email exists)
