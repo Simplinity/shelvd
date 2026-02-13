@@ -234,9 +234,10 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'Mobile Responsiveness',
-    description: 'Full mobile audit: hamburger nav, touch targets, single-column forms. Currently the app assumes you own a desk. Not everyone does.',
+    description: 'Full mobile audit: hamburger nav with slide-out drawer, responsive book lists, stacking headers, scrollable tabs, horizontal admin bar, touch-friendly targets. The app no longer assumes you own a desk.',
     category: 'platform',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.23.0',
   },
   {
     title: 'Wiki / Knowledge Base',

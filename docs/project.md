@@ -255,6 +255,7 @@ status, action_needed, internal_notes, catalog_entry
 | 064 | check_collections_table | Verify collections table structure |
 | 065 | fix_trigger_search_path | Fix `SET search_path = public` for auth triggers (critical signup bug) |
 | 066 | value_summary_rpc | `get_value_summary()` RPC for fast collection value aggregation |
+| 067 | fix_value_summary_rpc | Exclude `provenance_purchase` from latest valuation in value summary RPC |
 
 ---
 
@@ -448,7 +449,7 @@ status, action_needed, internal_notes, catalog_entry
 | 8f | Changelog (`/changelog`) | ✅ Done | — | 9 releases (0.1.0–0.9.0), data-driven from lib/changelog.ts, timeline design, color-coded change types, version badge in app header. |
 | 8g | Roadmap (`/roadmap`) | ✅ Done | — | 3-lane board (Shipped/Building/Planned), data-driven from lib/roadmap.ts, 26 items with category badges, 2-col card grid, stats bar, witty descriptions. |
 | 8h | Blog (`/blog`) | ✅ Done | — | 22 articles by Bruno van Branden. Data-driven from `content/blog/` + `lib/blog.ts`. Index page grouped by 6 thematic sections. Article pages with serif typography, font size control (A−/A/A+), JSON-LD BlogPosting schema, Open Graph, prev/next navigation. Swiss design, print-like reading experience. |
-| 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
+| 9 | Mobile responsiveness | High | High | **✅ Done (v0.23.0).** Website + app pages. Hamburger nav, card layouts, responsive grids, touch targets. |
 | 10 | Collection Audit | ✅ Done | — | Per-user library health score at `/audit`. 10 checks (identifiers, contributors, cover, condition, publisher, year, provenance, valuation, language, location), health score 0–100%, expandable book lists with fix links, FeatureGate (Pro+), nav link, activity logging. See details below. |
 | 11 | ~~Catalog Generator~~ | — | — | Moved to post-launch. |
 | 12 | User Onboarding | ✅ Done | — | Welcome wizard (4 screens with humor), getting started checklist (4 base + 2 profile-driven), smart empty states (6 pages), returning user nudge, activity logging. See details below. |
@@ -981,38 +982,26 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 
 Steps 1–6 complete (42 migrations). Step 7 is a separate feature that plugs into this system.
 
-#### #9 Mobile Responsiveness — Detail
+#### #9 Mobile Responsiveness — Detail ✅ COMPLETE (v0.23.0)
 
-**Website/marketing pages: ✅ AUDITED & MOBILE-READY (v0.11.0)**
-All public pages (landing, about, blog, changelog, roadmap, privacy, terms, auth) are mobile-ready. Responsive grids (`md:`/`sm:` breakpoints), max-width prose containers, responsive text sizes. Fixes applied: header dropdown width on xs, "Sign In" hidden on xs, changelog badge flex-wrap, blog article metadata stacks vertically on mobile (author / date / reading time each on own line).
+**Website/marketing pages: ✅ Done (v0.11.0)** — All public pages responsive.
 
-**App pages: NOT yet mobile-ready.** Currently the app is desktop-only in practice. Key issues:
+**App pages: ✅ Done (v0.23.0)** — 23 steps, 23 commits. Desktop layout untouched.
 
-**Critical (app is unusable on mobile without these):**
-- **No mobile navigation**: entire `<nav>` is `hidden md:flex` — below 768px users see only logo + sign out. Need hamburger menu / slide-out drawer with all nav items.
-- **No touch-friendly interactions**: buttons, links, form elements not sized for touch targets (minimum 44x44px recommended).
+**What was built:**
+- Mobile navigation: hamburger menu + slide-out drawer with all nav links, collections with counts, user section (settings/support/wiki/admin), sign out pinned to bottom, auto-close on route change
+- Books page: header stacks title + buttons, search bar icon-only buttons, selection bar wraps, value summary wraps, list view mobile card layout (cover + title + author), grid view already responsive
+- Book detail: cover stacks above title, action buttons wrap
+- Add/Edit forms: header buttons stack below title
+- Settings: tabs scroll horizontally
+- Admin: sidebar becomes horizontal scrollable bar on mobile, all tables overflow-x-auto
+- Support: form picker stacks on mobile
+- Touch targets: 44px minimum on nav links and key buttons
+- Tested at 375px (iPhone SE) — no overflow issues
 
-**Major (functional but poor UX):**
-- **Add/Edit forms**: 12+ sections with `lg:grid-cols-4` grids create extremely long scroll. Need single-column layouts, possibly step-by-step wizard on mobile.
-- **Provenance editor**: complex nested cards with source grids don't fit narrow screens. Needs stacked layout.
-- **Books list (list view)**: likely horizontal overflow with many columns. Need card-based mobile list or fewer visible columns.
-- **Advanced search**: 14-field grid needs single-column stacking.
-- **Admin page**: user management table will overflow. Needs card view or horizontal scroll container.
-- **Stats dashboard**: chart widths may not adapt. Need responsive chart containers.
+**Already responsive (no changes needed):** grid view, stats cards/charts, forms (grid-cols-2 on mobile), book detail fields, search form, settings form fields, audit cards, lookup form, activity table, onboarding wizard.
 
-**Minor (polish):**
-- **Detail page**: `grid-cols-2 md:grid-cols-4` works OK but field labels/values get cramped on very small screens.
-- **Settings pages**: sidebar navigation may need tab-style mobile layout.
-- **Import form**: preview table needs horizontal scroll or card layout.
-- **Modals/dialogs**: may not be properly sized for mobile viewports.
-
-**Implementation approach:**
-1. Mobile nav (hamburger + drawer) — unblocks everything
-2. Touch target audit (buttons, links, inputs ≥ 44px)
-3. Forms: single-column stacking below `sm:` breakpoint
-4. Books list: mobile card view
-5. Tables: horizontal scroll wrappers or card alternatives
-6. Test on 375px (iPhone SE) and 390px (iPhone 14) widths |
+See `docs/mobile-plan.md` for full analysis.
 
 #### #10 Collection Audit — Detail
 
@@ -1299,7 +1288,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 > Decided 2026-02-13. See `docs/staging.md` for full implementation guide.
 
 **Phase 1: Pre-launch (now)**
-- Finish remaining 4 features on `main` as before: Image Upload Fase 2+3, Mobile Responsiveness, Stripe
+- Finish remaining 3 features on `main` as before: Image Upload Fase 2+3, Stripe
 - Test everything yourself — you are the only user, `main` is your staging
 - Pre-migration backup script active (see `scripts/pre-migration-backup.sh`)
 
@@ -1320,12 +1309,12 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 ---
 
 ### Recently Completed
+- ~~Mobile responsiveness~~ → v0.23.0: Hamburger nav, card layouts, responsive grids, touch targets. 23 steps, desktop untouched.
+- ~~Valuation bug fix~~ → v0.23.0: provenance_purchase excluded from value summaries (RPC, stats, PDF, export). Stats batching fix for 5000+ books.
 - ~~Performance optimizations~~ → Book detail parallelization, value summary RPC, collection count batching
-- ~~User onboarding~~ → Welcome wizard, getting started checklist, smart empty states, returning user nudge
+- ~~User onboarding~~ → v0.22.0: Welcome wizard, getting started checklist, smart empty states, returning user nudge
 - ~~Collection activity logging~~ → Fixed client component bypassing server actions
 - ~~Valuation history~~ → v0.15.0: Valuation timeline, value trend chart, provenance auto-sync, CRUD editor
-- ~~PDF catalog export~~ → v0.11.0: Printable PDF inserts (catalog card + catalog sheet)
-- ~~Condition history~~ → v0.10.0: Condition history timeline + CRUD + auto-prompt
 
 
 ---
@@ -1415,7 +1404,7 @@ shelvd/
 │           ├── cerl-hpb.ts       # CERL HPB (EU, SRU MARCXML, rare books)
 │           └── hathitrust.ts     # HathiTrust (US, REST JSON + MARC-XML)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
-├── supabase/migrations/          # 001-066 (see Migrations table above)
+├── supabase/migrations/          # 001-067 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md
 ```
 

@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.22.0'
+export const APP_VERSION = '0.23.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,27 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.23.0',
+    date: '2026-02-13',
+    title: 'Mobile & Valuation Fix',
+    description: 'The app now works on phones. A full mobile audit across every page: hamburger navigation with slide-out drawer, responsive book lists with card layouts, stacking headers, scrollable settings tabs, horizontal admin bar, touch-friendly targets. Plus a critical valuation bug fix — acquisition costs were being counted as estimated values, deflating collection totals.',
+    changes: [
+      { type: 'added', text: 'Mobile navigation — hamburger menu with slide-out drawer: all nav links, collections with counts, user section, sign out. Auto-closes on route change.' },
+      { type: 'added', text: 'Books list mobile layout — compact card view with cover, title, and author instead of the 12-column grid' },
+      { type: 'improved', text: 'Books page header, search bar, and selection bar all stack and wrap on mobile instead of overflowing' },
+      { type: 'improved', text: 'Book detail page — cover stacks above title on mobile, action buttons wrap' },
+      { type: 'improved', text: 'Add/Edit book form headers stack buttons below title on mobile' },
+      { type: 'improved', text: 'Settings tabs scroll horizontally on mobile instead of overflowing' },
+      { type: 'improved', text: 'Admin sidebar becomes horizontal scrollable bar on mobile' },
+      { type: 'improved', text: 'All admin tables wrapped in overflow-x-auto for horizontal scrolling' },
+      { type: 'improved', text: 'Touch targets increased to 44px minimum on mobile navigation and key interactive elements' },
+      { type: 'fixed', text: 'Valuation summary showed acquisition cost instead of estimated value — provenance_purchase entries had highest position, so they were picked as "current value". Fixed in value summary RPC, stats calculation, PDF export, and CSV export.' },
+      { type: 'fixed', text: 'Stats calculation failed silently for large libraries — valuations query sent 5000+ UUIDs in a single request, exceeding URL length limits. Now batched in groups of 500.' },
+      { type: 'added', text: 'Pre-migration backup scripts (scripts/migrate.sh) — automatic pg_dump before every migration' },
+      { type: 'added', text: 'Staging & production safety guide (docs/staging.md) — full deployment playbook for post-launch development' },
+    ],
+  },
   {
     version: '0.22.0',
     date: '2026-02-13',
