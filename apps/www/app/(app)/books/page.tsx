@@ -1768,7 +1768,7 @@ export default function BooksPage() {
         const isGain = diff >= 0
         const fmt = (n: number) => fmtCurr(n, currency, userLocale, { decimals: false })
         return (
-          <div className="mb-6 flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-muted-foreground">
             {totalAcquired > 0 && <span>Cost: <span className="font-medium text-foreground">{fmt(totalAcquired)}</span></span>}
             {totalEstimated > 0 && <span>Value: <span className="font-medium text-foreground">{fmt(totalEstimated)}</span></span>}
             {totalAcquired > 0 && totalEstimated > 0 && (
