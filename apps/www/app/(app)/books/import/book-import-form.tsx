@@ -442,6 +442,15 @@ export default function BookImportForm({ referenceData, userId }: Props) {
 
         if (insertError) throw insertError
 
+        // Assign to selected collections
+        if (selectedImportCollections.size > 0) {
+          const colRows = Array.from(selectedImportCollections).map(colId => ({
+            book_id: newBook.id,
+            collection_id: colId,
+          }))
+          await supabase.from('book_collections').insert(colRows)
+        }
+
         // Create valuation_history entries from imported price data
         const valEntries: { book_id: string; position: number; value: number; currency: string; source: string; notes: string }[] = []
         let vPos = 1
