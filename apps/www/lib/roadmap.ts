@@ -347,4 +347,10 @@ export const ROADMAP: RoadmapItem[] = [
     category: 'cataloging',
     status: 'planned',
   },
+  {
+    title: 'Community',
+    description: 'Discussion space for collectors and dealers. Knowledge sharing, book identification help, trade discussions. Discord as interim solution — in-app forum if the community outgrows it.',
+    category: 'platform',
+    status: 'planned',
+  },
 ]
