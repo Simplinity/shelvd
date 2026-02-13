@@ -197,6 +197,7 @@ export const ROADMAP: RoadmapItem[] = [
     description: 'Every meaningful action recorded: book edits with JSON diffs, enrichments with source attribution, imports with summaries, admin actions with context. 20 log points across the platform. Personal /activity page with filters and pagination. Recent activity feed on /stats. Per-book timeline on detail pages. Admin live feed on dashboard + full /admin/activity viewer. The provenance of your provenance.',
     category: 'platform',
     status: 'shipped',
+    version: '0.13.0',
   },
   {
     title: 'Image Upload (Phase 2)',
@@ -309,6 +310,7 @@ export const ROADMAP: RoadmapItem[] = [
     description: 'Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks in code. Reassigning a feature from one tier to another is a database update, not a deployment. Upgrade hints in UI: locked features are visible but gated. Foundation for Stripe integration.',
     category: 'platform',
     status: 'shipped',
+    version: '0.14.0',
   },
 
   // Invite Codes
@@ -317,6 +319,7 @@ export const ROADMAP: RoadmapItem[] = [
     description: 'Optional promo codes on signup for attribution and benefits. Hand a blogger a unique code, print one on a bookfair flyer, track which channels convert. Codes can grant trial days or lifetime Collector Pro. Admin dashboard shows per-code stats: redemptions, active users, books added. Marketing without measurement is guesswork.',
     category: 'platform',
     status: 'shipped',
+    version: '0.13.0',
   },
 
   {
@@ -336,6 +339,7 @@ export const ROADMAP: RoadmapItem[] = [
     description: 'Your library, scored. Missing contributors, books without identifiers, provenance gaps, incomplete fields — all surfaced with one-click fixes. "Your collection is 87% complete. These 14 books need attention."',
     category: 'cataloging',
     status: 'shipped',
+    version: '0.16.0',
   },
   {
     title: 'Catalog Generator',
