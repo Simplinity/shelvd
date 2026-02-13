@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { logActivity } from '@/lib/actions/activity-log'
 
 // ─── Types ───
 
@@ -45,6 +46,21 @@ export async function saveWizardData(data: WizardData) {
     .eq('id', user.id)
 
   if (error) return { error: error.message }
+
+  void logActivity({
+    userId: user.id,
+    action: 'onboarding.wizard_completed',
+    category: 'onboarding',
+    entityType: 'user_profile',
+    entityId: user.id,
+    metadata: {
+      user_type: data.user_type,
+      collection_size: data.collection_size_estimate,
+      current_system: data.current_system,
+      interests: data.interests,
+    },
+  })
+
   return { success: true }
 }
 
@@ -71,6 +87,25 @@ export async function completeChecklistStep(step: keyof OnboardingChecklist) {
     .eq('id', user.id)
 
   if (error) return { error: error.message }
+
+  // Check if all base steps are complete → mark onboarding as done
+  const baseComplete = checklist.first_book && checklist.used_enrich && checklist.set_condition && checklist.created_collection
+  if (baseComplete) {
+    await supabase
+      .from('user_profiles')
+      .update({ onboarding_completed: true })
+      .eq('id', user.id)
+
+    void logActivity({
+      userId: user.id,
+      action: 'onboarding.completed',
+      category: 'onboarding',
+      entityType: 'user_profile',
+      entityId: user.id,
+      metadata: { checklist },
+    })
+  }
+
   return { success: true }
 }
 
@@ -90,6 +125,15 @@ export async function dismissOnboarding() {
     .eq('id', user.id)
 
   if (error) return { error: error.message }
+
+  void logActivity({
+    userId: user.id,
+    action: 'onboarding.checklist_dismissed',
+    category: 'onboarding',
+    entityType: 'user_profile',
+    entityId: user.id,
+  })
+
   return { success: true }
 }
 

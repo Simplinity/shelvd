@@ -47,8 +47,12 @@ export type ActivityAction =
   | 'admin.invite_code_toggled'
   // Audit
   | 'audit.viewed'
+  // Onboarding
+  | 'onboarding.wizard_completed'
+  | 'onboarding.checklist_dismissed'
+  | 'onboarding.completed'
 
-export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'contributor' | 'tag' | 'account' | 'admin' | 'import' | 'audit'
+export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'contributor' | 'tag' | 'account' | 'admin' | 'import' | 'audit' | 'onboarding'
 
 export type ActivitySource = 'app' | 'import' | 'api' | 'admin' | 'system'
 
