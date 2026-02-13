@@ -1850,7 +1850,7 @@ export default function BooksPage() {
       {/* List View */}
       {!loading && books.length > 0 && view === 'list' && (
         <div className="border border-border">
-          <div className={`grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border`}>
+          <div className={`hidden sm:grid ${selectionMode ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'} gap-4 px-4 py-3 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border`}>
             {selectionMode && (
               <div className="flex items-center">
                 <input
