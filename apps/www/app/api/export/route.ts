@@ -353,8 +353,8 @@ export async function GET(request: NextRequest) {
     for (const v of (vals || [])) {
       if (!valByBook[v.book_id]) valByBook[v.book_id] = { estimated: null, lowest: null, highest: null, currency: null, date: null }
       const entry = valByBook[v.book_id]
-      // First entry (highest position) = latest = estimated value
-      if (entry.estimated === null) {
+      // First non-purchase entry (highest position) = latest = estimated value
+      if (entry.estimated === null && v.source !== 'provenance_purchase') {
         entry.estimated = Number(v.value)
         entry.currency = v.currency
         entry.date = v.valuation_date

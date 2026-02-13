@@ -182,7 +182,7 @@ export async function GET(
     shelf_section: b.shelf_section || undefined,
     
     estimated_value: (() => {
-      const latest = (valuationData || [])[0]
+      const latest = (valuationData || []).find((v: any) => v.source !== 'provenance_purchase')
       return latest?.value ? Number(latest.value) : undefined
     })(),
     lowest_price: (() => {
@@ -196,7 +196,7 @@ export async function GET(
       return vals.length > 0 ? Math.max(...vals) : undefined
     })(),
     sales_price: b.sales_price || undefined,
-    price_currency: (valuationData || [])[0]?.currency || b.price_currency || undefined,
+    price_currency: (valuationData || []).find((v: any) => v.source !== 'provenance_purchase')?.currency || b.price_currency || undefined,
     
     provenance: (provenanceData || []).map((p: any) => ({
       owner_name: p.owner_name,
