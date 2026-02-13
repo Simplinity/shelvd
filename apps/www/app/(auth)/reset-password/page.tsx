@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -29,19 +29,6 @@ function SubmitButton() {
 export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    // Check if user has a valid recovery session
-    const supabase = createClient()
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setReady(true)
-      } else {
-        setError('Recovery link expired or already used. Please request a new password reset.')
-      }
-    })
-  }, [])
 
   async function handleSubmit(formData: FormData) {
     setError(null)
@@ -56,10 +43,13 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password })
 
     if (error) {
-      setError(error.message)
+      if (error.message.toLowerCase().includes('session') || error.message.toLowerCase().includes('not authenticated')) {
+        setError('Recovery link expired or already used. Please request a new password reset.')
+      } else {
+        setError(error.message)
+      }
     } else {
       setSuccess(true)
-      // Redirect to books after 2 seconds
       setTimeout(() => {
         window.location.href = '/books'
       }, 2000)
@@ -89,7 +79,7 @@ export default function ResetPasswordPage() {
         </Alert>
       )}
 
-      {!success && ready && (
+      {!success && (
         <form action={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide">
