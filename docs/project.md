@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2026-02-12
+> **Last updated:** 2026-02-13 (performance optimizations, activity logging fixes)
 
 ---
 
@@ -35,7 +35,13 @@ NEVER guess column names. ALWAYS verify.
 Update `CLAUDE_SESSION_LOG.md` after every task.
 
 ### Rule 6: Database migrations
-Use `supabase db push` (CLI) to apply migrations. The project is already linked (`supabase/.temp/project-ref`). NEVER open Supabase Dashboard in the browser to run SQL manually — the CLI does it in one command.
+Use `npx supabase migration up --linked` to apply migrations. The project is already linked (`supabase/.temp/project-ref`). NEVER open Supabase Dashboard in the browser to run SQL manually — the CLI does it in one command.
+
+### Rule 7: Always build locally before pushing
+Run `cd apps/www && npx next build` before every `git push`. This catches type errors, missing imports, and stale generated types. Never push without a green build.
+
+### Rule 8: Regenerate types after DB changes
+After any migration, run: `npx supabase gen types typescript --linked 2>/dev/null > apps/www/lib/supabase/database.types.ts`. Redirect stderr to avoid CLI output leaking into the types file.
 
 ---
 
@@ -139,14 +145,19 @@ title, subtitle, original_title, series
 publisher_name, publication_place, publication_year (VARCHAR for "MCMLXXIX [1979]")
 edition, impression, issue_state
 cover_type, binding_id, format_id, has_dust_jacket, is_signed
-condition_id, condition_notes
+condition_id, condition_notes, dust_jacket_condition_id
 paper_type, edge_treatment, endpapers_type, text_block_condition
-isbn_13, isbn_10, oclc_number, lccn, bisac_code
-storage_location, shelf
-acquired_from, acquired_date, acquired_price
-estimated_value, sales_price
-status, action_needed, internal_notes
+isbn_13, isbn_10, oclc_number, lccn, bisac_code, bisac_code_2, bisac_code_3
+storage_location, shelf, shelf_section
+cover_image_url
+sales_price, price_currency
+status, action_needed, internal_notes, catalog_entry
 ```
+
+**Dropped columns (migrated to separate tables):**
+- `acquired_from`, `acquired_date`, `acquired_price` → `provenance_entries` (migration 020/022)
+- `estimated_value`, `lowest_price`, `highest_price`, `valuation_date` → `valuation_history` (migration 044/045)
+- `provenance` (free text) → `provenance_entries` (migration 017)
 
 ### ISBN Providers (in DB)
 | code | name | country | type |
@@ -229,6 +240,13 @@ status, action_needed, internal_notes
 | 051 | add_cerl_hpb_provider | Add CERL HPB (EU) rare books provider |
 | 052 | add_hathitrust_provider | Add HathiTrust (US) digital library provider |
 | 053 | add_missing_external_link_types | Add 10 missing library catalogs to external link types |
+| 054 | user_onboarding | Onboarding columns on user_profiles (user_type, interests, checklist, etc.) |
+| 055 | fix_new_user_trigger | Fix auth trigger for new user profile creation |
+| 056 | cleanup_orphan_users | Clean up orphaned auth users without profiles |
+| 057–063 | debug_auth / deep_clean / restore | Series of auth debugging + cleanup migrations |
+| 064 | check_collections_table | Verify collections table structure |
+| 065 | fix_trigger_search_path | Fix `SET search_path = public` for auth triggers (critical signup bug) |
+| 066 | value_summary_rpc | `get_value_summary()` RPC for fast collection value aggregation |
 
 ---
 
@@ -300,6 +318,12 @@ status, action_needed, internal_notes
 - Colored tag chips (clickable to filter)
 - Move to Library button (Wishlist → Library one-click)
 - Previous/Next navigation
+
+### Performance Optimizations
+- **Book detail page:** 19 sequential queries → 1 book fetch + 1 `Promise.all` (19 parallel) + 2 chained. ~3 round-trips instead of ~16.
+- **Collection value summary:** 5-10 sequential client queries → 1 server-side RPC (`get_value_summary`, migration 066). Handles filtering by collection/tag in SQL.
+- **Collection counts:** N+1 sequential count queries → `Promise.all` parallel batch. Both in `collections-manager.tsx` and `getCollectionsWithCounts` server action.
+- **Collection activity logging:** Fixed — `CollectionsManager` client component was bypassing server actions (dead code), so collection CRUD was never logged. Added `logActivity` calls directly to client component handlers.
 
 ### Currency & Valuation
 - 29 ISO 4217 currencies in `lib/currencies.ts`, dropdown selects on add/edit forms
@@ -406,7 +430,7 @@ status, action_needed, internal_notes
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | ✅ Done | — | All 6 steps complete: activity_log table, 20 log points, admin live feed + /admin/activity viewer, user /activity page, recent feed on /stats, book detail timeline. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
-| 6 | Image upload | Medium | High | **Fase 1 complete ✅ (URL-only).** Fase 2 pending (Blob uploads). Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
+| 6 | Image upload | Medium | High | **Fase 1 ✅ COMPLETE (URL-only, 7/7 steps).** Fase 2 pending (Blob uploads). Cover images, spine, damage photos. Vercel Blob Storage. See details below. |
 | 7 | Sharing & Public Catalog | Medium | High | Public profile page, shareable collection links, embed widget. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | ✅ Done | — | Wiki at `/wiki` — 35 articles across 8 categories (Getting Started, Cataloging, Provenance & History, Search & Discovery, Data & Export, Settings, Glossary & Reference, For Dealers). 150+ term glossary, reference guides for 76 formats and 69 MARC roles. Same witty tone as blog and legal pages. |
@@ -566,14 +590,14 @@ book_images (
 - **Fase 2:** Vercel Blob uploads (betaald tier). Upload UI, sharp pipeline, gallery component, quota tracking, paywall check.
 - **Fase 3:** Polish. Foto volgorde drag-and-drop, bulk upload, camera capture op mobile, image zoom/lightbox.
 
-**Current progress (Fase 1):**
+**Current progress (Fase 1): ✅ COMPLETE**
 - ✅ Step 1: Migration 030 — `cover_image_url` TEXT column on books table
 - ✅ Step 2: Types + CRUD — database.types.ts, add form (type + initial state + insert), edit form (update payload)
-- ⏳ Step 3: Add URL input field to edit + add forms
-- Step 4: Display cover on book detail page
-- Step 5: Thumbnail in list view
-- Step 6: Cover in grid view
-- Step 7: Auto-fill cover URL during enrichment (`cover_url` already in BookData type, needs ENRICHABLE_FIELDS entry)
+- ✅ Step 3: URL input field on edit + add forms (in Physical Description section)
+- ✅ Step 4: Cover display on book detail page (with ClickableImage lightbox)
+- ✅ Step 5: Thumbnail in list view (6×9px cover next to title)
+- ✅ Step 6: Cover in grid view (aspect-ratio 3:4 with fallback icon)
+- ✅ Step 7: Auto-fill cover URL during enrichment (cover_url mapped in lookup)
 
 **Infra done:**
 - Vercel Blob store: `shelvd-images` in FRA1, linked to shelvd-www, `BLOB_READ_WRITE_TOKEN` in .env.local + production
@@ -1259,7 +1283,10 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | S9 | Data Cleanup Tools | Low-Medium | Orphaned records, inconsistencies, duplicate publishers. Admin-only. Build when scale demands it. |
 
 ### Recently Completed
-- ~~Valuation history~~ → v0.15.0: Valuation timeline, value trend chart, provenance auto-sync, CRUD editor, activity logging. Old flat fields dropped.
+- ~~Performance optimizations~~ → Book detail parallelization, value summary RPC, collection count batching
+- ~~User onboarding~~ → Welcome wizard, getting started checklist, smart empty states, returning user nudge
+- ~~Collection activity logging~~ → Fixed client component bypassing server actions
+- ~~Valuation history~~ → v0.15.0: Valuation timeline, value trend chart, provenance auto-sync, CRUD editor
 - ~~PDF catalog export~~ → v0.11.0: Printable PDF inserts (catalog card + catalog sheet)
 - ~~Condition history~~ → v0.10.0: Condition history timeline + CRUD + auto-prompt
 
@@ -1293,11 +1320,15 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 shelvd/
 ├── apps/www/
 │   ├── app/
-│   │   ├── (app)/books/          # Collection pages + lookup
-│   │   ├── (app)/stats/          # Statistics
-│   │   ├── (app)/settings/       # User settings + collections
-│   │   ├── (app)/admin/          # Admin dashboard
+│   │   ├── (app)/books/          # Collection pages + lookup + detail + edit
+│   │   ├── (app)/stats/          # Statistics dashboard
+│   │   ├── (app)/activity/       # User activity log
+│   │   ├── (app)/audit/          # Collection audit (health score)
+│   │   ├── (app)/support/        # User support page
+│   │   ├── (app)/settings/       # User settings + collections + tags
+│   │   ├── (app)/admin/          # Admin dashboard + users + activity + support + tiers
 │   │   ├── (auth)/               # Login/register
+│   │   ├── (marketing)/          # Landing, about, blog, wiki, changelog, roadmap, legal
 │   │   └── api/                  # API routes
 │   ├── components/
 │   │   ├── announcement-banner.tsx # Dismissible colored banners (layout)
@@ -1308,16 +1339,27 @@ shelvd/
 │   │   ├── enrich-panel.tsx      # ISBN/field search enrichment panel
 │   │   ├── provenance-editor.tsx  # Repeatable card UI for provenance chain
 │   │   ├── provenance-timeline.tsx # Vertical timeline display (detail page)
+│   │   ├── condition-history-timeline.tsx # Condition history timeline
+│   │   ├── valuation-timeline.tsx # Valuation history timeline + trend chart
+│   │   ├── book-timeline.tsx     # Activity timeline on book detail
+│   │   ├── recent-activity-feed.tsx # Compact activity feed (stats page)
+│   │   ├── feature-gate.tsx      # FeatureGate, LimitGate, UpgradeHint
+│   │   ├── onboarding/           # Welcome wizard, checklist, empty states, nudge
 │   │   ├── delete-book-button.tsx
 │   │   └── (support/callback/contact forms inline in support-client.tsx)
 │   └── lib/
 │       ├── supabase/             # DB client + types
-│       ├── actions/              # Server actions (collections, feedback, etc.)
+│       ├── actions/              # Server actions (collections, feedback, activity-log, audit, onboarding, etc.)
 │       ├── email.ts              # Resend email notifications
 │       ├── constants.ts          # BookStatus (14), conditions, roles, etc.
 │       ├── currencies.ts         # 29 ISO 4217 currencies for dropdowns
 │       ├── name-utils.ts         # Contributor name parsing (Last, First)
-│       └── isbn-providers/       # Book lookup providers (21)
+│       ├── tier.ts               # hasFeature(), getTierLimits() server-side
+│       ├── format.ts             # formatInteger, formatCurrency, formatDate
+│       ├── changelog.ts          # APP_VERSION + CHANGELOG array
+│       ├── roadmap.ts            # Roadmap data for /roadmap page
+│       ├── blog.ts               # Blog metadata + article registry
+│       └── isbn-providers/       # Book lookup providers (22)
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
 │           ├── open-library.ts
@@ -1332,19 +1374,12 @@ shelvd/
 │           ├── ndl.ts            # NDL Japan (OpenSearch RSS/DC)
 │           ├── trove.ts          # Trove/NLA (Australia, REST JSON)
 │           ├── kb-netherlands.ts # KB Netherlands (SRU Dublin Core)
-│           └── danbib.ts         # DanBib (Denmark, OpenSearch DKABM/DC)
+│           ├── danbib.ts         # DanBib (Denmark, OpenSearch DKABM/DC)
+│           ├── cerl-hpb.ts       # CERL HPB (EU, SRU MARCXML, rare books)
+│           └── hathitrust.ts     # HathiTrust (US, REST JSON + MARC-XML)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
-├── supabase/migrations/          # 001-025 (see Migrations table above)
+├── supabase/migrations/          # 001-066 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md
 ```
 
----
 
-## Pricing Model (proposal)
-
-| Tier | Price | Books | Features |
-|------|-------|-------|----------|
-| Free | €0 | 100 | Basic |
-| Collector | €7/mo | 5,000 | + Templates, Export |
-| Scholar | €15/mo | Unlimited | + ISBD, API |
-| Dealer | €29/mo | Unlimited | + Multi-user |
