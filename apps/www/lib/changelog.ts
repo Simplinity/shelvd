@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.20.0'
+export const APP_VERSION = '0.21.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,20 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.21.0',
+    date: '2026-02-13',
+    title: 'The Admin Sees All',
+    description: 'A proper system statistics dashboard for the admin panel. Eight key metrics, growth charts with cumulative totals, seven data health checks sorted worst-first, tier distribution, feature adoption rates, and an activation funnel that shows exactly where users drop off. The kind of dashboard that makes you either proud or nervous.',
+    changes: [
+      { type: 'added', text: 'Admin System Stats Dashboard — 8 key metrics: total users, total books, avg books/user, data completeness, books added 7d/30d, active users 7d/30d' },
+      { type: 'added', text: 'Growth chart with cumulative running totals alongside monthly books added and user signups' },
+      { type: 'added', text: 'Data Health panel — 7 checks (ISBN, condition, publisher, cover image, publication year, language, contributors) sorted worst-first with completion bars' },
+      { type: 'added', text: 'Tier Distribution — visual breakdown of users across Collector, Collector Pro, and Dealer tiers' },
+      { type: 'added', text: 'User Activation Funnel — from signup through 1+, 10+, 100+, 1,000+ books with conversion percentages' },
+      { type: 'improved', text: 'Data completeness score now based on 7 fields instead of 3, giving a more accurate picture of catalog quality' },
+    ],
+  },
   {
     version: '0.20.0',
     date: '2026-02-13',
