@@ -4,37 +4,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function updateSession(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
 
-  // Handle auth codes landing on root or other pages
+  // Handle auth codes landing on root or other pages — pass to callback
   const code = searchParams.get('code')
   if (code && pathname !== '/auth/callback') {
-    // Exchange the code right here in middleware, then redirect clean
-    const tempSupabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll()
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          },
-        },
-      }
-    )
-    const { error } = await tempSupabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/reset-password'
-      url.searchParams.delete('code')
-      const response = NextResponse.redirect(url)
-      // Copy auth cookies to the redirect response
-      request.cookies.getAll().forEach(cookie => {
-        response.cookies.set(cookie.name, cookie.value)
-      })
-      return response
-    }
-    // If exchange failed, try via callback route
     const url = request.nextUrl.clone()
     url.pathname = '/auth/callback'
     url.searchParams.set('next', '/reset-password')

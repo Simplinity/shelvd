@@ -9,25 +9,27 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/books'
 
   const supabase = await createClient()
+  const errors: string[] = []
 
-  // Method 1: PKCE code exchange (signup, OAuth)
+  // Method 1: PKCE code exchange
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`)
     }
-    console.error('Code exchange failed:', error.message)
+    errors.push(`code_exchange: ${error.message}`)
   }
 
-  // Method 2: Token hash verification (password reset, email confirm)
+  // Method 2: Token hash verification
   if (token_hash && type) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type })
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`)
     }
-    console.error('Token verification failed:', error.message)
+    errors.push(`verify_otp: ${error.message}`)
   }
 
-  // Return the user to an error page
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`)
+  // Show the actual error instead of generic message
+  const errorParam = encodeURIComponent(errors.join(' | ') || 'no_code_or_token')
+  return NextResponse.redirect(`${origin}/login?error=${errorParam}`)
 }

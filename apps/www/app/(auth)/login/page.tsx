@@ -28,7 +28,9 @@ function SubmitButton() {
 }
 
 export default function LoginPage() {
-  const [error, setError] = useState<string | null>(null)
+  const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+  const urlError = params?.get('error')
+  const [error, setError] = useState<string | null>(urlError || null)
 
   async function handleSubmit(formData: FormData) {
     setError(null)
