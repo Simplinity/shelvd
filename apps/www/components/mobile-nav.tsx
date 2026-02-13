@@ -6,8 +6,15 @@ import { APP_VERSION } from '@/lib/changelog'
 import Link from 'next/link'
 
 import { logout } from '@/lib/actions/auth'
+import type { CollectionWithCount } from '@/lib/actions/collections'
+import { Library, FolderOpen } from 'lucide-react'
 
-export function MobileNav({ email, isAdmin }: { email: string; isAdmin: boolean }) {
+export function MobileNav({ email, isAdmin, collections, totalBookCount }: {
+  email: string
+  isAdmin: boolean
+  collections: CollectionWithCount[]
+  totalBookCount: number
+}) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -58,7 +65,31 @@ export function MobileNav({ email, isAdmin }: { email: string; isAdmin: boolean 
 
         {/* Nav links */}
         <nav className="px-2 py-3 space-y-0.5 border-b border-border">
-          <MobileNavLink href="/books" icon={BookOpen} label="All Books" onClick={() => setOpen(false)} />
+          <Link
+            href="/books"
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-between px-3 py-3 text-sm font-medium text-gray-900 hover:bg-muted/50 transition-colors"
+          >
+            <span className="flex items-center gap-3">
+              <Library className="w-4 h-4" strokeWidth={1.75} />
+              All Books
+            </span>
+            <span className="text-xs text-muted-foreground">{totalBookCount}</span>
+          </Link>
+          {collections.map(col => (
+            <Link
+              key={col.id}
+              href={`/books?collection=${col.id}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-between px-3 py-3 pl-10 text-sm text-gray-600 hover:bg-muted/50 transition-colors"
+            >
+              <span className="flex items-center gap-3">
+                <FolderOpen className="w-3.5 h-3.5" strokeWidth={1.75} />
+                {col.name}
+              </span>
+              <span className="text-xs text-muted-foreground">{col.count}</span>
+            </Link>
+          ))}
           <MobileNavLink href="/books/add" icon={Plus} label="Add Book" onClick={() => setOpen(false)} />
           <MobileNavLink href="/books/import" icon={Upload} label="Import" onClick={() => setOpen(false)} />
           <MobileNavLink href="/books/search" icon={Search} label="Search" onClick={() => setOpen(false)} />
