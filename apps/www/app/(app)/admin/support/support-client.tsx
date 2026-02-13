@@ -192,7 +192,7 @@ export function AdminSupportClient({
       )}
 
       {/* Queue table */}
-      <div className="border rounded-lg">
+      <div className="border rounded-lg overflow-x-auto">
         {/* Table header */}
         <div className="flex items-center gap-3 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
           <input

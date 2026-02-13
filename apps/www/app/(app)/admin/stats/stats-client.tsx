@@ -83,7 +83,7 @@ export function StatsClient({ stats }: Props) {
       {stats.booksPerUser.length > 0 && (
         <div>
           <SectionTitle>Books per User</SectionTitle>
-          <div className="border">
+          <div className="border overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>

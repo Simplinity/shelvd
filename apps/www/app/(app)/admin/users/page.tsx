@@ -148,7 +148,7 @@ export default async function AdminUsersPage({
       </div>
 
       {/* Users Table */}
-      <div className="border">
+      <div className="border overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b">
             <tr>
