@@ -7,6 +7,12 @@ export interface AdminStats {
   avgBooksPerUser: number
   dataCompleteness: number // percentage
 
+  // Recent activity
+  booksLast7d: number
+  booksLast30d: number
+  activeUsersLast7d: number
+  activeUsersLast30d: number
+
   // Growth (books + signups by month)
   booksByMonth: { month: string; count: number }[]
   signupsByMonth: { month: string; count: number }[]
@@ -37,6 +43,9 @@ export interface AdminStats {
     total: number
   }[]
 
+  // Tier distribution
+  tierDistribution: { tier: string; count: number }[]
+
   // Per-user breakdown
   booksPerUser: { email: string; count: number }[]
 }
@@ -63,20 +72,61 @@ export async function getAdminStats(): Promise<AdminStats> {
   // ─── BOOKS DATA (for health, status, completeness) ───
   const { data: allBooks } = await supabase
     .from('books')
-    .select('isbn_13, isbn_10, condition_id, publisher_name, status, created_at')
+    .select('id, isbn_13, isbn_10, condition_id, publisher_name, cover_image_url, publication_year, language_id, status, created_at')
 
   const books = allBooks || []
 
+  // ─── RECENT ACTIVITY ───
+  const now = new Date()
+  const d7 = new Date(now); d7.setDate(d7.getDate() - 7)
+  const d30 = new Date(now); d30.setDate(d30.getDate() - 30)
+  const booksLast7d = books.filter(b => b.created_at && new Date(b.created_at) >= d7).length
+  const booksLast30d = books.filter(b => b.created_at && new Date(b.created_at) >= d30).length
+
+  // Active users: users who have activity_log entries in last 7d / 30d
+  let activeUsersLast7d = 0, activeUsersLast30d = 0
+  try {
+    const { count: au7 } = await supabase
+      .from('activity_log')
+      .select('user_id', { count: 'exact', head: true })
+      .gte('created_at', d7.toISOString())
+    activeUsersLast7d = au7 || 0
+    // Approximate: count distinct is not available via head, so use rpc or estimate
+    // For now, query distinct user_ids
+    const { data: active7 } = await supabase
+      .from('activity_log')
+      .select('user_id')
+      .gte('created_at', d7.toISOString())
+    activeUsersLast7d = new Set(active7?.map(a => a.user_id) || []).size
+
+    const { data: active30 } = await supabase
+      .from('activity_log')
+      .select('user_id')
+      .gte('created_at', d30.toISOString())
+    activeUsersLast30d = new Set(active30?.map(a => a.user_id) || []).size
+  } catch {}
+
   // ─── DATA COMPLETENESS ───
-  // Completeness = avg of (has ISBN, has condition, has publisher) across all books
-  let isbnCount = 0, conditionCount = 0, publisherCount = 0
+  let isbnCount = 0, conditionCount = 0, publisherCount = 0, coverCount = 0, yearCount = 0, languageCount = 0
   books.forEach(b => {
     if (b.isbn_13 || b.isbn_10) isbnCount++
     if (b.condition_id) conditionCount++
     if (b.publisher_name && b.publisher_name.trim() !== '') publisherCount++
+    if (b.cover_image_url && b.cover_image_url.trim() !== '') coverCount++
+    if (b.publication_year) yearCount++
+    if (b.language_id) languageCount++
   })
+
+  // Contributors: books that have at least one contributor
+  const { data: contribBookIds } = await supabase
+    .from('book_contributors')
+    .select('book_id')
+  const booksWithContributors = new Set(contribBookIds?.map(c => c.book_id) || []).size
+
+  const healthChecks = 7 // isbn, condition, publisher, cover, year, language, contributors
+  const totalHealthPoints = isbnCount + conditionCount + publisherCount + coverCount + yearCount + languageCount + booksWithContributors
   const dataCompleteness = totalBooks > 0
-    ? Math.round(((isbnCount + conditionCount + publisherCount) / (totalBooks * 3)) * 100)
+    ? Math.round((totalHealthPoints / (totalBooks * healthChecks)) * 100)
     : 0
 
   // ─── DATA HEALTH ───
@@ -84,6 +134,10 @@ export async function getAdminStats(): Promise<AdminStats> {
     { label: 'Has ISBN', complete: isbnCount, total: totalBooks },
     { label: 'Has Condition', complete: conditionCount, total: totalBooks },
     { label: 'Has Publisher', complete: publisherCount, total: totalBooks },
+    { label: 'Has Cover Image', complete: coverCount, total: totalBooks },
+    { label: 'Has Year', complete: yearCount, total: totalBooks },
+    { label: 'Has Language', complete: languageCount, total: totalBooks },
+    { label: 'Has Contributors', complete: booksWithContributors, total: totalBooks },
   ]
 
   // ─── BOOKS BY STATUS ───
@@ -190,17 +244,35 @@ export async function getAdminStats(): Promise<AdminStats> {
     .map(u => ({ email: u.email, count: u.count }))
     .sort((a, b) => b.count - a.count)
 
+  // ─── TIER DISTRIBUTION ───
+  const { data: tierData } = await supabase
+    .from('user_profiles')
+    .select('membership_tier')
+  const tierCounts = new Map<string, number>()
+  tierData?.forEach(u => {
+    const t = u.membership_tier || 'collector'
+    tierCounts.set(t, (tierCounts.get(t) || 0) + 1)
+  })
+  const tierDistribution = Array.from(tierCounts.entries())
+    .map(([tier, count]) => ({ tier, count }))
+    .sort((a, b) => b.count - a.count)
+
   return {
     totalBooks,
     totalUsers: userCount,
     avgBooksPerUser,
     dataCompleteness,
+    booksLast7d,
+    booksLast30d,
+    activeUsersLast7d,
+    activeUsersLast30d,
     booksByMonth,
     signupsByMonth,
     featureAdoption,
     booksByStatus,
     userFunnel,
     dataHealth,
+    tierDistribution,
     booksPerUser,
   }
 }
