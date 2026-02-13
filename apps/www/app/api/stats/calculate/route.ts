@@ -38,16 +38,27 @@ export async function POST() {
     // ============================================
     // STEP 2: Fetch lookups
     // ============================================
+    // Batch size for all .in() queries (avoids URL length limits)
+    const batchSize = 500
+
     // Fetch latest valuation per book (for collection value stats)
-    const { data: allValuations } = await supabase
-      .from('valuation_history')
-      .select('book_id, value, currency')
-      .in('book_id', bookIds.length > 0 ? bookIds : ['00000000-0000-0000-0000-000000000000'])
-      .order('position', { ascending: false })
+    // Batched to avoid URL length limits with 5000+ UUIDs
+    // Excludes provenance_purchase (that's acquisition cost, not current value)
+    let allValuations: any[] = []
+    for (let i = 0; i < bookIds.length; i += batchSize) {
+      const batchIds = bookIds.slice(i, i + batchSize)
+      const { data: batchVals } = await supabase
+        .from('valuation_history')
+        .select('book_id, value, currency, source')
+        .in('book_id', batchIds)
+        .neq('source', 'provenance_purchase')
+        .order('position', { ascending: false })
+      if (batchVals) allValuations = [...allValuations, ...batchVals]
+    }
 
     // Build map: book_id → latest valuation { value, currency }
     const latestValuation: Record<string, { value: number; currency: string }> = {}
-    for (const v of (allValuations || [])) {
+    for (const v of allValuations) {
       if (!latestValuation[v.book_id]) {
         latestValuation[v.book_id] = { value: Number(v.value), currency: v.currency }
       }
@@ -77,7 +88,6 @@ export async function POST() {
     // STEP 4: Fetch book_contributors in batches
     // ============================================
     let allBookContributors: any[] = []
-    const batchSize = 500
     for (let i = 0; i < bookIds.length; i += batchSize) {
       const batchIds = bookIds.slice(i, i + batchSize)
       const { data: batchContributors } = await supabase
