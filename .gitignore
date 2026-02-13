@@ -45,3 +45,5 @@ test-sudoc.ts
 configure-auth.mjs
 check-auth-config.mjs
 debug-users.mjs
+configure-smtp.mjs
+check-smtp.mjs
