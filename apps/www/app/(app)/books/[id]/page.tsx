@@ -388,14 +388,14 @@ export default async function BookDetailPage({ params }: PageProps) {
           {prevBook ? (
             <Link 
               href={`/books/${prevBook.id}`}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-2 sm:py-1.5 text-sm border border-border hover:bg-muted transition-colors"
               title={prevBook.title}
             >
               <ChevronLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Previous</span>
             </Link>
           ) : (
-            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border text-muted-foreground/50 cursor-not-allowed">
+            <span className="inline-flex items-center gap-1 px-3 py-2 sm:py-1.5 text-sm border border-border text-muted-foreground/50 cursor-not-allowed">
               <ChevronLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Previous</span>
             </span>
@@ -404,14 +404,14 @@ export default async function BookDetailPage({ params }: PageProps) {
           {nextBook ? (
             <Link 
               href={`/books/${nextBook.id}`}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-2 sm:py-1.5 text-sm border border-border hover:bg-muted transition-colors"
               title={nextBook.title}
             >
               <span className="hidden sm:inline">Next</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           ) : (
-            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border text-muted-foreground/50 cursor-not-allowed">
+            <span className="inline-flex items-center gap-1 px-3 py-2 sm:py-1.5 text-sm border border-border text-muted-foreground/50 cursor-not-allowed">
               <span className="hidden sm:inline">Next</span>
               <ChevronRight className="w-4 h-4" />
             </span>
