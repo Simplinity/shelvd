@@ -36,126 +36,121 @@ export default async function BookDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // Fetch user profile for locale preference
-  const { data: { user } } = await supabase.auth.getUser()
+  // Cast to any to avoid TypeScript issues with dynamic data
+  const bookRecord = book as any
+  const bisacCodes = [bookRecord.bisac_code, bookRecord.bisac_code_2, bookRecord.bisac_code_3].filter(Boolean)
+
+  // ── Parallel fetch: everything after book fetch is independent ──
+  const [
+    // User & profile
+    { data: { user } },
+    // Prev/next navigation
+    { data: prevBook },
+    { data: nextBook },
+    // Contributors
+    { data: bookContributors },
+    // Reference lookups (conditional)
+    languageResult,
+    originalLanguageResult,
+    conditionResult,
+    dustJacketConditionResult,
+    bindingResult,
+    bookFormatResult,
+    bisacResult,
+    // External links
+    { data: externalLinks },
+    // Collections, tags, provenance, condition history, valuations
+    { data: bookCollections },
+    { data: allCollections },
+    { data: bookTags },
+    { data: provenanceData },
+    { data: conditionHistoryData },
+    { data: valuationHistoryData },
+    // Activity
+    activityResult,
+  ] = await Promise.all([
+    // User
+    supabase.auth.getUser(),
+    // Prev book
+    supabase.from('books').select('id, title').lt('title', bookRecord.title).order('title', { ascending: false }).limit(1).single(),
+    // Next book
+    supabase.from('books').select('id, title').gt('title', bookRecord.title).order('title', { ascending: true }).limit(1).single(),
+    // Contributors
+    supabase.from('book_contributors').select(`
+      contributor:contributors ( canonical_name ),
+      role:contributor_roles ( name )
+    `).eq('book_id', id),
+    // Language
+    bookRecord.language_id
+      ? supabase.from('languages').select('name_en').eq('id', bookRecord.language_id).single()
+      : Promise.resolve({ data: null }),
+    // Original language
+    bookRecord.original_language_id
+      ? supabase.from('languages').select('name_en').eq('id', bookRecord.original_language_id).single()
+      : Promise.resolve({ data: null }),
+    // Condition
+    bookRecord.condition_id
+      ? supabase.from('conditions').select('name').eq('id', bookRecord.condition_id).single()
+      : Promise.resolve({ data: null }),
+    // Dust jacket condition
+    bookRecord.dust_jacket_condition_id
+      ? supabase.from('conditions').select('name').eq('id', bookRecord.dust_jacket_condition_id).single()
+      : Promise.resolve({ data: null }),
+    // Binding
+    bookRecord.binding_id
+      ? supabase.from('bindings').select('name').eq('id', bookRecord.binding_id).single()
+      : Promise.resolve({ data: null }),
+    // Book format
+    bookRecord.format_id
+      ? supabase.from('book_formats').select('name, abbreviation').eq('id', bookRecord.format_id).single()
+      : Promise.resolve({ data: null }),
+    // BISAC codes
+    bisacCodes.length > 0
+      ? supabase.from('bisac_codes').select('code, subject').in('code', bisacCodes)
+      : Promise.resolve({ data: [] as any[] }),
+    // External links
+    supabase.from('book_external_links').select('id, url, label, sort_order, link_type_id, link_type:external_link_types ( label, domain, category )').eq('book_id', id).order('sort_order'),
+    // Collections
+    supabase.from('book_collections').select('collection_id').eq('book_id', id),
+    supabase.from('collections').select('id, name, is_default').order('sort_order', { ascending: true }),
+    supabase.from('book_tags').select('tag_id, tags ( id, name, color )').eq('book_id', id),
+    // Provenance
+    supabase.from('provenance_entries').select(`
+      id, position, owner_name, owner_type, date_from, date_to,
+      evidence_type, evidence_description, transaction_type, transaction_detail,
+      price_paid, price_currency, association_type, association_note, notes,
+      provenance_sources ( id, source_type, title, url, reference, notes )
+    `).eq('book_id', id).order('position'),
+    // Condition history
+    supabase.from('condition_history').select(`
+      id, position, event_date, event_type, description, performed_by,
+      cost, cost_currency, notes,
+      before_condition:conditions!condition_history_before_condition_id_fkey ( name ),
+      after_condition:conditions!condition_history_after_condition_id_fkey ( name )
+    `).eq('book_id', id).order('position'),
+    // Valuation history
+    supabase.from('valuation_history').select('id, position, valuation_date, value, currency, source, appraiser, provenance_entry_id, notes').eq('book_id', id).order('position'),
+    // Activity
+    getBookActivity(id),
+  ])
+
+  // Unwrap conditional results
+  const language = languageResult.data
+  const originalLanguage = originalLanguageResult.data
+  const condition = conditionResult.data
+  const dustJacketCondition = dustJacketConditionResult.data
+  const binding = bindingResult.data
+  const bookFormat = bookFormatResult.data
+  const bisacData = bisacResult.data
+  const bookActivityEntries = activityResult.data
+
+  // Profile & feature check (depends on user, so chained after)
   const { data: profile } = user ? await supabase
     .from('user_profiles')
     .select('locale, default_currency')
     .eq('id', user.id)
     .single() : { data: null }
   const canPrintPdf = user ? await hasFeature(user.id, 'pdf_inserts') : false
-
-  // Cast to any to avoid TypeScript issues with dynamic data
-  const bookRecord = book as any
-
-  // Fetch previous and next books (alphabetically by title)
-  const [{ data: prevBook }, { data: nextBook }] = await Promise.all([
-    supabase
-      .from('books')
-      .select('id, title')
-      .lt('title', bookRecord.title)
-      .order('title', { ascending: false })
-      .limit(1)
-      .single(),
-    supabase
-      .from('books')
-      .select('id, title')
-      .gt('title', bookRecord.title)
-      .order('title', { ascending: true })
-      .limit(1)
-      .single()
-  ])
-
-  // Fetch contributors separately
-  const { data: bookContributors } = await supabase
-    .from('book_contributors')
-    .select(`
-      contributor:contributors ( canonical_name ),
-      role:contributor_roles ( name )
-    `)
-    .eq('book_id', id)
-
-  // Fetch related data
-  const { data: language } = bookRecord.language_id 
-    ? await supabase.from('languages').select('name_en').eq('id', bookRecord.language_id).single()
-    : { data: null }
-  
-  const { data: originalLanguage } = bookRecord.original_language_id
-    ? await supabase.from('languages').select('name_en').eq('id', bookRecord.original_language_id).single()
-    : { data: null }
-
-  const { data: condition } = bookRecord.condition_id
-    ? await supabase.from('conditions').select('name').eq('id', bookRecord.condition_id).single()
-    : { data: null }
-
-  const { data: dustJacketCondition } = bookRecord.dust_jacket_condition_id
-    ? await supabase.from('conditions').select('name').eq('id', bookRecord.dust_jacket_condition_id).single()
-    : { data: null }
-
-  const { data: binding } = bookRecord.binding_id
-    ? await supabase.from('bindings').select('name').eq('id', bookRecord.binding_id).single()
-    : { data: null }
-
-  const { data: bookFormat } = bookRecord.format_id
-    ? await supabase.from('book_formats').select('name, abbreviation').eq('id', bookRecord.format_id).single()
-    : { data: null }
-
-  // Fetch BISAC codes
-  const bisacCodes = [bookRecord.bisac_code, bookRecord.bisac_code_2, bookRecord.bisac_code_3].filter(Boolean)
-  const { data: bisacData } = bisacCodes.length > 0
-    ? await supabase.from('bisac_codes').select('code, subject').in('code', bisacCodes)
-    : { data: [] }
-
-  // Fetch external links with their type info
-  const { data: externalLinks } = await supabase
-    .from('book_external_links')
-    .select('id, url, label, sort_order, link_type_id, link_type:external_link_types ( label, domain, category )')
-    .eq('book_id', id)
-    .order('sort_order')
-
-  // Fetch book's collection memberships, ALL user collections, and tags
-  const [{ data: bookCollections }, { data: allCollections }, { data: bookTags }, { data: provenanceData }, { data: conditionHistoryData }, { data: valuationHistoryData }] = await Promise.all([
-    supabase
-      .from('book_collections')
-      .select('collection_id')
-      .eq('book_id', id),
-    supabase
-      .from('collections')
-      .select('id, name, is_default')
-      .order('sort_order', { ascending: true }),
-    supabase
-      .from('book_tags')
-      .select('tag_id, tags ( id, name, color )')
-      .eq('book_id', id),
-    supabase
-      .from('provenance_entries')
-      .select(`
-        id, position, owner_name, owner_type, date_from, date_to,
-        evidence_type, evidence_description, transaction_type, transaction_detail,
-        price_paid, price_currency, association_type, association_note, notes,
-        provenance_sources ( id, source_type, title, url, reference, notes )
-      `)
-      .eq('book_id', id)
-      .order('position'),
-    supabase
-      .from('condition_history')
-      .select(`
-        id, position, event_date, event_type, description, performed_by,
-        cost, cost_currency, notes,
-        before_condition:conditions!condition_history_before_condition_id_fkey ( name ),
-        after_condition:conditions!condition_history_after_condition_id_fkey ( name )
-      `)
-      .eq('book_id', id)
-      .order('position'),
-    supabase
-      .from('valuation_history')
-      .select('id, position, valuation_date, value, currency, source, appraiser, provenance_entry_id, notes')
-      .eq('book_id', id)
-      .order('position')
-  ])
-
-  // Activity history for this book
-  const { data: bookActivityEntries } = await getBookActivity(id)
 
   const bookCollectionIds = new Set((bookCollections || []).map((bc: any) => bc.collection_id))
   const libraryCollection = (allCollections || []).find((c: any) => c.name === 'Library' && c.is_default)
