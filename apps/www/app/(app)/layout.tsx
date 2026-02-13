@@ -34,6 +34,14 @@ export default async function AppLayout({
 
   // Determine if onboarding wizard is needed
   let needsOnboarding = !profile?.user_type
+  if (needsOnboarding && isAdmin) {
+    // Admins never see the wizard — auto-mark as onboarded
+    needsOnboarding = false
+    void supabase
+      .from('user_profiles')
+      .update({ user_type: 'collector', onboarding_completed: true })
+      .eq('id', user.id)
+  }
   if (needsOnboarding) {
     // Existing users with books skip the wizard — auto-mark as onboarded
     const { count: bookCount } = await supabase
@@ -42,7 +50,6 @@ export default async function AppLayout({
       .eq('user_id', user.id)
     if (bookCount && bookCount > 0) {
       needsOnboarding = false
-      // Auto-populate profile for existing user (fire-and-forget)
       void supabase
         .from('user_profiles')
         .update({
