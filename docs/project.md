@@ -1005,7 +1005,7 @@ SELECT b.id FROM books b WHERE b.user_id = $1
 ### Todo — Admin Section Enhancements
 | # | Feature | Priority | Effort | Description |
 |---|---------|----------|--------|-------------|
-| A1 | System stats dashboard | High | Medium | Total books, users, storage usage, activity trends, growth charts. |
+| A1 | System stats dashboard | ✅ Done | — | Full stats dashboard at `/admin/stats`: 8 key metrics (users, books, avg/user, completeness, books 7d/30d, active users 7d/30d), growth chart with cumulative running totals (books + signups by month), feature adoption bars (collections, provenance, tags, links), user activation funnel (signup → 1+ → 10+ → 100+ → 1000+ books), data health (7 checks: ISBN, condition, publisher, cover, year, language, contributors — sorted worst-first), tier distribution, books-per-user table with % of total. |
 | A2 | ~~Feedback/bug queue~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Admin support queue at `/admin/support` with full workflow. Part of #5. |
 | ~~A3~~ | ~~Activity log viewer + live feed~~ | ~~High~~ | ~~Medium~~ | ✅ Done. Steps 4–5 of #4. Live feed on dashboard (15 recent entries) + full /admin/activity page with table, category filters, search, pagination. Sidebar link added. |
 | ~~A4~~ | ~~User management~~ | ~~Medium~~ | ~~Medium~~ | ✅ Done. Detail page (/admin/users/[id]): avatar, stats, collections, recent books, support history, admin notes, status/membership/admin actions, send email. List: sortable columns (user/books/joined/last active), heat indicators, clickable rows. Full profile display: name, company, phone, website, address, VAT, locale, currency, invite code attribution + benefit expiry. |
