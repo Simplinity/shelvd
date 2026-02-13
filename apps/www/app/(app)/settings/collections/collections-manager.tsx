@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, Library, FolderOpen, Loader2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity } from '@/lib/actions/activity-log'
 
 type Collection = {
   id: string
@@ -88,6 +89,7 @@ export function CollectionsManager() {
     })
 
     if (!error) {
+      await logActivity({ userId: user.id, action: 'collection.created', category: 'collection', entityType: 'collection', entityLabel: newName.trim() })
       setNewName('')
       setNewDescription('')
       setShowCreate(false)
@@ -111,6 +113,8 @@ export function CollectionsManager() {
       .eq('id', id)
 
     if (!error) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) await logActivity({ userId: user.id, action: 'collection.renamed', category: 'collection', entityType: 'collection', entityId: id, entityLabel: editName.trim() })
       setEditingId(null)
       await fetchCollections()
     }
@@ -121,12 +125,15 @@ export function CollectionsManager() {
   const handleDelete = async (id: string) => {
     setSaving(true)
 
+    const col = collections.find(c => c.id === id)
     // Delete book_collections entries first
     await supabase.from('book_collections').delete().eq('collection_id', id)
     // Delete the collection
     const { error } = await supabase.from('collections').delete().eq('id', id)
 
     if (!error) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) await logActivity({ userId: user.id, action: 'collection.deleted', category: 'collection', entityType: 'collection', entityId: id, entityLabel: col?.name ?? 'Unknown' })
       setDeletingId(null)
       await fetchCollections()
     }
