@@ -833,7 +833,7 @@ All limits are concrete numbers (no "unlimited"). Configurable via admin UI at /
 | Catalog Generator (DOCX) | ❌ | ❌ | ✅ |
 | Bulk operations | ❌ | ❌ | ✅ |
 | Document storage (invoices, certs) | ❌ | ❌ | ✅ |
-| Dealer directory listing | ❌ | ❌ | ✅ |
+| Dealer directory | ❌ | ❌ | ✅ |
 | Insurance/valuation reports | ❌ | ❌ | ✅ |
 
 **Cost analysis (worst case — all limits fully used):**

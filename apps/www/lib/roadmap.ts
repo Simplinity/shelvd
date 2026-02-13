@@ -270,8 +270,8 @@ export const ROADMAP: RoadmapItem[] = [
   },
   // Dealer & Marketplace
   {
-    title: 'Dealer Directory & Messaging',
-    description: 'Dealers register with a business profile. Collectors browse the directory, send wishlists or collections with a message. Connecting buyers and sellers, the old-fashioned way.',
+    title: 'Dealer Directory',
+    description: 'Dealers register with a business profile. Collectors browse the directory and find specialists by region, period, or subject. Connecting buyers and sellers, the old-fashioned way.',
     category: 'marketplace',
     status: 'planned',
   },
