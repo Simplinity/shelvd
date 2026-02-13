@@ -55,7 +55,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
       data: {
         full_name: fullName,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.shelvd.org'}/auth/callback`,
     },
   })
 
@@ -104,7 +104,7 @@ export async function forgotPassword(formData: FormData): Promise<AuthResult> {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.shelvd.org'}/reset-password`,
   })
 
   if (error) {

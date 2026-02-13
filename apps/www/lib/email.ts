@@ -116,7 +116,7 @@ export async function sendFeedbackNotification(data: FeedbackEmailData, adminEma
   if (adminEmails.length === 0) { console.log('[Email] No admin emails'); return }
 
   const typeLabel = TYPE_LABELS[data.type] || data.type
-  const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://shelvd.org'}/admin/support`
+  const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.shelvd.org'}/admin/support`
 
   // Build details section based on type
   let detailsHtml = ''

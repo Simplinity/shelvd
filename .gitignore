@@ -42,3 +42,6 @@ Thumbs.db
 # Package lock (using npm)
 package-lock.json
 test-sudoc.ts
+configure-auth.mjs
+check-auth-config.mjs
+debug-users.mjs
