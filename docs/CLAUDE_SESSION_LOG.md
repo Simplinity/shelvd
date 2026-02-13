@@ -14,7 +14,7 @@
 
 | # | Feature | Status |
 |---|---------|--------|
-| 9 | Mobile Responsiveness (app pages) | ⏳ Starting |
+| 9 | Mobile Responsiveness (app pages) | ✅ Done |
 | 6.2 | Image Upload Fase 2 (Vercel Blob) | Queued |
 | 6.3 | Image Upload Fase 3 (drag-and-drop, bulk, camera, zoom) | Queued |
 | 14.7 | Stripe integratie + upgrade flow | Queued |
@@ -109,20 +109,20 @@ See `docs/mobile-plan.md` for full analysis and step breakdown.
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
 | 9.17 | Header: stack cover + title on mobile | `books/[id]/page.tsx` | ✅ |
-| 9.18 | Action buttons: flex-wrap | `books/[id]/page.tsx` | ⏳ |
+| 9.18 | Action buttons: flex-wrap | `books/[id]/page.tsx` | ✅ |
 
 **Phase E: Remaining Pages**
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
-| 9.19 | Support form picker: stack on mobile | `support/support-client.tsx` | |
-| 9.20 | Import preview: overflow-x-auto | `books/import/book-import-form.tsx` | |
-| 9.21 | Admin tables: overflow-x-auto | admin pages | |
+| 9.19 | Support form picker: stack on mobile | `support/support-client.tsx` | ✅ |
+| 9.20 | Import preview: overflow-x-auto | `books/import/book-import-form.tsx` | ✅ (already had it) |
+| 9.21 | Admin tables: overflow-x-auto | admin pages | ✅ |
 
 **Phase F: Polish**
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
-| 9.22 | Touch targets: min 44px | various | |
-| 9.23 | Final review at 375px | all pages | |
+| 9.22 | Touch targets: min 44px | various | ✅ |
+| 9.23 | Final review at 375px | all pages | ✅ |
 
 ---
 
