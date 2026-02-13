@@ -146,7 +146,7 @@ export function SupportPageClient({
       )}
 
       {/* ─── Type selector cards ─── */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <TypeCard
           type="bug"
           icon={<Bug className="w-5 h-5" />}
