@@ -351,6 +351,7 @@ export type Database = {
       }
       book_images: {
         Row: {
+          blob_url: string | null
           book_id: string
           book_part_id: string | null
           caption: string | null
@@ -358,14 +359,18 @@ export type Database = {
           file_size_bytes: number | null
           height: number | null
           id: string
+          image_type: string | null
           is_primary: boolean | null
           mime_type: string | null
           original_filename: string | null
           sort_order: number
-          storage_path: string
+          storage_path: string | null
+          thumb_blob_url: string | null
+          user_id: string | null
           width: number | null
         }
         Insert: {
+          blob_url?: string | null
           book_id: string
           book_part_id?: string | null
           caption?: string | null
@@ -373,14 +378,18 @@ export type Database = {
           file_size_bytes?: number | null
           height?: number | null
           id?: string
+          image_type?: string | null
           is_primary?: boolean | null
           mime_type?: string | null
           original_filename?: string | null
           sort_order?: number
-          storage_path: string
+          storage_path?: string | null
+          thumb_blob_url?: string | null
+          user_id?: string | null
           width?: number | null
         }
         Update: {
+          blob_url?: string | null
           book_id?: string
           book_part_id?: string | null
           caption?: string | null
@@ -388,11 +397,14 @@ export type Database = {
           file_size_bytes?: number | null
           height?: number | null
           id?: string
+          image_type?: string | null
           is_primary?: boolean | null
           mime_type?: string | null
           original_filename?: string | null
           sort_order?: number
-          storage_path?: string
+          storage_path?: string | null
+          thumb_blob_url?: string | null
+          user_id?: string | null
           width?: number | null
         }
         Relationships: [

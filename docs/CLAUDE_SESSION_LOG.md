@@ -63,6 +63,29 @@ Safety tag: `pre-mobile-responsive` (git tag on current working state)
 - Synced package.json versions to 0.22.0, created git tag v0.22.0
 - Commit: `b8290a7`
 
+### #6 Image Upload Fase 2 — In Progress
+
+**Safety tag:** `pre-image-upload-fase2`
+
+| # | Step | Status |
+|---|------|--------|
+| 6.2.1 | Install sharp + migration 068 (blob_url, thumb_blob_url, image_type, user_id on book_images) | ✅ |
+| 6.2.2 | Upload API route (validate → sharp → WebP → Vercel Blob → DB) | ⏳ |
+| 6.2.3 | Delete API route | |
+| 6.2.4 | Quota utility | |
+| 6.2.5 | ImageUploadZone component | |
+| 6.2.6 | Wire into book edit form | |
+| 6.2.7 | Wire into book add form | |
+| 6.2.8 | Image gallery on detail page | |
+| 6.2.9 | Cover image auto-sync | |
+| 6.2.10 | Prefer uploaded thumbs in views | |
+| 6.3.1 | Drag-and-drop reorder | |
+| 6.3.2 | Bulk upload to one book | |
+| 6.3.3 | Camera capture on mobile | |
+| 6.3.4 | Pinch-to-zoom lightbox | |
+
+---
+
 ### Valuation Bug Fix ✅
 
 **Root cause:** Migration 044 inserted `provenance_purchase` entries into `valuation_history` with the highest position number. Every query that picked "latest valuation" by `ORDER BY position DESC` got the acquisition cost instead of the actual estimated value.
