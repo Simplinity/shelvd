@@ -6,6 +6,7 @@ import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
 import { ClickableImage } from '@/components/image-lightbox'
+import ImageGalleryGrid from '@/components/image-gallery-grid'
 import BookPdfButton from '@/components/book-pdf-button'
 import { hasFeature } from '@/lib/tier'
 import MoveToLibraryButton from '@/components/move-to-library-button'
@@ -586,16 +587,7 @@ export default async function BookDetailPage({ params }: PageProps) {
         {bookImagesData && bookImagesData.length > 0 && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Images</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {(bookImagesData as any[]).map((img: any) => (
-                <div key={img.id} className="relative group cursor-pointer">
-                  <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
-                    <ClickableImage src={img.blob_url} alt={img.image_type} className="w-full h-full object-cover" />
-                  </div>
-                  <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1.5 py-0.5 rounded">{img.image_type}</span>
-                </div>
-              ))}
-            </div>
+            <ImageGalleryGrid images={bookImagesData as any[]} />
           </section>
         )}
 
