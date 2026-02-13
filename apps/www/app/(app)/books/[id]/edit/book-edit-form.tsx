@@ -339,6 +339,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
   const [bookImages, setBookImages] = useState<BookImage[]>([])
   const [quotaRemaining, setQuotaRemaining] = useState<number | undefined>(undefined)
   const [deletingImageId, setDeletingImageId] = useState<string | null>(null)
+  const [draggedImageIdx, setDraggedImageIdx] = useState<number | null>(null)
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
 
   const loadImages = async () => {
     const { data } = await supabase
@@ -365,6 +367,18 @@ export default function BookEditForm({ book, referenceData }: Props) {
     } finally {
       setDeletingImageId(null)
     }
+  }
+
+  const reorderImages = async (fromIdx: number, toIdx: number) => {
+    if (fromIdx === toIdx) return
+    const reordered = [...bookImages]
+    const [moved] = reordered.splice(fromIdx, 1)
+    reordered.splice(toIdx, 0, moved)
+    setBookImages(reordered)
+    // Persist new sort_order
+    await Promise.all(reordered.map((img, i) =>
+      supabase.from('book_images').update({ sort_order: i }).eq('id', img.id)
+    ))
   }
 
   useEffect(() => { loadImages() }, [])
@@ -1259,10 +1273,19 @@ export default function BookEditForm({ book, referenceData }: Props) {
             {/* Existing images grid */}
             {bookImages.length > 0 && (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4">
-                {bookImages.map(img => (
-                  <div key={img.id} className="relative group">
+                {bookImages.map((img, idx) => (
+                  <div
+                    key={img.id}
+                    className={`relative group ${canUpload ? 'cursor-grab active:cursor-grabbing' : ''} ${dragOverIdx === idx ? 'ring-2 ring-red-500 ring-offset-1' : ''} ${draggedImageIdx === idx ? 'opacity-40' : ''}`}
+                    draggable={canUpload}
+                    onDragStart={() => setDraggedImageIdx(idx)}
+                    onDragOver={e => { e.preventDefault(); setDragOverIdx(idx) }}
+                    onDragLeave={() => setDragOverIdx(null)}
+                    onDrop={e => { e.preventDefault(); setDragOverIdx(null); if (draggedImageIdx !== null) reorderImages(draggedImageIdx, idx); setDraggedImageIdx(null) }}
+                    onDragEnd={() => { setDraggedImageIdx(null); setDragOverIdx(null) }}
+                  >
                     <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
-                      <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover" />
+                      <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover pointer-events-none" />
                     </div>
                     <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.image_type}</span>
                     {canUpload && (
