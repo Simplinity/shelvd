@@ -37,8 +37,8 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex">
-      <div className="sticky top-[68px] h-[calc(100vh-68px)]">
+    <div className="flex flex-col md:flex-row">
+      <div className="sticky top-[68px] z-30 md:h-[calc(100vh-68px)]">
         <AdminSidebar badges={badges} />
       </div>
       <main className="flex-1 min-w-0 min-h-[calc(100vh-68px)]">
