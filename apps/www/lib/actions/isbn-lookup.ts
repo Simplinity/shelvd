@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { searchIsbn, searchProvider, searchByFields, getProviderDetails, type ProviderResult, type ActiveProvider, type SearchParams, type SearchResults } from '@/lib/isbn-providers'
+import { logActivity } from '@/lib/actions/activity-log'
 
 export async function lookupIsbn(isbn: string): Promise<{
   result: ProviderResult | null
@@ -30,7 +31,14 @@ export async function lookupIsbn(isbn: string): Promise<{
     }
   }
   
-  return searchIsbn(isbn, providers as ActiveProvider[])
+  const result = await searchIsbn(isbn, providers as ActiveProvider[])
+
+  // Log for onboarding checklist
+  if (result.result?.success) {
+    logActivity({ userId: user.id, action: 'book.enriched', category: 'enrich', metadata: { isbn, provider: result.result.provider } })
+  }
+
+  return result
 }
 
 export async function lookupIsbnWithProvider(
@@ -62,7 +70,14 @@ export async function lookupByFields(
     return { items: [], total: 0, provider: providerCode, error: 'Not authenticated' }
   }
   
-  return searchByFields(params, providerCode)
+  const result = await searchByFields(params, providerCode)
+
+  // Log for onboarding checklist
+  if (result.items.length > 0) {
+    logActivity({ userId: user.id, action: 'book.enriched', category: 'enrich', metadata: { provider: providerCode } })
+  }
+
+  return result
 }
 
 export async function lookupDetails(
