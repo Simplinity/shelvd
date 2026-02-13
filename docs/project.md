@@ -1166,10 +1166,20 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | 7 | Activity logging for valuation changes | ✅ Done |
 | 8 | Clean up: drop old flat fields from books table (migration 045) | ✅ Done |
 
-### Under Consideration (Future)
-- Insurance & valuation PDF reports (B1 — B2 now complete, this is unblocked)
-- Dealer & contact management
-- Templates system
+### Post-Launch: All Items with Effort Estimates
+
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| P1 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
+| S1 | WooCommerce Integration | Medium | Sync books to WooCommerce as products. Field mapping, publish/unpublish, sync status tracking. Dealer only. See detail above. |
+| S2 | Catawiki Integration | High | No public API — CSV/XML export in Catawiki bulk upload format. Lot description generator. Dealer only. |
+| S3 | AbeBooks/ZVAB Integration | Medium-High | HomeBase XML feed for dealer inventory. Fixed schema export, FTP or manual upload. Dealer only. |
+| S4 | Catalog Generator (DOCX) | Medium | Professional DOCX catalogs from selected books. Numbered entries, condition, provenance, pricing. Dealer + Pro. |
+| S5 | Insurance & Valuation Reports | Medium | Timestamped PDF reports: book list with photos, values, total collection value. Valuation history (B2) is done, this adds the export. |
+| S6 | Dealer Directory | Medium | Business profiles for dealers. Collectors browse by region, period, subject. Dealer only. |
+| S7 | Admin Impersonation | Low | "View as user" mode for debugging. See their books, collections, settings. Big red banner. |
+| S8 | Community | Low | Discord link as interim. In-app forum only if community outgrows it. |
+| S9 | Data Cleanup Tools | Low-Medium | Orphaned records, inconsistencies, duplicate publishers. Admin-only. Build when scale demands it. |
 
 ### Recently Completed
 - ~~Valuation history~~ → v0.15.0: Valuation timeline, value trend chart, provenance auto-sync, CRUD editor, activity logging. Old flat fields dropped.
