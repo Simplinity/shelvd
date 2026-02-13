@@ -380,11 +380,16 @@ export function CollectionsManager() {
       {!loading && collections.length === 0 && (
         <div className="text-center py-16 border-2 border-dashed border-border">
           <FolderOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">No collections yet</h3>
-          <p className="text-muted-foreground mb-4">Create your first collection to organize your books.</p>
+          <h3 className="text-lg font-medium mb-2">Give your library some chapters</h3>
+          <p className="text-muted-foreground mb-2 max-w-md mx-auto">
+            Signed copies? First editions? Books you&apos;ll never lend out? Collections let you organize however you think.
+          </p>
+          <p className="text-muted-foreground/60 text-sm italic mb-6">
+            Your Library collection will be created automatically.
+          </p>
           <Button onClick={() => setShowCreate(true)} className="gap-2">
             <Plus className="w-4 h-4" />
-            New Collection
+            Create Your First Collection
           </Button>
         </div>
       )}
