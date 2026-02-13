@@ -360,34 +360,43 @@ function UserEngagement({ funnel, booksByStatus, totalBooks }: {
 /* ─── DATA HEALTH ─── */
 
 function DataHealth({ data }: { data: AdminStats['dataHealth'] }) {
+  // Sort by completeness ascending (worst first)
+  const sorted = [...data].sort((a, b) => {
+    const pctA = a.total > 0 ? a.complete / a.total : 0
+    const pctB = b.total > 0 ? b.complete / b.total : 0
+    return pctA - pctB
+  })
+
   return (
     <div>
       <SectionTitle>Data Health</SectionTitle>
-      <div className="grid md:grid-cols-3 gap-4">
-        {data.map(d => {
+      <div className="border divide-y">
+        {sorted.map(d => {
           const pct = d.total > 0 ? (d.complete / d.total) * 100 : 0
           const missing = d.total - d.complete
           const isGood = pct >= 80
           const isBad = pct < 50
 
           return (
-            <div key={d.label} className="border p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium">{d.label}</span>
-                <span className={`text-lg font-mono font-bold ${isBad ? 'text-red-600' : isGood ? 'text-green-700' : 'text-amber-600'}`}>
-                  {pct.toFixed(0)}%
-                </span>
-              </div>
-              <div className="h-2 bg-muted/40 mb-2">
+            <div key={d.label} className="flex items-center gap-4 px-4 py-3">
+              <span className="text-sm w-36 shrink-0">{d.label}</span>
+              <div className="flex-1 h-3 bg-muted/40">
                 <div
                   className={`h-full ${isBad ? 'bg-red-600' : isGood ? 'bg-green-600' : 'bg-amber-500'}`}
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <div className="flex justify-between text-[11px] text-muted-foreground">
-                <span>{fmt(d.complete)} complete</span>
-                {missing > 0 && <span className="text-red-600">{fmt(missing)} missing</span>}
-              </div>
+              <span className={`text-sm font-mono font-bold w-12 text-right ${isBad ? 'text-red-600' : isGood ? 'text-green-700' : 'text-amber-600'}`}>
+                {pct.toFixed(0)}%
+              </span>
+              <span className="text-xs font-mono text-muted-foreground w-28 text-right">
+                {fmt(d.complete)}/{fmt(d.total)}
+              </span>
+              {missing > 0 && (
+                <span className="text-[11px] font-mono text-red-600 w-20 text-right">
+                  {fmt(missing)} gaps
+                </span>
+              )}
             </div>
           )
         })}
