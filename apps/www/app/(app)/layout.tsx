@@ -11,6 +11,7 @@ import { getUserTierData } from '@/lib/tier'
 import { TierProviderWrapper } from '@/components/tier-provider-wrapper'
 import { WelcomeWizard } from '@/components/onboarding/welcome-wizard'
 import { ReturningUserNudge } from '@/components/returning-user-nudge'
+import { MobileNav } from '@/components/mobile-nav'
 
 export default async function AppLayout({
   children,
@@ -105,6 +106,14 @@ export default async function AppLayout({
               <span className="text-lg font-bold tracking-tight uppercase">Shelvd</span>
               <span className="text-[9px] text-muted-foreground font-mono ml-1 mt-1">v{APP_VERSION}</span>
             </Link>
+
+            {/* Mobile navigation — hamburger + drawer */}
+            <MobileNav
+              email={user.email || ''}
+              isAdmin={isAdmin}
+              collections={collections || []}
+              totalBookCount={totalBookCount || 0}
+            />
 
             {/* Primary navigation — core book actions, left-aligned */}
             <nav className="hidden md:flex items-center gap-1 flex-1">

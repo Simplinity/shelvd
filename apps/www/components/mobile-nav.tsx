@@ -87,7 +87,7 @@ export function MobileNav({ email, isAdmin, collections, totalBookCount }: {
                 <FolderOpen className="w-3.5 h-3.5" strokeWidth={1.75} />
                 {col.name}
               </span>
-              <span className="text-xs text-muted-foreground">{col.count}</span>
+              <span className="text-xs text-muted-foreground">{col.book_count}</span>
             </Link>
           ))}
           <MobileNavLink href="/books/add" icon={Plus} label="Add Book" onClick={() => setOpen(false)} />
