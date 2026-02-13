@@ -1953,8 +1953,25 @@ export default function BooksPage() {
               )}
               <Link
                 href={`/books/${book.id}`}
-                className="grid grid-cols-12 gap-4 items-center"
+                className="block sm:contents"
               >
+                {/* Mobile card layout */}
+                <div className="sm:hidden flex items-center gap-3">
+                  {book.cover_image_url ? (
+                    <img src={book.cover_image_url} alt="" className="w-8 h-12 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                  ) : (
+                    <div className="w-8 h-12 bg-muted/50 flex-shrink-0 rounded-sm" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-foreground truncate">{book.title}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {getAuthors(book.contributors)}{book.publication_year ? ` · ${book.publication_year}` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop grid layout */}
+                <div className="hidden sm:grid grid-cols-12 gap-4 items-center">
                 <div className="col-span-4 text-muted-foreground line-clamp-2 flex items-center gap-2">
                   {book.cover_image_url ? (
                     <img src={book.cover_image_url} alt="" className="w-6 h-9 object-cover flex-shrink-0 bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
@@ -2009,6 +2026,7 @@ export default function BooksPage() {
                      book.status}
                   </span>
                 </div>
+                </div>{/* end desktop grid */}
               </Link>
             </div>
           ))}
