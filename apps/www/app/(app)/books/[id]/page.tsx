@@ -66,6 +66,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     { data: provenanceData },
     { data: conditionHistoryData },
     { data: valuationHistoryData },
+    { data: bookImagesData },
     // Activity
     activityResult,
   ] = await Promise.all([
@@ -130,6 +131,8 @@ export default async function BookDetailPage({ params }: PageProps) {
     `).eq('book_id', id).order('position'),
     // Valuation history
     supabase.from('valuation_history').select('id, position, valuation_date, value, currency, source, appraiser, provenance_entry_id, notes').eq('book_id', id).order('position'),
+    // Book images
+    supabase.from('book_images').select('id, blob_url, thumb_blob_url, image_type, sort_order').eq('book_id', id).order('sort_order'),
     // Activity
     getBookActivity(id),
   ])
@@ -575,6 +578,24 @@ export default async function BookDetailPage({ params }: PageProps) {
               <Field label="Dust Jacket" value={bookData.has_dust_jacket ? 'Yes' : null} />
               <Field label="Signed" value={bookData.is_signed ? 'Yes' : null} />
             </dl>
+          </section>
+        )}
+
+
+        {/* 5b. Images */}
+        {bookImagesData && bookImagesData.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Images</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {(bookImagesData as any[]).map((img: any) => (
+                <div key={img.id} className="relative group cursor-pointer">
+                  <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
+                    <ClickableImage src={img.blob_url} alt={img.image_type} className="w-full h-full object-cover" />
+                  </div>
+                  <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1.5 py-0.5 rounded">{img.image_type}</span>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
