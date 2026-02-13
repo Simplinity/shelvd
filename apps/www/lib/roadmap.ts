@@ -292,12 +292,6 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.12.0',
   },
   {
-    title: 'Weekly Admin Digest',
-    description: 'Automated email every Monday: new signups, books added, open tickets, health delta, most active users. Platform pulse without opening the dashboard.',
-    category: 'admin',
-    status: 'planned',
-  },
-  {
     title: 'User Onboarding Funnel (Admin View)',
     description: 'Per-user 6-step journey on user detail page (signed up → first book → 10+ books → used enrich → created collections → added provenance). Aggregated activation funnel on stats dashboard with conversion percentages at each step.',
     category: 'admin',
