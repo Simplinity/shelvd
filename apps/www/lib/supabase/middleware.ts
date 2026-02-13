@@ -2,6 +2,20 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl
+
+  // Handle auth codes landing on root or other pages — redirect to callback
+  const code = searchParams.get('code')
+  if (code && pathname !== '/auth/callback') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/callback'
+    // If coming from password reset (landing on /), redirect to reset-password after
+    if (pathname === '/') {
+      url.searchParams.set('next', '/reset-password')
+    }
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
