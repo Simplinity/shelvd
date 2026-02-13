@@ -83,7 +83,7 @@ export async function completeChecklistStep(step: keyof OnboardingChecklist) {
 
   const { error } = await supabase
     .from('user_profiles')
-    .update({ onboarding_checklist: checklist as Record<string, unknown> })
+    .update({ onboarding_checklist: checklist as any })
     .eq('id', user.id)
 
   if (error) return { error: error.message }
