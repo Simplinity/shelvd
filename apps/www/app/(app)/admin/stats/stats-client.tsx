@@ -74,6 +74,11 @@ export function StatsClient({ stats }: Props) {
       {/* ─── DATA HEALTH ─── */}
       <DataHealth data={stats.dataHealth} />
 
+      {/* ─── TIER DISTRIBUTION ─── */}
+      {stats.tierDistribution.length > 0 && (
+        <TierDistribution data={stats.tierDistribution} totalUsers={stats.totalUsers} />
+      )}
+
       {/* ─── BOOKS PER USER ─── */}
       {stats.booksPerUser.length > 0 && (
         <div>
@@ -382,6 +387,50 @@ function DataHealth({ data }: { data: AdminStats['dataHealth'] }) {
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>{fmt(d.complete)} complete</span>
                 {missing > 0 && <span className="text-red-600">{fmt(missing)} missing</span>}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ─── TIER DISTRIBUTION ─── */
+
+const TIER_LABELS: Record<string, string> = {
+  collector: 'Collector (Free)',
+  collector_pro: 'Collector Pro',
+  dealer: 'Dealer',
+}
+
+function TierDistribution({ data, totalUsers }: {
+  data: { tier: string; count: number }[]
+  totalUsers: number
+}) {
+  return (
+    <div>
+      <SectionTitle>Tier Distribution</SectionTitle>
+      <div className="grid md:grid-cols-3 gap-4">
+        {data.map(d => {
+          const pct = totalUsers > 0 ? (d.count / totalUsers) * 100 : 0
+          return (
+            <div key={d.tier} className="border p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">{TIER_LABELS[d.tier] || d.tier}</span>
+                </div>
+                <span className="text-lg font-mono font-bold">{fmt(d.count)}</span>
+              </div>
+              <div className="h-2 bg-muted/40 mb-2">
+                <div
+                  className="h-full bg-foreground transition-all"
+                  style={{ width: `${Math.max(pct, 1)}%` }}
+                />
+              </div>
+              <div className="text-right text-[11px] font-mono text-muted-foreground">
+                {pct.toFixed(1)}% of users
               </div>
             </div>
           )
