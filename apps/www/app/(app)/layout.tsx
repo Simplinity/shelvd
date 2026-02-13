@@ -27,11 +27,32 @@ export default async function AppLayout({
   // Check admin status + onboarding state
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('is_admin, user_type')
+    .select('is_admin, user_type, onboarding_completed')
     .eq('id', user.id)
     .single()
   const isAdmin = profile?.is_admin === true
-  const needsOnboarding = !profile?.user_type
+
+  // Determine if onboarding wizard is needed
+  let needsOnboarding = !profile?.user_type
+  if (needsOnboarding) {
+    // Existing users with books skip the wizard — auto-mark as onboarded
+    const { count: bookCount } = await supabase
+      .from('books')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+    if (bookCount && bookCount > 0) {
+      needsOnboarding = false
+      // Auto-populate profile for existing user (fire-and-forget)
+      void supabase
+        .from('user_profiles')
+        .update({
+          user_type: 'collector',
+          onboarding_completed: true,
+          collection_size_estimate: bookCount >= 5000 ? '5000_plus' : bookCount >= 500 ? '500_5000' : bookCount >= 50 ? '50_500' : 'under_50',
+        })
+        .eq('id', user.id)
+    }
+  }
 
   // Fetch collections for nav dropdown
   const { data: collections } = await getCollectionsWithCounts()

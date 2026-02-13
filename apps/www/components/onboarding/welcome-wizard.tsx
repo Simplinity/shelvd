@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { saveWizardData } from '@/lib/actions/onboarding'
 import type { UserType, CollectionSize, CurrentSystem, WizardData } from '@/lib/actions/onboarding'
 
@@ -9,7 +8,6 @@ const STEPS = ['user_type', 'collection_size', 'current_system', 'interests'] as
 type Step = typeof STEPS[number]
 
 export function WelcomeWizard() {
-  const router = useRouter()
   const [step, setStep] = useState<Step>('user_type')
   const [saving, setSaving] = useState(false)
 
@@ -34,14 +32,25 @@ export function WelcomeWizard() {
   async function finish() {
     if (!userType || !collectionSize || !currentSystem) return
     setSaving(true)
-    const data: WizardData = {
-      user_type: userType,
-      collection_size_estimate: collectionSize,
-      current_system: currentSystem,
-      interests,
+    try {
+      const data: WizardData = {
+        user_type: userType,
+        collection_size_estimate: collectionSize,
+        current_system: currentSystem,
+        interests,
+      }
+      const result = await saveWizardData(data)
+      if (result?.error) {
+        console.error('Wizard save failed:', result.error)
+        setSaving(false)
+        return
+      }
+      // Force full page reload to re-run server layout
+      window.location.href = '/books'
+    } catch (err) {
+      console.error('Wizard save error:', err)
+      setSaving(false)
     }
-    await saveWizardData(data)
-    router.refresh()
   }
 
   function toggleInterest(interest: string) {
