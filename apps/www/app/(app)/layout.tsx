@@ -82,14 +82,12 @@ export default async function AppLayout({
     .or(`ends_at.is.null,ends_at.gte.${now}`)
     .order('created_at', { ascending: false })
 
-  // Show wizard for new users
-  if (needsOnboarding) {
-    return <WelcomeWizard />
-  }
-
   return (
     <TierProviderWrapper tierData={tierData}>
     <div className="min-h-screen bg-background">
+
+      {/* Onboarding wizard overlay for new users */}
+      {needsOnboarding && <WelcomeWizard />}
       {/* Announcements */}
       {announcements && announcements.length > 0 && (
         <AnnouncementBanner announcements={announcements as any} />
