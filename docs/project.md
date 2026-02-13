@@ -419,7 +419,7 @@ status, action_needed, internal_notes
 | 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
 | 10 | Collection Audit | ✅ Done | — | Per-user library health score at `/audit`. 10 checks (identifiers, contributors, cover, condition, publisher, year, provenance, valuation, language, location), health score 0–100%, expandable book lists with fix links, FeatureGate (Pro+), nav link, activity logging. See details below. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
-| 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
+| 12 | User Onboarding | High | Medium | Welcome wizard (4 screens), getting started checklist (4–6 steps, profile-driven), smart empty states (6 pages), returning user nudge. See details below. |
 | 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
 | 15 | Community | Post-launch | — | Moved to post-launch. Discord link in footer/wiki as interim solution. |
 | 13 | Invite Codes | ✅ Done | — | Optional promo codes on signup for attribution + benefits. Tables: invite_codes + invite_code_redemptions. Signup form: optional code field with validation. Admin /admin/invite-codes: list, create, toggle, detail with per-code stats (users, books). Activity logging. Sidebar link. See details below. |
@@ -616,81 +616,158 @@ book_images (
 
 #### #12 User Onboarding — Detail
 
-**The problem:** A new user arrives at Shelvd. They see an empty page with "My Collection — 0 books" and a header with 7 navigation items. The add form has 76 formats, 45 cover types, 65 bindings. They don't know where to start. They either click around and give up, or add one book and never return.
+**The problem:** A new user arrives via a blogger's link. They see an empty page with "My Collection — 0 books" and a header with 7 navigation items. The add form has 76 formats, 45 cover types, 65 bindings. They don't know where to start. They either click around and give up, or add one book and never return.
 
-**Target users:** Private collectors (decades of books, failed at Excel), dealers/booksellers (inventory management), librarians/archivists (institutional cataloging), explorers (just curious).
+**Target users:** Private collectors (decades of books, failed at Excel), professional dealers (inventory management), librarians/archivists (institutional cataloging), curious visitors (just clicked a link).
 
-**Inspiration:** Notion (beautiful empty states — every blank page is an invitation, not a dead end). Linear (onboarding wizard — 4 screens, no optional fields, no distractions). Duolingo (progress without pressure — streaks and bars that feel like your project, not their assignment). Stripe (persistent checklist in sidebar — stays until done, ignorable but present). Superhuman (show don't tell — 1:1 demo of how good it can be). We can't do 1:1 calls, but we can show a perfectly cataloged demo book.
+**Design principles:**
+- Every screen has personality and humor
+- Never more than one decision per screen
+- Profile answers drive what comes next
+- All detection is automatic (same queries as admin journey funnel)
+- Dismissible but persistent — never blocking
 
-**Component 1: Welcome Wizard (first login, one-time)**
+---
 
-Three screens, not a tour or tooltips:
+**Component 1: Welcome Wizard (first login, one-time, 4 screens)**
 
-- **Screen 1 — "How do you collect?"** — Radio selection: Private collector / Dealer / Librarian / Just exploring. Stored as `user_profiles.user_type`. Drives the rest of onboarding.
-- **Screen 2 — "How big is your collection?"** — Under 50 / 50–500 / 500–5,000 / 5,000+. Determines whether we suggest manual add or import.
-- **Screen 3 — "Your first step"** — Personalized: small collection → add form (essentials only). Large collection → import with template. Dealer → add form with status/value prominent. Explorer → read-only demo book.
+**Screen 1 — "Who are you?"**
+> *"Before we let you loose in the stacks, a few questions. We promise they're painless — unlike that time you found foxing on your first edition."*
 
-**Component 2: Smart Empty States (permanent)**
+- 🏠 Private collector — *"I hoard books and call it a library"*
+- 📚 Professional dealer — *"I sell books and call it a career"*
+- 🎓 Librarian / Archivist — *"I catalog books and call it a calling"*
+- 👀 Just looking around — *"I clicked a link and here we are"*
 
-Every empty page becomes a learning opportunity:
+Stored as `user_profiles.user_type`.
 
-- **Empty collection:** "Your library starts here" with three paths: add manually, import Excel/CSV, look up by ISBN. Each with icon and one-line description.
-- **Empty stats:** "Add at least 5 books to unlock statistics. You're at 2/5."
-- **Empty search:** "Nothing to search yet. Add your first books and come back."
-- **Empty collections:** "Create your first collection to organize by room, theme, or project."
+**Screen 2 — "How many books?"**
+> *"No judgment. We've seen everything from 3 to 30,000."*
 
-**Component 3: Getting Started Checklist (persistent, dismissible)**
+- A handful (under 50)
+- A proper collection (50–500)
+- A serious problem (500–5,000)
+- We might need to talk (5,000+)
 
-Compact block on the collection page. Progress bar (4/6). Checklist items, each a link to the action:
+Stored as `user_profiles.collection_size_estimate`.
 
-1. Create your account ✓
-2. Add your first book
-3. Try Library Lookup (ISBN enrichment) — the "aha moment"
-4. Create a collection
-5. Add provenance to a book — "this is what spreadsheets can't do"
-6. Export your catalog — "your data is yours"
+**Screen 3 — "How do you catalog now?"**
+> *"Be honest. We've all been there."*
 
-Dismissible via ×. Disappears when all complete. Items chosen to showcase Shelvd's core value propositions.
+- 📊 Spreadsheet — *"Excel/Google Sheets. It works. Sort of."*
+- 📝 Notebook — *"Pen, paper, and hope"*
+- 🧠 My memory — *"I know exactly where everything is. Usually."*
+- 📦 Another app — *"LibraryThing / Bookbuddy / CLZ / other"*
+- 🫣 I don't — *"That's why I'm here"*
 
-**Component 4: Contextual First-Visit Hints**
+Stored as `user_profiles.current_system`.
 
-Subtle inline tips that appear once per feature, tracked via `user_profiles.seen_hints` (JSON array):
+**Screen 4 — "What matters most to you?" (pick up to 3)**
+> *"This helps us show you the right things first."*
 
-- **Add form:** "Tip: Only Title is required. Start simple — you can always enrich later via Library Lookup."
-- **Enrich panel:** "Tip: Enter an ISBN and click Search. We'll find bibliographic data from 9 international libraries."
-- **Provenance editor:** "Tip: Who owned this book before you? Add owners, bookplates, inscriptions. Build the story."
-- **Collections:** "Tip: Create collections for different parts of your library — by room, theme, or 'to sell'."
+- Knowing what I own
+- Tracking provenance & history
+- Insurance & valuation
+- Finding books in library catalogs
+- Organizing by condition & rarity
+- Selling online (WooCommerce, AbeBooks)
+- Just keeping it tidy
 
-**Component 5: Demo Book (optional, via wizard)**
+Stored as `user_profiles.interests` (TEXT[]). Drives which extra checklist steps appear and which wiki articles are linked.
 
-"Want to see an example first?" → Seed a fully cataloged demo book in their account: all contributors with MARC roles, provenance chain, condition history, tags, external links. Shows how good a complete entry looks. Deletable.
+---
 
-**Admin Component (A9): Funnel Tracker**
+**Component 2: Getting Started Checklist (persistent, dismissible)**
 
-On user detail page: horizontal 6-step progress bar. Green checks for completed, open circles for pending. Shows where each user is in their journey.
+Sticky panel on the library page. Appears after wizard completion. Disappears when all steps complete or user dismisses. Progress indicator: "3/5 complete".
 
-Aggregated on admin dashboard: funnel visualization showing conversion at each step. "80% stop at step 2" = add form is the problem. "Nobody uses Enrich" = feature not discoverable enough.
+**Base checklist (everyone gets these 4):**
+- ☐ **Add your first book** — *"Type a title, or paste an ISBN. We'll do the rest."* → link to add form
+- ☐ **Try Library Lookup** — *"22 libraries, 4 continents. Your book is probably in at least one."* → link to enrich
+- ☐ **Set your condition** — *"Fine? Very Good? 'It survived my toddler'?"* → link to edit
+- ☐ **Create a collection** — *"Library is your default. But maybe you want 'To Read', 'Signed Copies', or 'Books I Pretend I've Read'."* → link to collections
 
-Funnel steps:
-1. Signed up — `user_profiles.created_at` exists
-2. First book — `books` count ≥ 1
-3. 10 books — `books` count ≥ 10
-4. Used enrich — books with ISBN source or enrichment marker
-5. Organized — `collections` (non-default) count ≥ 1
-6. Rich metadata — has tags + contributors + provenance entries
+**Extra steps based on profile (max 2, so max 6 total):**
+- Dealer → ☐ **Set up your business profile** — *"Company name, VAT, the boring stuff that makes you look professional."* → link to settings
+- Provenance interest → ☐ **Add provenance to a book** — *"Where did it come from? Every book has a story."* → link to provenance
+- Valuation interest → ☐ **Record a valuation** — *"What's it worth? More than you paid, hopefully."* → link to valuation
+- Large collection (500+) → ☐ **Import via CSV** — *"Bring your spreadsheet. We won't judge the formatting."* → link to import
 
-**Database changes:**
-- `user_profiles.user_type` TEXT (collector/dealer/librarian/explorer)
-- `user_profiles.collection_size_estimate` TEXT (under_50/50_500/500_5000/5000_plus)
-- `user_profiles.onboarding_completed` BOOLEAN DEFAULT false
-- `user_profiles.onboarding_checklist` JSONB (tracks completed items)
-- `user_profiles.seen_hints` JSONB DEFAULT '[]' (tracks dismissed hints)
+All detection automatic — same queries as admin journey funnel (book count, activity_log categories, collection count).
 
-**Phased delivery:**
+Tracked via `user_profiles.onboarding_checklist` JSONB.
 
-- **Phase 1 (quick wins):** Smart empty states + first-visit hints + admin funnel tracker. No migration needed for empty states. One migration for `seen_hints`.
-- **Phase 2 (the wizard):** Welcome wizard + getting started checklist + demo book. Migration for `user_type`, `collection_size_estimate`, `onboarding_completed`, `onboarding_checklist`.
-- **Phase 3 (personalization):** Feature highlights per user type. Engagement emails ("You haven't added a book in 2 weeks"). Collection completeness score on user's own stats page.
+---
+
+**Component 3: Smart Empty States (permanent, 6 pages)**
+
+Every empty page gets a personality instead of a blank table.
+
+**Library (0 books):**
+> *"Every great library started with a single book. Yours is waiting."*
+> **[+ Add your first book]** — prominent center button
+
+**Collections (only default Library):**
+> *"You have your Library. Now give it chapters. Signed copies? First editions? Books you'll never lend out?"*
+> **[+ Create collection]**
+
+**Provenance (0 entries on a book):**
+> *"Where has this book been? A London bookshop in 1923? Your grandmother's attic? The story starts here."*
+> **[+ Add provenance]**
+
+**Activity (0 entries):**
+> *"Nothing here yet. Add a book and watch the timeline come to life."*
+
+**Audit (0 books):**
+> *"Can't audit what doesn't exist. Add some books first and we'll tell you what's missing."*
+
+**Stats (0 books):**
+> *"Numbers need data. Add a few books and we'll give you charts, trends, and the satisfaction of a well-organized collection."*
+
+---
+
+**Component 4: Returning User Nudge**
+
+When user returns after 3+ days and checklist is not complete:
+> *"Welcome back. You left off at [next uncompleted step]. Pick up where you left off?"*
+
+Small toast notification. Not blocking. Disappears after 5 seconds or click. Only shows once per session. Tracked via `onboarding_dismissed_at` timestamp.
+
+---
+
+**Admin Component (A9): ✅ Already shipped in v0.21.0**
+
+Per-user 6-step journey tracker on `/admin/users/[id]` + aggregated activation funnel on `/admin/stats`.
+
+---
+
+**Database changes (1 migration):**
+
+```sql
+ALTER TABLE user_profiles ADD COLUMN user_type TEXT;                    -- collector/dealer/librarian/explorer
+ALTER TABLE user_profiles ADD COLUMN collection_size_estimate TEXT;     -- under_50/50_500/500_5000/5000_plus
+ALTER TABLE user_profiles ADD COLUMN current_system TEXT;               -- spreadsheet/notebook/memory/other_app/nothing
+ALTER TABLE user_profiles ADD COLUMN interests TEXT[] DEFAULT '{}';     -- max 3 selected interests
+ALTER TABLE user_profiles ADD COLUMN onboarding_completed BOOLEAN DEFAULT false;
+ALTER TABLE user_profiles ADD COLUMN onboarding_checklist JSONB DEFAULT '{}';
+ALTER TABLE user_profiles ADD COLUMN onboarding_dismissed_at TIMESTAMPTZ;
+```
+
+---
+
+**Delivery plan:**
+
+| Step | Description | Effort |
+|------|-------------|--------|
+| 1 | Migration: add 7 onboarding columns to user_profiles | Low |
+| 2 | Welcome Wizard component (4 screens, saves to profile) | Medium |
+| 3 | Wizard gate: redirect to wizard on first login if user_type is null | Low |
+| 4 | Getting Started Checklist component (auto-detection, profile-driven) | Medium |
+| 5 | Checklist integration on library page (sticky panel) | Low |
+| 6 | Smart empty states: Library (0 books) | Low |
+| 7 | Smart empty states: Collections, Provenance, Activity, Audit, Stats | Low |
+| 8 | Returning user nudge (toast, session-aware) | Low |
+| 9 | Activity logging for onboarding events | Low |
 
 #### #13 Invite Codes — Detail
 
