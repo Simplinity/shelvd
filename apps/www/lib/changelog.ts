@@ -35,6 +35,7 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Tier Distribution — visual breakdown of users across Collector, Collector Pro, and Dealer tiers' },
       { type: 'added', text: 'User Activation Funnel — from signup through 1+, 10+, 100+, 1,000+ books with conversion percentages' },
       { type: 'improved', text: 'Data completeness score now based on 7 fields instead of 3, giving a more accurate picture of catalog quality' },
+      { type: 'added', text: 'Per-user Onboarding Journey on admin user detail page — 6-step visual tracker: signed up → first book → 10+ books → used enrich → created collections → added provenance' },
     ],
   },
   {
