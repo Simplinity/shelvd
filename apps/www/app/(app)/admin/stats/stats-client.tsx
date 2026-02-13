@@ -1,7 +1,7 @@
 'use client'
 
 import type { AdminStats } from '@/lib/actions/admin-stats'
-import { BookOpen, Users, Ratio, ShieldCheck } from 'lucide-react'
+import { BookOpen, Users, Ratio, ShieldCheck, TrendingUp, Activity, Crown } from 'lucide-react'
 
 interface Props {
   stats: AdminStats
@@ -32,6 +32,30 @@ export function StatsClient({ stats }: Props) {
           value={`${stats.dataCompleteness}%`}
           icon={<ShieldCheck className="w-4 h-4" />}
           bar={stats.dataCompleteness}
+        />
+      </div>
+
+      {/* ─── RECENT ACTIVITY METRICS ─── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <MetricCard
+          label="Books (7d)"
+          value={fmt(stats.booksLast7d)}
+          icon={<TrendingUp className="w-4 h-4" />}
+        />
+        <MetricCard
+          label="Books (30d)"
+          value={fmt(stats.booksLast30d)}
+          icon={<TrendingUp className="w-4 h-4" />}
+        />
+        <MetricCard
+          label="Active Users (7d)"
+          value={fmt(stats.activeUsersLast7d)}
+          icon={<Activity className="w-4 h-4" />}
+        />
+        <MetricCard
+          label="Active Users (30d)"
+          value={fmt(stats.activeUsersLast30d)}
+          icon={<Activity className="w-4 h-4" />}
         />
       </div>
 
