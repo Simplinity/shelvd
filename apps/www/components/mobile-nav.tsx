@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Menu, X, BookOpen, Plus, Upload, Search, ScanBarcode, BarChart3, Clock, ClipboardCheck, Settings, MessageSquare, Shield, LogOut, BookOpenCheck } from 'lucide-react'
 import { APP_VERSION } from '@/lib/changelog'
 import Link from 'next/link'
@@ -16,6 +17,12 @@ export function MobileNav({ email, isAdmin, collections, totalBookCount }: {
   totalBookCount: number
 }) {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Auto-close drawer on route change
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
 
   return (
     <div className="md:hidden">
