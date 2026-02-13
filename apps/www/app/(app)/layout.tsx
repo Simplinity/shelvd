@@ -9,6 +9,7 @@ import { AnnouncementBanner } from '@/components/announcement-banner'
 import { UserMenu } from '@/components/user-menu'
 import { getUserTierData } from '@/lib/tier'
 import { TierProviderWrapper } from '@/components/tier-provider-wrapper'
+import { WelcomeWizard } from '@/components/onboarding/welcome-wizard'
 
 export default async function AppLayout({
   children,
@@ -22,13 +23,14 @@ export default async function AppLayout({
     redirect('/login')
   }
 
-  // Check admin status for nav link
+  // Check admin status + onboarding state
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('is_admin')
+    .select('is_admin, user_type')
     .eq('id', user.id)
     .single()
   const isAdmin = profile?.is_admin === true
+  const needsOnboarding = !profile?.user_type
 
   // Fetch collections for nav dropdown
   const { data: collections } = await getCollectionsWithCounts()
@@ -50,6 +52,11 @@ export default async function AppLayout({
     .or(`starts_at.is.null,starts_at.lte.${now}`)
     .or(`ends_at.is.null,ends_at.gte.${now}`)
     .order('created_at', { ascending: false })
+
+  // Show wizard for new users
+  if (needsOnboarding) {
+    return <WelcomeWizard />
+  }
 
   return (
     <TierProviderWrapper tierData={tierData}>
