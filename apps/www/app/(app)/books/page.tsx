@@ -1404,9 +1404,9 @@ export default function BooksPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Page header */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">
             {hasAnySearch ? 'Search Results' : collectionName ? collectionName : tagName ? `Tag: ${tagName}` : 'My Collection'}
           </h1>
           <p className="text-muted-foreground">
@@ -1418,7 +1418,7 @@ export default function BooksPage() {
             }
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex border border-border">
             <button
               onClick={() => setView('list')}
