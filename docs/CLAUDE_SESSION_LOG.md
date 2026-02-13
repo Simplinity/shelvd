@@ -71,25 +71,58 @@ Safety tag: `pre-mobile-responsive` (git tag on current working state)
 
 **Subtasks:**
 
-| # | Task | Scope | Status |
-|---|------|-------|--------|
-| 9.1 | Mobile navigation: hamburger menu + slide-out drawer | `layout.tsx` | ⏳ |
-| 9.2 | Touch target audit: buttons, links, inputs ≥ 44px | Global CSS / components | |
-| 9.3 | Book detail page responsive | `books/[id]/page.tsx` | |
-| 9.4 | Books list (list view) responsive | `books/page.tsx` list section | |
-| 9.5 | Books list (grid view) responsive | `books/page.tsx` grid section | |
-| 9.6 | Books list header/filters/toolbar responsive | `books/page.tsx` top section | |
-| 9.7 | Add book form responsive | `books/add/book-add-form.tsx` | |
-| 9.8 | Edit book form responsive | `books/[id]/edit/book-edit-form.tsx` | |
-| 9.9 | Settings pages responsive | `settings/` pages | |
-| 9.10 | Stats dashboard responsive | `stats/page.tsx` | |
-| 9.11 | Activity page responsive | `activity/activity-client.tsx` | |
-| 9.12 | Audit page responsive | `audit/audit-client.tsx` | |
-| 9.13 | Support page responsive | `support/support-client.tsx` | |
-| 9.14 | Admin pages responsive | `admin/` pages | |
-| 9.15 | Onboarding responsive (wizard, checklist, empty states) | `components/onboarding/` | |
-| 9.16 | Modals and dialogs responsive | Shared components | |
-| 9.17 | Final review: test all pages at 375px (iPhone SE) | Manual audit | |
+See `docs/mobile-plan.md` for full analysis and step breakdown.
+
+**Already responsive (no work):** grid view, stats cards/charts, forms, book detail fields, search form, settings form fields, audit cards, lookup form, activity table, onboarding wizard, support page.
+
+**Broken on mobile:** nav hidden, books list view (grid-cols-12), books page header/search/selection bar, settings tabs overflow, admin sidebar, book detail header.
+
+**Phase A: Mobile Navigation (CRITICAL)**
+| # | Task | File(s) | Status |
+|---|------|---------|--------|
+| 9.1 | MobileNav component shell (button + state) | `components/mobile-nav.tsx` | |
+| 9.2 | Slide-out drawer (overlay + panel) | `components/mobile-nav.tsx` | |
+| 9.3 | Nav links in drawer | `components/mobile-nav.tsx` | |
+| 9.4 | User section in drawer (settings, support, sign out) | `components/mobile-nav.tsx` | |
+| 9.5 | CollectionNav in drawer | `components/mobile-nav.tsx` | |
+| 9.6 | Wire into layout.tsx (md:hidden) | `layout.tsx` | |
+| 9.7 | Auto-close on navigation | `components/mobile-nav.tsx` | |
+
+**Phase B: Books Page**
+| # | Task | File(s) | Status |
+|---|------|---------|--------|
+| 9.8 | Header: stack title + buttons on mobile | `books/page.tsx` | |
+| 9.9 | Search bar: icon-only buttons on mobile | `books/page.tsx` | |
+| 9.10 | Selection bar: wrap buttons | `books/page.tsx` | |
+| 9.11 | Value summary: flex-wrap | `books/page.tsx` | |
+| 9.12 | List view: mobile card layout | `books/page.tsx` | |
+| 9.13 | List header: hide on mobile | `books/page.tsx` | |
+
+**Phase C: Settings & Admin**
+| # | Task | File(s) | Status |
+|---|------|---------|--------|
+| 9.14 | Settings tabs: horizontal scroll | `settings/page.tsx` | |
+| 9.15 | Admin sidebar: horizontal bar on mobile | `admin/admin-sidebar.tsx` | |
+| 9.16 | Admin layout: stack on mobile | `admin/layout.tsx` | |
+
+**Phase D: Book Detail**
+| # | Task | File(s) | Status |
+|---|------|---------|--------|
+| 9.17 | Header: stack cover + title on mobile | `books/[id]/page.tsx` | |
+| 9.18 | Action buttons: flex-wrap | `books/[id]/page.tsx` | |
+
+**Phase E: Remaining Pages**
+| # | Task | File(s) | Status |
+|---|------|---------|--------|
+| 9.19 | Support form picker: stack on mobile | `support/support-client.tsx` | |
+| 9.20 | Import preview: overflow-x-auto | `books/import/book-import-form.tsx` | |
+| 9.21 | Admin tables: overflow-x-auto | admin pages | |
+
+**Phase F: Polish**
+| # | Task | File(s) | Status |
+|---|------|---------|--------|
+| 9.22 | Touch targets: min 44px | various | |
+| 9.23 | Final review at 375px | all pages | |
 
 ---
 
