@@ -1,3 +1,4 @@
+Initialising login role...
 export type Json =
   | string
   | number
@@ -11,6 +12,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.1"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -1630,14 +1656,17 @@ export type Database = {
           avatar_url: string | null
           benefit_expires_at: string | null
           city: string | null
+          collection_size_estimate: string | null
           company_name: string | null
           country: string | null
           created_at: string | null
+          current_system: string | null
           default_currency: string | null
           default_size_unit: string | null
           display_name: string | null
           full_name: string | null
           id: string
+          interests: string[] | null
           invite_code_id: string | null
           is_admin: boolean | null
           is_lifetime_free: boolean | null
@@ -1646,6 +1675,9 @@ export type Database = {
           locale: string | null
           membership_tier: string | null
           notes: string | null
+          onboarding_checklist: Json | null
+          onboarding_completed: boolean | null
+          onboarding_dismissed_at: string | null
           phone: string | null
           postal_code: string | null
           signup_source: string | null
@@ -1653,29 +1685,26 @@ export type Database = {
           status_reason: string | null
           street_address: string | null
           updated_at: string | null
+          user_type: string | null
           vat_number: string | null
           website: string | null
-          user_type: string | null
-          collection_size_estimate: string | null
-          current_system: string | null
-          interests: string[] | null
-          onboarding_completed: boolean | null
-          onboarding_checklist: Record<string, unknown> | null
-          onboarding_dismissed_at: string | null
         }
         Insert: {
           admin_role?: string | null
           avatar_url?: string | null
           benefit_expires_at?: string | null
           city?: string | null
+          collection_size_estimate?: string | null
           company_name?: string | null
           country?: string | null
           created_at?: string | null
+          current_system?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
           full_name?: string | null
           id: string
+          interests?: string[] | null
           invite_code_id?: string | null
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
@@ -1684,6 +1713,9 @@ export type Database = {
           locale?: string | null
           membership_tier?: string | null
           notes?: string | null
+          onboarding_checklist?: Json | null
+          onboarding_completed?: boolean | null
+          onboarding_dismissed_at?: string | null
           phone?: string | null
           postal_code?: string | null
           signup_source?: string | null
@@ -1691,29 +1723,26 @@ export type Database = {
           status_reason?: string | null
           street_address?: string | null
           updated_at?: string | null
+          user_type?: string | null
           vat_number?: string | null
           website?: string | null
-          user_type?: string | null
-          collection_size_estimate?: string | null
-          current_system?: string | null
-          interests?: string[] | null
-          onboarding_completed?: boolean | null
-          onboarding_checklist?: Record<string, unknown> | null
-          onboarding_dismissed_at?: string | null
         }
         Update: {
           admin_role?: string | null
           avatar_url?: string | null
           benefit_expires_at?: string | null
           city?: string | null
+          collection_size_estimate?: string | null
           company_name?: string | null
           country?: string | null
           created_at?: string | null
+          current_system?: string | null
           default_currency?: string | null
           default_size_unit?: string | null
           display_name?: string | null
           full_name?: string | null
           id?: string
+          interests?: string[] | null
           invite_code_id?: string | null
           is_admin?: boolean | null
           is_lifetime_free?: boolean | null
@@ -1722,6 +1751,9 @@ export type Database = {
           locale?: string | null
           membership_tier?: string | null
           notes?: string | null
+          onboarding_checklist?: Json | null
+          onboarding_completed?: boolean | null
+          onboarding_dismissed_at?: string | null
           phone?: string | null
           postal_code?: string | null
           signup_source?: string | null
@@ -1729,15 +1761,9 @@ export type Database = {
           status_reason?: string | null
           street_address?: string | null
           updated_at?: string | null
+          user_type?: string | null
           vat_number?: string | null
           website?: string | null
-          user_type?: string | null
-          collection_size_estimate?: string | null
-          current_system?: string | null
-          interests?: string[] | null
-          onboarding_completed?: boolean | null
-          onboarding_checklist?: Record<string, unknown> | null
-          onboarding_dismissed_at?: string | null
         }
         Relationships: [
           {
@@ -2064,6 +2090,10 @@ export type Database = {
           last_sign_in_at: string
         }[]
       }
+      get_value_summary: {
+        Args: { p_collection_id?: string; p_tag_id?: string; p_user_id: string }
+        Returns: Json
+      }
       is_admin: { Args: never; Returns: boolean }
       redeem_invite_code: {
         Args: { p_code: string; p_user_id: string }
@@ -2204,6 +2234,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       book_status: [
@@ -2218,3 +2251,5 @@ export const Constants = {
     },
   },
 } as const
+A new version of Supabase CLI is available: v2.75.0 (currently installed v2.72.7)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
