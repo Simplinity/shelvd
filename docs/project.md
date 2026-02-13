@@ -43,6 +43,14 @@ Run `cd apps/www && npx next build` before every `git push`. This catches type e
 ### Rule 8: Regenerate types after DB changes
 After any migration, run: `npx supabase gen types typescript --linked 2>/dev/null > apps/www/lib/supabase/database.types.ts`. Redirect stderr to avoid CLI output leaking into the types file.
 
+### Rule 9: Version bumps are a package deal
+When bumping `APP_VERSION` in `changelog.ts`, ALWAYS also:
+1. Bump `version` in root `package.json`
+2. Bump `version` in `apps/www/package.json`
+3. Create git tag: `git tag v0.X.0`
+4. Push tag: `git push --tags`
+All four must happen in the same commit. No exceptions.
+
 ---
 
 ## Project Overview
