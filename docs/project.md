@@ -1292,6 +1292,33 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | S10 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
 | S11 | Catalog Generator (DOCX) | Medium-High | Professional DOCX catalogs from selected books. Numbered entries, condition, provenance, pricing. Dealer + Pro. |
 
+---
+
+## Launch Plan & Production Safety
+
+> Decided 2026-02-13. See `docs/staging.md` for full implementation guide.
+
+**Phase 1: Pre-launch (now)**
+- Finish remaining 4 features on `main` as before: Image Upload Fase 2+3, Mobile Responsiveness, Stripe
+- Test everything yourself — you are the only user, `main` is your staging
+- Pre-migration backup script active (see `scripts/pre-migration-backup.sh`)
+
+**Phase 2: Launch**
+- Go live, first real users come in
+
+**Phase 3: Immediately after launch (~1 hour setup)**
+- `pg_dump` of production → staging Supabase project
+- Create staging Vercel project (`staging.shelvd.org`)
+- Enable branch protection on `main` (no direct pushes)
+- From this point: feature branches → staging test → merge to `main` → production
+
+**Standing rules (effective immediately):**
+- Database migrations are always additive: `ADD COLUMN` only. `DROP COLUMN`, `RENAME`, `ALTER TYPE` = two releases.
+- Pre-migration backup before every migration (automated via `scripts/migrate.sh`)
+- Vercel instant rollback is the emergency brake for code issues
+
+---
+
 ### Recently Completed
 - ~~Performance optimizations~~ → Book detail parallelization, value summary RPC, collection count batching
 - ~~User onboarding~~ → Welcome wizard, getting started checklist, smart empty states, returning user nudge

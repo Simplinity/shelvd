@@ -56,3 +56,6 @@ check-flow.mjs
 -e check-smtp-final.mjs
 get-email.mjs
 -e gen-recovery.mjs
+-e 
+# Database backups
+backups/
