@@ -14,7 +14,6 @@ export type WikiCategory =
   | 'settings'
   | 'reference'
   | 'dealers'
-  | 'coming-soon'
 
 export const WIKI_CATEGORIES: Record<WikiCategory, { label: string; description: string; icon: string }> = {
   'getting-started': { label: 'Getting Started', description: 'From zero to cataloged in five articles', icon: 'Rocket' },
@@ -25,7 +24,6 @@ export const WIKI_CATEGORIES: Record<WikiCategory, { label: string; description:
   'settings':        { label: 'Settings & Account', description: 'Configuring Shelvd to your peculiar specifications', icon: 'Settings' },
   'reference':       { label: 'Glossary & Reference', description: 'The encyclopedic bit', icon: 'Library' },
   'dealers':         { label: 'For Dealers', description: 'Tools for people who sell what we hoard', icon: 'Store' },
-  'coming-soon':     { label: 'Coming Soon', description: 'Features we\'re building — pages we\'re writing', icon: 'Clock' },
 }
 
 export const WIKI_SECTIONS: { title: string; categories: WikiCategory[] }[] = [
@@ -37,7 +35,6 @@ export const WIKI_SECTIONS: { title: string; categories: WikiCategory[] }[] = [
   { title: 'Settings & Account', categories: ['settings'] },
   { title: 'Glossary & Reference', categories: ['reference'] },
   { title: 'For Dealers', categories: ['dealers'] },
-  { title: 'Coming Soon', categories: ['coming-soon'] },
 ]
 
 export interface WikiArticle {
@@ -47,7 +44,6 @@ export interface WikiArticle {
   title: string
   subtitle: string
   category: WikiCategory
-  comingSoon?: boolean
   relatedBlog?: string[]  // slugs of related blog articles
   relatedWiki?: string[]  // slugs of related wiki articles
 }
@@ -387,74 +383,9 @@ export const WIKI_ARTICLES: WikiArticle[] = [
     subtitle: 'PDF generation in six paper sizes — what\'s included, how to customize it, and when to hand one to a prospective buyer.',
     category: 'dealers',
   },
-
-  // ── IX. COMING SOON (placeholders for unbuilt features) ──────────────
-  {
-    number: 36,
-    slug: 'image-upload',
-    filename: 'image-upload.md',
-    title: 'Image Upload: Coming Soon',
-    subtitle: 'Direct file uploads for covers, spine shots, and damage photos. Currently accepting prayers and feature requests.',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
-  {
-    number: 37,
-    slug: 'sharing-public-catalog',
-    filename: 'sharing-public-catalog.md',
-    title: 'Sharing & Public Catalog: Coming Soon',
-    subtitle: 'Public profiles, shareable collection links, and embed widgets. Because what\'s the point of a library nobody can see?',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
-  {
-    number: 38,
-    slug: 'catalog-generator',
-    filename: 'catalog-generator.md',
-    title: 'Catalog Generator: Coming Soon',
-    subtitle: 'Professional DOCX catalogs from your collection. For dealers who\'ve graduated from handwritten lists.',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
-  {
-    number: 39,
-    slug: 'insurance-reports',
-    filename: 'insurance-reports.md',
-    title: 'Insurance & Valuation Reports: Coming Soon',
-    subtitle: 'Timestamped PDF reports with photos and values. For when your insurer asks "how much are these books worth?" and you need a better answer than "a lot."',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
-  {
-    number: 40,
-    slug: 'dealer-directory',
-    filename: 'dealer-directory.md',
-    title: 'Dealer Directory & Messaging: Coming Soon',
-    subtitle: 'A directory of dealers, wishlists, and direct messaging. Connecting buyers and sellers, the old-fashioned way — but online.',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
-  {
-    number: 41,
-    slug: 'bulk-operations',
-    filename: 'bulk-operations.md',
-    title: 'Bulk Operations: Coming Soon',
-    subtitle: 'Mass edits, batch updates, and the power to change 500 records before lunch. For collections that outgrew one-at-a-time.',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
-  {
-    number: 42,
-    slug: 'mobile-app',
-    filename: 'mobile-app.md',
-    title: 'Mobile Experience: Coming Soon',
-    subtitle: 'Full mobile responsiveness for the app — because not everyone catalogs at a desk. Some of us do it at book fairs, in warehouses, and occasionally in bed.',
-    category: 'coming-soon',
-    comingSoon: true,
-  },
 ]
 
-// ── Utility functions ──────────────────────────────────────────────────
+// ── Utility functions ──────────────────────────────────────────────────────────────────
 
 export function getWikiArticle(slug: string): WikiArticle | undefined {
   return WIKI_ARTICLES.find(a => a.slug === slug)
@@ -481,7 +412,6 @@ export function getRelatedArticles(article: WikiArticle): WikiArticle[] {
 }
 
 export const WIKI_STATS = {
-  totalArticles: WIKI_ARTICLES.filter(a => !a.comingSoon).length,
-  comingSoonArticles: WIKI_ARTICLES.filter(a => a.comingSoon).length,
+  totalArticles: WIKI_ARTICLES.length,
   categories: Object.keys(WIKI_CATEGORIES).length,
 }

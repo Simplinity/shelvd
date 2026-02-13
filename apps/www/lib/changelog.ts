@@ -32,7 +32,6 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Wiki / Knowledge Base — 35 articles across 8 categories: Getting Started, Cataloging, Provenance & History, Search & Discovery, Data & Export, Settings, Glossary & Reference, and For Dealers' },
       { type: 'added', text: 'Comprehensive glossary with 150+ book collecting and cataloging terms' },
       { type: 'added', text: 'Reference guides for all 76 book formats, 69 MARC relator codes, binding styles, and condition terminology' },
-      { type: 'added', text: '7 placeholder pages for upcoming features (image upload, sharing, catalog generator, insurance reports, dealer directory, bulk operations, mobile app)' },
       { type: 'improved', text: 'Blog renamed from "Marginalia" to "Blog" across all navigation for clarity' },
       { type: 'improved', text: 'Blog promoted to standalone nav link on marketing website (out of Info dropdown)' },
       { type: 'added', text: 'Wiki linked in marketing header, footer, and app user menu' },

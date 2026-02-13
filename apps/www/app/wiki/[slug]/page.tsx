@@ -18,7 +18,7 @@ import { ArticleBody } from '@/app/blog/[slug]/article-body'
 
 // Generate all wiki pages at build time
 export function generateStaticParams() {
-  return WIKI_ARTICLES.filter(a => !a.comingSoon).map((article) => ({
+  return WIKI_ARTICLES.map((article) => ({
     slug: article.slug,
   }))
 }
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function WikiArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const article = getWikiArticle(slug)
-  if (!article || article.comingSoon) notFound()
+  if (!article) notFound()
 
   const categoryMeta = WIKI_CATEGORIES[article.category]
   const categoryArticles = getWikiArticlesByCategory(article.category)
