@@ -1013,7 +1013,7 @@ SELECT b.id FROM books b WHERE b.user_id = $1
 | A6 | Platform health score & checks | Medium | Medium | Health bar on dashboard (missing ISBNs, covers, conditions at a glance). Click through to orphaned records, inconsistencies, duplicate publishers. |
 | ~~A7~~ | ~~Admin sidebar navigation~~ | ~~High~~ | ~~Low~~ | ✅ Done. Persistent sidebar: Overview, Users, Support (badge), Stats. Active state with left border accent. Sticky, icon-only on mobile. 'Back to App' link. Dashboard simplified with 'Needs Attention' alerts section. |
 | A8 | Weekly admin digest | Medium | Medium | Automated Monday email via Resend + Vercel Cron: signups, books added, open tickets, health delta, most active users. |
-| A9 | User onboarding funnel (admin view) | Medium | Low | Visual journey tracker on user detail page: 6 steps from signup to power user. Aggregated funnel on dashboard. See #12 for the user-facing onboarding. |
+| A9 | User onboarding funnel (admin view) | ✅ Done | — | Per-user 6-step journey tracker on user detail page (signed up → first book → 10+ books → used enrich → created collections → added provenance). Aggregated activation funnel on `/admin/stats` (signup → 1+ → 10+ → 100+ → 1000+ books with conversion %). |
 
 ### Planned — Post-Launch: Sales Integrations (Dealer only)
 
