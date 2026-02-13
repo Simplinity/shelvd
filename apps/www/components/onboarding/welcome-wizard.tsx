@@ -64,8 +64,8 @@ export function WelcomeWizard() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm p-6">
-      <div className="w-full max-w-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm p-6">
+      <div className="w-full max-w-lg bg-background border border-border p-8 shadow-lg">
         {/* Progress */}
         <div className="flex gap-1.5 mb-8">
           {STEPS.map((s, i) => (
