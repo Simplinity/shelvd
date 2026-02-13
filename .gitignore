@@ -50,3 +50,4 @@ check-smtp.mjs
 check-smtp-all.mjs
 fix-smtp.mjs
 fix-rate-limit.mjs
+check-logs.mjs
