@@ -121,7 +121,17 @@ export async function createCollection(formData: FormData): Promise<CollectionRe
 
   if (error) return { error: 'Failed to create collection' }
 
-  await logActivity({ userId: user.id, action: 'collection.created', category: 'collection', entityType: 'collection', entityLabel: name })
+  // Log directly with same client (logActivity creates a 2nd client that can lose auth context)
+  const { error: logErr } = await supabase.from('activity_log').insert({
+    user_id: user.id,
+    action: 'collection.created',
+    category: 'collection',
+    entity_type: 'collection',
+    entity_label: name,
+    metadata: {},
+    source: 'app',
+  })
+  if (logErr) console.error('[collections] activity log insert failed:', logErr.message)
 
   revalidatePath('/books')
   return { success: true, message: 'Collection created' }
@@ -150,7 +160,17 @@ export async function updateCollection(id: string, formData: FormData): Promise<
 
   if (error) return { error: 'Failed to update collection' }
 
-  await logActivity({ userId: user.id, action: 'collection.renamed', category: 'collection', entityType: 'collection', entityId: id, entityLabel: name })
+  const { error: logErr } = await supabase.from('activity_log').insert({
+    user_id: user.id,
+    action: 'collection.renamed',
+    category: 'collection',
+    entity_type: 'collection',
+    entity_id: id,
+    entity_label: name,
+    metadata: {},
+    source: 'app',
+  })
+  if (logErr) console.error('[collections] activity log insert failed:', logErr.message)
 
   revalidatePath('/books')
   return { success: true, message: 'Collection updated' }
@@ -183,7 +203,17 @@ export async function deleteCollection(id: string): Promise<CollectionResult> {
 
   if (error) return { error: 'Failed to delete collection' }
 
-  await logActivity({ userId: user.id, action: 'collection.deleted', category: 'collection', entityType: 'collection', entityId: id, entityLabel: collection.name })
+  const { error: logErr } = await supabase.from('activity_log').insert({
+    user_id: user.id,
+    action: 'collection.deleted',
+    category: 'collection',
+    entity_type: 'collection',
+    entity_id: id,
+    entity_label: collection.name,
+    metadata: {},
+    source: 'app',
+  })
+  if (logErr) console.error('[collections] activity log insert failed:', logErr.message)
 
   revalidatePath('/books')
   return { success: true, message: 'Collection deleted' }
@@ -289,7 +319,15 @@ export async function addBooksToCollection(bookIds: string[], collectionId: stri
   }
 
   if (newIds.length > 0) {
-    await logActivity({ userId: user.id, action: 'collection.book_added', category: 'collection', entityType: 'collection', entityId: collectionId, metadata: { book_count: newIds.length } })
+    await supabase.from('activity_log').insert({
+      user_id: user.id,
+      action: 'collection.book_added',
+      category: 'collection',
+      entity_type: 'collection',
+      entity_id: collectionId,
+      metadata: { book_count: newIds.length },
+      source: 'app',
+    })
   }
 
   revalidatePath('/books')
@@ -316,7 +354,15 @@ export async function removeBooksFromCollection(bookIds: string[], collectionId:
     if (error) return { error: 'Failed to remove books from collection' }
   }
 
-  await logActivity({ userId: user.id, action: 'collection.book_removed', category: 'collection', entityType: 'collection', entityId: collectionId, metadata: { book_count: bookIds.length } })
+  await supabase.from('activity_log').insert({
+    user_id: user.id,
+    action: 'collection.book_removed',
+    category: 'collection',
+    entity_type: 'collection',
+    entity_id: collectionId,
+    metadata: { book_count: bookIds.length },
+    source: 'app',
+  })
 
   revalidatePath('/books')
   return { success: true, message: `${bookIds.length} book(s) removed from collection` }
