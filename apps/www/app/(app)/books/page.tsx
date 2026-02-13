@@ -1861,24 +1861,15 @@ export default function BooksPage() {
 
       {/* Empty state */}
       {!loading && books.length === 0 && (
-        <div className="text-center py-24 border-2 border-dashed border-border">
-          <div className="w-16 h-16 bg-muted flex items-center justify-center mx-auto mb-6">
-            {hasAnySearch ? (
+        hasAnySearch ? (
+          <div className="text-center py-24 border-2 border-dashed border-border">
+            <div className="w-16 h-16 bg-muted flex items-center justify-center mx-auto mb-6">
               <Search className="w-8 h-8 text-muted-foreground" />
-            ) : (
-              <BookOpen className="w-8 h-8 text-muted-foreground" />
-            )}
-          </div>
-          <h3 className="text-xl font-bold mb-2">
-            {hasAnySearch ? 'No books found' : 'No books yet'}
-          </h3>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            {hasAnySearch 
-              ? 'Try adjusting your search criteria or clear the filters.'
-              : 'Start building your collection by adding your first book.'
-            }
-          </p>
-          {hasAnySearch ? (
+            </div>
+            <h3 className="text-xl font-bold mb-2">No books found</h3>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              Try adjusting your search criteria or clear the filters.
+            </p>
             <div className="flex gap-3 justify-center">
               <Button variant="outline" asChild>
                 <Link href="/books/search">Advanced Search</Link>
@@ -1887,15 +1878,41 @@ export default function BooksPage() {
                 Clear Filters
               </Button>
             </div>
-          ) : (
-            <Button variant="secondary" asChild>
-              <Link href="/books/add" className="gap-2">
-                <Plus className="w-4 h-4" />
-                Add Your First Book
-              </Link>
-            </Button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-24 border-2 border-dashed border-border">
+            <div className="w-16 h-16 bg-muted flex items-center justify-center mx-auto mb-6">
+              <BookOpen className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Every great library started with a single book</h3>
+            <p className="text-muted-foreground mb-2 max-w-md mx-auto">
+              Yours is waiting. Type a title, paste an ISBN, or look it up in 22 libraries across 4 continents.
+            </p>
+            <p className="text-muted-foreground/60 mb-8 text-sm italic max-w-md mx-auto">
+              We promise the add form is less scary than it looks.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Button asChild>
+                <Link href="/books/add" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add Your First Book
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/books/lookup" className="gap-2">
+                  <Search className="w-4 h-4" />
+                  Library Lookup
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/books/import" className="gap-2">
+                  <Upload className="w-4 h-4" />
+                  Import
+                </Link>
+              </Button>
+            </div>
+          </div>
+        )
       )}
 
       {/* List View */}
