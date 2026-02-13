@@ -762,6 +762,20 @@ export default function BookAddForm({ referenceData }: Props) {
         }
       }
 
+      // Log provenance activity
+      if (activeProvEntries.length > 0) {
+        void logActivity({
+          userId: user.id,
+          action: 'provenance.added',
+          category: 'provenance',
+          entityType: 'book',
+          entityId: newBook.id,
+          entityLabel: bookLabel(formData.title, formData.publication_year),
+          metadata: { count: activeProvEntries.length },
+          source: 'app',
+        })
+      }
+
       // Add condition history entries
       const activeCondEntries = conditionHistoryEntries.filter(e => !e.isDeleted)
       for (const entry of activeCondEntries) {

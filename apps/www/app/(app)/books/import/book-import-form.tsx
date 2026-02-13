@@ -363,6 +363,8 @@ export default function BookImportForm({ referenceData, userId }: Props) {
 
     let success = 0
     let failed = 0
+    let provCount = 0
+    let valCount = 0
 
     for (let i = 0; i < validBooks.length; i++) {
       const book = validBooks[i]
@@ -458,6 +460,7 @@ export default function BookImportForm({ referenceData, userId }: Props) {
         }
         if (valEntries.length > 0) {
           await supabase.from('valuation_history').insert(valEntries)
+          valCount += valEntries.length
         }
 
         // Handle contributors
@@ -514,6 +517,7 @@ export default function BookImportForm({ referenceData, userId }: Props) {
             owner_type: 'unknown',
             notes: book.data.provenance.trim(),
           })
+          provCount++
         }
 
         success++
@@ -541,6 +545,28 @@ export default function BookImportForm({ referenceData, userId }: Props) {
         },
         source: 'import',
       })
+      if (provCount > 0) {
+        void logActivity({
+          userId,
+          action: 'provenance.added',
+          category: 'provenance',
+          entityType: 'book',
+          entityLabel: fileName || 'import',
+          metadata: { count: provCount, via: 'import' },
+          source: 'import',
+        })
+      }
+      if (valCount > 0) {
+        void logActivity({
+          userId,
+          action: 'valuation.added',
+          category: 'valuation',
+          entityType: 'book',
+          entityLabel: fileName || 'import',
+          metadata: { count: valCount, via: 'import' },
+          source: 'import',
+        })
+      }
     }
 
     setStatus('done')

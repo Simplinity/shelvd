@@ -23,11 +23,14 @@ export type ActivityAction =
   | 'provenance.entry_updated'
   | 'provenance.entry_removed'
   | 'provenance.source_added'
+  | 'provenance.added'
   // Contributors & Tags
   | 'contributor.added'
   | 'contributor.removed'
   | 'tag.added'
   | 'tag.removed'
+  // Valuation
+  | 'valuation.added'
   // Account
   | 'account.signup'
   | 'account.profile_updated'
@@ -53,7 +56,7 @@ export type ActivityAction =
   | 'onboarding.checklist_dismissed'
   | 'onboarding.completed'
 
-export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'contributor' | 'tag' | 'account' | 'admin' | 'import' | 'audit' | 'onboarding'
+export type ActivityCategory = 'book' | 'collection' | 'provenance' | 'valuation' | 'enrich' | 'contributor' | 'tag' | 'account' | 'admin' | 'import' | 'audit' | 'onboarding'
 
 export type ActivitySource = 'app' | 'import' | 'api' | 'admin' | 'system'
 

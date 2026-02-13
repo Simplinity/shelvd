@@ -274,6 +274,21 @@ export default function BookEditForm({ book, referenceData }: Props) {
         return next
       })
       setIsDirty(true)
+      // Log enrich activity
+      supabase.auth.getUser().then(({ data: { user: enrichUser } }) => {
+        if (enrichUser) {
+          void logActivity({
+            userId: enrichUser.id,
+            action: 'book.enriched',
+            category: 'enrich',
+            entityType: 'book',
+            entityId: book.id,
+            entityLabel: bookLabel(formData.title, formData.publication_year),
+            metadata: { fields: Object.keys(updates) },
+            source: 'app',
+          })
+        }
+      })
     },
     (authorNames) => {
       // Add new authors as contributors
@@ -667,6 +682,24 @@ export default function BookEditForm({ book, referenceData }: Props) {
         }
       }
 
+      // Log provenance activity
+      const newProvEntries = provenanceEntries.filter(e => e.isNew && !e.isDeleted)
+      if (newProvEntries.length > 0) {
+        const { data: { user: provUser } } = await supabase.auth.getUser()
+        if (provUser) {
+          void logActivity({
+            userId: provUser.id,
+            action: 'provenance.added',
+            category: 'provenance',
+            entityType: 'book',
+            entityId: book.id,
+            entityLabel: bookLabel(formData.title, formData.publication_year),
+            metadata: { count: newProvEntries.length },
+            source: 'app',
+          })
+        }
+      }
+
       // Save condition history entries
       // 1. Delete removed entries
       const deletedCondEntries = conditionHistoryEntries.filter(e => e.isDeleted && !e.isNew && e.dbId)
@@ -757,6 +790,24 @@ export default function BookEditForm({ book, referenceData }: Props) {
       const activeProvValEntries = valuationHistoryEntries.filter(e => !e.isDeleted && e.provenanceEntryId && e.dbId)
       for (const entry of activeProvValEntries) {
         await supabase.from('valuation_history').update({ position: entry.position }).eq('id', entry.dbId!)
+      }
+
+      // Log valuation activity
+      const newValEntries = activeValEntries.filter(e => e.isNew)
+      if (newValEntries.length > 0) {
+        const { data: { user: valUser } } = await supabase.auth.getUser()
+        if (valUser) {
+          void logActivity({
+            userId: valUser.id,
+            action: 'valuation.added',
+            category: 'valuation',
+            entityType: 'book',
+            entityId: book.id,
+            entityLabel: bookLabel(formData.title, formData.publication_year),
+            metadata: { count: newValEntries.length },
+            source: 'app',
+          })
+        }
       }
 
       // Activity log (fire-and-forget)
