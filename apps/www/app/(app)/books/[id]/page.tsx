@@ -466,7 +466,7 @@ export default async function BookDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap mt-4 sm:mt-0">
           {showMoveToLibrary && (
             <MoveToLibraryButton
               bookId={id}

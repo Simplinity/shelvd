@@ -92,24 +92,24 @@ See `docs/mobile-plan.md` for full analysis and step breakdown.
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
 | 9.8 | Header: stack title + buttons on mobile | `books/page.tsx` | ✅ |
-| 9.9 | Search bar: icon-only buttons on mobile | `books/page.tsx` | |
-| 9.10 | Selection bar: wrap buttons | `books/page.tsx` | |
-| 9.11 | Value summary: flex-wrap | `books/page.tsx` | |
-| 9.12 | List view: mobile card layout | `books/page.tsx` | |
-| 9.13 | List header: hide on mobile | `books/page.tsx` | |
+| 9.9 | Search bar: icon-only buttons on mobile | `books/page.tsx` | ✅ |
+| 9.10 | Selection bar: wrap buttons | `books/page.tsx` | ✅ |
+| 9.11 | Value summary: flex-wrap | `books/page.tsx` | ✅ |
+| 9.12 | List view: mobile card layout | `books/page.tsx` | ✅ |
+| 9.13 | List header: hide on mobile | `books/page.tsx` | ✅ |
 
 **Phase C: Settings & Admin**
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
-| 9.14 | Settings tabs: horizontal scroll | `settings/page.tsx` | |
-| 9.15 | Admin sidebar: horizontal bar on mobile | `admin/admin-sidebar.tsx` | |
-| 9.16 | Admin layout: stack on mobile | `admin/layout.tsx` | |
+| 9.14 | Settings tabs: horizontal scroll | `settings/page.tsx` | ✅ |
+| 9.15 | Admin sidebar: horizontal bar on mobile | `admin/admin-sidebar.tsx` | ✅ |
+| 9.16 | Admin layout: stack on mobile | `admin/layout.tsx` | ✅ |
 
 **Phase D: Book Detail**
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
-| 9.17 | Header: stack cover + title on mobile | `books/[id]/page.tsx` | |
-| 9.18 | Action buttons: flex-wrap | `books/[id]/page.tsx` | |
+| 9.17 | Header: stack cover + title on mobile | `books/[id]/page.tsx` | ✅ |
+| 9.18 | Action buttons: flex-wrap | `books/[id]/page.tsx` | ⏳ |
 
 **Phase E: Remaining Pages**
 | # | Task | File(s) | Status |
