@@ -11,6 +11,16 @@ const TIER_RANK: Record<Tier, number> = {
   dealer: 2,
 }
 
+/**
+ * Hardcoded fallback limits per tier.
+ * Used when DB queries fail or return empty.
+ */
+const FALLBACK_LIMITS: Record<string, Record<string, number>> = {
+  collector: { max_books: 500, max_tags: 20, storage_bytes: 0, bandwidth_bytes_mo: 0 },
+  collector_pro: { max_books: 5000, max_tags: 1000, storage_bytes: 5368709120, bandwidth_bytes_mo: 26843545600 },
+  dealer: { max_books: 100000, max_tags: 1000, storage_bytes: 26843545600, bandwidth_bytes_mo: 268435456000 },
+}
+
 function highestTier(...tiers: Tier[]): Tier {
   return tiers.reduce((a, b) => TIER_RANK[b] > TIER_RANK[a] ? b : a)
 }
@@ -62,7 +72,7 @@ export async function hasFeature(userId: string, feature: string): Promise<boole
 
 /**
  * Get a tier limit value for a user.
- * Returns the numeric limit (0 = none).
+ * Returns the numeric limit, with fallback to hardcoded defaults.
  */
 export async function getTierLimit(userId: string, limitKey: string): Promise<number> {
   const tier = await getEffectiveTier(userId)
@@ -75,7 +85,7 @@ export async function getTierLimit(userId: string, limitKey: string): Promise<nu
     .eq('limit_key', limitKey)
     .single()
 
-  return data?.limit_value ?? 0
+  return data?.limit_value ?? (FALLBACK_LIMITS[tier]?.[limitKey] ?? 0)
 }
 
 /**
@@ -99,7 +109,9 @@ export async function getUserTierData(userId: string) {
   ])
 
   const features = new Set((featuresRes.data || []).map(f => f.feature))
-  const limits: Record<string, number> = {}
+
+  // Start with fallback limits, then override with DB values
+  const limits: Record<string, number> = { ...(FALLBACK_LIMITS[tier] || FALLBACK_LIMITS.collector) }
   for (const l of limitsRes.data || []) {
     limits[l.limit_key] = Number(l.limit_value)
   }
