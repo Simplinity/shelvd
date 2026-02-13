@@ -167,10 +167,10 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'Admin System Stats',
-    description: 'Growth charts, feature adoption, user activation funnel, data health. Dashboards for knowing what\'s actually happening on the platform.',
+    description: 'Eight key metrics, growth charts with cumulative running totals, seven data health checks sorted worst-first, tier distribution, feature adoption rates, user activation funnel, and books-per-user breakdown. The kind of dashboard that makes you either proud or nervous.',
     category: 'admin',
     status: 'shipped',
-    version: '0.10.0',
+    version: '0.21.0',
   },
   {
     title: 'Condition History',
