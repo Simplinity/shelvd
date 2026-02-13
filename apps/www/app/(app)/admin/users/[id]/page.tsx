@@ -204,6 +204,45 @@ export default async function AdminUserDetailPage({
         <StatCard icon={BookOpen} label="Last 30d" value={recentBookCount || 0} sub="books added" />
       </div>
 
+      {/* ── Journey Funnel ── */}
+      <div className="border border-border mb-8">
+        <div className="px-4 py-2 bg-muted/50 border-b border-border flex items-center justify-between">
+          <h3 className="text-sm font-semibold">Onboarding Journey</h3>
+          <span className="text-xs font-mono text-muted-foreground">
+            {journeySteps.filter(s => s.done).length}/{journeySteps.length}
+          </span>
+        </div>
+        <div className="p-4">
+          <div className="flex items-center gap-0">
+            {journeySteps.map((step, i) => (
+              <div key={step.label} className="flex items-center flex-1 min-w-0">
+                {/* Step dot */}
+                <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    step.done
+                      ? 'bg-foreground text-background'
+                      : 'border-2 border-muted-foreground/30 text-muted-foreground/30'
+                  }`}>
+                    {step.done ? '✓' : i + 1}
+                  </div>
+                  <span className={`text-[10px] text-center leading-tight ${
+                    step.done ? 'text-foreground font-medium' : 'text-muted-foreground/50'
+                  }`}>
+                    {step.label}
+                  </span>
+                </div>
+                {/* Connector line */}
+                {i < journeySteps.length - 1 && (
+                  <div className={`flex-1 h-0.5 mx-1 mt-[-18px] ${
+                    step.done && journeySteps[i + 1].done ? 'bg-foreground' : 'bg-muted-foreground/20'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* ── Two-column layout: Details + Actions ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column: 2/3 */}
