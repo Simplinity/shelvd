@@ -45,6 +45,7 @@ export type ActivityAction =
   // Invite codes
   | 'admin.invite_code_created'
   | 'admin.invite_code_toggled'
+  | 'admin.onboarding_reset'
   // Audit
   | 'audit.viewed'
   // Onboarding

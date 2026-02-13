@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Save, Loader2, CheckCircle, Clock, Ban, Shield, ShieldOff, Gift, CreditCard, Send, Mail } from 'lucide-react'
+import { Save, Loader2, CheckCircle, Clock, Ban, Shield, ShieldOff, Gift, CreditCard, Send, Mail, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logActivity } from '@/lib/actions/activity-log'
 
@@ -60,6 +60,8 @@ export function UserDetailClient({
           void logActivity({ userId: admin.id, action: 'admin.membership_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { is_lifetime_free: updates.is_lifetime_free }, source: 'admin' })
         } else if ('is_admin' in updates) {
           void logActivity({ userId: admin.id, action: 'admin.membership_changed', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, metadata: { is_admin: updates.is_admin }, source: 'admin' })
+        } else if ('user_type' in updates && updates.user_type === null) {
+          void logActivity({ userId: admin.id, action: 'admin.onboarding_reset', category: 'admin', entityType: 'user_profile', entityId: userId, entityLabel: email, source: 'admin' })
         }
       }
       router.refresh()
@@ -250,6 +252,27 @@ export function UserDetailClient({
               />
             </div>
           )}
+
+          {/* Reset Onboarding */}
+          <div className="border-t border-border pt-3">
+            <p className="text-xs text-muted-foreground mb-2">Onboarding</p>
+            <ActionBtn
+              icon={RotateCcw} label="Reset Onboarding" color="text-amber-600"
+              loading={actionLoading}
+              onClick={() => {
+                if (confirm('Reset onboarding? User will see the welcome wizard again on next visit.'))
+                  updateProfile({
+                    user_type: null,
+                    collection_size_estimate: null,
+                    current_system: null,
+                    interests: [],
+                    onboarding_completed: false,
+                    onboarding_checklist: {},
+                    onboarding_dismissed_at: null,
+                  })
+              }}
+            />
+          </div>
 
           {/* Send Email */}
           {email && (
