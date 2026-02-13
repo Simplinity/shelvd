@@ -64,15 +64,17 @@ export async function getCollectionsWithCounts(): Promise<{ error?: string; data
 
   const typedCollections = (collections || []) as CollectionRow[]
 
-  // Get counts per collection
-  const counts: Record<string, number> = {}
-  for (const col of typedCollections) {
-    const { count } = await supabase
-      .from('book_collections')
-      .select('*', { count: 'exact', head: true })
-      .eq('collection_id', col.id)
-    counts[col.id] = count || 0
-  }
+  // Get counts per collection (parallel)
+  const countResults = await Promise.all(
+    typedCollections.map(col =>
+      supabase
+        .from('book_collections')
+        .select('*', { count: 'exact', head: true })
+        .eq('collection_id', col.id)
+        .then(({ count }) => ({ id: col.id, count: count || 0 }))
+    )
+  )
+  const counts: Record<string, number> = Object.fromEntries(countResults.map(c => [c.id, c.count]))
 
   const result: CollectionWithCount[] = typedCollections.map(c => ({
     ...c,

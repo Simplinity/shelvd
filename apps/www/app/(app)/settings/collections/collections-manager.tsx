@@ -53,15 +53,18 @@ export function CollectionsManager() {
       return
     }
 
-    // Get counts
-    const withCounts: Collection[] = []
-    for (const col of cols) {
-      const { count } = await supabase
-        .from('book_collections')
-        .select('*', { count: 'exact', head: true })
-        .eq('collection_id', col.id)
-      withCounts.push({ ...col, book_count: count || 0 } as Collection)
-    }
+    // Get all counts in parallel
+    const counts = await Promise.all(
+      cols.map(col =>
+        supabase
+          .from('book_collections')
+          .select('*', { count: 'exact', head: true })
+          .eq('collection_id', col.id)
+          .then(({ count }) => ({ id: col.id, count: count || 0 }))
+      )
+    )
+    const countMap = Object.fromEntries(counts.map(c => [c.id, c.count]))
+    const withCounts = cols.map(col => ({ ...col, book_count: countMap[col.id] || 0 }) as Collection)
 
     setCollections(withCounts)
     setLoading(false)
