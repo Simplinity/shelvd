@@ -10,6 +10,7 @@ import { UserMenu } from '@/components/user-menu'
 import { getUserTierData } from '@/lib/tier'
 import { TierProviderWrapper } from '@/components/tier-provider-wrapper'
 import { WelcomeWizard } from '@/components/onboarding/welcome-wizard'
+import { ReturningUserNudge } from '@/components/returning-user-nudge'
 
 export default async function AppLayout({
   children,
@@ -145,6 +146,9 @@ export default async function AppLayout({
       <main>
         {children}
       </main>
+
+      {/* Returning user nudge toast */}
+      <ReturningUserNudge />
     </div>
     </TierProviderWrapper>
   )
