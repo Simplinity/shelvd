@@ -35,6 +35,7 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
   const [defaultType, setDefaultType] = useState('cover')
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
 
   const validateFile = (file: File): string | null => {
     const ext = file.name.split('.').pop()?.toLowerCase() || ''
@@ -168,7 +169,28 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
         accept="image/*"
         multiple
         className="hidden"
-        onChange={e => e.target.files && addFiles(e.target.files)}
+        onChange={e => { e.target.files && addFiles(e.target.files); e.target.value = '' }}
+      />
+
+      {/* Camera button */}
+      <button
+        type="button"
+        onClick={() => !disabled && cameraInputRef.current?.click()}
+        disabled={disabled}
+        className={`w-full flex items-center justify-center gap-2 py-2.5 border border-border text-sm hover:bg-muted transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        <Camera className="w-4 h-4" />
+        Take Photo
+      </button>
+
+      {/* Camera input (mobile) */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={e => { e.target.files && addFiles(e.target.files); e.target.value = '' }}
       />
 
       {/* File list */}
