@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { formatInteger, formatCurrency as fmtCurr } from '@/lib/format'
 import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, FolderPlus, FolderMinus } from 'lucide-react'
 import { LimitGate } from '@/components/feature-gate'
+import { OnboardingChecklistLoader } from '@/components/onboarding/onboarding-checklist-loader'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -1847,6 +1848,9 @@ export default function BooksPage() {
           </div>
         )
       })()}
+
+      {/* Onboarding checklist */}
+      {!loading && <OnboardingChecklistLoader />}
 
       {/* Loading state */}
       {loading && (
