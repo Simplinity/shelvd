@@ -1583,13 +1583,14 @@ export default function BooksPage() {
               </div>
             )}
           </div>
-          <Button type="submit" variant="default">
-            Search
+          <Button type="submit" variant="default" className="gap-2">
+            <Search className="w-4 h-4 sm:hidden" />
+            <span className="hidden sm:inline">Search</span>
           </Button>
           <Button type="button" variant="outline" asChild>
             <Link href="/books/search" className="gap-2">
               <SlidersHorizontal className="w-4 h-4" />
-              Advanced
+              <span className="hidden sm:inline">Advanced</span>
             </Link>
           </Button>
         </form>

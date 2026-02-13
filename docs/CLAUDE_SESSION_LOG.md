@@ -80,18 +80,18 @@ See `docs/mobile-plan.md` for full analysis and step breakdown.
 **Phase A: Mobile Navigation (CRITICAL)**
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
-| 9.1 | MobileNav component shell (button + state) | `components/mobile-nav.tsx` | |
-| 9.2 | Slide-out drawer (overlay + panel) | `components/mobile-nav.tsx` | |
-| 9.3 | Nav links in drawer | `components/mobile-nav.tsx` | |
-| 9.4 | User section in drawer (settings, support, sign out) | `components/mobile-nav.tsx` | |
-| 9.5 | CollectionNav in drawer | `components/mobile-nav.tsx` | |
-| 9.6 | Wire into layout.tsx (md:hidden) | `layout.tsx` | |
-| 9.7 | Auto-close on navigation | `components/mobile-nav.tsx` | |
+| 9.1 | MobileNav component shell (button + state) | `components/mobile-nav.tsx` | ✅ |
+| 9.2 | Slide-out drawer (overlay + panel) | `components/mobile-nav.tsx` | ✅ |
+| 9.3 | Nav links in drawer | `components/mobile-nav.tsx` | ✅ |
+| 9.4 | User section in drawer (settings, support, sign out) | `components/mobile-nav.tsx` | ✅ |
+| 9.5 | CollectionNav in drawer | `components/mobile-nav.tsx` | ✅ |
+| 9.6 | Wire into layout.tsx (md:hidden) | `layout.tsx` | ✅ |
+| 9.7 | Auto-close on navigation | `components/mobile-nav.tsx` | ✅ |
 
 **Phase B: Books Page**
 | # | Task | File(s) | Status |
 |---|------|---------|--------|
-| 9.8 | Header: stack title + buttons on mobile | `books/page.tsx` | |
+| 9.8 | Header: stack title + buttons on mobile | `books/page.tsx` | ✅ |
 | 9.9 | Search bar: icon-only buttons on mobile | `books/page.tsx` | |
 | 9.10 | Selection bar: wrap buttons | `books/page.tsx` | |
 | 9.11 | Value summary: flex-wrap | `books/page.tsx` | |
