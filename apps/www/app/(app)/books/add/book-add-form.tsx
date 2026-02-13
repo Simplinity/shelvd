@@ -1180,6 +1180,7 @@ export default function BookAddForm({ referenceData }: Props) {
               )}
             </div>
           </div>
+          <p className="text-xs text-muted-foreground mt-3 italic">Want to upload your own photos? Save this book first, then add images from the edit page.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div className="col-span-2">
               <label className={labelClass}>Cover Type<FieldHelp text={FIELD_HELP.cover_type} /></label>
