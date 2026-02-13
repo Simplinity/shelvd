@@ -47,3 +47,6 @@ check-auth-config.mjs
 debug-users.mjs
 configure-smtp.mjs
 check-smtp.mjs
+check-smtp-all.mjs
+fix-smtp.mjs
+fix-rate-limit.mjs
