@@ -73,7 +73,7 @@ Safety tag: `pre-mobile-responsive` (git tag on current working state)
 | 6.2.2 | Upload API route (validate → sharp → WebP → Vercel Blob → DB) | ✅ |
 | 6.2.3 | Delete API route (Blob del + DB delete + cover_image_url cleanup) | ✅ |
 | 6.2.4 | Quota utility (getStorageQuota, formatBytes, tier limits) | ✅ |
-| 6.2.5 | ImageUploadZone component | |
+| 6.2.5 | ImageUploadZone component (drop zone, file list, type selector, progress) | ✅ |
 | 6.2.6 | Wire into book edit form | |
 | 6.2.7 | Wire into book add form | |
 | 6.2.8 | Image gallery on detail page | |
