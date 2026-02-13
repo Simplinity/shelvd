@@ -324,7 +324,14 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'Platform Health Score & Checks',
-    description: 'One glance: a health bar on the dashboard showing missing ISBNs, covers, conditions. Click through to orphaned records, inconsistencies, duplicate publishers. The janitor\'s dashboard with a report card.',
+    description: 'Data Health on admin stats: 7 checks (ISBN, condition, publisher, cover, year, language, contributors) sorted worst-first. Needs Attention alerts on admin dashboard. Per-user Collection Audit with 10 checks and health score.',
+    category: 'admin',
+    status: 'shipped',
+    version: '0.21.0',
+  },
+  {
+    title: 'Data Cleanup Tools',
+    description: 'Orphaned records, inconsistencies, duplicate publishers. The janitor\'s toolkit for when the platform grows beyond one-person oversight.',
     category: 'admin',
     status: 'planned',
   },
