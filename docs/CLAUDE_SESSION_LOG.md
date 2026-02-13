@@ -70,7 +70,7 @@ Safety tag: `pre-mobile-responsive` (git tag on current working state)
 | # | Step | Status |
 |---|------|--------|
 | 6.2.1 | Install sharp + migration 068 (blob_url, thumb_blob_url, image_type, user_id on book_images) | ✅ |
-| 6.2.2 | Upload API route (validate → sharp → WebP → Vercel Blob → DB) | ⏳ |
+| 6.2.2 | Upload API route (validate → sharp → WebP → Vercel Blob → DB) | ✅ |
 | 6.2.3 | Delete API route | |
 | 6.2.4 | Quota utility | |
 | 6.2.5 | ImageUploadZone component | |
