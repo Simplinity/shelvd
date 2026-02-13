@@ -75,6 +75,30 @@ function AuditContent({ audit }: { audit: CollectionAuditResult }) {
   // Count categories with issues
   const categoriesWithIssues = categories.filter(c => c.count > 0).length
 
+  if (totalBooks === 0) {
+    return (
+      <div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold mb-1">Collection Audit</h1>
+          <p className="text-sm text-muted-foreground">
+            Data quality overview for your library
+          </p>
+        </div>
+        <div className="border border-dashed border-border px-6 py-16 text-center max-w-md mx-auto">
+          <p className="text-base text-muted-foreground italic">
+            Can&apos;t audit what doesn&apos;t exist. Add some books first and we&apos;ll tell you what&apos;s missing.
+          </p>
+          <a
+            href="/books/new"
+            className="inline-block mt-4 px-4 py-2 text-sm font-medium border border-border hover:bg-accent transition-colors"
+          >
+            + Add your first book
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Header */}

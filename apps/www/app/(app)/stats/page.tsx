@@ -134,10 +134,24 @@ export default function StatsPage() {
     )
   }
 
-  if (!stats) {
+  if (!stats || stats.totalBooks === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <p className="text-gray-500">No statistics available.</p>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">Statistics</h1>
+          <p className="text-gray-500 mt-1">Overview of your collection</p>
+        </div>
+        <div className="border border-dashed border-gray-200 px-6 py-16 text-center max-w-md mx-auto">
+          <p className="text-base text-gray-500 italic">
+            Numbers need data. Add a few books and we&apos;ll give you charts, trends, and the satisfaction of a well-organized collection.
+          </p>
+          <a
+            href="/books/new"
+            className="inline-block mt-4 px-4 py-2 text-sm font-medium border border-gray-200 hover:bg-gray-50 transition-colors"
+          >
+            + Add your first book
+          </a>
+        </div>
       </div>
     )
   }

@@ -192,9 +192,13 @@ export function MyActivityClient({ entries, total, page, perPage, currentCategor
           </table>
         </div>
       ) : (
-        <div className="border border-dashed border-border px-4 py-12 text-center">
-          <p className="text-sm text-muted-foreground">No activity recorded yet.</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Your actions will appear here as you add and edit books.</p>
+        <div className="border border-dashed border-border px-6 py-16 text-center max-w-md mx-auto">
+          <p className="text-base text-muted-foreground italic">
+            Nothing here yet. Add a book and watch the timeline come to life.
+          </p>
+          <p className="text-xs text-muted-foreground/60 mt-3">
+            Every book you add, edit, or enrich gets logged here — your collection&apos;s diary.
+          </p>
         </div>
       )}
 
