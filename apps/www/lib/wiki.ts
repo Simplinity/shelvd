@@ -174,7 +174,7 @@ export const WIKI_ARTICLES: WikiArticle[] = [
     slug: 'identifiers',
     filename: 'identifiers.md',
     title: 'ISBN, OCLC, LCCN, DDC, LCC, UDC: An Alphabet Soup That Actually Matters',
-    subtitle: 'Every identifier field in Shelvd, explained — what each one is, where to find it, and when to care.',
+    subtitle: 'The complete guide to book identifiers — history, structure, where to find them, how they flow into Shelvd, and why they matter for every collector.',
     category: 'cataloging',
     relatedBlog: ['isbn-invented-1970'],
   },
