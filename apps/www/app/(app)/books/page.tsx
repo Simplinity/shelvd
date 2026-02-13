@@ -1134,96 +1134,27 @@ export default function BooksPage() {
       const displayCur = profile?.default_currency || 'EUR'
       if ((profile as any)?.locale) setUserLocale((profile as any).locale)
 
-      // Determine book IDs to aggregate
-      let bookIds: string[] | null = null // null = all books
-      const colId = searchParams.get('collection') || ''
-      const tId = searchParams.get('tag') || ''
+      const colId = searchParams.get('collection') || null
+      const tId = searchParams.get('tag') || null
 
-      if (colId && tId) {
-        const colIds = await getBookIdsForCollection(colId)
-        const tagIds = await getBookIdsForTag(tId)
-        const tagSet = new Set(tagIds)
-        bookIds = colIds.filter(id => tagSet.has(id))
-      } else if (colId) {
-        bookIds = await getBookIdsForCollection(colId)
-      } else if (tId) {
-        bookIds = await getBookIdsForTag(tId)
+      const { data, error } = await supabase.rpc('get_value_summary', {
+        p_user_id: user.id,
+        p_collection_id: colId || null,
+        p_tag_id: tId || null,
+      })
+
+      if (error) {
+        console.error('Value summary RPC error:', error.message)
+        return
       }
 
-      // Fetch estimated values from books
-      let allBooks: any[] = []
-      if (bookIds !== null) {
-        for (let i = 0; i < bookIds.length; i += 500) {
-          const batch = bookIds.slice(i, i + 500)
-          const { data } = await supabase
-            .from('books')
-            .select('id')
-            .eq('user_id', user.id)
-            .in('id', batch)
-          if (data) allBooks.push(...data)
-        }
-      } else {
-        let offset = 0
-        while (true) {
-          const { data } = await supabase
-            .from('books')
-            .select('id')
-            .eq('user_id', user.id)
-            .range(offset, offset + 999)
-          if (!data || data.length === 0) break
-          allBooks.push(...data)
-          if (data.length < 1000) break
-          offset += 1000
-        }
-      }
-
-      const allBookIds = allBooks.map((b: any) => b.id)
-
-      // Fetch latest valuation per book from valuation_history
-      const valMap = new Map<string, number>()
-      for (let i = 0; i < allBookIds.length; i += 500) {
-        const batch = allBookIds.slice(i, i + 500)
-        const { data } = await supabase
-          .from('valuation_history')
-          .select('book_id, value, currency')
-          .in('book_id', batch)
-          .order('position', { ascending: false })
-        data?.forEach((v: any) => {
-          if (!valMap.has(v.book_id)) {
-            valMap.set(v.book_id, Number(v.value))
-          }
-        })
-      }
-
-      // Fetch acquisition prices from provenance "self" entries
-      const acqMap = new Map<string, number>()
-      for (let i = 0; i < allBookIds.length; i += 500) {
-        const batch = allBookIds.slice(i, i + 500)
-        const { data } = await supabase
-          .from('provenance_entries')
-          .select('book_id, price_paid')
-          .eq('owner_type', 'self')
-          .not('price_paid', 'is', null)
-          .in('book_id', batch)
-        data?.forEach((p: any) => {
-          if (!acqMap.has(p.book_id) || Number(p.price_paid) > 0) {
-            acqMap.set(p.book_id, Number(p.price_paid))
-          }
-        })
-      }
-
-      let totalAcquired = 0
-      let totalEstimated = 0
-      let count = 0
-      for (const b of allBooks) {
-        const acqPrice = acqMap.get(b.id)
-        const estValue = valMap.get(b.id)
-        if (acqPrice) totalAcquired += acqPrice
-        if (estValue) totalEstimated += estValue
-        if (acqPrice || estValue) count++
-      }
-
-      setValueSummary({ totalAcquired, totalEstimated, bookCount: count, currency: displayCur })
+      const result = data as any
+      setValueSummary({
+        totalAcquired: Number(result?.total_acquired ?? 0),
+        totalEstimated: Number(result?.total_estimated ?? 0),
+        bookCount: Number(result?.book_count ?? 0),
+        currency: displayCur,
+      })
     } catch {
       // Silently fail — summary is non-critical
     }
