@@ -421,7 +421,7 @@ status, action_needed, internal_notes
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
 | 12 | User Onboarding | High | Medium | Welcome wizard, smart empty states, getting started checklist, contextual hints, demo book. Three phases. See details below. |
 | 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
-| 15 | Community | Medium | Medium-High | Community forum/discussion space for collectors and dealers. Collector tier support channel (best effort). Knowledge sharing, book identification help, trade discussions. Scope TBD. |
+| 15 | Community | Post-launch | — | Moved to post-launch. Discord link in footer/wiki as interim solution. |
 | 13 | Invite Codes | ✅ Done | — | Optional promo codes on signup for attribution + benefits. Tables: invite_codes + invite_code_redemptions. Signup form: optional code field with validation. Admin /admin/invite-codes: list, create, toggle, detail with per-code stats (users, books). Activity logging. Sidebar link. See details below. |
 
 #### #4 Activity Logging — Detail
