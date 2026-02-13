@@ -78,7 +78,7 @@ export interface LogActivityParams {
 export async function logActivity(params: LogActivityParams): Promise<void> {
   try {
     const supabase = await createClient()
-    await supabase.from('activity_log').insert({
+    const { error } = await supabase.from('activity_log').insert({
       user_id: params.userId,
       action: params.action,
       category: params.category,
@@ -88,9 +88,11 @@ export async function logActivity(params: LogActivityParams): Promise<void> {
       metadata: (params.metadata ?? {}) as Json,
       source: params.source ?? 'app',
     })
-  } catch {
-    // Silent — logging should never break the main flow
-    console.error('[activity-log] Failed to log activity:', params.action)
+    if (error) {
+      console.error('[activity-log] Insert failed:', error.message, '| action:', params.action, '| userId:', params.userId)
+    }
+  } catch (e) {
+    console.error('[activity-log] Exception:', e, '| action:', params.action)
   }
 }
 
