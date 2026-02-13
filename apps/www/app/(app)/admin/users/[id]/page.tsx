@@ -54,7 +54,43 @@ export default async function AdminUserDetailPage({
   // 6. Collections (SECURITY DEFINER RPC)
   const { data: collections } = await supabase.rpc('get_user_collections_for_admin', { target_user_id: id })
 
-  // 7. Invite code (if user has one)
+  // 7. Journey / onboarding funnel data
+  // Step 1: signed up (always true)
+  // Step 2: added first book (bookCount > 0)
+  // Step 3: added 10+ books (bookCount >= 10)
+  // Step 4: used enrich (check activity_log)
+  let usedEnrich = false
+  try {
+    const { count } = await supabase
+      .from('activity_log')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', id)
+      .eq('category', 'enrich')
+    usedEnrich = (count || 0) > 0
+  } catch {}
+  // Step 5: created collections (more than the auto-created Library)
+  const userCollectionCount = collections?.filter((c: any) => !c.is_default).length || 0
+  // Step 6: rich metadata (has provenance on any book)
+  let hasProvenance = false
+  try {
+    const { count: provActivityCount } = await supabase
+      .from('activity_log')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', id)
+      .eq('category', 'provenance')
+    hasProvenance = (provActivityCount || 0) > 0
+  } catch {}
+
+  const journeySteps = [
+    { label: 'Signed up', done: true },
+    { label: 'Added first book', done: bookCount > 0 },
+    { label: '10+ books', done: bookCount >= 10 },
+    { label: 'Used Enrich', done: usedEnrich },
+    { label: 'Created collections', done: userCollectionCount > 0 },
+    { label: 'Added provenance', done: hasProvenance },
+  ]
+
+  // 8. Invite code (if user has one)
   let inviteCode: { code: string; label: string | null; source_type: string; source_name: string | null } | null = null
   if (profile.invite_code_id) {
     const { data: codeData } = await supabase
