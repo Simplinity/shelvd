@@ -170,6 +170,17 @@ function GrowthChart({ booksByMonth, signupsByMonth }: {
   const totalBooks = booksByMonth.reduce((s, d) => s + d.count, 0)
   const totalSignups = signupsByMonth.reduce((s, d) => s + d.count, 0)
 
+  // Compute cumulative running totals
+  let cumBooks = 0, cumSignups = 0
+  const cumBookMap = new Map<string, number>()
+  const cumSignupMap = new Map<string, number>()
+  months.forEach(m => {
+    cumBooks += bookMap.get(m) || 0
+    cumSignups += signupMap.get(m) || 0
+    cumBookMap.set(m, cumBooks)
+    cumSignupMap.set(m, cumSignups)
+  })
+
   return (
     <div>
       <SectionTitle>Growth</SectionTitle>
@@ -188,7 +199,7 @@ function GrowthChart({ booksByMonth, signupsByMonth }: {
 
         {/* Chart area */}
         <div className="space-y-3">
-          {months.map((month, i) => {
+          {months.map((month) => {
             const books = bookMap.get(month) || 0
             const signups = signupMap.get(month) || 0
             const bookPct = (books / maxBooks) * 100
@@ -207,7 +218,8 @@ function GrowthChart({ booksByMonth, signupsByMonth }: {
                           style={{ width: `${Math.max(bookPct, 0.5)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-mono w-12 text-right">{fmt(books)}</span>
+                      <span className="text-xs font-mono w-14 text-right">+{fmt(books)}</span>
+                      <span className="text-[11px] font-mono text-muted-foreground w-16 text-right">Σ {fmt(cumBookMap.get(month) || 0)}</span>
                     </div>
                     {/* Signups bar */}
                     <div className="flex items-center gap-2">
@@ -217,7 +229,8 @@ function GrowthChart({ booksByMonth, signupsByMonth }: {
                           style={{ width: `${Math.max(signupPct, 0.5)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-mono w-12 text-right">{fmt(signups)}</span>
+                      <span className="text-xs font-mono w-14 text-right">+{fmt(signups)}</span>
+                      <span className="text-[11px] font-mono text-muted-foreground w-16 text-right">Σ {fmt(cumSignupMap.get(month) || 0)}</span>
                     </div>
                   </div>
                 </div>
