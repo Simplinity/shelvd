@@ -104,7 +104,7 @@ export async function forgotPassword(formData: FormData): Promise<AuthResult> {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.shelvd.org'}/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.shelvd.org'}/auth/callback?next=/reset-password`,
   })
 
   if (error) {
