@@ -298,9 +298,10 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'User Onboarding Funnel (Admin View)',
-    description: 'Visual 6-step journey tracker on each user detail page: signed up → first book → 10 books → used enrich → collections → rich metadata. Aggregated funnel on admin dashboard showing conversion at each step. Identifies friction points at a glance.',
+    description: 'Per-user 6-step journey on user detail page (signed up → first book → 10+ books → used enrich → created collections → added provenance). Aggregated activation funnel on stats dashboard with conversion percentages at each step.',
     category: 'admin',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.21.0',
   },
   // Tier System & Feature Gating
   {
