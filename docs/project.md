@@ -419,7 +419,7 @@ status, action_needed, internal_notes
 | 9 | Mobile responsiveness | High | High | **Website pages: ✅ Done.** App pages: not yet. See details below. |
 | 10 | Collection Audit | ✅ Done | — | Per-user library health score at `/audit`. 10 checks (identifiers, contributors, cover, condition, publisher, year, provenance, valuation, language, location), health score 0–100%, expandable book lists with fix links, FeatureGate (Pro+), nav link, activity logging. See details below. |
 | 11 | Catalog Generator | Medium | Medium-High | Generate professional DOCX book catalogs from selected books. For dealers, auction houses, and serious collectors. See details below. |
-| 12 | User Onboarding | High | Medium | Welcome wizard (4 screens), getting started checklist (4–6 steps, profile-driven), smart empty states (6 pages), returning user nudge. See details below. |
+| 12 | User Onboarding | ✅ Done | — | Welcome wizard (4 screens with humor), getting started checklist (4 base + 2 profile-driven), smart empty states (6 pages), returning user nudge, activity logging. See details below. |
 | 14 | Tier System & Feature Gating | High | Medium | Three tiers: Collector (free), Collector Pro, Dealer. Database-driven feature flags — no hardcoded tier checks. Upgrade hints in UI. See details below. |
 | 15 | Community | Post-launch | — | Moved to post-launch. Discord link in footer/wiki as interim solution. |
 | 13 | Invite Codes | ✅ Done | — | Optional promo codes on signup for attribution + benefits. Tables: invite_codes + invite_code_redemptions. Signup form: optional code field with validation. Admin /admin/invite-codes: list, create, toggle, detail with per-code stats (users, books). Activity logging. Sidebar link. See details below. |

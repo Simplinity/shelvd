@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.21.0'
+export const APP_VERSION = '0.22.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,19 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.22.0',
+    date: '2026-02-13',
+    title: 'Welcome to Shelvd',
+    description: 'First impressions matter — especially when a blogger sends you traffic. A 4-screen welcome wizard that asks the right questions (with the right amount of humor), a getting started checklist that adapts to your profile, smart empty states on every page, and a gentle nudge when you come back after a few days. Because an empty library page shouldn\'t feel like a dead end.',
+    changes: [
+      { type: 'added', text: 'Welcome Wizard — 4 screens: who you are, how many books, current system, what matters most. Answers drive the rest of onboarding.' },
+      { type: 'added', text: 'Getting Started Checklist — 4 base steps (add book, try Library Lookup, set condition, create collection) + up to 2 profile-driven extras. Auto-detects completion.' },
+      { type: 'added', text: 'Smart Empty States — 6 pages (Library, Collections, Provenance, Activity, Audit, Stats) get personality and clear calls to action instead of blank tables' },
+      { type: 'added', text: 'Returning User Nudge — toast notification after 3+ days away, pointing to your next uncompleted step' },
+      { type: 'added', text: 'Activity logging for all onboarding events: wizard completion, checklist progress, and full onboarding completion' },
+    ],
+  },
   {
     version: '0.21.0',
     date: '2026-02-13',

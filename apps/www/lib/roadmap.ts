@@ -249,9 +249,10 @@ export const ROADMAP: RoadmapItem[] = [
   // User Onboarding
   {
     title: 'User Onboarding',
-    description: 'Five components across three phases. Welcome wizard ("How do you collect?" — collector, dealer, librarian, explorer — personalized first step based on collection size). Smart empty states that teach instead of dead-ending. Getting Started checklist (6 steps showcasing core value: add a book, try Library Lookup, create a collection, add provenance, export). Contextual first-visit hints on key screens. Optional demo book — a fully cataloged entry showing what a complete bibliographic record looks like. Because a collector who sees a book with full provenance wants that for their own library.',
+    description: 'Welcome wizard (4 screens with humor: who are you, how many books, current system, what matters most). Getting started checklist (4 base steps + up to 2 profile-driven extras, auto-detects completion). Smart empty states on 6 pages. Returning user nudge after 3+ days. Activity logging for all onboarding events. Because an empty library page shouldn\'t feel like a dead end.',
     category: 'platform',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.22.0',
   },
 
   // Book Data Features
