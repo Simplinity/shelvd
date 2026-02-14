@@ -35,6 +35,12 @@ type BookData = {
   volumes: string | null
   height_mm: number | null
   width_mm: number | null
+  // Physical extras
+  depth_mm: number | null
+  paper_type: string | null
+  edge_treatment: string | null
+  endpapers_type: string | null
+  text_block_condition: string | null
   // Cover & Binding
   cover_type: string | null
   binding_name: string | null
@@ -42,13 +48,21 @@ type BookData = {
   format_abbreviation: string | null
   has_dust_jacket: boolean | null
   is_signed: boolean | null
+  signature_details: string | null
+  protective_enclosure: string | null
   // Condition
   condition_name: string | null
   condition_notes: string | null
+  dust_jacket_condition_name: string | null
+  // Language
+  language_name: string | null
+  original_language_name: string | null
   // Notes
   bibliography: string | null
   illustrations_description: string | null
   signatures_description: string | null
+  dedication_text: string | null
+  colophon_text: string | null
   // Structured provenance
   provenanceEntries?: {
     ownerName: string
@@ -67,6 +81,10 @@ type BookData = {
   isbn_10: string | null
   oclc_number: string | null
   lccn: string | null
+  user_catalog_id: string | null
+  ddc: string | null
+  lcc: string | null
+  udc: string | null
   // Contributors
   contributors: Contributor[]
 }
