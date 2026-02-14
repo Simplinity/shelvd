@@ -143,7 +143,7 @@ const getOrCondition = (field: string, value: string, isExact: boolean): string 
 const SEARCH_FIELDS = [
   'title', 'subtitle', 'original_title', 'series', 'author',
   'publisher_name', 'publication_place', 'publication_year',
-  'language', 'condition', 'status', 'isbn', 'storage_location', 'shelf'
+  'language', 'condition', 'status', 'isbn', 'user_catalog_id', 'storage_location', 'shelf'
 ]
 
 export default function BooksPage() {
