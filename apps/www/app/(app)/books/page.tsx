@@ -224,6 +224,27 @@ export default function BooksPage() {
     setGlobalSearchInput(globalSearchQuery)
   }, [globalSearchQuery])
 
+  // Save scroll position when leaving the page (for back button restore)
+  useEffect(() => {
+    return () => {
+      sessionStorage.setItem('books-scroll', String(window.scrollY))
+    }
+  }, [])
+
+  // Restore scroll position after data loads (returning via back button)
+  useEffect(() => {
+    if (!loading && books.length > 0) {
+      const saved = sessionStorage.getItem('books-scroll')
+      if (saved) {
+        sessionStorage.removeItem('books-scroll')
+        // Wait for DOM to render, then scroll
+        requestAnimationFrame(() => {
+          window.scrollTo(0, parseInt(saved))
+        })
+      }
+    }
+  }, [loading, books.length])
+
   // Load recent searches on mount
   useEffect(() => {
     setRecentSearches(getRecentSearches())
