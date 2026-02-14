@@ -43,6 +43,7 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'fixed', text: 'Image upload tier check — was reading non-existent column, now correctly checks membership_tier' },
       { type: 'fixed', text: 'Deleting a cover image now clears the cover URL in form state, preventing it from being written back on save' },
       { type: 'fixed', text: 'Image delete now shows a confirmation dialog before permanently removing the file' },
+      { type: 'improved', text: 'Back to collection button now returns you to your exact scroll position instead of the top of the list' },
     ],
   },
   {

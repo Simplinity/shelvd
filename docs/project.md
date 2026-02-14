@@ -1357,7 +1357,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 ---
 
 ### Recently Completed
-- ~~Image upload (Fase 2+3)~~ → v0.24.0: Vercel Blob + sharp WebP pipeline, upload UI, gallery, drag reorder, camera capture, pinch-to-zoom lightbox, quota tracking
+- ~~Image upload (Fase 2+3)~~ → v0.24.0: Vercel Blob + sharp WebP pipeline, upload UI, gallery, drag reorder, camera capture, pinch-to-zoom lightbox, quota tracking, catalog number search, scroll restore on back button, image delete confirmation + cover URL cleanup
 - ~~Mobile responsiveness~~ → v0.23.0: Hamburger nav, card layouts, responsive grids, touch targets. 23 steps, desktop untouched.
 - ~~Valuation bug fix~~ → v0.23.0: provenance_purchase excluded from value summaries (RPC, stats, PDF, export). Stats batching fix for 5000+ books.
 - ~~Performance optimizations~~ → Book detail parallelization, value summary RPC, collection count batching
