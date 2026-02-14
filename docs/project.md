@@ -469,12 +469,76 @@ All 8 steps complete (v0.15.0). `valuation_history` table with 7 source types, p
 
 ---
 
+## Pre-Release Polish
+
+Must-do improvements before launch. Low effort, low risk.
+
+### SEO & Web Standards
+| # | Item | Status |
+|---|------|--------|
+| P1 | Favicon + apple-touch-icon + web manifest | ✅ Done |
+| P2 | robots.txt (allow marketing, disallow app/admin/auth) | ✅ Done |
+| P3 | sitemap.xml (8 static + 22 blog + 35 wiki = 65 pages) | ✅ Done |
+| P4 | OpenGraph / Twitter Card metadata + OG image | Todo |
+
+### Error Handling & Resilience
+| # | Item | Status |
+|---|------|--------|
+| P5 | Global error page (app/error.tsx) | Todo |
+| P6 | Global 404 page (app/not-found.tsx) | Todo |
+| P7 | Global loading state (app/(app)/loading.tsx) | Todo |
+| P8 | Replace 12+ alert() calls with toast notification system | Todo |
+
+### UX Polish
+| # | Item | Status |
+|---|------|--------|
+| P9 | Save confirmation toast after book edit | Todo |
+| P10 | Prev/Next navigation follows active sort order | Todo |
+| P11 | Unsaved changes indicator in browser tab title | Todo |
+| P12 | Keyboard shortcuts: Cmd+K search, Cmd+S save, Cmd+N add | Todo |
+| P13 | Search term highlighting in results | Todo |
+
+### Data Quality
+| # | Item | Status |
+|---|------|--------|
+| P14 | Duplicate warning on add (debounced title check) | Todo |
+| P15 | "Recently added/edited" quick filter on books list | Todo |
+| P16 | "Add →" nudge links on empty fields in detail page | Todo |
+
+### Technical
+| # | Item | Status |
+|---|------|--------|
+| P17 | Split books/page.tsx (2300+ lines) into focused components | Todo |
+| P18 | Stricter TypeScript types for Supabase queries (remove `any`) | Todo |
+
+### Accessibility
+| # | Item | Status |
+|---|------|--------|
+| P19 | Skip-to-content link | Todo |
+| P20 | Alt text on cover images (book title instead of empty) | Todo |
+
+### Marketing & Growth
+| # | Item | Status |
+|---|------|--------|
+| P21 | JSON-LD structured data on marketing pages | Todo |
+| P22 | Newsletter email capture on landing page | Todo |
+| P23 | "Share with a friend" button (uses existing invite codes) | Todo |
+
+### Minor Polish
+| # | Item | Status |
+|---|------|--------|
+| P24 | Dynamic browser tab titles (book count, book title, page name) | Todo |
+| P25 | Scroll-to-top button on long book lists | Todo |
+
+---
+
 ## Launch Plan & Production Safety
 
 > Decided 2026-02-13. See `docs/staging.md` for full implementation guide.
 
 **Phase 1: Pre-launch (now)**
-- Finish remaining 2 features on `main` as before: Bulk Image Import (Dealer only) + Mollie integration + upgrade flow
+- Finish remaining 2 features on `main`: Bulk Image Import (Dealer only) + Mollie integration + upgrade flow
+- Pre-release polish (see above): P4–P25
 - Test everything yourself — you are the only user, `main` is your staging
 - Pre-migration backup script active (see `scripts/pre-migration-backup.sh`)
 
