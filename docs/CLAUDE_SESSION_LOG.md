@@ -4,7 +4,7 @@
 
 ## Current State
 - **Version:** v0.25.0
-- **Migrations:** 075 applied
+- **Migrations:** 076 applied
 - **Rollback tag:** `v0.25.0-pre-image-labels`
 - **Current task:** Image labeling via book_parts
 
@@ -19,15 +19,10 @@
 - [x] 1.4 Registered migration 075
 - [x] 1.5 Commit + push
 
-### Push 2: Description tooltips (migration 076)
-- [ ] 2.1 Write migration 076: Front matter descriptions (12)
-- [ ] 2.2 Write migration 076: Body descriptions (3)
-- [ ] 2.3 Write migration 076: Back matter descriptions (11)
-- [ ] 2.4 Write migration 076: Physical descriptions (8)
-- [ ] 2.5 Write migration 076: Illustration descriptions (12)
-- [ ] 2.6 Write migration 076: Other descriptions (5)
-- [ ] 2.7 Apply + verify all 51 filled
-- [ ] 2.8 Commit + push → Vercel
+### Push 2: Description tooltips (migration 076) ✅
+- [x] 2.1-2.6 Wrote all 51 descriptions (antiquarian perspective)
+- [x] 2.7 Applied: 51× UPDATE 1, verified 0 empty
+- [x] 2.8 Commit + push
 
 ### Push 3: Backend — book_part_id replaces image_type
 - [ ] 3.1 Read upload API, image queries, delete handler
