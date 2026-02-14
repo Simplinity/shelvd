@@ -322,7 +322,7 @@ export default function TermsPage() {
                 <Mail className="w-5 h-5 text-primary" />
               </div>
               <div className="space-y-1.5">
-                <p className="text-sm"><span className="text-muted-foreground">Email:</span> <strong>legal@shelvd.app</strong></p>
+                <p className="text-sm"><span className="text-muted-foreground">Email:</span> <a href="mailto:legal@shelvd.app" className="font-semibold underline hover:text-foreground">legal@shelvd.app</a></p>
                 <p className="text-sm"><span className="text-muted-foreground">Human:</span> <strong>Bruno van Branden</strong></p>
                 <p className="text-sm"><span className="text-muted-foreground">Location:</span> Belgium, EU</p>
                 <p className="text-sm"><span className="text-muted-foreground">Response time:</span> Usually within 48 hours. We read faster than we type.</p>

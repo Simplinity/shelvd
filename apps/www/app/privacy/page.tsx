@@ -66,7 +66,7 @@ export default function PrivacyPage() {
             <div className="my-6 p-5 bg-muted/30 border space-y-1.5">
               <p className="text-sm"><span className="text-muted-foreground">Data Controller:</span> <strong>Bruno van Branden / Simplinity</strong></p>
               <p className="text-sm"><span className="text-muted-foreground">Location:</span> Belgium, European Union</p>
-              <p className="text-sm"><span className="text-muted-foreground">Privacy inquiries:</span> <strong>privacy@shelvd.app</strong></p>
+              <p className="text-sm"><span className="text-muted-foreground">Privacy inquiries:</span> <a href="mailto:privacy@shelvd.app" className="font-semibold underline hover:text-foreground">privacy@shelvd.app</a></p>
             </div>
             <p>
               We are a one-person operation. There is no privacy department. There is no Chief Data Officer. 
@@ -245,7 +245,7 @@ export default function PrivacyPage() {
               </RightItem>
             </div>
             <p>
-              To exercise any of these rights, email <strong>privacy@shelvd.app</strong>. 
+              To exercise any of these rights, email <a href="mailto:privacy@shelvd.app" className="font-semibold underline hover:text-foreground">privacy@shelvd.app</a>. 
               You&apos;ll hear from Bruno. Not a bot.
             </p>
           </PolicySection>
@@ -299,7 +299,7 @@ export default function PrivacyPage() {
                 <Mail className="w-5 h-5 text-primary" />
               </div>
               <div className="space-y-1.5">
-                <p className="text-sm"><span className="text-muted-foreground">Email:</span> <strong>privacy@shelvd.app</strong></p>
+                <p className="text-sm"><span className="text-muted-foreground">Email:</span> <a href="mailto:privacy@shelvd.app" className="font-semibold underline hover:text-foreground">privacy@shelvd.app</a></p>
                 <p className="text-sm"><span className="text-muted-foreground">Human:</span> <strong>Bruno van Branden</strong></p>
                 <p className="text-sm"><span className="text-muted-foreground">Location:</span> Belgium, EU</p>
                 <p className="text-sm"><span className="text-muted-foreground">Response time:</span> Usually within 48 hours. Faster if you mention books.</p>
