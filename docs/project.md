@@ -1277,6 +1277,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 | S5 | Insurance & Valuation Reports | Medium | Timestamped PDF reports: book list with photos, values, total collection value. Valuation history (B2) is done, this adds the export. |
 | S6 | Dealer Directory | Medium | Business profiles for dealers. Collectors browse by region, period, subject. Dealer only. |
 | S7 | Admin Impersonation | Low | "View as user" mode for debugging. See their books, collections, settings. Big red banner. |
+| S12 | Images in PDF Inserts | Low | Add book images (cover + additional photos) to catalog sheet PDFs (A4/A5/A6). NOT on the catalog card (too small). Cover image at top, additional images in a grid below. Uses `book_images.blob_url` with `pdf-lib` image embedding. |
 | S8 | Community | Low | Discord link as interim. In-app forum only if community outgrows it. |
 | S9 | Data Cleanup Tools | Low-Medium | Orphaned records, inconsistencies, duplicate publishers. Admin-only. Build when scale demands it. |
 | S10 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
