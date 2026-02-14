@@ -211,7 +211,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     return (
       <div className={className}>
         <dt className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</dt>
-        <dd className="text-sm">{value}</dd>
+        <dd className="text-sm whitespace-pre-line">{value}</dd>
       </div>
     )
   }
