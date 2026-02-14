@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { MoreHorizontal, Ban, Clock, CheckCircle, Trash2 } from 'lucide-react'
@@ -30,7 +31,7 @@ export function UserActions({ userId, currentStatus, isAdmin }: UserActionsProps
       .eq('id', userId)
     
     if (error) {
-      alert('Error updating user: ' + error.message)
+      toast.error('Error updating user: ' + error.message)
     } else {
       router.refresh()
     }
@@ -72,7 +73,7 @@ export function UserActions({ userId, currentStatus, isAdmin }: UserActionsProps
 
     if (!response.ok) {
       const data = await response.json()
-      alert('Error deleting user: ' + (data.error || 'Unknown error'))
+      toast.error('Error deleting user: ' + (data.error || 'Unknown error'))
     } else {
       router.refresh()
     }

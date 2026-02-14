@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { BookOpen, Loader2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -40,7 +41,7 @@ export default function MoveToLibraryButton({ bookId, libraryCollectionId, wishl
       router.refresh()
     } catch (err) {
       console.error('Move to Library failed:', err)
-      alert('Failed to move book to Library')
+      toast.error('Failed to move book to Library')
     } finally {
       setLoading(false)
     }

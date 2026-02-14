@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Save, Loader2, CheckCircle, Clock, Ban, Shield, ShieldOff, Gift, CreditCard, Send, Mail, RotateCcw } from 'lucide-react'
@@ -48,7 +49,7 @@ export function UserDetailClient({
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', userId)
     if (error) {
-      alert('Error: ' + error.message)
+      toast.error('Error: ' + error.message)
     } else {
       const { data: { user: admin } } = await supabase.auth.getUser()
       if (admin) {
@@ -103,10 +104,10 @@ export function UserDetailClient({
         setTimeout(() => { setEmailSent(false); setShowEmail(false) }, 2000)
       } else {
         const data = await res.json()
-        alert('Failed: ' + (data.error || 'Unknown error'))
+        toast.error(data.error || 'Unknown error')
       }
     } catch {
-      alert('Failed to send email')
+      toast.error('Failed to send email')
     }
     setSendingEmail(false)
   }

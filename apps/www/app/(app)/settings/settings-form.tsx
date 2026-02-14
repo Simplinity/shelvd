@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Check, X, ExternalLink, Plus } from 'lucide-react'
 import { SUPPORTED_LOCALES, formatDateTime } from '@/lib/format'
 import {
@@ -305,7 +306,7 @@ function DangerSection() {
     setLoading(true)
     const res = await deleteAccount()
     if (res.error) {
-      alert('Error: ' + res.error)
+      toast.error(res.error || 'Something went wrong')
       setLoading(false)
     } else {
       window.location.href = '/login'

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { formatInteger, formatCurrency as fmtCurr } from '@/lib/format'
 import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, FolderPlus, FolderMinus } from 'lucide-react'
@@ -1349,9 +1350,9 @@ export default function BooksPage() {
         }
       }
       const colName = bulkCollections.find(c => c.id === targetCollectionId)?.name || 'collection'
-      alert(`Added ${toInsert.length} book(s) to "${colName}" (${existingSet.size} already there)`)
+      toast.success(`Added ${toInsert.length} book(s) to "${colName}"`)
     } catch (err) {
-      alert('Failed to add books to collection')
+      toast.error('Failed to add books to collection')
     } finally {
       setBulkActionLoading(false)
     }
@@ -1377,7 +1378,7 @@ export default function BooksPage() {
       setSelectedIds(new Set())
       setSelectionMode(false)
     } catch (err) {
-      alert('Failed to remove books from collection')
+      toast.error('Failed to remove books from collection')
     } finally {
       setBulkActionLoading(false)
     }
@@ -1426,7 +1427,7 @@ export default function BooksPage() {
     } catch (err) {
       console.error('Export error:', err)
       const message = err instanceof Error ? err.message : 'Export failed'
-      alert(`Export failed: ${message}`)
+      toast.error(`Export failed: ${message}`)
     } finally {
       setExporting(false)
     }
