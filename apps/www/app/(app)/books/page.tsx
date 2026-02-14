@@ -101,6 +101,18 @@ const ITEMS_PER_PAGE = 250
 type SortField = 'title' | 'author' | 'publisher' | 'place' | 'year' | 'status' | 'catalog_id' | 'date_added'
 type SortDirection = 'asc' | 'desc'
 
+// Map sort field to database column (returns null for fields that need client-side sort)
+const SORT_FIELD_TO_DB_COLUMN: Record<SortField, string | null> = {
+  title: 'title',
+  author: null, // joined table, client-side only
+  publisher: 'publisher_name',
+  place: 'publication_place',
+  year: 'publication_year',
+  status: 'status',
+  catalog_id: 'user_catalog_id',
+  date_added: 'created_at',
+}
+
 // Helper: Check if filter value is empty/not-empty syntax
 const isEmptySearch = (value: string) => value === '='
 const isNotEmptySearch = (value: string) => value === '!='
@@ -683,7 +695,7 @@ export default function BooksPage() {
         const result = await supabase
           .from('books')
           .select(bookSelect)
-          .order('title', { ascending: true })
+          .order(SORT_FIELD_TO_DB_COLUMN[sortField] || 'title', { ascending: sortDirection === 'asc' })
           .range(from, to)
         data = result.data
         error = result.error
@@ -787,7 +799,7 @@ export default function BooksPage() {
           const { data: batch, error: batchError } = await supabase
             .from('books')
             .select(bookSelect)
-            .order('title', { ascending: true })
+            .order(SORT_FIELD_TO_DB_COLUMN[sortField] || 'title', { ascending: sortDirection === 'asc' })
             .range(fetchFrom, fetchFrom + BATCH_SIZE - 1)
 
           if (batchError) {
@@ -1029,7 +1041,7 @@ export default function BooksPage() {
       }
     }
 
-    query = query.order('title', { ascending: true }).range(from, to)
+    query = query.order(SORT_FIELD_TO_DB_COLUMN[sortField] || 'title', { ascending: sortDirection === 'asc' }).range(from, to)
 
     const { data, error } = await query
 
@@ -1058,7 +1070,7 @@ export default function BooksPage() {
             )
           `)
           .in('id', missingAuthorBookIds.slice(0, 100))
-          .order('title', { ascending: true })
+          .order(SORT_FIELD_TO_DB_COLUMN[sortField] || 'title', { ascending: sortDirection === 'asc' })
         
         if (authorBooks) {
           allData = [...allData, ...authorBooks]
@@ -1219,7 +1231,7 @@ export default function BooksPage() {
     }
     fetchBooks(0)
     fetchValueSummary()
-  }, [searchParams.toString()])
+  }, [searchParams.toString(), sortField, sortDirection])
 
   const loadMore = () => {
     const nextPage = page + 1
