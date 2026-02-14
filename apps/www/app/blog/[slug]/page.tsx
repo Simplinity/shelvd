@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'article',
       publishedTime: article.date,
       authors: [BLOG_AUTHOR],
-      url: `https://shelvd.app/blog/${article.slug}`,
+      url: `/blog/${article.slug}`,
     },
   }
 }

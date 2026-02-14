@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { BookOpen, ArrowLeft, Search, Rocket, History, Database, Settings, Library, Store, BookOpenCheck, PenLine } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
@@ -10,9 +11,14 @@ import {
   type WikiCategory,
 } from '@/lib/wiki'
 
-export const metadata = {
-  title: 'Wiki — The Shelvd Knowledge Base',
+export const metadata: Metadata = {
+  title: 'Wiki — Knowledge Base',
   description: 'Everything you need to know about cataloging rare books with Shelvd. Tutorials, reference guides, glossaries, and more — written for collectors, by a collector.',
+  openGraph: {
+    title: 'Wiki — The Shelvd Knowledge Base',
+    description: 'Tutorials, reference guides, glossaries, and more — written for collectors, by a collector.',
+    url: '/wiki',
+  },
 }
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {

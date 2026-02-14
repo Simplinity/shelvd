@@ -30,13 +30,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!article) return {}
 
   return {
-    title: `${article.title} — Shelvd Wiki`,
+    title: article.title,
     description: article.subtitle,
     openGraph: {
-      title: article.title,
+      title: `${article.title} — Shelvd Wiki`,
       description: article.subtitle,
-      type: 'article',
-      url: `https://shelvd.app/wiki/${article.slug}`,
+      url: `/wiki/${article.slug}`,
     },
   }
 }

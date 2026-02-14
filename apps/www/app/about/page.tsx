@@ -1,11 +1,17 @@
+import type { Metadata } from 'next'
 import { ArrowLeft, BookOpen, Bookmark, Coffee, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 
-export const metadata = {
-  title: 'About — Shelvd',
+export const metadata: Metadata = {
+  title: 'About',
   description: 'A brief and only mildly embellished account of how this software came to exist.',
+  openGraph: {
+    title: 'About Shelvd',
+    description: 'A brief and only mildly embellished account of how this software came to exist.',
+    url: '/about',
+  },
 }
 
 export default function AboutPage() {

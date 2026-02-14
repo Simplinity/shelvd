@@ -1,11 +1,17 @@
+import type { Metadata } from 'next'
 import { ArrowLeft, Shield, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 
-export const metadata = {
-  title: 'Privacy Policy — Shelvd',
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
   description: 'How Shelvd handles your data. Written by a human, not a privacy policy generator.',
+  openGraph: {
+    title: 'Privacy Policy — Shelvd',
+    description: 'How Shelvd handles your data. Written by a human, not a privacy policy generator.',
+    url: '/privacy',
+  },
 }
 
 export default function PrivacyPage() {

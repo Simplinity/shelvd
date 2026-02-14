@@ -3,11 +3,17 @@ import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 import { CHANGELOG, APP_VERSION } from '@/lib/changelog'
+import type { Metadata } from 'next'
 import type { ChangeType } from '@/lib/changelog'
 
-export const metadata = {
-  title: 'Changelog — Shelvd',
+export const metadata: Metadata = {
+  title: 'Changelog',
   description: 'What we\'ve been building. A log of every version, feature, and fix — with commentary.',
+  openGraph: {
+    title: 'Changelog — Shelvd',
+    description: 'What we\'ve been building. A log of every version, feature, and fix — with commentary.',
+    url: '/changelog',
+  },
 }
 
 const typeConfig: Record<ChangeType, { label: string; color: string; icon: typeof Plus }> = {

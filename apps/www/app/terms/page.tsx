@@ -1,11 +1,17 @@
+import type { Metadata } from 'next'
 import { ArrowLeft, FileText, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 
-export const metadata = {
-  title: 'Terms of Service — Shelvd',
+export const metadata: Metadata = {
+  title: 'Terms of Service',
   description: 'The terms. Written by a human who would rather be cataloging books.',
+  openGraph: {
+    title: 'Terms of Service — Shelvd',
+    description: 'The terms. Written by a human who would rather be cataloging books.',
+    url: '/terms',
+  },
 }
 
 export default function TermsPage() {

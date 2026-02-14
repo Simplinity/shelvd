@@ -3,11 +3,17 @@ import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 import { ROADMAP, categoryConfig } from '@/lib/roadmap'
+import type { Metadata } from 'next'
 import type { RoadmapStatus } from '@/lib/roadmap'
 
-export const metadata = {
-  title: 'Roadmap — Shelvd',
+export const metadata: Metadata = {
+  title: 'Roadmap',
   description: 'Where we\'ve been, where we are, and where we\'re going. A public record of ambition.',
+  openGraph: {
+    title: 'Roadmap — Shelvd',
+    description: 'Where we\'ve been, where we are, and where we\'re going. A public record of ambition.',
+    url: '/roadmap',
+  },
 }
 
 const laneConfig: Record<RoadmapStatus, { 

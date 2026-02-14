@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { ArrowLeft, BookOpen, Clock, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
@@ -9,16 +10,13 @@ import {
   type BlogArticle,
 } from '@/lib/blog'
 
-export const metadata = {
-  title: 'Marginalia — The Shelvd Blog',
-  description:
-    'Essays on book collecting, cataloging, and the antiquarian trade. By Bruno van Branden.',
+export const metadata: Metadata = {
+  title: 'Marginalia — Blog',
+  description: 'Essays on book collecting, cataloging, and the antiquarian trade. By Bruno van Branden.',
   openGraph: {
     title: 'Marginalia — The Shelvd Blog',
-    description:
-      'Essays on book collecting, cataloging, and the antiquarian trade. By Bruno van Branden.',
-    type: 'website',
-    url: 'https://shelvd.app/blog',
+    description: 'Essays on book collecting, cataloging, and the antiquarian trade. By Bruno van Branden.',
+    url: '/blog',
   },
 }
 
