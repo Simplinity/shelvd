@@ -361,10 +361,18 @@ export default function BookEditForm({ book, referenceData }: Props) {
 
   const deleteImage = async (imageId: string) => {
     if (!window.confirm('Delete this image? This cannot be undone.')) return
+    const deletedImage = bookImages.find(img => img.id === imageId)
     setDeletingImageId(imageId)
     try {
       const res = await fetch(`/api/images/${imageId}`, { method: 'DELETE' })
-      if (res.ok) await loadImages()
+      if (res.ok) {
+        await loadImages()
+        // Clear cover_image_url if we just deleted a cover image
+        if (deletedImage?.image_type === 'cover') {
+          const remaining = bookImages.filter(img => img.id !== imageId && img.image_type === 'cover')
+          handleChange('cover_image_url', remaining[0]?.blob_url || '')
+        }
+      }
     } finally {
       setDeletingImageId(null)
     }
