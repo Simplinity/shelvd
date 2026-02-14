@@ -32,11 +32,11 @@ export async function POST(request: Request) {
   // ── Check tier ──
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('tier')
+    .select('membership_tier')
     .eq('id', user.id)
     .single()
 
-  const tier = (profile as any)?.tier || 'collector'
+  const tier = (profile as any)?.membership_tier || 'collector'
   const storageLimit = TIER_LIMITS[tier]
   if (!storageLimit) {
     return NextResponse.json({ error: 'Image uploads require a Pro or Dealer account' }, { status: 403 })
