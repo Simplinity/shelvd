@@ -299,3 +299,23 @@ export const LABELS: Record<CatalogLanguage, Record<LabelKey, string>> = {
     binding: 'Lig.',
   },
 }
+
+// ─── Abbreviations for Physical Description ─────────────────────────
+
+type AbbrKey = 'pages' | 'leaves' | 'volumes' | 'plates' | 'illustrations_abbr' | 'columns' | 'unnumbered'
+
+export const ABBREVIATIONS: Record<CatalogLanguage, Record<AbbrKey, string>> = {
+  en:      { pages: 'p.',   leaves: 'ff.',  volumes: 'vol.', plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'col.',  unnumbered: 'n.p.' },
+  fr:      { pages: 'p.',   leaves: 'ff.',  volumes: 'vol.', plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'col.',  unnumbered: 'n.ch.' },
+  de:      { pages: 'S.',   leaves: 'Bl.',  volumes: 'Bd.',  plates: 'Taf.',  illustrations_abbr: 'Ill.',  columns: 'Sp.',   unnumbered: 'ungez.' },
+  nl:      { pages: 'p.',   leaves: 'bl.',  volumes: 'dl.',  plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'kol.',  unnumbered: 'ongep.' },
+  es:      { pages: 'p.',   leaves: 'h.',   volumes: 'vol.', plates: 'láms.', illustrations_abbr: 'il.',   columns: 'col.',  unnumbered: 's.p.' },
+  pt:      { pages: 'p.',   leaves: 'ff.',  volumes: 'vol.', plates: 'ests.', illustrations_abbr: 'il.',   columns: 'col.',  unnumbered: 's.p.' },
+  it:      { pages: 'pp.',  leaves: 'cc.',  volumes: 'vol.', plates: 'tavv.', illustrations_abbr: 'ill.',  columns: 'coll.', unnumbered: 'n.n.' },
+  sv:      { pages: 's.',   leaves: 'bl.',  volumes: 'bd.',  plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'kol.',  unnumbered: 'onr.' },
+  da:      { pages: 's.',   leaves: 'bl.',  volumes: 'bd.',  plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'kol.',  unnumbered: 'upag.' },
+  no:      { pages: 's.',   leaves: 'bl.',  volumes: 'bd.',  plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'kol.',  unnumbered: 'upag.' },
+  'be-fr': { pages: 'p.',   leaves: 'ff.',  volumes: 'vol.', plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'col.',  unnumbered: 'n.ch.' },
+  'be-nl': { pages: 'p.',   leaves: 'bl.',  volumes: 'dl.',  plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'kol.',  unnumbered: 'ongep.' },
+  la:      { pages: 'pp.',  leaves: 'ff.',  volumes: 'vol.', plates: 'tab.',  illustrations_abbr: 'fig.',  columns: 'coll.', unnumbered: 's.n.' },
+}
