@@ -319,3 +319,109 @@ export const ABBREVIATIONS: Record<CatalogLanguage, Record<AbbrKey, string>> = {
   'be-nl': { pages: 'p.',   leaves: 'bl.',  volumes: 'dl.',  plates: 'pl.',   illustrations_abbr: 'ill.',  columns: 'kol.',  unnumbered: 'ongep.' },
   la:      { pages: 'pp.',  leaves: 'ff.',  volumes: 'vol.', plates: 'tab.',  illustrations_abbr: 'fig.',  columns: 'coll.', unnumbered: 's.n.' },
 }
+
+// ─── Contributor Role Phrases (Trade Mode) ──────────────────────────
+// How each role is phrased in a trade catalog entry.
+// Format: the phrase precedes or follows the contributor name.
+// Roles with 'prefix: true' appear as "phrase Name" (e.g. "illustrated by X")
+// Roles with 'prefix: false' appear as "Name, phrase" (e.g. "X, co-author")
+
+type RoleKey =
+  | 'author' | 'co_author' | 'editor' | 'translator' | 'illustrator'
+  | 'photographer' | 'cover_designer' | 'engraver' | 'woodcutter' | 'etcher'
+  | 'lithographer' | 'calligrapher' | 'cartographer'
+  | 'foreword' | 'introduction' | 'preface' | 'afterword'
+
+export const CONTRIBUTOR_ROLES: Record<CatalogLanguage, Record<RoleKey, string>> = {
+  en: {
+    author: 'by', co_author: ', co-author', editor: 'edited by', translator: 'translated by',
+    illustrator: 'illustrated by', photographer: 'photographs by', cover_designer: 'cover by',
+    engraver: 'engraved by', woodcutter: 'woodcuts by', etcher: 'etchings by',
+    lithographer: 'lithographs by', calligrapher: 'calligraphy by', cartographer: 'maps by',
+    foreword: 'foreword by', introduction: 'introduction by', preface: 'preface by', afterword: 'afterword by',
+  },
+  fr: {
+    author: 'par', co_author: ', co-auteur', editor: 'sous la direction de', translator: 'traduit par',
+    illustrator: 'illustré par', photographer: 'photographies de', cover_designer: 'couverture de',
+    engraver: 'gravé par', woodcutter: 'bois gravés par', etcher: 'eaux-fortes de',
+    lithographer: 'lithographies de', calligrapher: 'calligraphie de', cartographer: 'cartes de',
+    foreword: 'préface de', introduction: 'introduction de', preface: 'avant-propos de', afterword: 'postface de',
+  },
+  de: {
+    author: 'von', co_author: ', Mitautor', editor: 'herausgegeben von', translator: 'übersetzt von',
+    illustrator: 'illustriert von', photographer: 'Fotografien von', cover_designer: 'Umschlag von',
+    engraver: 'gestochen von', woodcutter: 'Holzschnitte von', etcher: 'Radierungen von',
+    lithographer: 'Lithographien von', calligrapher: 'Kalligraphie von', cartographer: 'Karten von',
+    foreword: 'Geleitwort von', introduction: 'Einleitung von', preface: 'Vorwort von', afterword: 'Nachwort von',
+  },
+  nl: {
+    author: 'door', co_author: ', co-auteur', editor: 'onder redactie van', translator: 'vertaald door',
+    illustrator: 'geïllustreerd door', photographer: "foto's door", cover_designer: 'omslagontwerp door',
+    engraver: 'gegraveerd door', woodcutter: 'houtsneden door', etcher: 'etsen door',
+    lithographer: "litho's door", calligrapher: 'kalligrafie door', cartographer: 'kaarten door',
+    foreword: 'voorwoord door', introduction: 'inleiding door', preface: 'ten geleide door', afterword: 'nawoord door',
+  },
+  es: {
+    author: 'por', co_author: ', coautor', editor: 'edición de', translator: 'traducido por',
+    illustrator: 'ilustrado por', photographer: 'fotografías de', cover_designer: 'cubierta de',
+    engraver: 'grabado por', woodcutter: 'xilografías de', etcher: 'aguafuertes de',
+    lithographer: 'litografías de', calligrapher: 'caligrafía de', cartographer: 'mapas de',
+    foreword: 'prólogo de', introduction: 'introducción de', preface: 'prefacio de', afterword: 'epílogo de',
+  },
+  pt: {
+    author: 'por', co_author: ', co-autor', editor: 'edição de', translator: 'traduzido por',
+    illustrator: 'ilustrado por', photographer: 'fotografias de', cover_designer: 'capa de',
+    engraver: 'gravado por', woodcutter: 'xilogravuras de', etcher: 'águas-fortes de',
+    lithographer: 'litografias de', calligrapher: 'caligrafia de', cartographer: 'mapas de',
+    foreword: 'prefácio de', introduction: 'introdução de', preface: 'prefácio de', afterword: 'posfácio de',
+  },
+  it: {
+    author: 'di', co_author: ', coautore', editor: 'a cura di', translator: 'tradotto da',
+    illustrator: 'illustrato da', photographer: 'fotografie di', cover_designer: 'copertina di',
+    engraver: 'inciso da', woodcutter: 'xilografie di', etcher: 'acqueforti di',
+    lithographer: 'litografie di', calligrapher: 'calligrafia di', cartographer: 'carte di',
+    foreword: 'premessa di', introduction: 'introduzione di', preface: 'prefazione di', afterword: 'postfazione di',
+  },
+  sv: {
+    author: 'av', co_author: ', medförfattare', editor: 'redigerad av', translator: 'översatt av',
+    illustrator: 'illustrerad av', photographer: 'fotografier av', cover_designer: 'omslag av',
+    engraver: 'graverad av', woodcutter: 'träsnitt av', etcher: 'etsningar av',
+    lithographer: 'litografier av', calligrapher: 'kalligrafi av', cartographer: 'kartor av',
+    foreword: 'förord av', introduction: 'inledning av', preface: 'företal av', afterword: 'efterord av',
+  },
+  da: {
+    author: 'af', co_author: ', medforfatter', editor: 'redigeret af', translator: 'oversat af',
+    illustrator: 'illustreret af', photographer: 'fotografier af', cover_designer: 'omslag af',
+    engraver: 'graveret af', woodcutter: 'træsnit af', etcher: 'raderinger af',
+    lithographer: 'litografier af', calligrapher: 'kalligrafi af', cartographer: 'kort af',
+    foreword: 'forord af', introduction: 'indledning af', preface: 'forord af', afterword: 'efterskrift af',
+  },
+  no: {
+    author: 'av', co_author: ', medforfatter', editor: 'redigert av', translator: 'oversatt av',
+    illustrator: 'illustrert av', photographer: 'fotografier av', cover_designer: 'omslag av',
+    engraver: 'gravert av', woodcutter: 'tresnitt av', etcher: 'raderinger av',
+    lithographer: 'litografier av', calligrapher: 'kalligrafi av', cartographer: 'kart av',
+    foreword: 'forord av', introduction: 'innledning av', preface: 'forord av', afterword: 'etterord av',
+  },
+  'be-fr': {
+    author: 'par', co_author: ', co-auteur', editor: 'sous la direction de', translator: 'traduit par',
+    illustrator: 'illustré par', photographer: 'photographies de', cover_designer: 'couverture de',
+    engraver: 'gravé par', woodcutter: 'bois gravés par', etcher: 'eaux-fortes de',
+    lithographer: 'lithographies de', calligrapher: 'calligraphie de', cartographer: 'cartes de',
+    foreword: 'préface de', introduction: 'introduction de', preface: 'avant-propos de', afterword: 'postface de',
+  },
+  'be-nl': {
+    author: 'door', co_author: ', co-auteur', editor: 'onder redactie van', translator: 'vertaald door',
+    illustrator: 'geïllustreerd door', photographer: "foto's door", cover_designer: 'omslagontwerp door',
+    engraver: 'gegraveerd door', woodcutter: 'houtsneden door', etcher: 'etsen door',
+    lithographer: "litho's door", calligrapher: 'kalligrafie door', cartographer: 'kaarten door',
+    foreword: 'voorwoord door', introduction: 'inleiding door', preface: 'ten geleide door', afterword: 'nawoord door',
+  },
+  la: {
+    author: 'auct.', co_author: '', editor: 'ed.', translator: 'interpr.',
+    illustrator: 'pinx.', photographer: '', cover_designer: '',
+    engraver: 'sculps.', woodcutter: 'sculps.', etcher: 'sculps.',
+    lithographer: '', calligrapher: 'scrips.', cartographer: '',
+    foreword: 'praef.', introduction: 'introd.', preface: 'praef.', afterword: '',
+  },
+}
