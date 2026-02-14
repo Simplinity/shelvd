@@ -1652,17 +1652,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
             }
             return <>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className={labelClass}>Trade Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
-              <CatalogEntryGenerator book={catalogBook} mode="trade" onGenerate={entry => { handleChange('catalog_entry', entry); setIsDirty(true) }} />
-            </div>
+            <CatalogEntryGenerator book={catalogBook} mode="trade" onGenerate={entry => { handleChange('catalog_entry', entry); setIsDirty(true) }} />
+            <label className={`${labelClass} mt-2`}>Trade Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
             <textarea value={formData.catalog_entry || ''} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
           </div>
-          <div className="mt-3">
-            <div className="flex items-center justify-between mb-1">
-              <label className={labelClass}>ISBD Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry_isbd} /></label>
-              <CatalogEntryGenerator book={catalogBook} mode="isbd" onGenerate={entry => { handleChange('catalog_entry_isbd', entry); setIsDirty(true) }} />
-            </div>
+          <div className="mt-4">
+            <CatalogEntryGenerator book={catalogBook} mode="isbd" onGenerate={entry => { handleChange('catalog_entry_isbd', entry); setIsDirty(true) }} />
+            <label className={`${labelClass} mt-2`}>ISBD Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry_isbd} /></label>
             <textarea value={formData.catalog_entry_isbd || ''} onChange={e => handleChange('catalog_entry_isbd', e.target.value)} rows={4} className={textareaClass} />
           </div>
             </>
