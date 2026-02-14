@@ -15,12 +15,15 @@ ALTER TABLE book_images ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.us
 ALTER TABLE book_images ALTER COLUMN storage_path DROP NOT NULL;
 
 -- Direct user_id policy (faster than subquery through books)
+DROP POLICY IF EXISTS "Users can insert own images" ON book_images;
 CREATE POLICY "Users can insert own images" ON book_images
   FOR INSERT WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update own images" ON book_images;
 CREATE POLICY "Users can update own images" ON book_images
   FOR UPDATE USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can delete own images" ON book_images;
 CREATE POLICY "Users can delete own images" ON book_images
   FOR DELETE USING (user_id = auth.uid());
 
