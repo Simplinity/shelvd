@@ -14,9 +14,26 @@ export const metadata: Metadata = {
   },
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Shelvd',
+  description: 'A brief and only mildly embellished account of how this software came to exist.',
+  url: 'https://shelvd.org/about',
+  mainEntity: {
+    '@type': 'Organization',
+    name: 'Shelvd',
+    url: 'https://shelvd.org',
+  },
+}
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-background flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <MarketingHeader />
 
       {/* Hero */}

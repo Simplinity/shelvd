@@ -5,6 +5,7 @@ import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 import {
   BLOG_ARTICLES,
+  BLOG_AUTHOR,
   BLOG_STATS,
   CATEGORY_SECTIONS,
   type BlogArticle,
@@ -58,9 +59,23 @@ function ArticleCard({ article }: { article: BlogArticle }) {
   )
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Marginalia — The Shelvd Blog',
+  description: 'Essays on book collecting, cataloging, and the antiquarian trade.',
+  url: 'https://shelvd.org/blog',
+  author: { '@type': 'Person', name: BLOG_AUTHOR },
+  publisher: { '@type': 'Organization', name: 'Shelvd', url: 'https://shelvd.org' },
+}
+
 export default function BlogPage() {
   return (
     <main className="min-h-screen bg-background flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <MarketingHeader />
 
       {/* Hero */}

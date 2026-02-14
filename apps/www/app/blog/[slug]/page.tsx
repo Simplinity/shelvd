@@ -67,14 +67,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     publisher: {
       '@type': 'Organization',
       name: 'Shelvd',
-      url: 'https://shelvd.app',
+      url: 'https://shelvd.org',
     },
     datePublished: article.date,
     wordCount: article.wordCount,
-    url: `https://shelvd.app/blog/${article.slug}`,
+    url: `https://shelvd.org/blog/${article.slug}`,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://shelvd.app/blog/${article.slug}`,
+      '@id': `https://shelvd.org/blog/${article.slug}`,
     },
   }
 

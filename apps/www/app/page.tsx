@@ -4,9 +4,45 @@ import { Button } from '@/components/ui/button'
 import { MarketingHeader } from '@/components/marketing/marketing-header'
 import { MarketingFooter } from '@/components/marketing/marketing-footer'
 
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Shelvd',
+    url: 'https://shelvd.org',
+    logo: 'https://shelvd.org/icon-512.png',
+    description: 'Professional collection management for antiquarian books, rare editions, and fine bindings.',
+    foundingDate: '2025',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Shelvd',
+    url: 'https://shelvd.org',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Shelvd',
+    url: 'https://shelvd.org',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description: 'Professional collection management for antiquarian books, rare editions, and fine bindings. Catalog with bibliographic precision. Track provenance. Know your collection\'s value.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'EUR',
+    },
+  },
+]
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-background flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <MarketingHeader />
 
       {/* ═══════════════════════════════════════
