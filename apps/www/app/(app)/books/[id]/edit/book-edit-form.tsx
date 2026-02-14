@@ -452,7 +452,6 @@ export default function BookEditForm({ book, referenceData }: Props) {
     })
     if (res.ok) {
       await loadImages()
-      setSelectedImageId(null)
     }
   }
 
