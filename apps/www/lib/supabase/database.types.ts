@@ -510,7 +510,6 @@ export type Database = {
           edition: string | null
           edition_notes: string | null
           endpapers_type: string | null
-          filemaker_id: string | null
           format_id: string | null
           has_dust_jacket: boolean | null
           height_cm: number | null
@@ -598,7 +597,6 @@ export type Database = {
           edition?: string | null
           edition_notes?: string | null
           endpapers_type?: string | null
-          filemaker_id?: string | null
           format_id?: string | null
           has_dust_jacket?: boolean | null
           height_cm?: number | null
@@ -686,7 +684,6 @@ export type Database = {
           edition?: string | null
           edition_notes?: string | null
           endpapers_type?: string | null
-          filemaker_id?: string | null
           format_id?: string | null
           has_dust_jacket?: boolean | null
           height_cm?: number | null
