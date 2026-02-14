@@ -425,3 +425,43 @@ export const CONTRIBUTOR_ROLES: Record<CatalogLanguage, Record<RoleKey, string>>
     foreword: 'praef.', introduction: 'introd.', preface: 'praef.', afterword: '',
   },
 }
+
+// ─── Cover Type Translations ────────────────────────────────────────
+// Maps database cover_type values to display strings per language.
+// Part 1: Softcover, Hardcover, Full bindings (leather/calf/vellum/morocco/faux)
+
+export const COVER_TYPES: Record<string, Record<CatalogLanguage, string>> = {
+  // ── Softcover group ──
+  softcover:         { en: 'Softcover', fr: 'Broché', de: 'Broschur', nl: 'Softcover', es: 'Rústica', pt: 'Brochura', it: 'Brossura', sv: 'Häftad', da: 'Hæftet', no: 'Heftet', 'be-fr': 'Broché', 'be-nl': 'Softcover', la: '—' },
+  softcover_dj:      { en: 'Softcover, dust jacket', fr: 'Broché, jaquette', de: 'Broschur, Schutzumschlag', nl: 'Softcover, stofomslag', es: 'Rústica, sobrecubierta', pt: 'Brochura, sobrecapa', it: 'Brossura, sovraccoperta', sv: 'Häftad, skyddsomslag', da: 'Hæftet, smudsomslag', no: 'Heftet, smussomslag', 'be-fr': 'Broché, jaquette', 'be-nl': 'Softcover, stofomslag', la: '—' },
+  original_wraps:    { en: 'Original wrappers', fr: "Couverture d'éditeur", de: 'Originalbroschur', nl: 'Originele omslag', es: 'Cubiertas originales', pt: 'Brochura original', it: 'Brossura editoriale', sv: 'Originalhäfte', da: 'Originalt omslag', no: 'Originalt omslag', 'be-fr': "Couverture d'éditeur", 'be-nl': 'Originele omslag', la: 'Lig. orig.' },
+  printed_wrappers:  { en: 'Printed wrappers', fr: 'Couverture imprimée', de: 'Bedruckter Umschlag', nl: 'Bedrukte omslag', es: 'Cubiertas impresas', pt: 'Capas impressas', it: 'Copertina stampata', sv: 'Tryckta omslag', da: 'Trykt omslag', no: 'Trykt omslag', 'be-fr': 'Couverture imprimée', 'be-nl': 'Bedrukte omslag', la: '—' },
+  stiff_wraps:       { en: 'Stiff wrappers', fr: 'Cartonnage souple', de: 'Steifbroschur', nl: 'Stijve omslag', es: 'Cubiertas rígidas', pt: 'Brochura rígida', it: 'Brossura rigida', sv: 'Styvt omslag', da: 'Stift omslag', no: 'Stivt omslag', 'be-fr': 'Cartonnage souple', 'be-nl': 'Stijve omslag', la: '—' },
+
+  // ── Hardcover group ──
+  hardcover:         { en: 'Hardcover', fr: 'Relié', de: 'Gebunden', nl: 'Hardcover', es: 'Cartoné', pt: 'Capa dura', it: 'Cartonato', sv: 'Inbunden', da: 'Indbundet', no: 'Innbundet', 'be-fr': 'Relié', 'be-nl': 'Hardcover', la: '—' },
+  hardcover_dj:      { en: 'Hardcover, dust jacket', fr: 'Relié, jaquette', de: 'Gebunden, Schutzumschlag', nl: 'Hardcover, stofomslag', es: 'Cartoné, sobrecubierta', pt: 'Capa dura, sobrecapa', it: 'Cartonato, sovraccoperta', sv: 'Inbunden, skyddsomslag', da: 'Indbundet, smudsomslag', no: 'Innbundet, smussomslag', 'be-fr': 'Relié, jaquette', 'be-nl': 'Hardcover, stofomslag', la: '—' },
+  cardboard_covers:  { en: 'Cardboard covers', fr: 'Cartonnage', de: 'Pappband', nl: 'Kartonnen band', es: 'Cartoné', pt: 'Cartonagem', it: 'Cartonato', sv: 'Pappband', da: 'Papbind', no: 'Pappband', 'be-fr': 'Cartonnage', 'be-nl': 'Kartonnen band', la: '—' },
+  paper_boards:      { en: 'Paper boards', fr: 'Cartonnage papier', de: 'Pappband, Papierüberzug', nl: 'Papieren platten', es: 'Tapas de papel', pt: 'Capas de papel', it: 'Cartone ricoperto', sv: 'Pappband, papper', da: 'Papbind, papir', no: 'Pappband, papir', 'be-fr': 'Cartonnage papier', 'be-nl': 'Papieren platten', la: '—' },
+  library_binding:   { en: 'Library binding', fr: 'Reliure de bibliothèque', de: 'Bibliothekseinband', nl: 'Bibliotheekband', es: 'Encuadernación de biblioteca', pt: 'Encadernação de biblioteca', it: 'Legatura da biblioteca', sv: 'Biblioteksband', da: 'Biblioteksbind', no: 'Biblioteksbind', 'be-fr': 'Reliure de bibliothèque', 'be-nl': 'Bibliotheekband', la: '—' },
+
+  // ── Full leather ──
+  full_leather_hardcover:  { en: 'Full leather', fr: 'Plein cuir', de: 'Ganzleder', nl: 'Volledig leer', es: 'Plena piel', pt: 'Pele inteira', it: 'Piena pelle', sv: 'Helskinnband', da: 'Hellæderbind', no: 'Helskinnbind', 'be-fr': 'Plein cuir', 'be-nl': 'Volledig leer', la: 'Lig. in corio' },
+  full_leather_softcover:  { en: 'Limp leather', fr: 'Cuir souple', de: 'Leder, flexibel', nl: 'Slap leer', es: 'Piel flexible', pt: 'Pele flexível', it: 'Pelle molle', sv: 'Mjukt skinnband', da: 'Blødt læderbind', no: 'Mykt skinnbind', 'be-fr': 'Cuir souple', 'be-nl': 'Slap leer', la: 'Lig. in corio flex.' },
+
+  // ── Full calf ──
+  full_calf_hardcover:     { en: 'Full calf', fr: 'Plein veau', de: 'Ganzkalbleder', nl: 'Volledig kalfsleer', es: 'Plena becerra', pt: 'Bezerro inteiro', it: 'Piena vitella', sv: 'Helkalvskinn', da: 'Helkalvskind', no: 'Helkalvskinn', 'be-fr': 'Plein veau', 'be-nl': 'Volledig kalfsleer', la: 'Lig. in corio vitul.' },
+  full_calf_softcover:     { en: 'Limp calf', fr: 'Veau souple', de: 'Kalbleder, flexibel', nl: 'Slap kalfsleer', es: 'Becerra flexible', pt: 'Bezerro flexível', it: 'Vitella molle', sv: 'Mjukt kalvskinn', da: 'Blødt kalvskind', no: 'Mykt kalvskinn', 'be-fr': 'Veau souple', 'be-nl': 'Slap kalfsleer', la: '—' },
+
+  // ── Full vellum ──
+  full_vellum_hardcover:   { en: 'Full vellum', fr: 'Plein vélin', de: 'Ganzpergament', nl: 'Volledig perkament', es: 'Pleno pergamino', pt: 'Pergaminho inteiro', it: 'Piena pergamena', sv: 'Helpergamentband', da: 'Helpergamentbind', no: 'Helpergamentbind', 'be-fr': 'Plein vélin', 'be-nl': 'Volledig perkament', la: 'Lig. in pergamena' },
+  full_vellum_softcover:   { en: 'Limp vellum', fr: 'Vélin souple', de: 'Pergament, flexibel', nl: 'Slap perkament', es: 'Pergamino flexible', pt: 'Pergaminho flexível', it: 'Pergamena molle', sv: 'Mjukt pergamentband', da: 'Blødt pergamentbind', no: 'Mykt pergamentbind', 'be-fr': 'Vélin souple', 'be-nl': 'Slap perkament', la: 'Lig. in perg. flex.' },
+
+  // ── Full morocco ──
+  full_morocco_hardcover:  { en: 'Full morocco', fr: 'Plein maroquin', de: 'Ganzmaroquin', nl: 'Volledig marokijn', es: 'Pleno marroquín', pt: 'Marroquim inteiro', it: 'Pieno marocchino', sv: 'Helsaffianband', da: 'Helsaffianbind', no: 'Helsaffianbind', 'be-fr': 'Plein maroquin', 'be-nl': 'Volledig marokijn', la: 'Lig. in maroquin' },
+  full_morocco_softcover:  { en: 'Limp morocco', fr: 'Maroquin souple', de: 'Maroquin, flexibel', nl: 'Slap marokijn', es: 'Marroquín flexible', pt: 'Marroquim flexível', it: 'Marocchino molle', sv: 'Mjukt saffianband', da: 'Blødt saffianbind', no: 'Mykt saffianbind', 'be-fr': 'Maroquin souple', 'be-nl': 'Slap marokijn', la: '—' },
+
+  // ── Full faux leather ──
+  full_faux_leather_hardcover: { en: 'Faux leather', fr: 'Simili-cuir', de: 'Kunstleder', nl: 'Kunstleer', es: 'Imitación piel', pt: 'Imitação pele', it: 'Finta pelle', sv: 'Konstläder', da: 'Kunstlæder', no: 'Kunstskinn', 'be-fr': 'Simili-cuir', 'be-nl': 'Kunstleer', la: '—' },
+  full_faux_leather_softcover: { en: 'Limp faux leather', fr: 'Simili-cuir souple', de: 'Kunstleder, flexibel', nl: 'Slap kunstleer', es: 'Imitación piel flexible', pt: 'Imitação pele flexível', it: 'Finta pelle molle', sv: 'Mjukt konstläder', da: 'Blødt kunstlæder', no: 'Mykt kunstskinn', 'be-fr': 'Simili-cuir souple', 'be-nl': 'Slap kunstleer', la: '—' },
+}
