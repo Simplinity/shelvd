@@ -33,6 +33,7 @@ export default async function BookSearchPage({ searchParams }: Props) {
     condition: (params.condition as string) || '',
     status: (params.status as string) || '',
     isbn: (params.isbn as string) || '',
+    user_catalog_id: (params.user_catalog_id as string) || '',
     storage_location: (params.storage_location as string) || '',
     shelf: (params.shelf as string) || '',
   }

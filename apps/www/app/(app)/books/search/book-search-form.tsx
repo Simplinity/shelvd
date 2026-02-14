@@ -22,6 +22,7 @@ type SearchFields = {
   condition: string
   status: string
   isbn: string
+  user_catalog_id: string
   storage_location: string
   shelf: string
 }
@@ -39,6 +40,7 @@ const emptyFields: SearchFields = {
   condition: '',
   status: '',
   isbn: '',
+  user_catalog_id: '',
   storage_location: '',
   shelf: '',
 }
@@ -420,6 +422,7 @@ export default function BookSearchForm({
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SearchInput label="ISBN" field="isbn" value={fields.isbn} onChange={handleChange} placeholder="Search ISBN-10 or ISBN-13..." />
+              <SearchInput label="Catalog Number" field="user_catalog_id" value={fields.user_catalog_id} onChange={handleChange} placeholder="Search catalog number..." />
             </div>
           </section>
 
