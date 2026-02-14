@@ -360,6 +360,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
   }
 
   const deleteImage = async (imageId: string) => {
+    if (!window.confirm('Delete this image? This cannot be undone.')) return
     setDeletingImageId(imageId)
     try {
       const res = await fetch(`/api/images/${imageId}`, { method: 'DELETE' })
