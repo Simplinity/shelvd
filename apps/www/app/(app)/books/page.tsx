@@ -875,6 +875,9 @@ export default function BooksPage() {
         if (filters.shelf) {
           query = applyTextFilter(query, 'shelf', filters.shelf, isExact)
         }
+        if (filters.user_catalog_id) {
+          query = applyTextFilter(query, 'user_catalog_id', filters.user_catalog_id, isExact)
+        }
         if (filters.isbn) {
           if (isEmptySearch(filters.isbn)) {
             // Both ISBN fields must be empty
@@ -959,6 +962,11 @@ export default function BooksPage() {
           orConditions.push(isExact 
             ? `shelf.ilike.${filters.shelf}`
             : `shelf.ilike.%${filters.shelf}%`)
+        }
+        if (filters.user_catalog_id) {
+          orConditions.push(isExact 
+            ? `user_catalog_id.ilike.${filters.user_catalog_id}`
+            : `user_catalog_id.ilike.%${filters.user_catalog_id}%`)
         }
         if (filters.isbn) {
           orConditions.push(`isbn_13.ilike.%${filters.isbn}%`)
@@ -1105,6 +1113,7 @@ export default function BooksPage() {
       if (filters.publication_year) query = query.ilike('publication_year', isExact ? filters.publication_year : `%${filters.publication_year}%`)
       if (filters.storage_location) query = query.ilike('storage_location', isExact ? filters.storage_location : `%${filters.storage_location}%`)
       if (filters.shelf) query = query.ilike('shelf', isExact ? filters.shelf : `%${filters.shelf}%`)
+      if (filters.user_catalog_id) query = query.ilike('user_catalog_id', isExact ? filters.user_catalog_id : `%${filters.user_catalog_id}%`)
       if (filters.isbn) query = query.or(`isbn_13.ilike.%${filters.isbn}%,isbn_10.ilike.%${filters.isbn}%`)
       if (filters.language) query = query.eq('language_id', filters.language)
       if (filters.condition) query = query.eq('condition_id', filters.condition)
