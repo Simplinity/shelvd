@@ -221,18 +221,64 @@ const actionNeededOptions = [
   { value: 'replace', label: 'Replace' },
 ]
 
-const coverTypeOptions = [
-  { value: 'softcover', label: 'Softcover' },
-  { value: 'softcover_dj', label: 'Softcover with dust jacket' },
-  { value: 'hardcover', label: 'Hardcover' },
-  { value: 'hardcover_dj', label: 'Hardcover with dust jacket' },
-  { value: 'full_leather_hardcover', label: 'Full leather hardcover' },
-  { value: 'full_cloth_hardcover', label: 'Full cloth hardcover' },
-  { value: 'quarter_leather_paper', label: 'Quarter binding (leather-paper)' },
-  { value: 'half_leather_paper', label: 'Half binding (leather-paper)' },
-  { value: 'library_binding', label: 'Library binding' },
-  { value: 'original_wraps', label: 'Original wraps' },
-  { value: 'printed_wrappers', label: 'Printed wrappers' },
+const coverTypeOptions: { value: string; label: string; group: string }[] = [
+  // ── Softcover / Wrappers ──
+  { value: 'softcover', label: 'Softcover', group: 'Softcover / Wrappers' },
+  { value: 'softcover_dj', label: 'Softcover with dust jacket', group: 'Softcover / Wrappers' },
+  { value: 'original_wraps', label: 'Original wrappers', group: 'Softcover / Wrappers' },
+  { value: 'printed_wrappers', label: 'Printed wrappers', group: 'Softcover / Wrappers' },
+  { value: 'stiff_wraps', label: 'Stiff wrappers', group: 'Softcover / Wrappers' },
+  // ── Hardcover ──
+  { value: 'hardcover', label: 'Hardcover', group: 'Hardcover' },
+  { value: 'hardcover_dj', label: 'Hardcover with dust jacket', group: 'Hardcover' },
+  { value: 'cardboard_covers', label: 'Cardboard covers', group: 'Hardcover' },
+  { value: 'paper_boards', label: 'Paper boards', group: 'Hardcover' },
+  { value: 'library_binding', label: 'Library binding', group: 'Hardcover' },
+  // ── Full binding (hardcover) ──
+  { value: 'full_leather_hardcover', label: 'Full leather', group: 'Full binding (hardcover)' },
+  { value: 'full_calf_hardcover', label: 'Full calf', group: 'Full binding (hardcover)' },
+  { value: 'full_vellum_hardcover', label: 'Full vellum', group: 'Full binding (hardcover)' },
+  { value: 'full_morocco_hardcover', label: 'Full morocco', group: 'Full binding (hardcover)' },
+  { value: 'full_faux_leather_hardcover', label: 'Full faux leather', group: 'Full binding (hardcover)' },
+  { value: 'full_cloth_hardcover', label: 'Full cloth', group: 'Full binding (hardcover)' },
+  { value: 'full_buckram_hardcover', label: 'Full buckram', group: 'Full binding (hardcover)' },
+  { value: 'full_linen_hardcover', label: 'Full linen', group: 'Full binding (hardcover)' },
+  { value: 'full_silk_hardcover', label: 'Full silk', group: 'Full binding (hardcover)' },
+  { value: 'full_canvas_hardcover', label: 'Full canvas', group: 'Full binding (hardcover)' },
+  { value: 'full_moire_hardcover', label: 'Full moiré', group: 'Full binding (hardcover)' },
+  // ── Full binding (softcover) ──
+  { value: 'full_leather_softcover', label: 'Full leather (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_calf_softcover', label: 'Full calf (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_vellum_softcover', label: 'Full vellum (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_morocco_softcover', label: 'Full morocco (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_faux_leather_softcover', label: 'Full faux leather (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_cloth_softcover', label: 'Full cloth (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_buckram_softcover', label: 'Full buckram (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_linen_softcover', label: 'Full linen (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_silk_softcover', label: 'Full silk (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_canvas_softcover', label: 'Full canvas (limp)', group: 'Full binding (softcover)' },
+  { value: 'full_moire_softcover', label: 'Full moiré (limp)', group: 'Full binding (softcover)' },
+  // ── Quarter binding ──
+  { value: 'quarter_leather_paper', label: 'Quarter leather, paper sides', group: 'Quarter binding' },
+  { value: 'quarter_leather_cloth', label: 'Quarter leather, cloth sides', group: 'Quarter binding' },
+  { value: 'quarter_leather_marbled', label: 'Quarter leather, marbled sides', group: 'Quarter binding' },
+  { value: 'quarter_morocco_paper', label: 'Quarter morocco, paper sides', group: 'Quarter binding' },
+  { value: 'quarter_morocco_cloth', label: 'Quarter morocco, cloth sides', group: 'Quarter binding' },
+  // ── Half binding ──
+  { value: 'half_leather_paper', label: 'Half leather, paper sides', group: 'Half binding' },
+  { value: 'half_leather_cloth', label: 'Half leather, cloth sides', group: 'Half binding' },
+  { value: 'half_leather_marbled', label: 'Half leather, marbled sides', group: 'Half binding' },
+  { value: 'half_morocco_paper', label: 'Half morocco, paper sides', group: 'Half binding' },
+  { value: 'half_morocco_cloth', label: 'Half morocco, cloth sides', group: 'Half binding' },
+  // ── Three-quarter binding ──
+  { value: 'three_quarter_leather_paper', label: 'Three-quarter leather, paper sides', group: 'Three-quarter binding' },
+  { value: 'three_quarter_leather_cloth', label: 'Three-quarter leather, cloth sides', group: 'Three-quarter binding' },
+  { value: 'three_quarter_leather_marbled', label: 'Three-quarter leather, marbled sides', group: 'Three-quarter binding' },
+  { value: 'three_quarter_morocco_paper', label: 'Three-quarter morocco, paper sides', group: 'Three-quarter binding' },
+  { value: 'three_quarter_morocco_cloth', label: 'Three-quarter morocco, cloth sides', group: 'Three-quarter binding' },
+  // ── Limp binding ──
+  { value: 'limp_leather', label: 'Limp leather', group: 'Limp binding' },
+  { value: 'limp_vellum', label: 'Limp vellum', group: 'Limp binding' },
 ]
 
 const protectiveEnclosureOptions = [
@@ -1224,7 +1270,11 @@ export default function BookAddForm({ referenceData }: Props) {
               <label className={labelClass}>Cover Type<FieldHelp text={FIELD_HELP.cover_type} /></label>
               <select value={formData.cover_type} onChange={e => handleChange('cover_type', e.target.value)} className={inputClass}>
                 <option value="">Select cover type...</option>
-                {coverTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {Object.entries(coverTypeOptions.reduce((acc, o) => { (acc[o.group] ??= []).push(o); return acc }, {} as Record<string, typeof coverTypeOptions>)).map(([group, opts]) => (
+                  <optgroup key={group} label={group}>
+                    {opts.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </optgroup>
+                ))}
               </select>
             </div>
             <div>
