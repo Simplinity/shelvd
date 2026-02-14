@@ -167,9 +167,9 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
 
   return (
     <div className="space-y-3">
-      {/* Default type selector */}
+      {/* Label for new images */}
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-muted-foreground">Default type:</span>
+        <span className="text-muted-foreground">Label for new images:</span>
         <PartSelect value={defaultPartId} onChange={setDefaultPartId} className="flex-1 max-w-xs" />
       </div>
 

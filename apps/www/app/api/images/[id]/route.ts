@@ -2,6 +2,54 @@ import { createClient } from '@/lib/supabase/server'
 import { del } from '@vercel/blob'
 import { NextResponse } from 'next/server'
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Not authorized' }, { status: 401 })
+
+  const body = await request.json()
+  const { book_part_id } = body
+
+  if (!book_part_id) {
+    return NextResponse.json({ error: 'book_part_id required' }, { status: 400 })
+  }
+
+  // Verify ownership
+  const { data: image } = await supabase
+    .from('book_images')
+    .select('id, book_id, user_id')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!image) return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+
+  // Derive image_type from book_part for backwards compat
+  const { data: part } = await supabase
+    .from('book_parts')
+    .select('purpose')
+    .eq('id', book_part_id)
+    .single()
+
+  const purposeToType: Record<string, string> = {
+    'Front Cover': 'cover', 'Spine': 'spine', 'Back Cover': 'back',
+  }
+  const derivedType = purposeToType[part?.purpose || ''] || 'detail'
+
+  const { error } = await supabase
+    .from('book_images')
+    .update({ book_part_id, image_type: derivedType })
+    .eq('id', id)
+
+  if (error) return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
+
+  return NextResponse.json({ success: true, image_type: derivedType })
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

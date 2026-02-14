@@ -393,6 +393,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
   const [deletingImageId, setDeletingImageId] = useState<string | null>(null)
   const [draggedImageIdx, setDraggedImageIdx] = useState<number | null>(null)
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null)
+  const [allBookParts, setAllBookParts] = useState<{ id: string; matter: string; purpose: string; description: string | null }[]>([])
 
   const loadImages = async () => {
     const { data } = await supabase
@@ -442,7 +444,24 @@ export default function BookEditForm({ book, referenceData }: Props) {
     ))
   }
 
-  useEffect(() => { loadImages() }, [])
+  const relabelImage = async (imageId: string, bookPartId: string) => {
+    const res = await fetch(`/api/images/${imageId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ book_part_id: bookPartId }),
+    })
+    if (res.ok) {
+      await loadImages()
+      setSelectedImageId(null)
+    }
+  }
+
+  useEffect(() => {
+    loadImages()
+    supabase.from('book_parts').select('id, matter, purpose, description').order('sort_order').then(({ data }) => {
+      if (data) setAllBookParts(data)
+    })
+  }, [])
 
   // Fetch collections, tags, and book's current memberships
   useEffect(() => {
@@ -1440,8 +1459,9 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 {bookImages.map((img, idx) => (
                   <div
                     key={img.id}
-                    className={`relative group ${canUpload ? 'cursor-grab active:cursor-grabbing' : ''} ${dragOverIdx === idx ? 'ring-2 ring-red-500 ring-offset-1' : ''} ${draggedImageIdx === idx ? 'opacity-40' : ''}`}
+                    className={`relative group cursor-pointer ${dragOverIdx === idx ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${draggedImageIdx === idx ? 'opacity-40' : ''} ${selectedImageId === img.id ? 'ring-2 ring-red-500 ring-offset-1' : ''}`}
                     draggable={canUpload}
+                    onClick={() => setSelectedImageId(prev => prev === img.id ? null : img.id)}
                     onDragStart={() => setDraggedImageIdx(idx)}
                     onDragOver={e => { e.preventDefault(); setDragOverIdx(idx) }}
                     onDragLeave={() => setDragOverIdx(null)}
@@ -1449,13 +1469,13 @@ export default function BookEditForm({ book, referenceData }: Props) {
                     onDragEnd={() => { setDraggedImageIdx(null); setDragOverIdx(null) }}
                   >
                     <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
-                      <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover pointer-events-none" />
+                      <img src={img.thumb_blob_url || img.blob_url} alt={img.book_parts?.purpose || img.image_type} className="w-full h-full object-cover pointer-events-none" />
                     </div>
                     <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded" title={img.book_parts?.description || ''}>{img.book_parts?.purpose || img.image_type}</span>
                     {canUpload && (
                       <button
                         type="button"
-                        onClick={() => deleteImage(img.id)}
+                        onClick={e => { e.stopPropagation(); deleteImage(img.id) }}
                         disabled={deletingImageId === img.id}
                         className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
                       >
@@ -1466,6 +1486,34 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 ))}
               </div>
             )}
+
+            {/* Relabel selected image */}
+            {selectedImageId && allBookParts.length > 0 && (() => {
+              const sel = bookImages.find(i => i.id === selectedImageId)
+              if (!sel) return null
+              const MATTER_ORDER = ['Physical', 'Front', 'Body', 'Back', 'Illustration', 'Other']
+              return (
+                <div className="flex items-center gap-3 mb-4 p-2 border border-red-500/30 bg-red-500/5">
+                  <span className="text-xs text-muted-foreground shrink-0">Label:</span>
+                  <select
+                    value={sel.book_part_id || ''}
+                    onChange={e => relabelImage(sel.id, e.target.value)}
+                    className="text-xs border border-border px-2 py-1 bg-background flex-1"
+                  >
+                    <option value="" disabled>Select label…</option>
+                    {MATTER_ORDER.map(matter => {
+                      const parts = allBookParts.filter(p => p.matter === matter)
+                      return parts.length > 0 ? (
+                        <optgroup key={matter} label={matter}>
+                          {parts.map(p => <option key={p.id} value={p.id}>{p.purpose}</option>)}
+                        </optgroup>
+                      ) : null
+                    })}
+                  </select>
+                  <button type="button" onClick={() => setSelectedImageId(null)} className="text-xs text-muted-foreground hover:text-foreground"><X className="w-3 h-3" /></button>
+                </div>
+              )
+            })()}
 
             {/* Upload zone (Pro+ only) */}
             {canUpload ? (
