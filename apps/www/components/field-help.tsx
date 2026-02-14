@@ -13,13 +13,24 @@ export default function FieldHelp({ text }: Props) {
   const iconRef = useRef<HTMLSpanElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
+  const [hAlign, setHAlign] = useState<'center' | 'left' | 'right'>('center')
+
   useEffect(() => {
     if (show && iconRef.current) {
       const rect = iconRef.current.getBoundingClientRect()
       const spaceBelow = window.innerHeight - rect.bottom
       setPosition(spaceBelow < 120 ? 'top' : 'bottom')
+      // Horizontal: keep tooltip on screen
+      const tooltipW = 256 // w-64 = 16rem = 256px
+      const spaceLeft = rect.left + rect.width / 2
+      const spaceRight = window.innerWidth - rect.left - rect.width / 2
+      if (spaceLeft < tooltipW / 2 + 8) setHAlign('left')
+      else if (spaceRight < tooltipW / 2 + 8) setHAlign('right')
+      else setHAlign('center')
     }
   }, [show])
+
+  const hClass = hAlign === 'left' ? 'left-0' : hAlign === 'right' ? 'right-0' : 'left-1/2 -translate-x-1/2'
 
   return (
     <span
@@ -37,11 +48,9 @@ export default function FieldHelp({ text }: Props) {
       {show && (
         <div
           ref={tooltipRef}
-          className={`absolute z-50 w-64 px-3 py-2 text-xs leading-relaxed font-normal normal-case tracking-normal text-popover-foreground bg-popover border border-border shadow-md ${
-            position === 'bottom'
-              ? 'top-full mt-1.5 left-1/2 -translate-x-1/2'
-              : 'bottom-full mb-1.5 left-1/2 -translate-x-1/2'
-          }`}
+          className={`absolute z-50 w-64 px-3 py-2 text-xs leading-relaxed font-normal normal-case tracking-normal text-amber-950 dark:text-amber-100 bg-amber-50 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800/50 shadow-md ${
+            position === 'bottom' ? 'top-full mt-1.5' : 'bottom-full mb-1.5'
+          } ${hClass}`}
           role="tooltip"
         >
           {text}
