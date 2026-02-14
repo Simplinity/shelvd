@@ -12,6 +12,16 @@
 
 ## Session: 2026-02-14
 
+### P4: OpenGraph / Twitter Cards ✅
+- Root metadata + metadataBase in layout.tsx
+- Default OG + Twitter images (Swiss Design: white bg, red bar, Inter font)
+- Blog dynamic OG images per article (title + author + date)
+- Wiki dynamic OG images per article (title + category)
+- blog-data.ts + wiki-data.ts edge-compatible splits (fs/path isolated)
+- Per-page metadata: fix title template duplication, add OG, fix shelvd.app → relative URLs
+- Shared layouts in lib/og/layouts.tsx: Default, Blog, Wiki, Page variants
+- Commits: d6b58ba, bb833ca, caedf61, 094d30d, c774361
+
 ### Grid View Sort Dropdown ✅
 - 8 sort fields: Title, Author, Publisher, Year, Place, Status, Catalog ID, Date added
 - Fix: DB-side sorting (was client-only, missed books in other batches)

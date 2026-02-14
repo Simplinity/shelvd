@@ -479,7 +479,7 @@ Must-do improvements before launch. Low effort, low risk.
 | P1 | Favicon + apple-touch-icon + web manifest | ✅ Done |
 | P2 | robots.txt (allow marketing, disallow app/admin/auth) | ✅ Done |
 | P3 | sitemap.xml (8 static + 22 blog + 35 wiki = 65 pages) | ✅ Done |
-| P4 | OpenGraph / Twitter Card metadata + OG image | Todo |
+| P4 | OpenGraph / Twitter Card metadata + OG image | ✅ Done |
 
 ### Error Handling & Resilience
 | # | Item | Status |
