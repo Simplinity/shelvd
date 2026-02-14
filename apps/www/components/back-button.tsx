@@ -10,6 +10,7 @@ export default function BackButton() {
     <button
       onClick={() => {
         if (window.history.length > 1) {
+          sessionStorage.setItem('books-restore-scroll', '1')
           router.back()
         } else {
           router.push('/books')

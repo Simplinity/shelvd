@@ -224,22 +224,33 @@ export default function BooksPage() {
     setGlobalSearchInput(globalSearchQuery)
   }, [globalSearchQuery])
 
-  // Save scroll position when leaving the page (for back button restore)
+  // Continuously save scroll position so back button can restore it
   useEffect(() => {
-    return () => {
-      sessionStorage.setItem('books-scroll', String(window.scrollY))
+    let ticking = false
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true
+        requestAnimationFrame(() => {
+          sessionStorage.setItem('books-scroll-y', String(window.scrollY))
+          ticking = false
+        })
+      }
     }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Restore scroll position after data loads (returning via back button)
+  // Restore scroll position when returning via back button
   useEffect(() => {
-    if (!loading && books.length > 0) {
-      const saved = sessionStorage.getItem('books-scroll')
-      if (saved) {
-        sessionStorage.removeItem('books-scroll')
-        // Wait for DOM to render, then scroll
+    if (!loading && books.length > 0 && sessionStorage.getItem('books-restore-scroll')) {
+      sessionStorage.removeItem('books-restore-scroll')
+      const y = parseInt(sessionStorage.getItem('books-scroll-y') || '0')
+      if (y > 0) {
+        // Double rAF to ensure DOM is fully painted
         requestAnimationFrame(() => {
-          window.scrollTo(0, parseInt(saved))
+          requestAnimationFrame(() => {
+            window.scrollTo(0, y)
+          })
         })
       }
     }
