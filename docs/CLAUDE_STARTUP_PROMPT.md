@@ -59,6 +59,11 @@ After reading, summarize: current state, uncommitted changes, what's next.
 9. **Version bumps:** changelog.ts + both package.json + git tag (Rule 9 in project.md)
 10. **Tier system:** `getEffectiveTier()` — collector < collector_pro < dealer. Feature flags in DB, not hardcoded.
 11. **DB migrations are additive:** ADD COLUMN only. DROP/RENAME = two releases.
+12. **Antwoord in het Nederlands** — tenzij code, commits, of docs (die blijven Engels).
+13. **Analyseer voor je adviseert** — geen suggesties zonder impact en risico te verifiëren. Geen "klinkt slim" optimalisaties.
+14. **Houd docs compact** — voltooide features max 1-2 regels. Verwijder plan-docs zodra shipped. Context window is beperkt.
+15. **Wees bondig** — korte antwoorden tenzij detail gevraagd wordt. Geen essays.
+16. **Geen info dupliceren** — één bron per onderwerp. Als het in project.md staat, geen apart document.
 
 ---
 
