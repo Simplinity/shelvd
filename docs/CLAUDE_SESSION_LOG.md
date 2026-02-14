@@ -4,9 +4,9 @@
 
 ## Current State
 - **Version:** v0.25.0
-- **Migrations:** 076 applied
+- **Migrations:** 077 applied
 - **Rollback tag:** `v0.25.0-pre-image-labels`
-- **Current task:** Image labeling via book_parts
+- **Current task:** Image labeling via book_parts — ALL 5 PUSHES COMPLETE
 
 ---
 
@@ -43,13 +43,13 @@
 - [x] 4.7 TypeScript clean
 - [x] 4.8 Commit + push → Vercel
 
-### Push 5: Data migration + cleanup
-- [ ] 5.1 Migration 077: map image_type → book_part_id
-- [ ] 5.2 Migration 077: make image_type nullable
-- [ ] 5.3 Apply + verify
-- [ ] 5.4 Regen database.types.ts
-- [ ] 5.5 TypeScript check
-- [ ] 5.6 Commit + push → Vercel
+### Push 5: Data migration + cleanup ✅
+- [x] 5.1 Migration 077: map image_type → book_part_id (6 covers mapped)
+- [x] 5.2 Migration 077: make image_type nullable, drop CHECK constraint
+- [x] 5.3 Applied + verified: 6/6 images now have book_part_id = Front Cover
+- [x] 5.4 database.types.ts already current (regen'd in push 3/4)
+- [x] 5.5 TypeScript clean
+- [x] 5.6 Commit b5a9f17 + push
 
 ---
 
