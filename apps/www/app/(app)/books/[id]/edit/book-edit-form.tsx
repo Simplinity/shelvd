@@ -593,6 +593,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           bibliography: formData.bibliography || null,
           summary: formData.summary || null,
           catalog_entry: formData.catalog_entry || null,
+          catalog_entry_isbd: formData.catalog_entry_isbd || null,
           internal_notes: formData.internal_notes || null,
         })
         .eq('id', book.id)
@@ -1650,12 +1651,16 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 contributors: contributorsForCatalog,
                 provenanceEntries: provenanceEntries.filter(e => !e.isDeleted && e.ownerName.trim()).sort((a, b) => a.position - b.position),
               }}
-              onGenerate={(entry) => { handleChange('catalog_entry', entry); setIsDirty(true) }}
+              onGenerate={(entry, field) => { handleChange(field, entry); setIsDirty(true) }}
             />
           </div>
           <div>
-            <label className={labelClass}>Full Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
+            <label className={labelClass}>Trade Catalog Entry<FieldHelp text={FIELD_HELP.catalog_entry} /></label>
             <textarea value={formData.catalog_entry || ''} onChange={e => handleChange('catalog_entry', e.target.value)} rows={4} className={textareaClass} />
+          </div>
+          <div className="mt-3">
+            <label className={labelClass}>ISBD Catalog Entry</label>
+            <textarea value={formData.catalog_entry_isbd || ''} onChange={e => handleChange('catalog_entry_isbd', e.target.value)} rows={4} className={textareaClass} />
           </div>
           </div>}
         </section>

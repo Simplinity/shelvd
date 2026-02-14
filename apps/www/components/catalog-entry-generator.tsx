@@ -3,12 +3,37 @@
 import { useState } from 'react'
 import { FileText, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
-type Language = 'en' | 'fr' | 'de' | 'nl'
+import {
+  type CatalogLanguage,
+  type CatalogMode,
+  CATALOG_LANGUAGES,
+  LABELS,
+  ABBREVIATIONS,
+  CONTRIBUTOR_ROLES,
+  ALL_COVER_TYPES,
+  CONDITION_GRADES,
+  TEXT_BLOCK_CONDITIONS,
+  EVIDENCE_TYPES,
+  ASSOCIATION_TYPES,
+  ENCLOSURE_TYPES,
+} from '@/lib/catalog-translations'
 
 type Contributor = {
   name: string
   role: string
+}
+
+type ProvenanceEntry = {
+  ownerName: string
+  ownerType: string
+  dateFrom: string
+  dateTo: string
+  evidenceType: string[]
+  evidenceDescription: string
+  transactionType: string
+  transactionDetail: string
+  associationType: string
+  associationNote: string
 }
 
 type BookData = {
@@ -35,7 +60,6 @@ type BookData = {
   volumes: string | null
   height_mm: number | null
   width_mm: number | null
-  // Physical extras
   depth_mm: number | null
   paper_type: string | null
   edge_treatment: string | null
@@ -64,18 +88,7 @@ type BookData = {
   dedication_text: string | null
   colophon_text: string | null
   // Structured provenance
-  provenanceEntries?: {
-    ownerName: string
-    ownerType: string
-    dateFrom: string
-    dateTo: string
-    evidenceType: string[]
-    evidenceDescription: string
-    transactionType: string
-    transactionDetail: string
-    associationType: string
-    associationNote: string
-  }[]
+  provenanceEntries?: ProvenanceEntry[]
   // Identifiers
   isbn_13: string | null
   isbn_10: string | null
@@ -89,624 +102,567 @@ type BookData = {
   contributors: Contributor[]
 }
 
-// Translations for contributor roles and labels
-const translations: Record<Language, Record<string, string>> = {
-  en: {
-    // Contributor role formats
-    'co-author': ', co-author',
-    'illustrated by': 'illustrated by',
-    'translated by': 'translated by',
-    'edited by': 'edited by',
-    'artist': ', artist',
-    'photographer': ', photographer',
-    'colorist': ', colorist',
-    'cover designer': 'cover design by',
-    'engraver': ', engraver',
-    'woodcutter': ', woodcutter',
-    'etcher': ', etcher',
-    'lithographer': ', lithographer',
-    'calligrapher': ', calligrapher',
-    'cartographer': ', cartographer',
-    'foreword by': 'foreword by',
-    'introduction by': 'introduction by',
-    'preface by': 'preface by',
-    'afterword by': 'afterword by',
-    // Labels
-    'printed by': 'Printed by',
-    'bibliography': 'Bibliography',
-    'provenance': 'Provenance',
-    'illustrations': 'Illustrations',
-    'signatures': 'Signatures',
-    'condition': 'Condition',
-    'original title': 'Original title',
-    'signed': 'Signed',
-    'with dust jacket': 'In dust jacket',
-    'p.': 'p.',
-    'ill.': 'ill.',
-    'vol.': 'vol.',
-  },
-  fr: {
-    'co-author': ', co-auteur',
-    'illustrated by': 'illustré par',
-    'translated by': 'traduit par',
-    'edited by': 'sous la direction de',
-    'artist': ', artiste',
-    'photographer': ', photographe',
-    'colorist': ', coloriste',
-    'cover designer': 'couverture de',
-    'engraver': ', graveur',
-    'woodcutter': ', graveur sur bois',
-    'etcher': ', aquafortiste',
-    'lithographer': ', lithographe',
-    'calligrapher': ', calligraphe',
-    'cartographer': ', cartographe',
-    'foreword by': 'préface de',
-    'introduction by': 'introduction de',
-    'preface by': 'avant-propos de',
-    'afterword by': 'postface de',
-    'printed by': 'Imprimé par',
-    'bibliography': 'Bibliographie',
-    'provenance': 'Provenance',
-    'illustrations': 'Illustrations',
-    'signatures': 'Signatures',
-    'condition': 'État',
-    'original title': 'Titre original',
-    'signed': 'Signé',
-    'with dust jacket': 'Sous jaquette',
-    'p.': 'p.',
-    'ill.': 'ill.',
-    'vol.': 'vol.',
-  },
-  de: {
-    'co-author': ', Mitautor',
-    'illustrated by': 'illustriert von',
-    'translated by': 'übersetzt von',
-    'edited by': 'herausgegeben von',
-    'artist': ', Künstler',
-    'photographer': ', Fotograf',
-    'colorist': ', Kolorist',
-    'cover designer': 'Umschlaggestaltung von',
-    'engraver': ', Kupferstecher',
-    'woodcutter': ', Holzschneider',
-    'etcher': ', Radierer',
-    'lithographer': ', Lithograf',
-    'calligrapher': ', Kalligraf',
-    'cartographer': ', Kartograf',
-    'foreword by': 'Geleitwort von',
-    'introduction by': 'Einleitung von',
-    'preface by': 'Vorwort von',
-    'afterword by': 'Nachwort von',
-    'printed by': 'Gedruckt von',
-    'bibliography': 'Bibliographie',
-    'provenance': 'Provenienz',
-    'illustrations': 'Illustrationen',
-    'signatures': 'Signaturen',
-    'condition': 'Zustand',
-    'original title': 'Originaltitel',
-    'signed': 'Signiert',
-    'with dust jacket': 'Mit Schutzumschlag',
-    'p.': 'S.',
-    'ill.': 'Ill.',
-    'vol.': 'Bd.',
-  },
-  nl: {
-    'co-author': ', co-auteur',
-    'illustrated by': 'geïllustreerd door',
-    'translated by': 'vertaald door',
-    'edited by': 'onder redactie van',
-    'artist': ', kunstenaar',
-    'photographer': ', fotograaf',
-    'colorist': ', inkleuring',
-    'cover designer': 'omslagontwerp door',
-    'engraver': ', graveur',
-    'woodcutter': ', houtsnijder',
-    'etcher': ', etser',
-    'lithographer': ', lithograaf',
-    'calligrapher': ', kalligraaf',
-    'cartographer': ', cartograaf',
-    'foreword by': 'voorwoord door',
-    'introduction by': 'inleiding door',
-    'preface by': 'ten geleide door',
-    'afterword by': 'nawoord door',
-    'printed by': 'Gedrukt door',
-    'bibliography': 'Bibliografie',
-    'provenance': 'Herkomst',
-    'illustrations': 'Illustraties',
-    'signatures': 'Signaturen',
-    'condition': 'Conditie',
-    'original title': 'Oorspronkelijke titel',
-    'signed': 'Gesigneerd',
-    'with dust jacket': 'Met stofomslag',
-    'p.': 'p.',
-    'ill.': 'ill.',
-    'dl.': 'dl.',
-  },
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Convert "John William Smith" → "SMITH, John William" */
+function authorCaps(name: string): string {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length <= 1) return name.toUpperCase()
+  const family = parts[parts.length - 1]
+  const given = parts.slice(0, -1).join(' ')
+  return `${family.toUpperCase()}, ${given}`
 }
 
-// Cover type translations (simplified - only most common ones)
-const coverTypeLabels: Record<string, Record<Language, string>> = {
-  'softcover': { en: 'Softcover', fr: 'Broché', de: 'Broschur', nl: 'Softcover' },
-  'softcover_dj': { en: 'Softcover in dust jacket', fr: 'Broché sous jaquette', de: 'Broschur mit Schutzumschlag', nl: 'Softcover met stofomslag' },
-  'hardcover': { en: 'Hardcover', fr: 'Relié', de: 'Gebunden', nl: 'Hardcover' },
-  'hardcover_dj': { en: 'Hardcover in dust jacket', fr: 'Relié sous jaquette', de: 'Gebunden mit Schutzumschlag', nl: 'Hardcover met stofomslag' },
-  'full_leather_hardcover': { en: 'Full leather', fr: 'Plein cuir', de: 'Ganzleder', nl: 'Volledig leer' },
-  'full_leather_softcover': { en: 'Full leather (limp)', fr: 'Plein cuir souple', de: 'Ganzleder (flexibel)', nl: 'Volledig leer (slap)' },
-  'full_calf_hardcover': { en: 'Full calf', fr: 'Plein veau', de: 'Ganzkalbleder', nl: 'Volledig kalfsleer' },
-  'full_vellum_hardcover': { en: 'Full vellum', fr: 'Plein vélin', de: 'Ganzpergament', nl: 'Volledig perkament' },
-  'full_morocco_hardcover': { en: 'Full morocco', fr: 'Plein maroquin', de: 'Ganzmaroquin', nl: 'Volledig marokijn' },
-  'full_cloth_hardcover': { en: 'Cloth', fr: 'Toile', de: 'Leinen', nl: 'Linnen' },
-  'half_leather_paper': { en: 'Half leather', fr: 'Demi-cuir', de: 'Halbleder', nl: 'Half leer' },
-  'half_leather_cloth': { en: 'Half leather, cloth sides', fr: 'Demi-cuir, plats toile', de: 'Halbleder mit Leinenbezug', nl: 'Half leer, linnen platten' },
-  'quarter_leather_paper': { en: 'Quarter leather', fr: 'Quart de cuir', de: 'Viertelleder', nl: 'Kwart leer' },
-  'original_wraps': { en: 'Original wrappers', fr: 'Couverture d\'éditeur', de: 'Originalbroschur', nl: 'Originele omslag' },
-  'printed_wrappers': { en: 'Printed wrappers', fr: 'Couverture imprimée', de: 'Bedruckter Umschlag', nl: 'Bedrukte omslag' },
-  'limp_vellum': { en: 'Limp vellum', fr: 'Vélin souple', de: 'Pergamenteinband', nl: 'Slap perkament' },
-  'limp_leather': { en: 'Limp leather', fr: 'Cuir souple', de: 'Flexibler Ledereinband', nl: 'Slap leer' },
+/** Get contributors by role (case-insensitive) */
+function getByRole(contributors: Contributor[], role: string): string[] {
+  return contributors
+    .filter(c => c.role.toLowerCase() === role.toLowerCase())
+    .map(c => c.name)
 }
 
-function generateCatalogEntry(book: BookData, lang: Language): string {
-  const t = translations[lang]
-  const parts: string[] = []
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 1: TITLE AND STATEMENT OF RESPONSIBILITY
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Helper to get contributors by role (case-insensitive)
-  const getContributorsByRole = (role: string): string[] => {
-    return book.contributors
-      .filter(c => c.role.toLowerCase() === role.toLowerCase())
-      .map(c => c.name)
-  }
-  
-  // Get all contributor types
-  const authors = getContributorsByRole('Author')
-  const coAuthors = getContributorsByRole('Co-author')
-  const editors = getContributorsByRole('Editor')
-  const translators = getContributorsByRole('Translator')
-  const illustrators = getContributorsByRole('Illustrator')
-  const artists = getContributorsByRole('Artist')
-  const photographers = getContributorsByRole('Photographer')
-  const colorists = getContributorsByRole('Colorist')
-  const coverDesigners = getContributorsByRole('Cover designer')
-  const engravers = getContributorsByRole('Engraver')
-  const woodcutters = getContributorsByRole('Woodcutter')
-  const etchers = getContributorsByRole('Etcher')
-  const lithographers = getContributorsByRole('Lithographer')
-  const calligraphers = getContributorsByRole('Calligrapher')
-  const cartographers = getContributorsByRole('Cartographer')
-  const forewordWriters = getContributorsByRole('Writer of foreword')
-  const introWriters = getContributorsByRole('Writer of introduction')
-  const prefaceWriters = getContributorsByRole('Writer of preface')
-  const afterwordWriters = getContributorsByRole('Writer of afterword')
-  
-  let area1 = ''
-  
-  // Main author(s) at the start
-  if (authors.length > 0) {
-    area1 += authors.join(' ; ') + '. '
-  }
-  
-  // Title
-  if (book.title) {
-    area1 += book.title
-    
-    // Subtitle (preceded by " : ")
-    if (book.subtitle) {
-      area1 += ' : ' + book.subtitle
+/** Format dimensions for Trade mode (mm) */
+function tradeDimensions(h: number | null, w: number | null): string {
+  if (h && w) return `${h} × ${w} mm`
+  if (h) return `${h} mm`
+  return ''
+}
+
+/** Format dimensions for ISBD mode (cm, height only, rounded up) */
+function isbdDimensions(h: number | null): string {
+  if (!h) return ''
+  return `${Math.ceil(h / 10)} cm`
+}
+
+/** Translate a cover type value to a given language */
+function coverLabel(coverType: string | null, lang: CatalogLanguage): string {
+  if (!coverType) return ''
+  return ALL_COVER_TYPES[coverType]?.[lang] || coverType.replace(/_/g, ' ')
+}
+
+/** Translate a condition grade */
+function conditionLabel(condName: string | null, lang: CatalogLanguage): string {
+  if (!condName) return ''
+  // Find by matching the English name (condition_name from DB is English)
+  const key = Object.keys(CONDITION_GRADES).find(
+    k => CONDITION_GRADES[k]?.en?.toLowerCase() === condName.toLowerCase()
+  )
+  if (key) return CONDITION_GRADES[key]![lang] || condName
+  return condName
+}
+
+/** Translate text block condition */
+function textBlockLabel(cond: string | null, lang: CatalogLanguage): string {
+  if (!cond) return ''
+  return TEXT_BLOCK_CONDITIONS[cond]?.[lang] || cond.replace(/_/g, ' ')
+}
+
+/** Translate enclosure type */
+function enclosureLabel(enc: string | null, lang: CatalogLanguage): string {
+  if (!enc || enc === 'none') return ''
+  return ENCLOSURE_TYPES[enc]?.[lang] || enc.replace(/_/g, ' ')
+}
+
+/** Build provenance text */
+function provenanceText(entries: ProvenanceEntry[], lang: CatalogLanguage): string {
+  if (!entries || entries.length === 0) return ''
+
+  const chain = entries.map(entry => {
+    const parts: string[] = []
+
+    // Evidence
+    const evTypes = (entry.evidenceType || []).filter(t => t !== 'none')
+    const evLabel = evTypes.length > 0
+      ? evTypes.map(t => EVIDENCE_TYPES[t]?.[lang] || t).join(', ')
+      : null
+
+    // Owner
+    if (evLabel && entry.ownerType !== 'self') {
+      parts.push(`${evLabel}: ${entry.ownerName}`)
+    } else {
+      parts.push(entry.ownerName)
     }
-    
-    // Statement of responsibility (preceded by " / ")
-    const responsibilities: string[] = []
-    
-    // Authors again in responsibility (if present)
-    if (authors.length > 0) {
-      if (lang === 'en') {
-        responsibilities.push('by ' + authors.join(', '))
-      } else if (lang === 'fr') {
-        responsibilities.push('par ' + authors.join(', '))
-      } else if (lang === 'de') {
-        responsibilities.push('von ' + authors.join(', '))
-      } else {
-        responsibilities.push('door ' + authors.join(', '))
+
+    // Dates
+    const dates = [entry.dateFrom, entry.dateTo].filter(Boolean)
+    if (dates.length > 0) parts.push(`(${dates.join('–')})`)
+
+    // Transaction
+    if (entry.transactionDetail) {
+      parts.push(entry.transactionDetail)
+    }
+
+    // Association
+    if (entry.associationType && entry.associationType !== 'none') {
+      const aLabel = ASSOCIATION_TYPES[entry.associationType]?.[lang] || ''
+      if (entry.associationNote) {
+        parts.push(`[${aLabel}: ${entry.associationNote}]`)
+      } else if (aLabel) {
+        parts.push(`[${aLabel}]`)
       }
     }
-    
-    // Co-authors
-    if (coAuthors.length > 0) {
-      responsibilities.push(coAuthors.map(n => n + t['co-author']).join(' ; '))
-    }
-    
-    // Editors
-    if (editors.length > 0) {
-      responsibilities.push(t['edited by'] + ' ' + editors.join(', '))
-    }
-    
-    // Translators
-    if (translators.length > 0) {
-      responsibilities.push(t['translated by'] + ' ' + translators.join(', '))
-    }
-    
-    // Illustrators
-    if (illustrators.length > 0) {
-      responsibilities.push(t['illustrated by'] + ' ' + illustrators.join(', '))
-    }
-    
-    // Artists
-    if (artists.length > 0) {
-      responsibilities.push(artists.map(n => n + t['artist']).join(' ; '))
-    }
-    
-    // Photographers
-    if (photographers.length > 0) {
-      responsibilities.push(photographers.map(n => n + t['photographer']).join(' ; '))
-    }
-    
-    // Colorists
-    if (colorists.length > 0) {
-      responsibilities.push(colorists.map(n => n + t['colorist']).join(' ; '))
-    }
-    
-    // Cover designers
-    if (coverDesigners.length > 0) {
-      responsibilities.push(t['cover designer'] + ' ' + coverDesigners.join(', '))
-    }
-    
-    // Engravers
-    if (engravers.length > 0) {
-      responsibilities.push(engravers.map(n => n + t['engraver']).join(' ; '))
-    }
-    
-    // Woodcutters
-    if (woodcutters.length > 0) {
-      responsibilities.push(woodcutters.map(n => n + t['woodcutter']).join(' ; '))
-    }
-    
-    // Etchers
-    if (etchers.length > 0) {
-      responsibilities.push(etchers.map(n => n + t['etcher']).join(' ; '))
-    }
-    
-    // Lithographers
-    if (lithographers.length > 0) {
-      responsibilities.push(lithographers.map(n => n + t['lithographer']).join(' ; '))
-    }
-    
-    // Calligraphers
-    if (calligraphers.length > 0) {
-      responsibilities.push(calligraphers.map(n => n + t['calligrapher']).join(' ; '))
-    }
-    
-    // Cartographers
-    if (cartographers.length > 0) {
-      responsibilities.push(cartographers.map(n => n + t['cartographer']).join(' ; '))
-    }
-    
-    // Foreword writers
-    if (forewordWriters.length > 0) {
-      responsibilities.push(t['foreword by'] + ' ' + forewordWriters.join(', '))
-    }
-    
-    // Introduction writers
-    if (introWriters.length > 0) {
-      responsibilities.push(t['introduction by'] + ' ' + introWriters.join(', '))
-    }
-    
-    // Preface writers
-    if (prefaceWriters.length > 0) {
-      responsibilities.push(t['preface by'] + ' ' + prefaceWriters.join(', '))
-    }
-    
-    // Afterword writers
-    if (afterwordWriters.length > 0) {
-      responsibilities.push(t['afterword by'] + ' ' + afterwordWriters.join(', '))
-    }
-    
-    if (responsibilities.length > 0) {
-      area1 += ' / ' + responsibilities.join(' ; ')
+
+    return parts.filter(Boolean).join(' ')
+  })
+
+  return chain.join(' — ')
+}
+
+/** Build contributor SoR string for Trade mode */
+function tradeContributors(contributors: Contributor[], lang: CatalogLanguage): string {
+  const roles = CONTRIBUTOR_ROLES[lang]
+  const parts: string[] = []
+
+  // Authors (already shown as main author, skip in SoR)
+  const coAuthors = getByRole(contributors, 'Co-author')
+  if (coAuthors.length > 0) parts.push(coAuthors.map(n => n + (roles?.co_author || '')).join(', '))
+
+  // Role-based contributors
+  const roleMappings: [string, keyof typeof roles][] = [
+    ['Editor', 'editor'],
+    ['Translator', 'translator'],
+    ['Illustrator', 'illustrator'],
+    ['Photographer', 'photographer'],
+    ['Cover designer', 'cover_designer'],
+    ['Engraver', 'engraver'],
+    ['Woodcutter', 'woodcutter'],
+    ['Etcher', 'etcher'],
+    ['Lithographer', 'lithographer'],
+    ['Calligrapher', 'calligrapher'],
+    ['Cartographer', 'cartographer'],
+    ['Writer of foreword', 'foreword'],
+    ['Writer of introduction', 'introduction'],
+    ['Writer of preface', 'preface'],
+    ['Writer of afterword', 'afterword'],
+  ]
+
+  for (const [dbRole, transKey] of roleMappings) {
+    const names = getByRole(contributors, dbRole)
+    if (names.length > 0) {
+      const phrase = roles?.[transKey as keyof typeof roles] || dbRole.toLowerCase()
+      parts.push(`${phrase} ${names.join(', ')}`)
     }
   }
-  
-  if (area1.trim()) {
-    parts.push(area1.trim())
+
+  return parts.join('. ')
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TRADE CATALOG MODE
+// ═══════════════════════════════════════════════════════════════════════════
+
+function generateTradeEntry(book: BookData, lang: CatalogLanguage): string {
+  const t = LABELS[lang]
+  const abbr = ABBREVIATIONS[lang]
+  const parts: string[] = []
+
+  // ── Author ──
+  const authors = getByRole(book.contributors, 'Author')
+  if (authors.length > 0) {
+    parts.push(authors.map(authorCaps).join(' ; '))
   }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 2: EDITION
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  const editionParts: string[] = []
-  if (book.edition) editionParts.push(book.edition)
-  if (book.impression) editionParts.push(book.impression)
-  
-  if (editionParts.length > 0) {
-    parts.push(editionParts.join(', '))
+
+  // ── Title ──
+  let titleBlock = ''
+  if (book.title) {
+    titleBlock = book.title
+    if (book.subtitle) titleBlock += ' : ' + book.subtitle
   }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 4: PUBLICATION, DISTRIBUTION
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  let area4 = ''
-  
-  if (book.publication_place) {
-    area4 += book.publication_place
+  if (titleBlock) parts.push(titleBlock)
+
+  // ── Publication ──
+  const pubParts: string[] = []
+  if (book.publication_place) pubParts.push(book.publication_place)
+  if (book.publisher_name) pubParts.push(book.publisher_name)
+  if (book.publication_year) pubParts.push(book.publication_year)
+  if (pubParts.length > 0) parts.push(pubParts.join(', '))
+
+  // ── Edition ──
+  const edParts: string[] = []
+  if (book.edition) edParts.push(book.edition)
+  if (book.impression) edParts.push(book.impression)
+  if (edParts.length > 0) parts.push(edParts.join(', '))
+
+  // ── Physical: Format BEFORE dimensions (trade convention) ──
+  let physical = ''
+
+  // Format first
+  if (book.format_abbreviation) {
+    physical += book.format_abbreviation
+  } else if (book.format_name) {
+    physical += book.format_name
   }
-  
-  if (book.publisher_name) {
-    if (area4) area4 += ' : '
-    area4 += book.publisher_name
+
+  // Pagination
+  const pagination = book.pagination_description
+    || (book.page_count ? `${book.page_count} ${abbr.pages}` : '')
+  if (pagination) {
+    if (physical) physical += '. '
+    physical += pagination
   }
-  
-  if (book.publication_year) {
-    if (area4) area4 += ', '
-    area4 += book.publication_year
+
+  // Volumes
+  if (book.volumes) {
+    if (physical) physical += ', '
+    physical += book.volumes
   }
-  
-  // Printer info (optional, after main publication)
+
+  // Illustrations (brief, in physical line)
+  if (book.illustrations_description) {
+    if (physical) physical += ', '
+    physical += book.illustrations_description
+  }
+
+  // Dimensions (mm for trade)
+  const dims = tradeDimensions(book.height_mm, book.width_mm)
+  if (dims) {
+    if (physical) physical += '. '
+    physical += dims
+  }
+
+  if (physical) parts.push(physical)
+
+  // ── Cover / Binding ──
+  const coverParts: string[] = []
+  const cv = coverLabel(book.cover_type, lang)
+  if (cv) coverParts.push(cv)
+  if (book.binding_name && !book.cover_type) coverParts.push(book.binding_name)
+  if (book.has_dust_jacket && book.cover_type && !book.cover_type.includes('_dj')) {
+    coverParts.push(t.dust_jacket)
+  }
+  if (coverParts.length > 0) parts.push(coverParts.join('. '))
+
+  // ── Issue/State + Edition notes ──
+  if (book.issue_state) parts.push(book.issue_state)
+  if (book.edition_notes) parts.push(book.edition_notes)
+
+  // ── Condition ──
+  let condText = ''
+  const condGrade = conditionLabel(book.condition_name, lang)
+  if (condGrade) {
+    condText = condGrade
+    if (book.condition_notes) condText += '. ' + book.condition_notes
+  } else if (book.condition_notes) {
+    condText = book.condition_notes
+  }
+  // DJ condition
+  if (book.dust_jacket_condition_name) {
+    const djGrade = conditionLabel(book.dust_jacket_condition_name, lang)
+    if (djGrade) condText += `. ${t.dust_jacket}: ${djGrade}`
+  }
+  // Text block
+  const tbLabel = textBlockLabel(book.text_block_condition, lang)
+  if (tbLabel) condText += `. ${t.text_block}: ${tbLabel}`
+  if (condText) parts.push(condText)
+
+  // ── Notes block ──
+  const notes: string[] = []
+
+  // Signed
+  if (book.is_signed) {
+    const sigText = book.signature_details
+      ? `${t.signed}: ${book.signature_details}`
+      : t.signed
+    notes.push(sigText)
+  }
+
+  // Original title
+  if (book.original_title) {
+    notes.push(`${t.original_title}: ${book.original_title}`)
+  }
+
+  // Dedication
+  if (book.dedication_text) notes.push(`${t.dedication}: ${book.dedication_text}`)
+
+  // Colophon
+  if (book.colophon_text) notes.push(`${t.colophon}: ${book.colophon_text}`)
+
+  // Paper type
+  if (book.paper_type && book.paper_type !== 'wove') {
+    notes.push(`${t.paper}: ${book.paper_type.replace(/_/g, ' ')}`)
+  }
+
+  // Edge treatment
+  if (book.edge_treatment && book.edge_treatment !== 'trimmed') {
+    notes.push(`${t.edges}: ${book.edge_treatment.replace(/_/g, ' ')}`)
+  }
+
+  // Endpapers
+  if (book.endpapers_type && !['plain_white', 'none'].includes(book.endpapers_type)) {
+    notes.push(`${t.endpapers}: ${book.endpapers_type.replace(/_/g, ' ')}`)
+  }
+
+  // Protective enclosure
+  const encLabel = enclosureLabel(book.protective_enclosure, lang)
+  if (encLabel) notes.push(`${t.enclosure}: ${encLabel}`)
+
+  // Signatures/collation
+  if (book.signatures_description) notes.push(`${t.signatures}: ${book.signatures_description}`)
+
+  // Printer
   if (book.printer) {
-    if (area4) area4 += '. '
-    area4 += t['printed by'] + ' ' + book.printer
-    if (book.printing_place) {
-      area4 += ', ' + book.printing_place
+    let printerText = `${t.printed_by} ${book.printer}`
+    if (book.printing_place) printerText += `, ${book.printing_place}`
+    notes.push(printerText)
+  }
+
+  // Provenance
+  const prov = provenanceText(book.provenanceEntries || [], lang)
+  if (prov) notes.push(`${t.provenance}: ${prov}`)
+
+  // Bibliography
+  if (book.bibliography) notes.push(`${t.bibliography}: ${book.bibliography}`)
+
+  // Contributors (non-author)
+  const contribText = tradeContributors(book.contributors, lang)
+  if (contribText) notes.push(contribText)
+
+  if (notes.length > 0) parts.push(notes.join('. '))
+
+  // ── Series ──
+  if (book.series) {
+    let seriesText = `(${book.series}`
+    if (book.series_number) seriesText += ` ; ${book.series_number}`
+    seriesText += ')'
+    parts.push(seriesText)
+  }
+
+  // ── Identifiers (trade: usually ISBN only) ──
+  if (book.isbn_13) parts.push('ISBN ' + book.isbn_13)
+  else if (book.isbn_10) parts.push('ISBN ' + book.isbn_10)
+
+  return parts.join('. ')
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ISBD FORMAL MODE
+// ═══════════════════════════════════════════════════════════════════════════
+
+function generateISBDEntry(book: BookData, lang: CatalogLanguage): string {
+  const t = LABELS[lang]
+  const abbr = ABBREVIATIONS[lang]
+  const areas: string[] = []
+
+  // ── AREA 1: Title and Statement of Responsibility ──
+  // ISBD: title first, NO author before title
+  let area1 = ''
+  if (book.title) {
+    area1 = book.title
+    if (book.subtitle) area1 += ' : ' + book.subtitle
+
+    // Statement of Responsibility — transcribe from title page, use " / " separator
+    const sorParts: string[] = []
+    const authors = getByRole(book.contributors, 'Author')
+    if (authors.length > 0) sorParts.push(authors.join(', '))
+
+    const coAuthors = getByRole(book.contributors, 'Co-author')
+    if (coAuthors.length > 0) sorParts.push(...coAuthors)
+
+    const editors = getByRole(book.contributors, 'Editor')
+    if (editors.length > 0) {
+      const edPhrase = CONTRIBUTOR_ROLES[lang]?.editor || 'edited by'
+      sorParts.push(`${edPhrase} ${editors.join(', ')}`)
+    }
+
+    const translators = getByRole(book.contributors, 'Translator')
+    if (translators.length > 0) {
+      const trPhrase = CONTRIBUTOR_ROLES[lang]?.translator || 'translated by'
+      sorParts.push(`${trPhrase} ${translators.join(', ')}`)
+    }
+
+    const illustrators = getByRole(book.contributors, 'Illustrator')
+    if (illustrators.length > 0) {
+      const ilPhrase = CONTRIBUTOR_ROLES[lang]?.illustrator || 'illustrated by'
+      sorParts.push(`${ilPhrase} ${illustrators.join(', ')}`)
+    }
+
+    if (sorParts.length > 0) {
+      area1 += ' / ' + sorParts.join(' ; ')
     }
   }
-  
-  if (area4) {
-    parts.push(area4)
+  if (area1) areas.push(area1)
+
+  // ── AREA 2: Edition ──
+  const edParts: string[] = []
+  if (book.edition) edParts.push(book.edition)
+  if (book.impression) edParts.push(book.impression)
+  if (edParts.length > 0) areas.push(edParts.join(', '))
+
+  // ── AREA 4: Publication ──
+  let area4 = ''
+  if (book.publication_place) area4 += book.publication_place
+  else area4 += '[S.l.]'
+
+  if (book.publisher_name) {
+    area4 += ' : ' + book.publisher_name
+  } else {
+    area4 += ' : [s.n.]'
   }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 5: PHYSICAL DESCRIPTION
-  // ═══════════════════════════════════════════════════════════════════════════
-  
+
+  if (book.publication_year) {
+    area4 += ', ' + book.publication_year
+  }
+  areas.push(area4)
+
+  // ── AREA 5: Physical Description ──
   let area5 = ''
-  
-  // Pagination (collation)
+
+  // Extent (pagination)
   if (book.pagination_description) {
-    area5 += book.pagination_description
+    area5 = book.pagination_description
   } else if (book.page_count) {
-    area5 += book.page_count + ' ' + t['p.']
+    area5 = `${book.page_count} ${abbr.pages}`
   }
-  
+
   // Volumes
   if (book.volumes) {
     if (area5) area5 += ', '
     area5 += book.volumes
   }
-  
-  // Dimensions (height × width in mm)
-  if (book.height_mm || book.width_mm) {
+
+  // Illustrations (ISBD: ": ill." in Area 5)
+  if (book.illustrations_description) {
+    if (area5) area5 += ' : '
+    area5 += book.illustrations_description
+  }
+
+  // Dimensions (ISBD: cm, height only, rounded up)
+  const dims = isbdDimensions(book.height_mm)
+  if (dims) {
     if (area5) area5 += ' ; '
-    if (book.height_mm && book.width_mm) {
-      area5 += book.height_mm + ' × ' + book.width_mm + ' mm'
-    } else if (book.height_mm) {
-      area5 += book.height_mm + ' mm'
-    }
+    area5 += dims
   }
-  
-  // Book format (8vo, 4to, folio, etc.)
-  if (book.format_abbreviation) {
-    if (area5) area5 += ' '
-    area5 += book.format_abbreviation
-  } else if (book.format_name) {
-    if (area5) area5 += ' '
-    area5 += book.format_name
-  }
-  
-  // Cover type
-  if (book.cover_type) {
-    const coverLabel = coverTypeLabels[book.cover_type]?.[lang] || 
-                       book.cover_type.replace(/_/g, ' ')
-    if (area5) area5 += '. '
-    area5 += coverLabel
-  }
-  
-  // Binding (if different from cover type)
-  if (book.binding_name && !book.cover_type) {
-    if (area5) area5 += '. '
-    area5 += book.binding_name
-  }
-  
-  // Dust jacket (only if not already indicated in cover_type)
-  if (book.has_dust_jacket && book.cover_type && !book.cover_type.includes('_dj')) {
-    if (area5) area5 += '. '
-    area5 += t['with dust jacket']
-  }
-  
-  // Signed
-  if (book.is_signed) {
-    if (area5) area5 += '. '
-    area5 += t['signed']
-  }
-  
-  if (area5) {
-    parts.push(area5)
-  }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 6: SERIES
-  // ═══════════════════════════════════════════════════════════════════════════
-  
+
+  if (area5) areas.push(area5)
+
+  // ── AREA 6: Series ──
   if (book.series) {
     let area6 = '(' + book.series
-    if (book.series_number) {
-      area6 += ' ; ' + book.series_number
-    }
+    if (book.series_number) area6 += ' ; ' + book.series_number
     area6 += ')'
-    parts.push(area6)
+    areas.push(area6)
   }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 7: NOTES
-  // ═══════════════════════════════════════════════════════════════════════════
-  
+
+  // ── AREA 7: Notes (free-form, each separated) ──
   const notes: string[] = []
-  
-  // Original title
-  if (book.original_title) {
-    notes.push(t['original title'] + ': ' + book.original_title)
+
+  // Original title (for translations)
+  if (book.original_title) notes.push(`${t.original_title}: ${book.original_title}`)
+
+  // Language note
+  if (book.original_language_name && book.language_name) {
+    notes.push(`Translated from ${book.original_language_name}`)
   }
-  
+
   // Edition notes
-  if (book.edition_notes) {
-    notes.push(book.edition_notes)
-  }
-  
+  if (book.edition_notes) notes.push(book.edition_notes)
+
   // Issue/state
-  if (book.issue_state) {
-    notes.push(book.issue_state)
-  }
-  
-  // Bibliography
-  if (book.bibliography) {
-    notes.push(t['bibliography'] + ': ' + book.bibliography)
-  }
-  
-  // Provenance (structured entries take priority over free-text field)
-  if (book.provenanceEntries && book.provenanceEntries.length > 0) {
-    const chain = book.provenanceEntries.map(entry => {
-      const parts: string[] = []
+  if (book.issue_state) notes.push(book.issue_state)
 
-      // Evidence prefix (e.g. "Bookplate of", "Inscription:")
-      const evidenceTypes = (entry.evidenceType || []).filter(t => t !== 'none')
-      const evidenceLabel = evidenceTypes.length > 0
-        ? evidenceTypes.map(t => {
-            const labels: Record<string, string> = {
-              bookplate: 'Bookplate', inscription: 'Inscription', stamp: 'Stamp',
-              annotation: 'Annotations', binding: 'Binding mark', shelfmark: 'Shelfmark',
-              auction_record: 'Auction record', dealer_record: 'Dealer record',
-              receipt: 'Receipt', oral_history: 'Oral history',
-            }
-            return labels[t] || t
-          }).join(', ')
-        : null
-
-      // Owner name with optional evidence prefix
-      if (evidenceLabel && entry.ownerType !== 'self') {
-        parts.push(`${evidenceLabel} of ${entry.ownerName}`)
-      } else if (entry.ownerType === 'self') {
-        parts.push(entry.ownerName)
-      } else {
-        parts.push(entry.ownerName)
-      }
-
-      // Dates
-      const dates = [entry.dateFrom, entry.dateTo].filter(Boolean)
-      if (dates.length > 0) {
-        parts.push(`(${dates.join('–')})`)
-      }
-
-      // Transaction detail (e.g. "Sotheby's London, lot 85, 2 Nov 1977")
-      if (entry.transactionDetail) {
-        parts.push(entry.transactionDetail)
-      } else if (entry.transactionType && entry.transactionType !== 'unknown') {
-        const txLabels: Record<string, string> = {
-          purchase: 'Purchased', auction: 'Sold at auction', dealer: 'Acquired from dealer',
-          gift: 'Gift', presentation: 'Presentation by author', inheritance: 'Inherited',
-        }
-        parts.push(txLabels[entry.transactionType] || '')
-      }
-
-      // Association note
-      if (entry.associationType && entry.associationType !== 'none') {
-        const assocLabels: Record<string, string> = {
-          dedication_copy: 'dedication copy', association_copy: 'association copy',
-          presentation_copy: 'presentation copy', inscribed: 'inscribed by author',
-          signed: 'signed by author', authors_copy: "author's own copy",
-          annotated: 'annotated by notable person', from_notable_collection: 'from notable collection',
-          ex_library: 'ex-library', review_copy: 'review copy',
-          subscriber_copy: 'subscriber copy', prize_copy: 'prize/award copy',
-          working_copy: 'working copy',
-        }
-        const label = assocLabels[entry.associationType] || ''
-        if (entry.associationNote) {
-          parts.push(`[${label}: ${entry.associationNote}]`)
-        } else if (label) {
-          parts.push(`[${label}]`)
-        }
-      }
-
-      return parts.filter(Boolean).join(' ')
-    })
-    notes.push(t['provenance'] + ': ' + chain.join(' — '))
-  }
-  
-  // Illustrations description (detailed)
-  if (book.illustrations_description) {
-    notes.push(t['illustrations'] + ': ' + book.illustrations_description)
-  }
-  
   // Signatures/collation formula
-  if (book.signatures_description) {
-    notes.push(t['signatures'] + ': ' + book.signatures_description)
+  if (book.signatures_description) notes.push(`${t.signatures}: ${book.signatures_description}`)
+
+  // Dedication
+  if (book.dedication_text) notes.push(`${t.dedication}: ${book.dedication_text}`)
+
+  // Colophon
+  if (book.colophon_text) notes.push(`${t.colophon}: ${book.colophon_text}`)
+
+  // Paper, edges, endpapers
+  if (book.paper_type && book.paper_type !== 'wove') {
+    notes.push(`${t.paper}: ${book.paper_type.replace(/_/g, ' ')}`)
   }
-  
-  // Condition (always show grade, notes only if present)
-  if (book.condition_name) {
-    let conditionText = t['condition'] + ': ' + book.condition_name
-    if (book.condition_notes) {
-      conditionText += '. ' + book.condition_notes
+  if (book.edge_treatment && book.edge_treatment !== 'trimmed') {
+    notes.push(`${t.edges}: ${book.edge_treatment.replace(/_/g, ' ')}`)
+  }
+  if (book.endpapers_type && !['plain_white', 'none'].includes(book.endpapers_type)) {
+    notes.push(`${t.endpapers}: ${book.endpapers_type.replace(/_/g, ' ')}`)
+  }
+
+  // Bibliography
+  if (book.bibliography) notes.push(`${t.bibliography}: ${book.bibliography}`)
+
+  // Provenance
+  const prov = provenanceText(book.provenanceEntries || [], lang)
+  if (prov) notes.push(`${t.provenance}: ${prov}`)
+
+  // Binding (ISBD: in Area 7, NOT Area 5)
+  const cv = coverLabel(book.cover_type, lang)
+  if (cv) notes.push(`${t.binding}: ${cv}`)
+  if (book.binding_name && !book.cover_type) notes.push(`${t.binding}: ${book.binding_name}`)
+  if (book.has_dust_jacket && book.cover_type && !book.cover_type.includes('_dj')) {
+    notes.push(t.dust_jacket)
+  }
+
+  // Enclosure
+  const encLabel = enclosureLabel(book.protective_enclosure, lang)
+  if (encLabel) notes.push(`${t.enclosure}: ${encLabel}`)
+
+  // Signed
+  if (book.is_signed) {
+    notes.push(book.signature_details ? `${t.signed}: ${book.signature_details}` : t.signed)
+  }
+
+  // Condition (ISBD: in Area 7)
+  const condGrade = conditionLabel(book.condition_name, lang)
+  if (condGrade) {
+    let condText = `${t.condition}: ${condGrade}`
+    if (book.condition_notes) condText += '. ' + book.condition_notes
+    if (book.dust_jacket_condition_name) {
+      condText += `. ${t.dust_jacket}: ${conditionLabel(book.dust_jacket_condition_name, lang)}`
     }
-    notes.push(conditionText)
+    const tbLabel = textBlockLabel(book.text_block_condition, lang)
+    if (tbLabel) condText += `. ${t.text_block}: ${tbLabel}`
+    notes.push(condText)
   }
-  
-  if (notes.length > 0) {
-    parts.push(notes.join('. '))
+
+  // Printer
+  if (book.printer) {
+    let pText = `${t.printed_by} ${book.printer}`
+    if (book.printing_place) pText += `, ${book.printing_place}`
+    notes.push(pText)
   }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AREA 8: STANDARD NUMBER AND TERMS OF AVAILABILITY
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  const identifiers: string[] = []
-  
-  if (book.isbn_13) {
-    identifiers.push('ISBN ' + book.isbn_13)
-  } else if (book.isbn_10) {
-    identifiers.push('ISBN ' + book.isbn_10)
-  }
-  
-  if (book.oclc_number) {
-    identifiers.push('OCLC: ' + book.oclc_number)
-  }
-  
-  if (book.lccn) {
-    identifiers.push('LCCN: ' + book.lccn)
-  }
-  
-  if (identifiers.length > 0) {
-    parts.push(identifiers.join('. '))
-  }
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // COMBINE ALL AREAS WITH ISBD PUNCTUATION (". — ")
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  return parts.join('. — ')
+
+  if (notes.length > 0) areas.push(notes.join('. — '))
+
+  // ── AREA 8: Identifiers ──
+  const ids: string[] = []
+  if (book.isbn_13) ids.push('ISBN ' + book.isbn_13)
+  else if (book.isbn_10) ids.push('ISBN ' + book.isbn_10)
+  if (book.oclc_number) ids.push('OCLC: ' + book.oclc_number)
+  if (book.lccn) ids.push('LCCN: ' + book.lccn)
+  if (book.ddc) ids.push('DDC: ' + book.ddc)
+  if (book.lcc) ids.push('LCC: ' + book.lcc)
+  if (book.udc) ids.push('UDC: ' + book.udc)
+  if (ids.length > 0) areas.push(ids.join('. '))
+
+  // ── Combine with ISBD prescribed punctuation ──
+  return areas.join('. — ')
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
 
 type CatalogEntryGeneratorProps = {
   book: BookData
-  onGenerate: (entry: string) => void
+  onGenerate: (entry: string, field: 'catalog_entry' | 'catalog_entry_isbd') => void
 }
 
 export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntryGeneratorProps) {
   const [showModal, setShowModal] = useState(false)
-  
-  const handleGenerate = (lang: Language) => {
-    const entry = generateCatalogEntry(book, lang)
-    onGenerate(entry)
+
+  const handleGenerate = (lang: CatalogLanguage, mode: CatalogMode) => {
+    const entry = mode === 'trade'
+      ? generateTradeEntry(book, lang)
+      : generateISBDEntry(book, lang)
+    const field = mode === 'trade' ? 'catalog_entry' : 'catalog_entry_isbd'
+    onGenerate(entry, field)
     setShowModal(false)
   }
-  
-  const languageOptions: { code: Language; label: string; flag: string }[] = [
-    { code: 'en', label: 'English', flag: '🇬🇧' },
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-    { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-    { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
-  ]
-  
+
   return (
     <>
       <Button
@@ -719,39 +675,56 @@ export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntry
         <FileText className="w-4 h-4" />
         Generate Catalog Entry
       </Button>
-      
+
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setShowModal(false)}
           />
-          
-          {/* Modal */}
-          <div className="relative bg-background border border-border shadow-lg p-6 w-full max-w-sm">
+
+          <div className="relative bg-background border border-border shadow-lg p-6 w-full max-w-lg max-h-[85vh] overflow-y-auto">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
             >
               <X className="w-5 h-5" />
             </button>
-            
-            <h3 className="text-lg font-semibold mb-4">Generate Catalog Entry</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Select language for labels:
+
+            <h3 className="text-lg font-semibold mb-1">Generate Catalog Entry</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Select language and mode. Trade writes to <span className="font-mono text-xs">catalog_entry</span>, ISBD to <span className="font-mono text-xs">catalog_entry_isbd</span>.
             </p>
-            
-            <div className="grid grid-cols-2 gap-3">
-              {languageOptions.map(opt => (
-                <button
-                  key={opt.code}
-                  onClick={() => handleGenerate(opt.code)}
-                  className="flex items-center gap-3 px-4 py-3 border border-border hover:bg-muted transition-colors text-left"
-                >
-                  <span className="text-2xl">{opt.flag}</span>
-                  <span className="text-sm font-medium">{opt.label}</span>
-                </button>
+
+            {/* Header row */}
+            <div className="grid grid-cols-[1fr_80px_80px] gap-2 mb-2 px-1">
+              <div />
+              <div className="text-xs font-semibold text-center text-muted-foreground uppercase tracking-wide">Trade</div>
+              <div className="text-xs font-semibold text-center text-muted-foreground uppercase tracking-wide">ISBD</div>
+            </div>
+
+            {/* Language rows */}
+            <div className="space-y-1">
+              {CATALOG_LANGUAGES.map(opt => (
+                <div key={opt.code} className="grid grid-cols-[1fr_80px_80px] gap-2 items-center">
+                  <div className="flex items-center gap-2 pl-1">
+                    <span className="text-lg">{opt.flag}</span>
+                    <span className="text-sm font-medium">{opt.label}</span>
+                    <span className="text-xs text-muted-foreground">{opt.association}</span>
+                  </div>
+                  <button
+                    onClick={() => handleGenerate(opt.code, 'trade')}
+                    className="px-2 py-1.5 border border-border hover:bg-muted transition-colors text-xs font-medium text-center"
+                  >
+                    Trade
+                  </button>
+                  <button
+                    onClick={() => handleGenerate(opt.code, 'isbd')}
+                    className="px-2 py-1.5 border border-border hover:bg-muted transition-colors text-xs font-medium text-center"
+                  >
+                    ISBD
+                  </button>
+                </div>
               ))}
             </div>
           </div>
@@ -761,6 +734,6 @@ export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntry
   )
 }
 
-// Export types and function for external use
-export type { BookData, Contributor, Language }
-export { generateCatalogEntry }
+// Export types and functions for external use
+export type { BookData, Contributor, ProvenanceEntry }
+export { generateTradeEntry, generateISBDEntry }

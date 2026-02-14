@@ -725,10 +725,21 @@ export default async function BookDetailPage({ params }: PageProps) {
         )}
 
         {/* 13. Catalog Entry */}
-        {bookData.catalog_entry && (
+        {(bookData.catalog_entry || bookData.catalog_entry_isbd) && (
           <section>
             <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Catalog Entry</h2>
-            <p className="text-sm whitespace-pre-wrap bg-muted p-4">{bookData.catalog_entry}</p>
+            {bookData.catalog_entry && (
+              <div className="mb-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Trade</h3>
+                <p className="text-sm whitespace-pre-wrap bg-muted p-4">{bookData.catalog_entry}</p>
+              </div>
+            )}
+            {bookData.catalog_entry_isbd && (
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">ISBD</h3>
+                <p className="text-sm whitespace-pre-wrap bg-muted p-4">{bookData.catalog_entry_isbd}</p>
+              </div>
+            )}
           </section>
         )}
 
