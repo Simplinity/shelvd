@@ -559,6 +559,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
           format_id: formData.format_id || null,
           has_dust_jacket: formData.has_dust_jacket,
           is_signed: formData.is_signed,
+          signature_details: (formData as any).signature_details || null,
           protective_enclosure: (formData as any).protective_enclosure || 'none',
           condition_id: formData.condition_id || null,
           condition_notes: formData.condition_notes || null,
@@ -1423,6 +1424,12 @@ export default function BookEditForm({ book, referenceData }: Props) {
               </label>
             </div>
           </div>
+            {formData.is_signed && (
+              <div className="col-span-2 mt-2">
+                <label className={labelClass}>Signature Details<FieldHelp text="Describe signing details: location (half-title, title page, ffep), date, inscription text, etc." /></label>
+                <textarea value={(formData as any).signature_details || ''} onChange={e => handleChange('signature_details' as keyof Book, e.target.value)} rows={2} className={textareaClass} placeholder="e.g. Signed by author on half-title, dated 1923" />
+              </div>
+            )}
 
           {/* Sub-group: Materials */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
