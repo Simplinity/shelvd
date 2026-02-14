@@ -382,7 +382,12 @@ export default function BookEditForm({ book, referenceData }: Props) {
   // Image uploads state
   const canUpload = useFeature('image_upload')
   const userTier = useTier()
-  type BookImage = { id: string; blob_url: string; thumb_blob_url: string; image_type: string; file_size_bytes: number; original_filename: string; sort_order: number }
+  type BookImage = {
+    id: string; blob_url: string; thumb_blob_url: string; image_type: string;
+    book_part_id: string | null;
+    book_parts: { purpose: string; matter: string; description: string | null } | null;
+    file_size_bytes: number; original_filename: string; sort_order: number
+  }
   const [bookImages, setBookImages] = useState<BookImage[]>([])
   const [quotaRemaining, setQuotaRemaining] = useState<number | undefined>(undefined)
   const [deletingImageId, setDeletingImageId] = useState<string | null>(null)
@@ -392,7 +397,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
   const loadImages = async () => {
     const { data } = await supabase
       .from('book_images')
-      .select('id, blob_url, thumb_blob_url, image_type, file_size_bytes, original_filename, sort_order')
+      .select('id, blob_url, thumb_blob_url, image_type, book_part_id, book_parts(purpose, matter, description), file_size_bytes, original_filename, sort_order')
       .eq('book_id', book.id)
       .order('sort_order')
     if (data) setBookImages(data as BookImage[])
@@ -1446,7 +1451,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                     <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
                       <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover pointer-events-none" />
                     </div>
-                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.image_type}</span>
+                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.book_parts?.purpose || img.image_type}</span>
                     {canUpload && (
                       <button
                         type="button"

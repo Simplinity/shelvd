@@ -16,6 +16,17 @@ const ALLOWED_TYPES = [
 ]
 const VALID_IMAGE_TYPES = ['cover', 'spine', 'back', 'detail', 'page']
 
+/** Map book_part purpose → legacy image_type for backwards compat */
+const PURPOSE_TO_IMAGE_TYPE: Record<string, string> = {
+  'Front Cover': 'cover',
+  'Spine': 'spine',
+  'Back Cover': 'back',
+  'Volume Page': 'page', 'Chapter Page': 'page', 'First Page': 'page',
+}
+function deriveImageType(purpose: string): string {
+  return PURPOSE_TO_IMAGE_TYPE[purpose] || 'detail'
+}
+
 // Tier storage limits in bytes
 const TIER_LIMITS: Record<string, number> = {
   collector_pro: 1 * 1024 * 1024 * 1024,  // 1 GB
@@ -46,13 +57,31 @@ export async function POST(request: Request) {
   const formData = await request.formData()
   const file = formData.get('file') as File | null
   const bookId = formData.get('book_id') as string | null
-  const imageType = (formData.get('image_type') as string) || 'cover'
+  const bookPartId = formData.get('book_part_id') as string | null
+  // Legacy fallback: accept image_type if book_part_id not provided
+  const legacyImageType = (formData.get('image_type') as string) || null
 
   if (!file || !bookId) {
     return NextResponse.json({ error: 'Missing file or book_id' }, { status: 400 })
   }
-  if (!VALID_IMAGE_TYPES.includes(imageType)) {
-    return NextResponse.json({ error: `Invalid image_type. Must be one of: ${VALID_IMAGE_TYPES.join(', ')}` }, { status: 400 })
+
+  // Resolve book_part and derive image_type
+  let resolvedPartId: string | null = null
+  let imageType = 'detail'
+
+  if (bookPartId) {
+    const { data: part } = await supabase
+      .from('book_parts')
+      .select('id, purpose')
+      .eq('id', bookPartId)
+      .single()
+    if (!part) {
+      return NextResponse.json({ error: 'Invalid book_part_id' }, { status: 400 })
+    }
+    resolvedPartId = part.id
+    imageType = deriveImageType(part.purpose)
+  } else if (legacyImageType && VALID_IMAGE_TYPES.includes(legacyImageType)) {
+    imageType = legacyImageType
   }
 
   // ── Validate file ──
@@ -154,6 +183,7 @@ export async function POST(request: Request) {
         blob_url: fullBlob.url,
         thumb_blob_url: thumbBlob.url,
         image_type: imageType,
+        book_part_id: resolvedPartId,
         original_filename: file.name,
         mime_type: 'image/webp',
         width: metadata.width || null,
@@ -162,7 +192,7 @@ export async function POST(request: Request) {
         sort_order: nextSort,
         is_primary: imageType === 'cover' && nextSort === 0,
       })
-      .select('id, blob_url, thumb_blob_url, image_type, sort_order')
+      .select('id, blob_url, thumb_blob_url, image_type, book_part_id, sort_order')
       .single()
 
     if (insertError) {

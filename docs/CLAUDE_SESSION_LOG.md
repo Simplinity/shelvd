@@ -24,13 +24,14 @@
 - [x] 2.7 Applied: 51× UPDATE 1, verified 0 empty
 - [x] 2.8 Commit + push
 
-### Push 3: Backend — book_part_id replaces image_type
-- [ ] 3.1 Read upload API, image queries, delete handler
-- [ ] 3.2 Upload API: accept book_part_id
-- [ ] 3.3 Cover auto-sync: detect "Front Cover" by book_part_id
-- [ ] 3.4 Image queries: join book_parts
-- [ ] 3.5 TypeScript check
-- [ ] 3.6 Commit + push → Vercel
+### Push 3: Backend — book_part_id replaces image_type ✅
+- [x] 3.1 Read upload API, delete handler, edit form, detail page, gallery component
+- [x] 3.2 Upload API: accepts book_part_id, validates against book_parts, derives image_type for backwards compat
+- [x] 3.3 Cover auto-sync: still uses derived image_type='cover' (safe, no breaking change)
+- [x] 3.4 Image queries: edit form + detail page join book_parts(purpose, matter, description)
+- [x] 3.4b Gallery grid + edit form thumbnails: show purpose label with image_type fallback
+- [x] 3.5 TypeScript clean
+- [x] 3.6 Commit + push → Vercel
 
 ### Push 4: Frontend — dropdown + labels
 - [ ] 4.1 Read image-upload-zone.tsx, edit form, detail page

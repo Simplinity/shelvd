@@ -142,7 +142,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     // Valuation history
     supabase.from('valuation_history').select('id, position, valuation_date, value, currency, source, appraiser, provenance_entry_id, notes').eq('book_id', id).order('position'),
     // Book images
-    supabase.from('book_images').select('id, blob_url, thumb_blob_url, image_type, sort_order').eq('book_id', id).order('sort_order'),
+    supabase.from('book_images').select('id, blob_url, thumb_blob_url, image_type, book_part_id, book_parts(purpose, matter), sort_order').eq('book_id', id).order('sort_order'),
     // Activity
     getBookActivity(id),
   ])

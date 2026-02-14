@@ -17,7 +17,7 @@ export async function DELETE(
   // Fetch image (verify ownership via user_id)
   const { data: image } = await supabase
     .from('book_images')
-    .select('id, book_id, blob_url, thumb_blob_url, image_type, user_id')
+    .select('id, book_id, blob_url, thumb_blob_url, image_type, book_part_id, user_id')
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
