@@ -441,6 +441,7 @@ status, action_needed, internal_notes, catalog_entry
 | 4 | Activity logging | ✅ Done | — | All 6 steps complete: activity_log table, 20 log points, admin live feed + /admin/activity viewer, user /activity page, recent feed on /stats, book detail timeline. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
 | 6 | Image upload | Medium | High | **✅ All 3 phases complete (v0.24.0).** Fase 1: URL-only. Fase 2: Vercel Blob uploads, sharp WebP pipeline, upload UI, gallery, quota. Fase 3: drag reorder, camera capture, pinch-to-zoom lightbox. |
+| 6b | Bulk Image Import | High | Medium | **Pre-launch.** Drop hundreds of photos named by catalog number (e.g. `0001_01.jpg`, `0042_1.png`). Shelvd matches to books, converts to WebP, uploads sequentially. Progress bar, mismatch report, duplicate protection. **Dealer only** — gated via `tier_features` + Settings toggle. Reuses existing upload API. See detail below. |
 | 7 | ~~Sharing & Public Catalog~~ | — | — | Moved to post-launch. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | ✅ Done | — | Wiki at `/wiki` — 35 articles across 8 categories (Getting Started, Cataloging, Provenance & History, Search & Discovery, Data & Export, Settings, Glossary & Reference, For Dealers). 150+ term glossary, reference guides for 76 formats and 69 MARC roles. Same witty tone as blog and legal pages. |
@@ -611,6 +612,50 @@ book_images (
 
 **Infra done:**
 - Vercel Blob store: `shelvd-images` in FRA1, linked to shelvd-www, `BLOB_READ_WRITE_TOKEN` in .env.local + production
+
+#### #6b Bulk Image Import — Detail
+
+**The pitch:** A dealer photographs 200 books at a desk session, names the files by catalog number, drops them all into Shelvd at once. Done in 20 minutes instead of 200 individual uploads.
+
+**Access control:**
+- Dealer tier only — not for Collector Pro
+- Feature flag: `bulk_image_import` in `tier_features` table (enabled for `dealer`, disabled for all others)
+- Settings toggle: user can enable/disable in Settings → Features (same pattern as existing feature toggles)
+- Nav link only visible when feature is enabled
+
+**Filename convention:**
+- `{catalog_id}_{sequence}.{ext}` — e.g. `0001_01.jpg`, `0001_02.png`, `0042_1.heic`
+- Separator: `_` or `-` both accepted
+- Sequence: `01` or `1` both accepted (leading zero optional)
+- Extension: any supported format (JPEG, PNG, WebP, HEIC, TIFF, BMP, GIF)
+- First image per catalog_id (lowest sequence) auto-tagged as `cover`, rest as `detail`
+
+**Flow:**
+1. User navigates to `/books/import-images` (new page)
+2. Drops files or clicks file picker — accepts hundreds of files
+3. Client-side: parse filenames → extract catalog_id + sequence
+4. Client-side: batch lookup `WHERE user_catalog_id IN (...)` → resolve to book_id
+5. Preview table: filename | catalog_id | matched book title | status
+6. Mismatches highlighted in red (unknown catalog_id, unparseable filename)
+7. User clicks "Start Import" → sequential upload via existing `/api/images/upload`
+8. Progress bar: "142 / 287 — 0042_02.jpg ✓"
+9. Summary: X uploaded, Y skipped (mismatches), Z skipped (duplicates)
+
+**Duplicate protection:** If a book already has an image with the same `original_filename`, skip it. Prevents re-importing on retry.
+
+**Implementation steps:**
+
+| # | Step | File(s) | What |
+|---|------|---------|------|
+| 6b.1 | Feature flag | Migration 069, seed `tier_features` | Add `bulk_image_import` feature, enabled for dealer tier only |
+| 6b.2 | Settings toggle | Settings page | Add toggle for bulk_image_import in Features section |
+| 6b.3 | Bulk import page | `app/(app)/books/import-images/page.tsx` | File picker, filename parser, catalog_id lookup, preview table, progress bar, summary |
+
+**Performance:**
+- 500 images × 3 sec/image = ~25 minutes total
+- Each upload is a separate function invocation — no timeout risk
+- Browser does the orchestration — if it closes, resume by re-dropping (duplicates auto-skipped)
+- Vercel Pro: 40 hours compute/month, this uses ~0.4 hours
 
 #### #11 Catalog Generator — Detail
 
@@ -941,6 +986,7 @@ All limits are concrete numbers (no "unlimited"). Configurable via admin UI at /
 | Public catalog / sharing | ❌ | ✅ | ✅ |
 | Collection Audit | ❌ | ✅ | ✅ |
 | Advanced statistics | ❌ | ✅ | ✅ |
+| Bulk image import | ❌ | ❌ | ✅ |
 | Catalog Generator (DOCX) | ❌ | ❌ | ✅ |
 | Bulk operations | ❌ | ❌ | ✅ |
 | Document storage (invoices, certs) | ❌ | ❌ | ✅ |
@@ -1290,7 +1336,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 > Decided 2026-02-13. See `docs/staging.md` for full implementation guide.
 
 **Phase 1: Pre-launch (now)**
-- Finish remaining 1 feature on `main` as before: Stripe integration + upgrade flow
+- Finish remaining 2 features on `main` as before: Bulk Image Import (Dealer only) + Stripe integration + upgrade flow
 - Test everything yourself — you are the only user, `main` is your staging
 - Pre-migration backup script active (see `scripts/pre-migration-backup.sh`)
 

@@ -39,6 +39,10 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'Retina thumbnails in list/grid views — 400px WebP thumbs for sharp display on high-DPI screens' },
       { type: 'added', text: 'Storage quota tracking per user tier (Pro: 1 GB, Dealer: 25 GB) with enforcement on upload' },
       { type: 'added', text: 'Hint on add form to upload photos after saving (upload requires a saved book)' },
+      { type: 'added', text: 'Catalog number search — global search bar and advanced search now both find books by catalog number' },
+      { type: 'fixed', text: 'Image upload tier check — was reading non-existent column, now correctly checks membership_tier' },
+      { type: 'fixed', text: 'Deleting a cover image now clears the cover URL in form state, preventing it from being written back on save' },
+      { type: 'fixed', text: 'Image delete now shows a confirmation dialog before permanently removing the file' },
     ],
   },
   {

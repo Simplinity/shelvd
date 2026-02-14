@@ -207,6 +207,12 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.24.0',
   },
   {
+    title: 'Bulk Image Import',
+    description: 'Drop 500 photos at once. Name each file after its catalog number — 0001_01.jpg, 0001_02.jpg, 0042_1.png — and Shelvd matches them to your books, converts to WebP, and uploads automatically. Progress bar, mismatch report, duplicate protection. Because photographing 200 books shouldn\'t mean 200 upload sessions. Dealer only.',
+    category: 'cataloging',
+    status: 'planned',
+  },
+  {
     title: 'Cover Images',
     description: 'Paste a URL or let Enrich find one. Covers on detail pages, list thumbnails, grid cards. Click to view full-size in a lightbox. Phase 1 of image upload.',
     category: 'cataloging',
