@@ -648,20 +648,26 @@ function generateISBDEntry(book: BookData, lang: CatalogLanguage): string {
 
 type CatalogEntryGeneratorProps = {
   book: BookData
-  onGenerate: (entry: string, field: 'catalog_entry' | 'catalog_entry_isbd') => void
+  mode: CatalogMode
+  onGenerate: (entry: string) => void
 }
 
-export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntryGeneratorProps) {
+export default function CatalogEntryGenerator({ book, mode, onGenerate }: CatalogEntryGeneratorProps) {
   const [showModal, setShowModal] = useState(false)
 
-  const handleGenerate = (lang: CatalogLanguage, mode: CatalogMode) => {
+  const handleGenerate = (lang: CatalogLanguage) => {
     const entry = mode === 'trade'
       ? generateTradeEntry(book, lang)
       : generateISBDEntry(book, lang)
-    const field = mode === 'trade' ? 'catalog_entry' : 'catalog_entry_isbd'
-    onGenerate(entry, field)
+    onGenerate(entry)
     setShowModal(false)
   }
+
+  const label = mode === 'trade' ? 'Generate Trade Entry' : 'Generate ISBD Entry'
+  const title = mode === 'trade' ? 'Trade Catalog Entry' : 'ISBD Catalog Entry'
+  const subtitle = mode === 'trade'
+    ? 'Author-first format following ILAB / national trade conventions.'
+    : 'Title-first format following IFLA ISBD standard punctuation.'
 
   return (
     <>
@@ -673,7 +679,7 @@ export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntry
         className="gap-2"
       >
         <FileText className="w-4 h-4" />
-        Generate Catalog Entry
+        {label}
       </Button>
 
       {showModal && (
@@ -683,7 +689,7 @@ export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntry
             onClick={() => setShowModal(false)}
           />
 
-          <div className="relative bg-background border border-border shadow-lg p-6 w-full max-w-lg max-h-[85vh] overflow-y-auto">
+          <div className="relative bg-background border border-border shadow-lg p-6 w-full max-w-sm max-h-[85vh] overflow-y-auto">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
@@ -691,40 +697,21 @@ export default function CatalogEntryGenerator({ book, onGenerate }: CatalogEntry
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-semibold mb-1">Generate Catalog Entry</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Select language and mode. Trade writes to <span className="font-mono text-xs">catalog_entry</span>, ISBD to <span className="font-mono text-xs">catalog_entry_isbd</span>.
-            </p>
+            <h3 className="text-lg font-semibold mb-1">{title}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{subtitle}</p>
 
-            {/* Header row */}
-            <div className="grid grid-cols-[1fr_80px_80px] gap-2 mb-2 px-1">
-              <div />
-              <div className="text-xs font-semibold text-center text-muted-foreground uppercase tracking-wide">Trade</div>
-              <div className="text-xs font-semibold text-center text-muted-foreground uppercase tracking-wide">ISBD</div>
-            </div>
-
-            {/* Language rows */}
-            <div className="space-y-1">
+            {/* Language list */}
+            <div className="space-y-0.5">
               {CATALOG_LANGUAGES.map(opt => (
-                <div key={opt.code} className="grid grid-cols-[1fr_80px_80px] gap-2 items-center">
-                  <div className="flex items-center gap-2 pl-1">
-                    <span className="text-lg">{opt.flag}</span>
-                    <span className="text-sm font-medium">{opt.label}</span>
-                    <span className="text-xs text-muted-foreground">{opt.association}</span>
-                  </div>
-                  <button
-                    onClick={() => handleGenerate(opt.code, 'trade')}
-                    className="px-2 py-1.5 border border-border hover:bg-muted transition-colors text-xs font-medium text-center"
-                  >
-                    Trade
-                  </button>
-                  <button
-                    onClick={() => handleGenerate(opt.code, 'isbd')}
-                    className="px-2 py-1.5 border border-border hover:bg-muted transition-colors text-xs font-medium text-center"
-                  >
-                    ISBD
-                  </button>
-                </div>
+                <button
+                  key={opt.code}
+                  onClick={() => handleGenerate(opt.code)}
+                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted transition-colors text-left"
+                >
+                  <span className="text-lg">{opt.flag}</span>
+                  <span className="text-sm font-medium">{opt.label}</span>
+                  <span className="text-xs text-muted-foreground">{opt.association}</span>
+                </button>
               ))}
             </div>
           </div>
