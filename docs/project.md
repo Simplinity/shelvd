@@ -467,6 +467,12 @@ All 8 steps complete (v0.15.0). `valuation_history` table with 7 source types, p
 | S10 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
 | S11 | Catalog Generator (DOCX) | Medium-High | Professional DOCX catalogs from selected books. Numbered entries, condition, provenance, pricing. Dealer + Pro. |
 
+### V2 — Major Refactors & Internal Quality
+
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| P18 | Stricter TypeScript types | High | Remove 69 `as any` casts. Proper Supabase query types, FormData interfaces, RPC types. Internal quality, zero user impact. |
+
 ---
 
 ## Pre-Release Polish
@@ -484,51 +490,51 @@ Must-do improvements before launch. Low effort, low risk.
 ### Error Handling & Resilience
 | # | Item | Status |
 |---|------|--------|
-| P5 | Global error page (app/error.tsx) | Todo |
-| P6 | Global 404 page (app/not-found.tsx) | Todo |
-| P7 | Global loading state (app/(app)/loading.tsx) | Todo |
-| P8 | Replace 12+ alert() calls with toast notification system | Todo |
+| P5 | Global error page (app/error.tsx) | ✅ Done |
+| P6 | Global 404 page (app/not-found.tsx) | ✅ Done |
+| P7 | Global loading state (app/(app)/loading.tsx) | ✅ Done |
+| P8 | Replace 12+ alert() calls with toast notification system | ✅ Done |
 
 ### UX Polish
 | # | Item | Status |
 |---|------|--------|
-| P9 | Save confirmation toast after book edit | Todo |
+| P9 | Save confirmation toast after book edit | ✅ Done |
 | P10 | Prev/Next navigation follows active sort order | Todo |
-| P11 | Unsaved changes indicator in browser tab title | Todo |
-| P12 | Keyboard shortcuts: Cmd+K search, Cmd+S save, Cmd+N add | Todo |
+| P11 | Unsaved changes indicator in browser tab title | ✅ Done |
+| ~~P12~~ | ~~Keyboard shortcuts~~ | Cancelled — niet nodig voor doelgroep |
 | P13 | Search term highlighting in results | Todo |
 
 ### Data Quality
 | # | Item | Status |
 |---|------|--------|
-| P14 | Duplicate warning on add (debounced title check) | Todo |
-| P15 | "Recently added/edited" quick filter on books list | Todo |
-| P16 | "Add →" nudge links on empty fields in detail page | Todo |
+| P14 | Duplicate warning on add (debounced title check) | ✅ Done |
+| ~~P15~~ | ~~"Recently added/edited" quick filter~~ | Cancelled — Date added sort dekt het al |
+| ~~P16~~ | ~~"Add →" nudge links on empty fields~~ | Cancelled |
 
 ### Technical
 | # | Item | Status |
 |---|------|--------|
-| P17 | Split books/page.tsx (2300+ lines) into focused components | Todo |
-| P18 | Stricter TypeScript types for Supabase queries (remove `any`) | Todo |
+| P17 | Split books/page.tsx (2300+ lines) into focused components | Post-launch |
+| P18 | Stricter TypeScript types for Supabase queries (remove `any`) | → V2 |
 
 ### Accessibility
 | # | Item | Status |
 |---|------|--------|
-| P19 | Skip-to-content link | Todo |
-| P20 | Alt text on cover images (book title instead of empty) | Todo |
+| P19 | Skip-to-content link | ✅ Done |
+| P20 | Alt text on cover images (book title instead of empty) | ✅ Done |
 
 ### Marketing & Growth
 | # | Item | Status |
 |---|------|--------|
-| P21 | JSON-LD structured data on marketing pages | Todo |
-| P22 | Newsletter email capture on landing page | Todo |
-| P23 | "Share with a friend" button (uses existing invite codes) | Todo |
+| P21 | JSON-LD structured data on marketing pages | ✅ Done |
+| P22 | Newsletter email capture (Mailchimp form embed) | Todo |
+| P23 | "Share with a friend" button (uses existing invite codes) | Post-launch |
 
 ### Minor Polish
 | # | Item | Status |
 |---|------|--------|
-| P24 | Dynamic browser tab titles (book count, book title, page name) | Todo |
-| P25 | Scroll-to-top button on long book lists | Todo |
+| P24 | Dynamic browser tab titles (book count, book title, page name) | ✅ Done |
+| P25 | Scroll-to-top button on long book lists | ✅ Done |
 
 ---
 
