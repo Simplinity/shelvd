@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -510,6 +510,26 @@ export default function BookAddForm({ referenceData }: Props) {
     document.title = isDirty ? `● ${base}` : base
   }, [isDirty])
 
+  // Duplicate title check (debounced)
+  const [duplicates, setDuplicates] = useState<{ id: string; title: string; publication_year: string | null }[]>([])
+  const dupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (dupTimerRef.current) clearTimeout(dupTimerRef.current)
+    const title = formData.title.trim()
+    if (title.length < 4) { setDuplicates([]); return }
+    dupTimerRef.current = setTimeout(async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('books')
+        .select('id, title, publication_year')
+        .ilike('title', `%${title}%`)
+        .range(0, 4)
+      setDuplicates(data || [])
+    }, 500)
+    return () => { if (dupTimerRef.current) clearTimeout(dupTimerRef.current) }
+  }, [formData.title])
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setIsDirty(true)
@@ -1001,6 +1021,16 @@ export default function BookAddForm({ referenceData }: Props) {
             <div className="col-span-2 md:col-span-4">
               <label className={labelClass}>Title <span className="text-red-500">*</span><FieldHelp text={FIELD_HELP.title} /></label>
               <input type="text" value={formData.title} onChange={e => handleChange('title', e.target.value)} required className={inputClass} />
+              {duplicates.length > 0 && (
+                <div className="mt-2 border-l-2 border-primary pl-3 py-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">Already in your collection</p>
+                  {duplicates.map(d => (
+                    <Link key={d.id} href={`/books/${d.id}`} target="_blank" className="block text-sm text-foreground hover:text-primary transition-colors leading-relaxed">
+                      {d.title}{d.publication_year ? ` (${d.publication_year})` : ''} →
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="col-span-2 md:col-span-4">
               <label className={labelClass}>Subtitle<FieldHelp text={FIELD_HELP.subtitle} /></label>
