@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown, Trash2, ImageIcon } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
@@ -913,6 +914,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
       }
 
       setIsDirty(false)
+      toast.success('Book saved')
       router.push(`/books/${book.id}`)
       router.refresh()
     } catch (err: unknown) {

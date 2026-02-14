@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { EnrichButton, EnrichDropdown, useEnrich } from '@/components/enrich-panel'
@@ -821,6 +822,7 @@ export default function BookAddForm({ referenceData }: Props) {
         source: 'app',
       })
 
+      toast.success('Book added')
       router.push(`/books/${newBook.id}`)
       router.refresh()
     } catch (err: unknown) {
