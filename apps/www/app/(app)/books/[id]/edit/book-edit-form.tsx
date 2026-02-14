@@ -993,7 +993,8 @@ export default function BookEditForm({ book, referenceData }: Props) {
     'Language': ['language_id', 'original_language_id'],
     'Publication': ['publisher_name', 'publication_place', 'publication_year', 'printer', 'printing_place'],
     'Edition': ['edition', 'impression', 'issue_state', 'edition_notes'],
-    'Physical Description': ['pagination_description', 'volumes', 'height_mm', 'width_mm', 'depth_mm', 'weight_grams', 'cover_image_url', 'cover_type', 'binding_id', 'format_id', 'protective_enclosure', 'paper_type', 'edge_treatment', 'endpapers_type', 'text_block_condition', 'has_dust_jacket', 'is_signed'],
+    'Physical Description': ['pagination_description', 'volumes', 'height_mm', 'width_mm', 'depth_mm', 'weight_grams', 'cover_type', 'binding_id', 'format_id', 'protective_enclosure', 'paper_type', 'edge_treatment', 'endpapers_type', 'text_block_condition', 'has_dust_jacket', 'is_signed'],
+
     'Condition & Status': ['condition_id', 'dust_jacket_condition_id', 'status', 'action_needed', 'condition_notes'],
     'Identifiers': ['isbn_13', 'isbn_10', 'oclc_number', 'lccn', 'user_catalog_id', 'ddc', 'lcc', 'udc', 'topic'],
     'BISAC Subject Codes': ['bisac_code', 'bisac_code_2', 'bisac_code_3'],
@@ -1020,11 +1021,12 @@ export default function BookEditForm({ book, referenceData }: Props) {
     'Provenance': provenanceEntries.length > 0 ? [provenanceEntries.length, provenanceEntries.length] : null,
     'Condition History': conditionHistoryEntries.filter(e => !e.isDeleted).length > 0 ? [conditionHistoryEntries.filter(e => !e.isDeleted).length, conditionHistoryEntries.filter(e => !e.isDeleted).length] : null,
     'External Links': externalLinks.length > 0 ? [externalLinks.length, externalLinks.length] : null,
+    'Images': (() => { const n = bookImages.length + (formData.cover_image_url ? 1 : 0); return n > 0 ? [n, n] as [number, number] : null })(),
   }
 
   const allSections = [
     'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
-    'Physical Description', 'Condition & Status', 'Condition History', 'Provenance',
+    'Physical Description', 'Images', 'Condition & Status', 'Condition History', 'Provenance',
     'Identifiers', 'BISAC Subject Codes', 'Catalog Entry',
     'Collections', 'Tags', 'Storage', 'Valuation',
     'Notes', 'External Links'
@@ -1311,70 +1313,6 @@ export default function BookEditForm({ book, referenceData }: Props) {
             </div>
           </div>
 
-          {/* Sub-group: Cover Image */}
-          <div className="mt-6 pt-6 border-t border-dashed border-border">
-            <div className="flex gap-4 items-start">
-              <div className="flex-1">
-                <label className={labelClass}>Cover Image URL</label>
-                <input type="url" value={formData.cover_image_url || ''} onChange={e => handleChange('cover_image_url', e.target.value || null)} className={inputClass} placeholder="https://covers.openlibrary.org/..." />
-                <p className="text-xs text-muted-foreground mt-1">Paste a URL to a cover image, or use Enrich to find one automatically.</p>
-              </div>
-              {formData.cover_image_url && (
-                <div className="flex-shrink-0 w-16 h-24 bg-muted rounded overflow-hidden">
-                  <img src={formData.cover_image_url} alt="Cover preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
-                </div>
-              )}
-            </div>
-          </div>
-
-
-          {/* Sub-group: Uploaded Images */}
-          <div className="mt-6 pt-6 border-t border-dashed border-border">
-            <div className="flex items-center gap-2 mb-3">
-              <ImageIcon className="w-4 h-4 text-muted-foreground" />
-              <label className={labelClass}>Images{bookImages.length > 0 && <span className="text-muted-foreground font-normal ml-1">({bookImages.length})</span>}</label>
-            </div>
-
-            {/* Existing images grid */}
-            {bookImages.length > 0 && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4">
-                {bookImages.map((img, idx) => (
-                  <div
-                    key={img.id}
-                    className={`relative group ${canUpload ? 'cursor-grab active:cursor-grabbing' : ''} ${dragOverIdx === idx ? 'ring-2 ring-red-500 ring-offset-1' : ''} ${draggedImageIdx === idx ? 'opacity-40' : ''}`}
-                    draggable={canUpload}
-                    onDragStart={() => setDraggedImageIdx(idx)}
-                    onDragOver={e => { e.preventDefault(); setDragOverIdx(idx) }}
-                    onDragLeave={() => setDragOverIdx(null)}
-                    onDrop={e => { e.preventDefault(); setDragOverIdx(null); if (draggedImageIdx !== null) reorderImages(draggedImageIdx, idx); setDraggedImageIdx(null) }}
-                    onDragEnd={() => { setDraggedImageIdx(null); setDragOverIdx(null) }}
-                  >
-                    <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
-                      <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover pointer-events-none" />
-                    </div>
-                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.image_type}</span>
-                    {canUpload && (
-                      <button
-                        type="button"
-                        onClick={() => deleteImage(img.id)}
-                        disabled={deletingImageId === img.id}
-                        className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                      >
-                        {deletingImageId === img.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Upload zone (Pro+ only) */}
-            {canUpload ? (
-              <ImageUploadZone bookId={book.id} onUploadComplete={loadImages} quotaRemaining={quotaRemaining} />
-            ) : (
-              <UpgradeHint feature="image_upload" />
-            )}
-          </div>
           {/* Sub-group: Binding & Cover */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div className="col-span-2">
@@ -1462,6 +1400,74 @@ export default function BookEditForm({ book, referenceData }: Props) {
                 {textBlockConditionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
+          </div>
+          </div>}
+        </section>
+
+        {/* 6b. Images */}
+        <section>
+          <SectionHeader title="Images" />
+          {openSections.has('Images') && <div className="mt-4">
+          {/* Cover Image URL */}
+          <div className="flex gap-4 items-start">
+            <div className="flex-1">
+              <label className={labelClass}>Cover Image URL</label>
+              <input type="url" value={formData.cover_image_url || ''} onChange={e => handleChange('cover_image_url', e.target.value || null)} className={inputClass} placeholder="https://covers.openlibrary.org/..." />
+              <p className="text-xs text-muted-foreground mt-1">Paste a URL to a cover image, or use Enrich to find one automatically.</p>
+            </div>
+            {formData.cover_image_url && (
+              <div className="flex-shrink-0 w-16 h-24 bg-muted rounded overflow-hidden">
+                <img src={formData.cover_image_url} alt="Cover preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
+              </div>
+            )}
+          </div>
+
+          {/* Uploaded Images */}
+          <div className="mt-6 pt-6 border-t border-dashed border-border">
+            <div className="flex items-center gap-2 mb-3">
+              <ImageIcon className="w-4 h-4 text-muted-foreground" />
+              <label className={labelClass}>Uploaded Images{bookImages.length > 0 && <span className="text-muted-foreground font-normal ml-1">({bookImages.length})</span>}</label>
+            </div>
+
+            {/* Existing images grid */}
+            {bookImages.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4">
+                {bookImages.map((img, idx) => (
+                  <div
+                    key={img.id}
+                    className={`relative group ${canUpload ? 'cursor-grab active:cursor-grabbing' : ''} ${dragOverIdx === idx ? 'ring-2 ring-red-500 ring-offset-1' : ''} ${draggedImageIdx === idx ? 'opacity-40' : ''}`}
+                    draggable={canUpload}
+                    onDragStart={() => setDraggedImageIdx(idx)}
+                    onDragOver={e => { e.preventDefault(); setDragOverIdx(idx) }}
+                    onDragLeave={() => setDragOverIdx(null)}
+                    onDrop={e => { e.preventDefault(); setDragOverIdx(null); if (draggedImageIdx !== null) reorderImages(draggedImageIdx, idx); setDraggedImageIdx(null) }}
+                    onDragEnd={() => { setDraggedImageIdx(null); setDragOverIdx(null) }}
+                  >
+                    <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
+                      <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover pointer-events-none" />
+                    </div>
+                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.image_type}</span>
+                    {canUpload && (
+                      <button
+                        type="button"
+                        onClick={() => deleteImage(img.id)}
+                        disabled={deletingImageId === img.id}
+                        className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        {deletingImageId === img.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Upload zone (Pro+ only) */}
+            {canUpload ? (
+              <ImageUploadZone bookId={book.id} onUploadComplete={loadImages} quotaRemaining={quotaRemaining} />
+            ) : (
+              <UpgradeHint feature="image_upload" />
+            )}
           </div>
           </div>}
         </section>

@@ -916,7 +916,8 @@ export default function BookAddForm({ referenceData }: Props) {
     'Language': ['language_id', 'original_language_id'],
     'Publication': ['publisher_name', 'publication_place', 'publication_year', 'printer', 'printing_place'],
     'Edition': ['edition', 'impression', 'issue_state', 'edition_notes'],
-    'Physical Description': ['pagination_description', 'volumes', 'height_mm', 'width_mm', 'depth_mm', 'weight_grams', 'cover_image_url', 'cover_type', 'binding_id', 'format_id', 'protective_enclosure', 'paper_type', 'edge_treatment', 'endpapers_type', 'text_block_condition', 'has_dust_jacket', 'is_signed'],
+    'Physical Description': ['pagination_description', 'volumes', 'height_mm', 'width_mm', 'depth_mm', 'weight_grams', 'cover_type', 'binding_id', 'format_id', 'protective_enclosure', 'paper_type', 'edge_treatment', 'endpapers_type', 'text_block_condition', 'has_dust_jacket', 'is_signed'],
+    'Images': ['cover_image_url'],
     'Condition & Status': ['condition_id', 'dust_jacket_condition_id', 'status', 'action_needed', 'condition_notes'],
     'Identifiers': ['isbn_13', 'isbn_10', 'oclc_number', 'lccn', 'user_catalog_id', 'ddc', 'lcc', 'udc', 'topic'],
     'BISAC Subject Codes': ['bisac_code', 'bisac_code_2', 'bisac_code_3'],
@@ -945,7 +946,7 @@ export default function BookAddForm({ referenceData }: Props) {
 
   const allSections = [
     'Title & Series', 'Contributors', 'Language', 'Publication', 'Edition',
-    'Physical Description', 'Condition & Status', 'Condition History', 'Provenance',
+    'Physical Description', 'Images', 'Condition & Status', 'Condition History', 'Provenance',
     'Identifiers', 'BISAC Subject Codes', 'Catalog Entry',
     'Collections', 'Tags', 'Storage', 'Valuation',
     'Notes', 'External Links'
@@ -1256,21 +1257,6 @@ export default function BookAddForm({ referenceData }: Props) {
               <input type="number" value={formData.weight_grams} onChange={e => handleChange('weight_grams', e.target.value)} className={inputClass} />
             </div>
           </div>
-          <div className="mt-6 pt-6 border-t border-dashed border-border">
-            <div className="flex gap-4 items-start">
-              <div className="flex-1">
-                <label className={labelClass}>Cover Image URL</label>
-                <input type="url" value={formData.cover_image_url} onChange={e => handleChange('cover_image_url', e.target.value)} className={inputClass} placeholder="https://covers.openlibrary.org/..." />
-                <p className="text-xs text-muted-foreground mt-1">Paste a URL to a cover image, or use Enrich to find one automatically.</p>
-              </div>
-              {formData.cover_image_url && (
-                <div className="flex-shrink-0 w-16 h-24 bg-muted rounded overflow-hidden">
-                  <img src={formData.cover_image_url} alt="Cover preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
-                </div>
-              )}
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground mt-3 italic">Want to upload your own photos? Save this book first, then add images from the edit page.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div className="col-span-2">
               <label className={labelClass}>Cover Type<FieldHelp text={FIELD_HELP.cover_type} /></label>
@@ -1356,6 +1342,26 @@ export default function BookAddForm({ referenceData }: Props) {
               </select>
             </div>
           </div>
+          </div>}
+        </section>
+
+        {/* 8b. Images */}
+        <section>
+          <SectionHeader title="Images" />
+          {openSections.has('Images') && <div className="mt-4">
+          <div className="flex gap-4 items-start">
+            <div className="flex-1">
+              <label className={labelClass}>Cover Image URL</label>
+              <input type="url" value={formData.cover_image_url} onChange={e => handleChange('cover_image_url', e.target.value)} className={inputClass} placeholder="https://covers.openlibrary.org/..." />
+              <p className="text-xs text-muted-foreground mt-1">Paste a URL to a cover image, or use Enrich to find one automatically.</p>
+            </div>
+            {formData.cover_image_url && (
+              <div className="flex-shrink-0 w-16 h-24 bg-muted rounded overflow-hidden">
+                <img src={formData.cover_image_url} alt="Cover preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground mt-3 italic">Want to upload your own photos? Save this book first, then add images from the edit page.</p>
           </div>}
         </section>
 
