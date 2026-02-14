@@ -1,31 +1,30 @@
 # Catalog Norm Compliance — Migration Log
 
-## Steps
+> **Status: COMPLETE** — All phases done, committed, pushed. v0.25.0.
 
-- [x] **Step 1** — DB migration: add `catalog_entry_isbd` column to books ✅
-- [x] **Step 2** — DB migration: fix conditions (Mint→As New, Fine Plus→Near Fine, add Fair) ✅
-- [x] **Step 3** — Cover type dropdown: expand with ~38 missing types (edit form) ✅
-- [x] **Step 4** — Cover type dropdown: same expansion in add form ✅
-- [x] **Step 5** — Add `signature_details` text field to edit form ✅
-- [x] **Step 6** — Add `signature_details` text field to add form ✅
-- [x] **Step 7** — Update seed files to match migrations (done in step 2) ✅
-- [x] **Step 8** — Update database.types.ts to reflect new column ✅
+## Phase A: Database & Reference Data (migrations 072–074)
+- [x] 072: `catalog_entry_isbd` column on books
+- [x] 073: Condition grades corrected to ABAA standard (Mint→As New, Fine Plus→Near Fine, Fair added)
+- [x] 074: Google Books added to isbn_providers, LoC reordered
 
-## Progress
+## Phase B: Forms & UI (S1–S10)
+- [x] Translation file: `catalog-translations.ts` (590 lines, 13 languages)
+- [x] Cover type dropdown: 11→49 types with optgroups (both forms)
+- [x] Signature details textarea, conditional on is_signed (both forms)
+- [x] All 19 DB fields wired into forms
+- [x] `database.types.ts` regenerated
 
-- **Step 1** completed — `072_catalog_entry_isbd.sql` committed
-- **Step 2** completed — `073_fix_condition_grades.sql` + seed updated
-- **Step 3** completed — 49 cover types with optgroups in edit form
-- **Step 4** completed — same in add form
-- **Step 5** completed — signature_details textarea in edit form (conditional on is_signed)
-- **Step 6** completed — same in add form
-- **Step 7** completed — seed files were already updated as part of step 2
-- **Step 8** completed — `catalog_entry_isbd` added to Row, Insert, Update in database.types.ts
+## Phase C: Generator & Display (S11–S14)
+- [x] `catalog-entry-generator.tsx` complete rewrite: Trade + ISBD modes, 13 languages
+- [x] Edit form: new onGenerate signature, ISBD textarea, save handler
+- [x] Add form: same updates
+- [x] Detail page: Trade/ISBD sub-headers
+- [x] PDF types + route + sheet renderer: both entries
 
-## Phase C: Generator Refactoring
+## Phase D: Documentation
+- [x] `CATALOG_ENTRY_SPEC.md` — 1097-line reference (spec, conventions, translations)
+- [x] `field-help-texts.ts` — 68 tooltips rewritten from antiquarian perspective
+- [x] Changelog, roadmap, project.md updated
 
-- [x] **S1–S10** — Translation file (590 lines), 13 languages, all label/abbreviation/role/cover/condition/provenance tables
-- [x] **S11** — Full rewrite of catalog-entry-generator.tsx: two modes (Trade + ISBD), 13 languages, correct conventions
-- [x] **S12** — Edit form: new onGenerate signature, catalog_entry_isbd textarea + save handler
-- [x] **S13** — Add form: same updates (type, initial state, save, onGenerate, ISBD textarea)
-- [x] **S14** — Detail page: shows both Trade and ISBD entries with sub-headers
+## Reference
+Full specification: `/docs/CATALOG_ENTRY_SPEC.md`

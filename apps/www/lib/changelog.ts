@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.24.0'
+export const APP_VERSION = '0.25.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,30 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.25.0',
+    date: '2026-02-14',
+    title: 'The Cataloger\'s Standard',
+    description: 'Professional catalog entries rewritten from the ground up. Two output modes — Trade Catalog (ILAB/ABA/SLAM conventions) and ISBD Formal (IFLA standard) — across thirteen languages with per-country antiquarian trade conventions. Condition grades corrected to ABAA standard. Cover types expanded from 11 to 49 with proper antiquarian terminology. Every field help tooltip rewritten from the book trade perspective, not IT. The kind of detail that makes a librarian nod approvingly.',
+    changes: [
+      { type: 'added', text: 'Two-mode catalog entry generator: Trade Catalog (author-first, periods, per-country conventions) and ISBD Formal (title-first, prescribed ". — " punctuation, dimensions in cm, binding in Area 7)' },
+      { type: 'added', text: 'Thirteen output languages: English (ABA/ABAA), French (SLAM), German (VDA), Dutch (NVvA), Spanish (AILA), Portuguese (ALAFARQ), Italian (ALAI), Swedish (SVAF), Danish (ABF), Norwegian (NABF), Belgian French and Dutch (CLAM/BBA), and Latin — each with national trade association conventions' },
+      { type: 'added', text: 'ISBD catalog entry field (catalog_entry_isbd) — new database column for storing ISBD formal output alongside the existing Trade entry' },
+      { type: 'added', text: 'Language selector modal with 13 rows × 2 columns (Trade / ISBD), showing flag, language name, and trade association' },
+      { type: 'added', text: 'Translation engine: 590-line file with labels, abbreviations, contributor role phrases, cover type names, condition grades, text block conditions, evidence types, association types, and enclosure types — all in 13 languages' },
+      { type: 'added', text: 'Nineteen new fields wired into the catalog generator: depth, paper type, edge treatment, endpapers, text block condition, DJ condition, signature details, protective enclosure, dedication, colophon, language, original language, DDC, LCC, UDC, and catalog ID' },
+      { type: 'added', text: 'ISBD catalog entry displayed on book detail page with Trade/ISBD sub-headers' },
+      { type: 'added', text: 'ISBD catalog entry in PDF print inserts (catalog sheet) alongside Trade entry' },
+      { type: 'added', text: 'Google Books added as ISBN lookup provider (position 2, between Open Library and Library of Congress)' },
+      { type: 'added', text: 'Signature details text field on add and edit forms — appears conditionally when Signed is toggled on' },
+      { type: 'improved', text: 'Cover type dropdown expanded from 11 to 49 options with optgroups: Softcover, Hardcover, Full Leather, Full Cloth/Fabric, Quarter Binding, Half Binding, Three-Quarter Binding, Limp Binding' },
+      { type: 'improved', text: 'Condition grades corrected to ABAA/ABA/ILAB standard: "Mint" renamed to "As New", "Fine Plus" renamed to "Near Fine", new grade "Fair" added between Good and Poor' },
+      { type: 'improved', text: 'All 68 field help tooltips rewritten from the antiquarian book trade perspective — with examples from the trade ("Connolly 78", "Wing S2926"), standard terminology explained (foxing, cocked, shaken, t.e.g.), and filling conventions per ABAA/ILAB norms' },
+      { type: 'improved', text: 'Loading indicator upgraded from barely-visible pulsing bar to BookOpen icon with full opacity + scale animation' },
+      { type: 'improved', text: 'ISBN lookup provider order: Open Library → Google Books → Library of Congress (was: Open Library → WorldCat → LoC)' },
+      { type: 'fixed', text: 'Database migrations now applied automatically via Supabase CLI after creation (was: created but not applied to production)' },
+    ],
+  },
   {
     version: '0.24.0',
     date: '2026-02-14',

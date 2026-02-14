@@ -4,66 +4,61 @@
 
 ## Current State (2026-02-14)
 
-**App version: v0.24.0.** 71 DB migrations applied. 22 lookup providers. All core features complete.
+**App version: v0.25.0.** 74 DB migrations applied. 23 lookup providers. All core features complete.
 
-**Next tasks:** Pre-release polish (P10, P13, P22 remaining), Bulk Image Import (6b), Mollie integration (14.7).
+**Next tasks:** Bulk Image Import (6b), Mollie integration (14.7), remaining polish (P10, P13, P22).
 
 ---
 
-## Session: 2026-02-14
+## Session: 2026-02-14 (afternoon) — v0.25.0 "The Cataloger's Standard"
 
-### Pre-Release Polish Blitz (13 items) ✅
-- **P4** OpenGraph + Twitter Cards: dynamic OG images (default, blog, wiki), edge-compatible data splits, per-page metadata
-- **P5** Global error page (error.tsx + global-error.tsx, Swiss Design)
-- **P6** Global 404 page — "Ex Libris Nobody" (bibliophile humor)
-- **P7** Global loading state — pulsing red bar
-- **P8** Toast system: Sonner installed, all 11 alert() calls replaced
-- **P9** Save confirmation toast on book edit + add
-- **P11** Unsaved changes indicator in browser tab (● prefix)
-- **P14** Duplicate warning on add — debounced title check, red accent
-- **P19** Skip-to-content accessibility link
-- **P20** Alt text on cover images (book title instead of empty)
-- **P21** JSON-LD structured data — homepage, blog, about + shelvd.app → shelvd.org URL fix
-- **P24** Dynamic browser tab titles — 20 pages, book detail shows title
-- **P25** Scroll-to-top button on books list
-- Cancelled: P12 (keyboard shortcuts), P15 (already solved), P16 (overkill)
-- Deferred: P10 (sort-aware prev/next), P13 (search highlighting), P17 (post-launch), P18 (→ V2)
-- Docs: all statuses updated in project.md, duplicates S10/S11 cleaned up, V2 section added
+### Catalog Normalization (complete)
+Full rewrite of the catalog entry system from 4-language single-mode to 13-language dual-mode.
 
-### Grid View Sort Dropdown ✅
-- 8 sort fields: Title, Author, Publisher, Year, Place, Status, Catalog ID, Date added
-- Fix: DB-side sorting (was client-only, missed books in other batches)
-- `SORT_FIELD_TO_DB_COLUMN` mapping, re-fetch on sort change
-- Commits: `c3c32e2`, `1ad5df7`
+**Spec:** `/docs/CATALOG_ENTRY_SPEC.md` — 1097-line reference document covering ISBD formal mode, Trade per-country conventions, all 13 languages, database field mapping, translation tables.
 
-### Database Performance ✅
-- Migration 070: 5 sort indexes on books (publisher, place, year, catalog_id, created_at)
-- Migration 071: 3 composite indexes (book_images, book_contributors, book_collections)
-- Lazy loading images on list/grid views
-- Commit: `11b5390`, `31c1a73`, `196afb5`
+**DB migrations:**
+- 072: `catalog_entry_isbd` column on books
+- 073: condition grades corrected (Mint→As New, Fine Plus→Near Fine, Fair added)
+- 074: Google Books added to isbn_providers (display_order 15), LoC reordered to 18
 
-### SEO & Web Standards ✅
-- Favicon + apple-touch-icon + web manifest (Swiss Red BookOpen)
-- robots.txt (allow marketing, disallow app/admin/auth)
-- sitemap.xml (65 pages: 8 static + 22 blog + 35 wiki)
-- Commits: `6ed7ebb`, `49b29d7`
+**Code changes:**
+- `lib/catalog-translations.ts` — 590-line translation file (labels, roles, covers, conditions, evidence, associations, enclosures × 13 languages)
+- `components/catalog-entry-generator.tsx` — complete rewrite: `generateTradeEntry()` + `generateISBDEntry()`, 13×2 modal with flags + trade associations
+- Edit form: new onGenerate signature, ISBD textarea, save handler updated
+- Add form: same updates (type, initial state, save, onGenerate, ISBD textarea)
+- Detail page: shows both Trade/ISBD entries with sub-headers
+- PDF types: `catalog_entry_isbd` in BookPdfData
+- PDF route: passes ISBD field from DB to generator
+- PDF catalog-sheet: "Trade Catalog Entry" + "ISBD Catalog Entry" sections
+- Cover type dropdown: 11→49 options with 8 optgroups (both forms)
+- Signature details textarea: conditional on is_signed (both forms)
 
-### Documentation ✅
-- Trimmed project.md from 1460 → 586 lines
-- Added 25 pre-release polish items (P1–P25) to project.md
-- Removed completed plan docs: mobile-plan.md, image-upload-plan.md, improvement-analysis.md
-- Stripe → Mollie references updated across 6 files
+### Field Help Texts Rewrite
+`lib/field-help-texts.ts` — all 68 tooltips rewritten from antiquarian book trade perspective. Examples from the trade, standard terminology, ABAA/ILAB conventions.
 
-### Previous Session: 2026-02-13
-- Catalog number search (global + advanced)
-- Scroll position restore on back button
-- Mollie profile setup + logo
-- v0.24.0 changelog updates
+### Loading Indicator
+Replaced pulsing bar with BookOpen icon (opacity 0.2→1 + scale 0.9×→1.1×, 1.2s).
+
+### Commits
+- 3a1cc9e: S11-S14 generator + forms
+- 564b324: Loading icon
+- 23505f5: Provider reordering
+- 163dcf3: Field help texts
+- d8eae12: ISBD in PDF inserts
+- (pending): v0.25.0 version bump + docs
+
+### Session: 2026-02-14 (morning) — v0.24.0 final
+- Pre-release polish blitz (P4–P25): OG images, error pages, toasts, accessibility, JSON-LD
+- Grid view sort dropdown (8 fields, DB-side sorting)
+- Database performance (5 sort + 3 composite indexes, lazy loading)
+- SEO foundation (favicon, robots.txt, sitemap 65 pages)
 
 ---
 
 ## Version History
-- v0.24.0 — Image upload (3 phases), catalog search, scroll restore
+- v0.25.0 — Catalog normalization: 2 modes (Trade+ISBD), 13 languages, 49 cover types, ABAA conditions, 68 field tooltips, PDF inserts updated
+- v0.24.0 — Image upload (3 phases), catalog search, scroll restore, pre-release polish, SEO
 - v0.23.0 — Mobile responsiveness (23 steps)
 - v0.22.0 — User onboarding, auth fixes, performance optimizations
 - v0.21.0 — Admin system stats, wiki/knowledge base

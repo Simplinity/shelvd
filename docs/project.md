@@ -1,6 +1,6 @@
 # Shelvd
 
-> **Last updated:** 2026-02-13 (performance optimizations, activity logging fixes)
+> **Last updated:** 2026-02-14 (v0.25.0 — catalog normalization, 13 languages, ISBD+Trade dual mode)
 
 ---
 
@@ -118,7 +118,7 @@ while (true) {
 ### Reference Tables (shared, read-only)
 | Table | Records | Description |
 |-------|---------|-------------|
-| conditions | 9 | Fine, VG, Good, etc. |
+| conditions | 9 | As New, Fine, Near Fine, VG, Good, Fair, Poor (ABAA standard) |
 | bindings | 65 | Binding types |
 | book_formats | 76 | Folio, Quarto, Octavo, etc. |
 | languages | 85 | ISO 639 language codes |
@@ -135,7 +135,7 @@ while (true) {
 | external_link_types | 64 | System defaults + user custom |
 | user_active_link_types | — | Which link types each user has activated |
 | book_external_links | — | External links per book |
-| isbn_providers | 22 | Book lookup providers (21 active + Trove pending) |
+| isbn_providers | 23 | Book lookup providers (22 active + Trove pending) |
 | user_isbn_providers | — | Per-user provider preferences |
 | collections | — | User collections (Library + Wishlist default, custom) |
 | book_collections | — | M:N books ↔ collections |
@@ -159,7 +159,7 @@ isbn_13, isbn_10, oclc_number, lccn, bisac_code, bisac_code_2, bisac_code_3
 storage_location, shelf, shelf_section
 cover_image_url
 sales_price, price_currency
-status, action_needed, internal_notes, catalog_entry
+status, action_needed, internal_notes, catalog_entry, catalog_entry_isbd
 ```
 
 **Dropped columns (migrated to separate tables):**
@@ -257,6 +257,10 @@ status, action_needed, internal_notes, catalog_entry
 | 066 | value_summary_rpc | `get_value_summary()` RPC for fast collection value aggregation |
 | 067 | fix_value_summary_rpc | Exclude `provenance_purchase` from latest valuation in value summary RPC |
 | 068 | book_images_blob_columns | Add `blob_url`, `thumb_blob_url`, `image_type`, `user_id` to book_images; make `storage_path` nullable |
+| 069–071 | sort + composite indexes | Sort indexes on books (publisher, place, year, catalog_id, created_at) + composite joins (book_images, book_contributors, book_collections) |
+| 072 | catalog_entry_isbd | Add `catalog_entry_isbd` column to books for ISBD formal output |
+| 073 | fix_condition_grades | Rename Mint→As New, Fine Plus→Near Fine, add Fair grade (ABAA standard) |
+| 074 | add_google_books_provider | Add Google Books to isbn_providers (display_order 15), reorder LoC to 18 |
 
 ---
 
@@ -267,7 +271,7 @@ status, action_needed, internal_notes, catalog_entry
 - Global search (5000+ books) + Advanced search (14 fields, AND/OR logic)
 - Excel import/export (XLSX/CSV/JSON), selective export
 - Statistics dashboard (key metrics, distributions, top 10s, value charts)
-- ISBD Catalog Entry Generator (EN/NL/FR/DE), 45+ cover types, 76 formats, 69 MARC roles, 3887 BISAC codes
+- Dual-mode Catalog Entry Generator: Trade (ILAB/ABA/SLAM) + ISBD (IFLA), 13 languages, 49 cover types, 76 formats, 69 MARC roles, 3887 BISAC codes
 - Admin dashboard (stats, user management, announcement system, support queue, activity log, tiers)
 - User settings (account, configuration, external links, book lookup providers)
 - 54 external link types across 8 categories, per-user activation
@@ -297,7 +301,7 @@ Field-by-field comparison (NEW/DIFFERENT/same), 19 enrichable fields, smart auth
 ### Feedback & Support
 Bug reports + messages. Admin queue with status workflow, priority, admin response (emails user). Badge count, email notifications via Resend.
 
-### Book Lookup (22 providers, 19 countries)
+### Book Lookup (23 providers, 19 countries)
 Multi-field search, results with covers, Load More pagination. Shared SRU/MARCXML parser + custom parsers per provider. Auto-creates external link.
 
 ## Roadmap
@@ -627,8 +631,10 @@ shelvd/
 │       ├── format.ts             # formatInteger, formatCurrency, formatDate
 │       ├── changelog.ts          # APP_VERSION + CHANGELOG array
 │       ├── roadmap.ts            # Roadmap data for /roadmap page
+│       ├── catalog-translations.ts # 590 lines: labels, roles, covers, conditions in 13 languages
+│       ├── field-help-texts.ts   # 68 field tooltips (antiquarian trade perspective)
 │       ├── blog.ts               # Blog metadata + article registry
-│       └── isbn-providers/       # Book lookup providers (22)
+│       └── isbn-providers/       # Book lookup providers (23)
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
 │           ├── open-library.ts
@@ -647,8 +653,8 @@ shelvd/
 │           ├── cerl-hpb.ts       # CERL HPB (EU, SRU MARCXML, rare books)
 │           └── hathitrust.ts     # HathiTrust (US, REST JSON + MARC-XML)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
-├── supabase/migrations/          # 001-068 (see Migrations table above)
-└── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md
+├── supabase/migrations/          # 001-074 (see Migrations table above)
+└── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CATALOG_ENTRY_SPEC.md, book-reference.md
 ```
 
 

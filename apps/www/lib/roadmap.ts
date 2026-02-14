@@ -40,11 +40,11 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.1.0',
   },
   {
-    title: 'ISBD Catalog Entries',
-    description: 'Professional catalog entries generated in four languages. Your auction house will be impressed.',
+    title: 'Catalog Entry Generator (Trade + ISBD)',
+    description: 'Two professional output modes — Trade Catalog (ILAB/ABA/SLAM author-first) and ISBD Formal (IFLA title-first) — across thirteen languages with per-country antiquarian trade conventions. 590 lines of translation tables. 49 cover types, ABAA condition grades, 19 fields wired through. Your auction house and your librarian will both be impressed.',
     category: 'cataloging',
     status: 'shipped',
-    version: '0.2.0',
+    version: '0.25.0',
   },
   {
     title: 'Contributors & MARC Roles',
@@ -89,8 +89,8 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.5.0',
   },
   {
-    title: 'Library Lookup (22 providers)',
-    description: 'Twenty-two sources across nineteen countries on four continents. From the Library of Congress to HathiTrust\'s 13M digitised volumes, from Denmark\'s 14M-record union catalog to Finland\'s open-data Finna service. One search, twenty-two libraries.',
+    title: 'Library Lookup (23 providers)',
+    description: 'Twenty-three sources across nineteen countries on four continents. From the Library of Congress to HathiTrust\'s 13M digitised volumes, from Denmark\'s 14M-record union catalog to Finland\'s open-data Finna service. Google Books for broad coverage. One search, twenty-three libraries.',
     category: 'data',
     status: 'shipped',
     version: '0.19.0',
@@ -181,7 +181,7 @@ export const ROADMAP: RoadmapItem[] = [
   },
   {
     title: 'Printable PDF Inserts',
-    description: 'Vintage 3\u00D75\" catalog cards with red vertical line, Courier typewriter font, and AACR layout. Full catalog sheets in Swiss typography across 6 paper sizes. Two formats, one button.',
+    description: 'Vintage 3\u00D75\" catalog cards with red vertical line, Courier typewriter font, and AACR layout. Full catalog sheets in Swiss typography across 6 paper sizes with both Trade and ISBD catalog entries. Two formats, one button.',
     category: 'cataloging',
     status: 'shipped',
     version: '0.11.0',
