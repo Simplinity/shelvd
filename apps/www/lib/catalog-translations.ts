@@ -513,3 +513,37 @@ export const COVER_TYPES_2: Record<string, Record<CatalogLanguage, string>> = {
 
 // Merge all cover types into one lookup
 export const ALL_COVER_TYPES: Record<string, Record<CatalogLanguage, string>> = { ...COVER_TYPES, ...COVER_TYPES_2 }
+
+// ─── Condition Grade Translations ───────────────────────────────────
+// Maps condition names (from conditions table) to per-language display strings
+
+export const CONDITION_GRADES: Record<string, Record<CatalogLanguage, string>> = {
+  'As New':        { en: 'As new', fr: 'Comme neuf', de: 'Wie neu', nl: 'Als nieuw', es: 'Como nuevo', pt: 'Como novo', it: 'Come nuovo', sv: 'Som ny', da: 'Som ny', no: 'Som ny', 'be-fr': 'Comme neuf', 'be-nl': 'Als nieuw', la: 'Exemplar novum' },
+  'Fine':          { en: 'Fine', fr: 'Parfait état', de: 'Sehr gut', nl: 'Uitstekend', es: 'Perfecto', pt: 'Óptimo', it: 'Ottimo', sv: 'Fint', da: 'Fint', no: 'Fint', 'be-fr': 'Parfait état', 'be-nl': 'Uitstekend', la: 'Exemplar pulchrum' },
+  'Fine Plus':     { en: 'Fine plus', fr: 'Parfait état', de: 'Sehr gut', nl: 'Uitstekend', es: 'Perfecto', pt: 'Óptimo', it: 'Ottimo', sv: 'Fint', da: 'Fint', no: 'Fint', 'be-fr': 'Parfait état', 'be-nl': 'Uitstekend', la: 'Exemplar pulchrum' },
+  'Near Fine':     { en: 'Near fine', fr: 'Très bon état', de: 'Fast sehr gut', nl: 'Vrijwel uitstekend', es: 'Casi perfecto', pt: 'Quase óptimo', it: 'Quasi ottimo', sv: 'Nästan fint', da: 'Næsten fint', no: 'Nesten fint', 'be-fr': 'Très bon état', 'be-nl': 'Vrijwel uitstekend', la: 'Exemplar fere pulchrum' },
+  'Very Good Plus': { en: 'Very good plus', fr: 'Très bon état', de: 'Sehr gut', nl: 'Zeer goed', es: 'Muy bueno', pt: 'Muito bom', it: 'Molto buono', sv: 'Mycket gott', da: 'Meget godt', no: 'Meget godt', 'be-fr': 'Très bon état', 'be-nl': 'Zeer goed', la: 'Exemplar optimum' },
+  'Very Good':     { en: 'Very good', fr: 'Bon état', de: 'Gut', nl: 'Zeer goed', es: 'Muy bueno', pt: 'Muito bom', it: 'Molto buono', sv: 'Mycket gott', da: 'Meget godt', no: 'Meget godt', 'be-fr': 'Bon état', 'be-nl': 'Zeer goed', la: 'Exemplar bonum' },
+  'Good Plus':     { en: 'Good plus', fr: 'Assez bon état', de: 'Recht gut', nl: 'Goed', es: 'Bueno', pt: 'Bom', it: 'Buono', sv: 'Gott', da: 'Godt', no: 'Godt', 'be-fr': 'Assez bon état', 'be-nl': 'Goed', la: 'Exemplar satis bonum' },
+  'Good':          { en: 'Good', fr: 'État correct', de: 'Befriedigend', nl: 'Goed', es: 'Bueno', pt: 'Bom', it: 'Buono', sv: 'Gott', da: 'Godt', no: 'Godt', 'be-fr': 'État correct', 'be-nl': 'Goed', la: 'Exemplar bonum' },
+  'Good Minus':    { en: 'Good minus', fr: 'État passable', de: 'Noch befriedigend', nl: 'Redelijk', es: 'Aceptable', pt: 'Regular', it: 'Discreto', sv: 'Acceptabelt', da: 'Acceptabelt', no: 'Akseptabelt', 'be-fr': 'État passable', 'be-nl': 'Redelijk', la: 'Exemplar mediocre' },
+  'Fair':          { en: 'Fair', fr: 'État moyen', de: 'Ausreichend', nl: 'Matig', es: 'Regular', pt: 'Regular', it: 'Mediocre', sv: 'Tillräckligt', da: 'Tilstrækkeligt', no: 'Tilstrekkelig', 'be-fr': 'État moyen', 'be-nl': 'Matig', la: 'Exemplar mediocre' },
+  'Poor':          { en: 'Poor', fr: 'Mauvais état', de: 'Mangelhaft', nl: 'Slecht', es: 'Malo', pt: 'Mau', it: 'Scadente', sv: 'Dåligt', da: 'Dårligt', no: 'Dårlig', 'be-fr': 'Mauvais état', 'be-nl': 'Slecht', la: 'Exemplar mancum' },
+  'Mint':          { en: 'Mint', fr: 'Neuf', de: 'Neuwertig', nl: 'Nieuwstaat', es: 'Impecable', pt: 'Impecável', it: 'Perfetto', sv: 'Nyskick', da: 'Nystand', no: 'Nystand', 'be-fr': 'Neuf', 'be-nl': 'Nieuwstaat', la: 'Exemplar perfectum' },
+}
+
+// ─── Text Block Condition ───────────────────────────────────────────
+
+export const TEXT_BLOCK_CONDITIONS: Record<string, Record<CatalogLanguage, string>> = {
+  tight:     { en: 'tight', fr: 'serré', de: 'fest', nl: 'strak', es: 'firme', pt: 'firme', it: 'saldo', sv: 'fast', da: 'fast', no: 'fast', 'be-fr': 'serré', 'be-nl': 'strak', la: 'firmum' },
+  solid:     { en: 'solid', fr: 'solide', de: 'solide', nl: 'solide', es: 'sólido', pt: 'sólido', it: 'solido', sv: 'solid', da: 'solid', no: 'solid', 'be-fr': 'solide', 'be-nl': 'solide', la: 'solidum' },
+  sound:     { en: 'sound', fr: 'bon', de: 'gut', nl: 'goed', es: 'bueno', pt: 'bom', it: 'buono', sv: 'bra', da: 'god', no: 'god', 'be-fr': 'bon', 'be-nl': 'goed', la: 'bonum' },
+  tender:    { en: 'tender', fr: 'fragile', de: 'empfindlich', nl: 'kwetsbaar', es: 'frágil', pt: 'frágil', it: 'fragile', sv: 'ömtålig', da: 'skrøbelig', no: 'skjør', 'be-fr': 'fragile', 'be-nl': 'kwetsbaar', la: 'fragile' },
+  shaken:    { en: 'shaken', fr: 'déboîté', de: 'gelockert', nl: 'los', es: 'flojo', pt: 'solto', it: 'allentato', sv: 'lös', da: 'løs', no: 'løs', 'be-fr': 'déboîté', 'be-nl': 'los', la: 'laxum' },
+  loose:     { en: 'loose', fr: 'détaché', de: 'lose', nl: 'losgeraakt', es: 'suelto', pt: 'solto', it: 'staccato', sv: 'lös', da: 'løs', no: 'løs', 'be-fr': 'détaché', 'be-nl': 'losgeraakt', la: 'solutum' },
+  detached:  { en: 'detached', fr: 'détaché', de: 'gelöst', nl: 'losgeraakt', es: 'desprendido', pt: 'destacado', it: 'staccato', sv: 'lossnad', da: 'løsnet', no: 'løsnet', 'be-fr': 'détaché', 'be-nl': 'losgeraakt', la: 'separatum' },
+  broken:    { en: 'broken', fr: 'cassé', de: 'gebrochen', nl: 'gebroken', es: 'roto', pt: 'partido', it: 'rotto', sv: 'bruten', da: 'brudt', no: 'brutt', 'be-fr': 'cassé', 'be-nl': 'gebroken', la: 'fractum' },
+  recased:   { en: 'recased', fr: 'remboîté', de: 'neu eingehängt', nl: 'opnieuw ingehangen', es: 'reencuadernado', pt: 'reencadernado', it: 'rincastonato', sv: 'omhängd', da: 'ombundet', no: 'ombundet', 'be-fr': 'remboîté', 'be-nl': 'opnieuw ingehangen', la: 'renovatum' },
+  rebacked:  { en: 'rebacked', fr: 'dos refait', de: 'neu bezogen', nl: 'opnieuw gerugt', es: 'lomo restaurado', pt: 'lombada restaurada', it: 'dorso rifatto', sv: 'rygg omgjord', da: 'ryg omgjort', no: 'rygg omgjort', 'be-fr': 'dos refait', 'be-nl': 'opnieuw gerugt', la: 'dorso renovato' },
+  rebound:   { en: 'rebound', fr: 'relié à nouveau', de: 'neu gebunden', nl: 'opnieuw gebonden', es: 'reencuadernado', pt: 'reencadernado', it: 'rilegato', sv: 'ombunden', da: 'ombundet', no: 'ombundet', 'be-fr': 'relié à nouveau', 'be-nl': 'opnieuw gebonden', la: 'de novo ligatum' },
+}
