@@ -118,6 +118,7 @@ export interface BookPdfData {
   
   // Catalog Entry
   catalog_entry?: string
+  catalog_entry_isbd?: string
   
   // Owner info
   owner_name?: string

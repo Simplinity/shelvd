@@ -296,8 +296,16 @@ export async function generateCatalogSheet(data: BookPdfData, paperSize: PaperSi
   }
 
   if (data.catalog_entry) {
-    sec(c, 'Catalog Entry')
+    sec(c, 'Trade Catalog Entry')
     for (const ln of wrap(i, safe(data.catalog_entry), c.mxW, c.fs)) {
+      if (!fits(c)) break
+      pg.drawText(ln, { x: c.mg, y: c.y, size: c.fs, font: i, color: c.black }); c.y -= c.ls
+    }
+  }
+
+  if (data.catalog_entry_isbd) {
+    sec(c, 'ISBD Catalog Entry')
+    for (const ln of wrap(i, safe(data.catalog_entry_isbd), c.mxW, c.fs)) {
       if (!fits(c)) break
       pg.drawText(ln, { x: c.mg, y: c.y, size: c.fs, font: i, color: c.black }); c.y -= c.ls
     }

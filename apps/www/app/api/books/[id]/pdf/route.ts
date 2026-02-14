@@ -236,6 +236,7 @@ export async function GET(
     })),
     
     catalog_entry: b.catalog_entry || undefined,
+    catalog_entry_isbd: b.catalog_entry_isbd || undefined,
     owner_name: profile?.full_name || undefined,
   }
   
