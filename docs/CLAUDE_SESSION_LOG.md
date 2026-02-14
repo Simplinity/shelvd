@@ -6,7 +6,7 @@
 - **Version:** v0.25.0
 - **Migrations:** 077 applied
 - **Rollback tag:** `v0.25.0-pre-image-labels`
-- **Current task:** Image labeling via book_parts — ALL 5 PUSHES COMPLETE
+- **Current task:** Image labeling via book_parts — ALL 6 PUSHES COMPLETE (incl. relabeling UX)
 
 ---
 
@@ -50,6 +50,14 @@
 - [x] 5.4 database.types.ts already current (regen'd in push 3/4)
 - [x] 5.5 TypeScript clean
 - [x] 5.6 Commit b5a9f17 + push
+
+### Push 6: Image relabeling UX ✅
+- [x] 6.1 PATCH /api/images/[id] — updates book_part_id + derives image_type
+- [x] 6.2 Edit form: selectedImageId state, allBookParts fetch
+- [x] 6.3 Image grid: click-to-select (red ring), stopPropagation on delete btn
+- [x] 6.4 Relabel bar below grid: grouped dropdown, X to deselect
+- [x] 6.5 Renamed "Default type" → "Label for new images"
+- [x] 6.6 Commit c1052d9 + push
 
 ---
 
