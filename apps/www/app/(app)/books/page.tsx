@@ -776,6 +776,7 @@ export default function BooksPage() {
           book.publication_place,
           book.isbn_13,
           book.isbn_10,
+          book.user_catalog_id,
           ...(book.book_contributors || []).map((bc: any) => bc.contributor?.canonical_name || '')
         ].filter(Boolean).join(' ').toLowerCase()
         
