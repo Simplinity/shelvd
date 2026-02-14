@@ -915,7 +915,7 @@ ALTER TABLE user_profiles ADD COLUMN onboarding_dismissed_at TIMESTAMPTZ;
 
 **What it is:** A database-driven system that controls which features are available to which users, based on their subscription tier. No feature checks are hardcoded in the codebase — everything is driven by a `tier_features` table.
 
-**Why it matters:** Without this, every feature is available to everyone forever. That's fine for early access, but before monetization (Stripe), we need the infrastructure to gate features. More importantly: the system must be flexible enough that moving a feature from one tier to another is a database update, not a code deployment.
+**Why it matters:** Without this, every feature is available to everyone forever. That's fine for early access, but before monetization (Mollie), we need the infrastructure to gate features. More importantly: the system must be flexible enough that moving a feature from one tier to another is a database update, not a code deployment.
 
 **Tier names:**
 
@@ -1023,9 +1023,9 @@ Realistic margins: Pro ~97%, Dealer ~95% (average users won't hit limits).
 | 6 | Admin: /admin/tiers — feature matrix (on/off toggles with confirmation) + limits editor (click to edit). Migration 041 for admin RLS | ✅ Done |
 | 6b | Admin: user detail — tier selector (Collector/Pro/Dealer buttons) with activity logging | ✅ Done |
 | 6c | Migration 042: replace unlimited (-1) with concrete maximums. All limits are real numbers, no edge cases | ✅ Done |
-| 7 | Stripe integration + upgrade flow (separate feature, depends on this) | High |
+| 7 | Mollie integration + upgrade flow (separate feature, depends on this) | High |
 
-**⚠️ Temporary:** All upgrade links (FeatureGate, LimitGate, UpgradeHint, pricing page CTAs) currently point to `/#pricing` as placeholder. Must be wired to Stripe checkout when payments are implemented. Tier changes should happen automatically on payment success via Stripe webhooks.
+**⚠️ Temporary:** All upgrade links (FeatureGate, LimitGate, UpgradeHint, pricing page CTAs) currently point to `/#pricing` as placeholder. Must be wired to Mollie checkout when payments are implemented. Tier changes should happen automatically on payment success via Mollie webhooks.
 
 Steps 1–6 complete (42 migrations). Step 7 is a separate feature that plugs into this system.
 
@@ -1336,7 +1336,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 > Decided 2026-02-13. See `docs/staging.md` for full implementation guide.
 
 **Phase 1: Pre-launch (now)**
-- Finish remaining 2 features on `main` as before: Bulk Image Import (Dealer only) + Stripe integration + upgrade flow
+- Finish remaining 2 features on `main` as before: Bulk Image Import (Dealer only) + Mollie integration + upgrade flow
 - Test everything yourself — you are the only user, `main` is your staging
 - Pre-migration backup script active (see `scripts/pre-migration-backup.sh`)
 

@@ -130,6 +130,6 @@ After reading, summarize: what's complete, what's in progress, any uncommitted c
 | 🟡 Medium | Image Upload (fase 2 — Blob) |
 | 🟡 Medium | Sharing & Public Catalog |
 | 🟡 Medium | Knowledge base (`/help`) |
-| 🟡 Medium | Payments & Upgrade Flow (Stripe) |
+| 🟡 Medium | Payments & Upgrade Flow (Mollie) |
 | 🟢 Low | Catalog Generator (DOCX) |
 | 🟢 Low | Insurance & valuation PDF reports |

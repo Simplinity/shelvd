@@ -171,7 +171,7 @@ Even before staging exists, start following this rule. It builds the habit.
 
 ### Checklist before going live
 
-- [ ] All 4 pre-launch features complete (Image Upload 2+3, Mobile, Stripe)
+- [ ] All 4 pre-launch features complete (Image Upload 2+3, Mobile, Mollie)
 - [ ] Full manual test of critical flows:
   - [ ] Signup (new user, with and without invite code)
   - [ ] Add book (manual, via lookup, via import)
@@ -179,7 +179,7 @@ Even before staging exists, start following this rule. It builds the habit.
   - [ ] Collections (create, add books, switch, delete)
   - [ ] Tags (create, assign, filter)
   - [ ] Search (global, advanced)
-  - [ ] Stripe checkout → tier upgrade → feature unlocked
+  - [ ] Mollie checkout → tier upgrade → feature unlocked
   - [ ] Settings (profile, currency, providers)
   - [ ] Admin panel (users, activity, support, tiers)
   - [ ] Onboarding flow (wizard, checklist, empty states)
@@ -187,7 +187,7 @@ Even before staging exists, start following this rule. It builds the habit.
 - [ ] Performance check: pages load in < 2 seconds
 - [ ] Error monitoring: check Vercel logs for any recurring errors
 - [ ] DNS and SSL working on shelvd.org and www.shelvd.org
-- [ ] Stripe webhooks configured for production
+- [ ] Mollie webhooks configured for production
 - [ ] Resend email configured for production (password reset, admin notifications)
 - [ ] Legal pages accessible (privacy, terms)
 - [ ] Social sharing metadata (OG images, descriptions)
@@ -310,12 +310,11 @@ In the staging Vercel project, set:
 NEXT_PUBLIC_SUPABASE_URL=https://STAGING_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...staging...
 RESEND_API_KEY=... (same or separate)
-STRIPE_SECRET_KEY=sk_test_... (Stripe TEST key, not production!)
-STRIPE_WEBHOOK_SECRET=whsec_... (staging webhook)
+MOLLIE_API_KEY=test_... (Mollie TEST key, not production!)
 GOOGLE_BOOKS_API_KEY=... (same)
 ```
 
-**Important:** Stripe has separate test and live API keys. Staging MUST use test keys. This lets you test payments with Stripe's test card numbers without real charges.
+**Important:** Mollie has separate test and live API keys. Staging MUST use test keys (`test_...`). This lets you test payments without real charges.
 
 ### 3.3 Enable Branch Protection on GitHub
 
@@ -340,9 +339,7 @@ File: `apps/www/.env.staging.example`
 NEXT_PUBLIC_SUPABASE_URL=https://STAGING_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_staging_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_staging_service_role_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_test_key
-STRIPE_WEBHOOK_SECRET=whsec_your_staging_webhook
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_test_key
+MOLLIE_API_KEY=test_your_mollie_test_key
 RESEND_API_KEY=your_resend_key
 GOOGLE_BOOKS_API_KEY=your_google_key
 NEXT_PUBLIC_APP_URL=https://staging.shelvd.org
@@ -539,16 +536,16 @@ ls -la backups/pre_migration_*
 2. Nothing to do — wait for Vercel to resolve
 3. If prolonged: consider a static maintenance page on a different host (Cloudflare Pages, etc.)
 
-### Scenario 5: Stripe webhook failure
+### Scenario 5: Mollie webhook failure
 
 **Symptoms:** Users pay but their tier doesn't upgrade. Or: cancellations don't downgrade.
 **Impact:** Revenue/access mismatch.
 
 **Fix:**
-1. Check Stripe dashboard → Webhooks → Events
+1. Check Mollie dashboard → Webhooks → Events
 2. Find failed events, check error messages
 3. Fix the webhook handler
-4. Use Stripe's "Resend" button to replay failed events
+4. Use Mollie's "Resend" button to replay failed events
 5. Manually adjust affected users' tiers in admin panel if needed
 
 ---

@@ -17,7 +17,7 @@
 | 9 | Mobile Responsiveness (app pages) | ✅ Done (v0.23.0) |
 | 6.2 | Image Upload Fase 2 (Vercel Blob) | ✅ Done (v0.24.0) |
 | 6.3 | Image Upload Fase 3 (drag-and-drop, camera, zoom) | ✅ Done (v0.24.0) |
-| 14.7 | Stripe integratie + upgrade flow | Queued |
+| 14.7 | Mollie integratie + upgrade flow | Queued |
 
 Safety tag: `pre-mobile-responsive` (git tag on current working state)
 
