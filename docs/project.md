@@ -453,7 +453,7 @@ All 8 steps complete (v0.15.0). `valuation_history` table with 7 source types, p
 
 | # | Feature | Effort | Description |
 |---|---------|--------|-------------|
-| P1 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
+| S10 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
 | S1 | WooCommerce Integration | Medium | Sync books to WooCommerce as products. Field mapping, publish/unpublish, sync status tracking. Dealer only. See detail above. |
 | S2 | Catawiki Integration | High | No public API — CSV/XML export in Catawiki bulk upload format. Lot description generator. Dealer only. |
 | S3 | AbeBooks/ZVAB Integration | Medium-High | HomeBase XML feed for dealer inventory. Fixed schema export, FTP or manual upload. Dealer only. |
@@ -464,8 +464,6 @@ All 8 steps complete (v0.15.0). `valuation_history` table with 7 source types, p
 | S12 | Images in PDF Inserts | Low | Add book images (cover + additional photos) to catalog sheet PDFs (A4/A5/A6). NOT on the catalog card (too small). Cover image at top, additional images in a grid below. Uses `book_images.blob_url` with `pdf-lib` image embedding. |
 | S8 | Community | Low | Discord link as interim. In-app forum only if community outgrows it. |
 | S9 | Data Cleanup Tools | Low-Medium | Orphaned records, inconsistencies, duplicate publishers. Admin-only. Build when scale demands it. |
-| S10 | Sharing & Public Catalog | High | Public profile page, shareable collection links, embed widget. Privacy controls per collection. |
-| S11 | Catalog Generator (DOCX) | Medium-High | Professional DOCX catalogs from selected books. Numbered entries, condition, provenance, pricing. Dealer + Pro. |
 
 ### V2 — Major Refactors & Internal Quality
 
