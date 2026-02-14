@@ -33,15 +33,15 @@
 - [x] 3.5 TypeScript clean
 - [x] 3.6 Commit + push → Vercel
 
-### Push 4: Frontend — dropdown + labels
-- [ ] 4.1 Read image-upload-zone.tsx, edit form, detail page
-- [ ] 4.2 Fetch book_parts data
-- [ ] 4.3 Upload zone: grouped select per matter
-- [ ] 4.4 Image grid: purpose label + description tooltip
-- [ ] 4.5 Detail page: purpose label
-- [ ] 4.6 Fallback for unlabeled images
-- [ ] 4.7 TypeScript check
-- [ ] 4.8 Commit + push → Vercel
+### Push 4: Frontend — dropdown + labels ✅
+- [x] 4.1 Read image-upload-zone.tsx, edit form, detail page
+- [x] 4.2 Upload zone fetches book_parts on mount (self-contained, no prop drilling)
+- [x] 4.3 Complete rewrite: grouped <select> with optgroups per matter (Physical, Front, Body, Back, Illustration, Other)
+- [x] 4.4 Image grid: purpose label + description tooltip on hover
+- [x] 4.5 Detail page: purpose label (done in Push 3 via gallery component)
+- [x] 4.6 Fallback: book_parts?.purpose || image_type
+- [x] 4.7 TypeScript clean
+- [x] 4.8 Commit + push → Vercel
 
 ### Push 5: Data migration + cleanup
 - [ ] 5.1 Migration 077: map image_type → book_part_id

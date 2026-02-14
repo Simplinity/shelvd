@@ -1451,7 +1451,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                     <div className="aspect-[3/4] bg-muted rounded overflow-hidden">
                       <img src={img.thumb_blob_url || img.blob_url} alt={img.image_type} className="w-full h-full object-cover pointer-events-none" />
                     </div>
-                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded">{img.book_parts?.purpose || img.image_type}</span>
+                    <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 py-0.5 rounded" title={img.book_parts?.description || ''}>{img.book_parts?.purpose || img.image_type}</span>
                     {canUpload && (
                       <button
                         type="button"

@@ -1,22 +1,21 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Upload, X, Loader2, Camera, AlertCircle } from 'lucide-react'
 import { formatBytes } from '@/lib/image-quota'
+import { createClient } from '@/lib/supabase/client'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'tiff', 'tif', 'bmp', 'gif', 'avif']
-const IMAGE_TYPES = [
-  { value: 'cover', label: 'Cover' },
-  { value: 'spine', label: 'Spine' },
-  { value: 'back', label: 'Back' },
-  { value: 'detail', label: 'Detail' },
-  { value: 'page', label: 'Page' },
-]
+
+// Matter group display order and labels
+const MATTER_ORDER = ['Physical', 'Front', 'Body', 'Back', 'Illustration', 'Other']
+
+type BookPart = { id: string; matter: string; purpose: string; description: string | null }
 
 interface UploadingFile {
   file: File
-  imageType: string
+  bookPartId: string
   progress: 'pending' | 'uploading' | 'done' | 'error'
   error?: string
   result?: { id: string; blob_url: string; thumb_blob_url: string }
@@ -32,10 +31,41 @@ interface Props {
 export default function ImageUploadZone({ bookId, onUploadComplete, disabled, quotaRemaining }: Props) {
   const [files, setFiles] = useState<UploadingFile[]>([])
   const [dragActive, setDragActive] = useState(false)
-  const [defaultType, setDefaultType] = useState('cover')
+  const [defaultPartId, setDefaultPartId] = useState<string>('')
   const [uploading, setUploading] = useState(false)
+  const [bookParts, setBookParts] = useState<BookPart[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+
+  // Fetch book_parts on mount
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
+      .from('book_parts')
+      .select('id, matter, purpose, description')
+      .order('sort_order')
+      .then(({ data }) => {
+        if (data) {
+          setBookParts(data as BookPart[])
+          // Default to "Front Cover"
+          const frontCover = data.find(p => p.purpose === 'Front Cover')
+          if (frontCover) setDefaultPartId(frontCover.id)
+          else if (data.length > 0) setDefaultPartId(data[0].id)
+        }
+      })
+  }, [])
+
+  // Group parts by matter
+  const groupedParts = MATTER_ORDER
+    .map(matter => ({
+      matter,
+      parts: bookParts.filter(p => p.matter === matter),
+    }))
+    .filter(g => g.parts.length > 0)
+
+  const getPartLabel = (partId: string): string => {
+    return bookParts.find(p => p.id === partId)?.purpose || 'Unknown'
+  }
 
   const validateFile = (file: File): string | null => {
     const ext = file.name.split('.').pop()?.toLowerCase() || ''
@@ -53,20 +83,20 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
       const error = validateFile(file)
       return {
         file,
-        imageType: defaultType,
+        bookPartId: defaultPartId,
         progress: error ? 'error' as const : 'pending' as const,
         error: error || undefined,
       }
     })
     setFiles(prev => [...prev, ...entries])
-  }, [defaultType])
+  }, [defaultPartId])
 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index))
   }
 
-  const updateFileType = (index: number, type: string) => {
-    setFiles(prev => prev.map((f, i) => i === index ? { ...f, imageType: type } : f))
+  const updateFilePart = (index: number, partId: string) => {
+    setFiles(prev => prev.map((f, i) => i === index ? { ...f, bookPartId: partId } : f))
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -97,7 +127,7 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
         const formData = new FormData()
         formData.append('file', entry.file)
         formData.append('book_id', bookId)
-        formData.append('image_type', entry.imageType)
+        formData.append('book_part_id', entry.bookPartId)
 
         const res = await fetch('/api/images/upload', { method: 'POST', body: formData })
         const data = await res.json()
@@ -118,25 +148,29 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
 
   const pendingCount = files.filter(f => f.progress === 'pending').length
 
+  // Grouped select for book parts
+  const PartSelect = ({ value, onChange, className = '' }: { value: string; onChange: (v: string) => void; className?: string }) => (
+    <select
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      className={`text-xs border border-border px-1 py-0.5 bg-background ${className}`}
+    >
+      {groupedParts.map(g => (
+        <optgroup key={g.matter} label={g.matter}>
+          {g.parts.map(p => (
+            <option key={p.id} value={p.id}>{p.purpose}</option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  )
+
   return (
     <div className="space-y-3">
       {/* Default type selector */}
       <div className="flex items-center gap-2 text-sm">
         <span className="text-muted-foreground">Default type:</span>
-        {IMAGE_TYPES.map(t => (
-          <button
-            key={t.value}
-            type="button"
-            onClick={() => setDefaultType(t.value)}
-            className={`px-2 py-1 text-xs border transition-colors ${
-              defaultType === t.value
-                ? 'bg-foreground text-background border-foreground'
-                : 'border-border hover:bg-muted'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+        <PartSelect value={defaultPartId} onChange={setDefaultPartId} className="flex-1 max-w-xs" />
       </div>
 
       {/* Drop zone */}
@@ -210,20 +244,11 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
               {/* Size */}
               <span className="text-xs text-muted-foreground flex-shrink-0">{formatBytes(entry.file.size)}</span>
 
-              {/* Type selector */}
-              {entry.progress === 'pending' && (
-                <select
-                  value={entry.imageType}
-                  onChange={e => updateFileType(i, e.target.value)}
-                  className="text-xs border border-border px-1 py-0.5 bg-background"
-                >
-                  {IMAGE_TYPES.map(t => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
-              )}
-              {entry.progress !== 'pending' && (
-                <span className="text-xs text-muted-foreground">{entry.imageType}</span>
+              {/* Part selector */}
+              {entry.progress === 'pending' ? (
+                <PartSelect value={entry.bookPartId} onChange={v => updateFilePart(i, v)} />
+              ) : (
+                <span className="text-xs text-muted-foreground">{getPartLabel(entry.bookPartId)}</span>
               )}
 
               {/* Error message */}
