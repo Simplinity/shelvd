@@ -187,6 +187,21 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.11.0',
   },
 
+  {
+    title: 'Pre-Launch Polish',
+    description: 'The invisible work that makes a product feel finished. OpenGraph images, toast notifications, error pages, 404 page, loading states, accessibility (skip links, alt text), JSON-LD structured data, dynamic tab titles, duplicate detection on add, unsaved changes indicator, scroll-to-top. Thirteen improvements in one afternoon.',
+    category: 'platform',
+    status: 'shipped',
+    version: '0.24.0',
+  },
+  {
+    title: 'SEO Foundation',
+    description: 'Favicon, web manifest, robots.txt, sitemap (65 pages), OpenGraph + Twitter Card images for every page, JSON-LD structured data (Organization, SoftwareApplication, Blog, AboutPage). The things search engines look for before they look at your content.',
+    category: 'website',
+    status: 'shipped',
+    version: '0.24.0',
+  },
+
   // ═══════════════════════════════
   // PLANNED
   // ═══════════════════════════════
@@ -361,6 +376,34 @@ export const ROADMAP: RoadmapItem[] = [
     title: 'Community',
     description: 'Discussion space for collectors and dealers. Knowledge sharing, book identification help, trade discussions. Discord as interim solution — in-app forum if the community outgrows it.',
     category: 'platform',
+    status: 'planned',
+  },
+
+  // Payments & Subscriptions
+  {
+    title: 'Paid Subscriptions (Mollie)',
+    description: 'Upgrade to Collector Pro or Dealer via Mollie — the European payment provider that handles iDEAL, Bancontact, credit cards, and SEPA direct debit. In-app upgrade flow with checkout, webhook-driven tier activation, and subscription management. Because the free tier was never the whole plan.',
+    category: 'platform',
+    status: 'planned',
+  },
+
+  // Marketplace Integrations
+  {
+    title: 'WooCommerce Integration',
+    description: 'Sync your books to WooCommerce as products. Field mapping, publish/unpublish, sync status tracking. Turn your catalog into a shop without re-entering everything. Dealer only.',
+    category: 'marketplace',
+    status: 'planned',
+  },
+  {
+    title: 'Catawiki Integration',
+    description: 'Export your books in Catawiki\'s bulk upload format. Lot description generator, category mapping, condition translation. From catalog to auction in one export. Dealer only.',
+    category: 'marketplace',
+    status: 'planned',
+  },
+  {
+    title: 'AbeBooks / ZVAB Integration',
+    description: 'Generate HomeBase XML feeds for AbeBooks and ZVAB. Fixed schema export for dealer inventory listings. The world\'s largest rare book marketplace, fed from your catalog. Dealer only.',
+    category: 'marketplace',
     status: 'planned',
   },
 ]

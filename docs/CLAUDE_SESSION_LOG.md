@@ -6,21 +6,29 @@
 
 **App version: v0.24.0.** 71 DB migrations applied. 22 lookup providers. All core features complete.
 
-**Next tasks:** Pre-release polish (P4–P25 in project.md), Bulk Image Import (6b), Mollie integration (14.7).
+**Next tasks:** Pre-release polish (P10, P13, P22 remaining), Bulk Image Import (6b), Mollie integration (14.7).
 
 ---
 
 ## Session: 2026-02-14
 
-### P4: OpenGraph / Twitter Cards ✅
-- Root metadata + metadataBase in layout.tsx
-- Default OG + Twitter images (Swiss Design: white bg, red bar, Inter font)
-- Blog dynamic OG images per article (title + author + date)
-- Wiki dynamic OG images per article (title + category)
-- blog-data.ts + wiki-data.ts edge-compatible splits (fs/path isolated)
-- Per-page metadata: fix title template duplication, add OG, fix shelvd.app → relative URLs
-- Shared layouts in lib/og/layouts.tsx: Default, Blog, Wiki, Page variants
-- Commits: d6b58ba, bb833ca, caedf61, 094d30d, c774361
+### Pre-Release Polish Blitz (13 items) ✅
+- **P4** OpenGraph + Twitter Cards: dynamic OG images (default, blog, wiki), edge-compatible data splits, per-page metadata
+- **P5** Global error page (error.tsx + global-error.tsx, Swiss Design)
+- **P6** Global 404 page — "Ex Libris Nobody" (bibliophile humor)
+- **P7** Global loading state — pulsing red bar
+- **P8** Toast system: Sonner installed, all 11 alert() calls replaced
+- **P9** Save confirmation toast on book edit + add
+- **P11** Unsaved changes indicator in browser tab (● prefix)
+- **P14** Duplicate warning on add — debounced title check, red accent
+- **P19** Skip-to-content accessibility link
+- **P20** Alt text on cover images (book title instead of empty)
+- **P21** JSON-LD structured data — homepage, blog, about + shelvd.app → shelvd.org URL fix
+- **P24** Dynamic browser tab titles — 20 pages, book detail shows title
+- **P25** Scroll-to-top button on books list
+- Cancelled: P12 (keyboard shortcuts), P15 (already solved), P16 (overkill)
+- Deferred: P10 (sort-aware prev/next), P13 (search highlighting), P17 (post-launch), P18 (→ V2)
+- Docs: all statuses updated in project.md, duplicates S10/S11 cleaned up, V2 section added
 
 ### Grid View Sort Dropdown ✅
 - 8 sort fields: Title, Author, Publisher, Year, Place, Status, Catalog ID, Date added
