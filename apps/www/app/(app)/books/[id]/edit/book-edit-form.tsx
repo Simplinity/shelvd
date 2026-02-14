@@ -1493,24 +1493,30 @@ export default function BookEditForm({ book, referenceData }: Props) {
               if (!sel) return null
               const MATTER_ORDER = ['Physical', 'Front', 'Body', 'Back', 'Illustration', 'Other']
               return (
-                <div className="flex items-center gap-3 mb-4 p-2 border border-red-500/30 bg-red-500/5">
-                  <span className="text-xs text-muted-foreground shrink-0">Label:</span>
-                  <select
-                    value={sel.book_part_id || ''}
-                    onChange={e => relabelImage(sel.id, e.target.value)}
-                    className="text-xs border border-border px-2 py-1 bg-background flex-1"
-                  >
-                    <option value="" disabled>Select label…</option>
-                    {MATTER_ORDER.map(matter => {
-                      const parts = allBookParts.filter(p => p.matter === matter)
-                      return parts.length > 0 ? (
-                        <optgroup key={matter} label={matter}>
-                          {parts.map(p => <option key={p.id} value={p.id}>{p.purpose}</option>)}
-                        </optgroup>
-                      ) : null
-                    })}
-                  </select>
-                  <button type="button" onClick={() => setSelectedImageId(null)} className="text-xs text-muted-foreground hover:text-foreground"><X className="w-3 h-3" /></button>
+                <div className="mb-4 p-2 border border-red-500/30 bg-red-500/5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground shrink-0">Label:</span>
+                    <select
+                      value={sel.book_part_id || ''}
+                      onChange={e => relabelImage(sel.id, e.target.value)}
+                      className="text-xs border border-border px-2 py-1 bg-background"
+                    >
+                      <option value="" disabled>Select label…</option>
+                      {MATTER_ORDER.map(matter => {
+                        const parts = allBookParts.filter(p => p.matter === matter)
+                        return parts.length > 0 ? (
+                          <optgroup key={matter} label={matter}>
+                            {parts.map(p => <option key={p.id} value={p.id}>{p.purpose}</option>)}
+                          </optgroup>
+                        ) : null
+                      })}
+                    </select>
+                    <button type="button" onClick={() => setSelectedImageId(null)} className="text-xs text-muted-foreground hover:text-foreground"><X className="w-3 h-3" /></button>
+                  </div>
+                  {sel.book_part_id && (() => {
+                    const desc = allBookParts.find(p => p.id === sel.book_part_id)?.description
+                    return desc ? <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{desc}</p> : null
+                  })()}
                 </div>
               )
             })()}
