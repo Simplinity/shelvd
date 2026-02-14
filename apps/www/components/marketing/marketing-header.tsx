@@ -106,7 +106,7 @@ export function MarketingHeader() {
         {isLoggedIn ? (
           <Button asChild size="sm">
             <Link href="/books">
-              Go to Collection
+              Collection
             </Link>
           </Button>
         ) : (
