@@ -2,6 +2,8 @@ import { getUserFeedback } from '@/lib/actions/feedback'
 import { SupportPageClient } from './support-client'
 import { APP_VERSION } from '@/lib/changelog'
 
+export const metadata = { title: 'Support' }
+
 export default async function SupportPage() {
   const { data: submissions } = await getUserFeedback()
 

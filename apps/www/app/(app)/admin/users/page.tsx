@@ -4,6 +4,8 @@ import { Search, Shield, Check, X, Clock, ArrowUp, ArrowDown, ChevronRight } fro
 import { formatInteger, formatDate } from '@/lib/format'
 import { UserActions } from './user-actions'
 
+export const metadata = { title: 'Admin — Users' }
+
 export default async function AdminUsersPage({
   searchParams,
 }: {

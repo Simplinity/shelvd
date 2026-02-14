@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { LookupForm } from './lookup-form'
 
+export const metadata = { title: 'Book Lookup' }
+
 export default async function LookupPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

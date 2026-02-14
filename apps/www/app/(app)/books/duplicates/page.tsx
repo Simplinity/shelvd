@@ -44,6 +44,11 @@ export default function DuplicatesPage() {
     getCount()
   }, [])
 
+  // Dynamic browser tab title
+  useEffect(() => {
+    document.title = 'Duplicate Detection — Shelvd'
+  }, [])
+
   const handleScan = async () => {
     setLoading(true)
     setSelected(new Set())

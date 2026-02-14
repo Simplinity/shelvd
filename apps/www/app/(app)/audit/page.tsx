@@ -3,6 +3,8 @@ import { logActivity } from '@/lib/actions/activity-log'
 import { createClient } from '@/lib/supabase/server'
 import { AuditClient } from './audit-client'
 
+export const metadata = { title: 'Collection Audit' }
+
 export default async function AuditPage() {
   const audit = await getCollectionAudit()
 

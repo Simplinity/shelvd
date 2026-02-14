@@ -3,6 +3,8 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import BookSearchForm from './book-search-form'
 
+export const metadata = { title: 'Advanced Search' }
+
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }

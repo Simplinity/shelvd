@@ -6,6 +6,8 @@ import { AnnouncementManager } from './announcements/announcement-manager'
 import { getRecentActivityForAdmin } from '@/lib/actions/activity-log'
 import { ActivityFeed } from '@/components/admin/activity-feed'
 
+export const metadata = { title: 'Admin' }
+
 export default async function AdminPage() {
   const supabase = await createClient()
 

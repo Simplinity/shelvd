@@ -1,6 +1,8 @@
 import { getInviteCodes } from '@/lib/actions/invite-codes'
 import { InviteCodesClient } from './invite-codes-client'
 
+export const metadata = { title: 'Admin — Invite Codes' }
+
 export default async function InviteCodesPage() {
   const { data: codes } = await getInviteCodes()
 

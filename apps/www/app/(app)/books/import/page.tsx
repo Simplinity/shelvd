@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import BookImportForm from './book-import-form'
 
+export const metadata = { title: 'Import Books' }
+
 export default async function ImportBooksPage() {
   const supabase = await createClient()
   

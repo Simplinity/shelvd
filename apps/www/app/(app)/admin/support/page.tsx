@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getAllFeedback } from '@/lib/actions/feedback'
 import { AdminSupportClient } from './support-client'
 
+export const metadata = { title: 'Admin — Support' }
+
 export default async function AdminSupportPage({
   searchParams,
 }: {

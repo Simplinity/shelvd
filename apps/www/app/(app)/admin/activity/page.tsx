@@ -1,6 +1,8 @@
 import { getActivityPageForAdmin } from '@/lib/actions/activity-log'
 import { ActivityLogClient } from './activity-log-client'
 
+export const metadata = { title: 'Admin — Activity' }
+
 export default async function ActivityPage({
   searchParams,
 }: {

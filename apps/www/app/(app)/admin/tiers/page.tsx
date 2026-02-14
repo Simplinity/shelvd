@@ -1,6 +1,8 @@
 import { getTierFeatures, getTierLimits } from '@/lib/actions/tiers'
 import { TiersClient } from './tiers-client'
 
+export const metadata = { title: 'Admin — Tiers' }
+
 export default async function TiersPage() {
   const [featuresRes, limitsRes] = await Promise.all([
     getTierFeatures(),

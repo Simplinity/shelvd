@@ -1,6 +1,8 @@
 import { getAdminStats } from '@/lib/actions/admin-stats'
 import { StatsClient } from './stats-client'
 
+export const metadata = { title: 'Admin — Stats' }
+
 export default async function AdminStatsPage() {
   const stats = await getAdminStats()
 

@@ -90,6 +90,11 @@ export default function StatsPage() {
     loadStats()
   }, [])
 
+  // Dynamic browser tab title
+  useEffect(() => {
+    document.title = 'Statistics — Shelvd'
+  }, [])
+
   // Format helpers (locale-aware)
   const formatCurrency = (amount: number) => {
     return fmtCurr(amount, displayCurrency, userLocale, { decimals: false })

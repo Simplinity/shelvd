@@ -17,6 +17,14 @@ import ConditionHistoryTimeline from '@/components/condition-history-timeline'
 import ValuationTimeline from '@/components/valuation-timeline'
 import { getBookActivity } from '@/lib/actions/activity-log'
 import { BookTimeline } from '@/components/book-timeline'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data } = await supabase.from('books').select('title').eq('id', id).single()
+  return { title: data?.title || 'Book' }
+}
 
 type PageProps = {
   params: Promise<{ id: string }>

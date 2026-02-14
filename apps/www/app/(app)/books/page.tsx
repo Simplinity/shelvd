@@ -233,6 +233,11 @@ export default function BooksPage() {
   const searchMode = searchParams.get('mode') || 'and'
   const matchMode = searchParams.get('match') || 'fuzzy'
 
+  // Dynamic browser tab title
+  useEffect(() => {
+    document.title = totalCount > 0 ? `Books (${totalCount.toLocaleString()}) — Shelvd` : 'Books — Shelvd'
+  }, [totalCount])
+
   // Initialize global search input from URL
   useEffect(() => {
     setGlobalSearchInput(globalSearchQuery)

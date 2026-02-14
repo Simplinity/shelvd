@@ -1,6 +1,8 @@
 import { getMyActivity } from '@/lib/actions/activity-log'
 import { MyActivityClient } from './activity-client'
 
+export const metadata = { title: 'Activity' }
+
 export default async function ActivityPage({
   searchParams,
 }: {
