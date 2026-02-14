@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, Sparkles, Lock } from 'lucide-react'
+import { Edit, ChevronLeft, ChevronRight, ExternalLink as ExternalLinkIcon, Sparkles, Lock } from 'lucide-react'
+import BackButton from '@/components/back-button'
 import { formatDate, formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import DeleteBookButton from '@/components/delete-book-button'
@@ -379,13 +380,7 @@ export default async function BookDetailPage({ params }: PageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Navigation bar */}
       <div className="flex justify-between items-center mb-8">
-        <Link 
-          href="/books" 
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to collection
-        </Link>
+        <BackButton />
 
         {/* Prev/Next navigation */}
         <div className="flex items-center gap-2">
