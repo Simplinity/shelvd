@@ -453,7 +453,7 @@ export function LookupForm({ activeProviders }: Props) {
                       {item.cover_url ? (
                         <img
                           src={item.cover_url}
-                          alt=""
+                          alt={item.title}
                           className="w-full h-full object-cover"
                           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />

@@ -180,7 +180,7 @@ export function EnrichDropdown({
           {searchResults.map((item, i) => (
             <button key={i} type="button" onClick={() => onPickResult(item)} disabled={loadingDetail}
               className="w-full text-left px-4 py-2.5 hover:bg-muted/50 flex items-start gap-3">
-              {item.cover_url && <img src={item.cover_url} alt="" className="w-8 h-12 object-cover flex-shrink-0 bg-muted" />}
+              {item.cover_url && <img src={item.cover_url} alt={item.title} className="w-8 h-12 object-cover flex-shrink-0 bg-muted" />}
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate">{item.title}</div>
                 {item.authors && item.authors.length > 0 && <div className="text-xs text-muted-foreground truncate">{item.authors.join(', ')}</div>}
@@ -228,7 +228,7 @@ export function EnrichDropdown({
                   {row.status === 'different' && row.currentValue && <div className="text-xs text-muted-foreground truncate">Current: {row.currentValue}</div>}
                   {row.key === 'cover_image_url' ? (
                     <div className="flex items-center gap-2 mt-1">
-                      <ClickableImage src={row.newValue} alt="" className="w-8 h-12 object-cover bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
+                      <ClickableImage src={row.newValue} alt="Cover image" className="w-8 h-12 object-cover bg-muted rounded-sm" onError={e => (e.currentTarget.style.display = 'none')} />
                       <span className="text-xs text-muted-foreground truncate">{row.newValue}</span>
                     </div>
                   ) : (
