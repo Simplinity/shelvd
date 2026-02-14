@@ -5,7 +5,7 @@
  * Add new entries to the TOP of the CHANGELOG array.
  */
 
-export const APP_VERSION = '0.23.0'
+export const APP_VERSION = '0.24.0'
 
 export type ChangeType = 'added' | 'improved' | 'fixed'
 
@@ -23,6 +23,24 @@ export interface ChangelogRelease {
 }
 
 export const CHANGELOG: ChangelogRelease[] = [
+  {
+    version: '0.24.0',
+    date: '2026-02-14',
+    title: 'See Your Books',
+    description: 'Real image uploads for Pro and Dealer accounts. Drop files or take photos directly from your phone — they\'re converted to WebP, resized to 2400px full and 400px retina thumbnails, and stored on Vercel Blob. A proper gallery with pinch-to-zoom, swipe navigation, and drag-to-reorder. Cover images auto-sync to list and grid views. Because a book catalog without photographs is just a spreadsheet.',
+    changes: [
+      { type: 'added', text: 'Image upload API — accepts JPEG, PNG, WebP, HEIC, TIFF, BMP, GIF up to 10 MB. Server-side conversion to WebP via sharp: 2400px full (q85) + 400px retina thumb (q80).' },
+      { type: 'added', text: 'Upload UI on book edit form — drop zone, file picker, per-file type selector (cover/spine/back/detail/page), upload progress, quota display' },
+      { type: 'added', text: 'Camera capture button — opens rear camera directly on mobile for quick book photography' },
+      { type: 'added', text: 'Image gallery on book detail page with type labels and image counter' },
+      { type: 'added', text: 'Gallery lightbox — fullscreen view with swipe navigation, pinch-to-zoom (1x–5x), double-tap zoom, pan when zoomed, keyboard arrows' },
+      { type: 'added', text: 'Drag-and-drop image reorder on edit form — grab to rearrange, sort order persists to database' },
+      { type: 'added', text: 'Cover auto-sync — uploading a cover image automatically updates the book\'s display image in all views' },
+      { type: 'added', text: 'Retina thumbnails in list/grid views — 400px WebP thumbs for sharp display on high-DPI screens' },
+      { type: 'added', text: 'Storage quota tracking per user tier (Pro: 1 GB, Dealer: 25 GB) with enforcement on upload' },
+      { type: 'added', text: 'Hint on add form to upload photos after saving (upload requires a saved book)' },
+    ],
+  },
   {
     version: '0.23.0',
     date: '2026-02-13',

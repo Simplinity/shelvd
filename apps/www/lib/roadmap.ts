@@ -200,10 +200,11 @@ export const ROADMAP: RoadmapItem[] = [
     version: '0.13.0',
   },
   {
-    title: 'Image Upload (Phase 2)',
-    description: 'Direct file uploads via Vercel Blob: spine shots, damage photos, multiple images per book. Drag-and-drop, thumbnails, gallery view. Phase 1 (cover URLs) shipped in 0.12.0.',
+    title: 'Image Upload (Phase 2+3)',
+    description: 'Real file uploads via Vercel Blob with sharp pipeline: WebP conversion, 2400px full + 400px retina thumbs. Drop zone, camera capture, drag-to-reorder, gallery lightbox with pinch-to-zoom and swipe. Quota tracking per tier. Phase 1 (cover URLs) shipped in 0.12.0.',
     category: 'cataloging',
-    status: 'planned',
+    status: 'shipped',
+    version: '0.24.0',
   },
   {
     title: 'Cover Images',

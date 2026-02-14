@@ -256,6 +256,7 @@ status, action_needed, internal_notes, catalog_entry
 | 065 | fix_trigger_search_path | Fix `SET search_path = public` for auth triggers (critical signup bug) |
 | 066 | value_summary_rpc | `get_value_summary()` RPC for fast collection value aggregation |
 | 067 | fix_value_summary_rpc | Exclude `provenance_purchase` from latest valuation in value summary RPC |
+| 068 | book_images_blob_columns | Add `blob_url`, `thumb_blob_url`, `image_type`, `user_id` to book_images; make `storage_path` nullable |
 
 ---
 
@@ -439,7 +440,7 @@ status, action_needed, internal_notes, catalog_entry
 | 3 | ~~Edit page collapsible sections~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Accordion sections on both add + edit forms. Field count badges, expand/collapse all toggle. |
 | 4 | Activity logging | ✅ Done | — | All 6 steps complete: activity_log table, 20 log points, admin live feed + /admin/activity viewer, user /activity page, recent feed on /stats, book detail timeline. See details below. |
 | 5 | ~~Feedback & bug reporting~~ | ~~High~~ | ~~Medium~~ | ✅ Done — Two form types: Bug Report + Message. `feedback` table (migration 025), admin queue with filters/status/priority/bulk actions, email notifications to admins on new tickets (Resend via `ADMIN_NOTIFICATION_EMAILS` env var), admin response emails user directly, badge count, support nav link + footer link. |
-| 6 | Image upload | Medium | High | **Fase 1 ✅ COMPLETE (URL-only, 7/7 steps).** Fase 2 pending (Blob uploads). Fase 3 pending (drag-and-drop, bulk, camera, zoom). Both pre-launch. See details below. |
+| 6 | Image upload | Medium | High | **✅ All 3 phases complete (v0.24.0).** Fase 1: URL-only. Fase 2: Vercel Blob uploads, sharp WebP pipeline, upload UI, gallery, quota. Fase 3: drag reorder, camera capture, pinch-to-zoom lightbox. |
 | 7 | ~~Sharing & Public Catalog~~ | — | — | Moved to post-launch. |
 | 8a | Landing page (marketing website) | ✅ Done | — | Full redesign: hero, numbers strip, collectors/dealers sections, 12-feature showcase, 4 visual spotlights (search, provenance, enrich, condition), comparison grid, 3-tier pricing, CTA. Swiss design + humor. |
 | 8b | Knowledge base / Help center | ✅ Done | — | Wiki at `/wiki` — 35 articles across 8 categories (Getting Started, Cataloging, Provenance & History, Search & Discovery, Data & Export, Settings, Glossary & Reference, For Dealers). 150+ term glossary, reference guides for 76 formats and 69 MARC roles. Same witty tone as blog and legal pages. |
@@ -1288,7 +1289,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 > Decided 2026-02-13. See `docs/staging.md` for full implementation guide.
 
 **Phase 1: Pre-launch (now)**
-- Finish remaining 3 features on `main` as before: Image Upload Fase 2+3, Stripe
+- Finish remaining 1 feature on `main` as before: Stripe integration + upgrade flow
 - Test everything yourself — you are the only user, `main` is your staging
 - Pre-migration backup script active (see `scripts/pre-migration-backup.sh`)
 
@@ -1309,6 +1310,7 @@ Migration strategy: **Phase 1** keeps the old fields read-only as fallback. **Ph
 ---
 
 ### Recently Completed
+- ~~Image upload (Fase 2+3)~~ → v0.24.0: Vercel Blob + sharp WebP pipeline, upload UI, gallery, drag reorder, camera capture, pinch-to-zoom lightbox, quota tracking
 - ~~Mobile responsiveness~~ → v0.23.0: Hamburger nav, card layouts, responsive grids, touch targets. 23 steps, desktop untouched.
 - ~~Valuation bug fix~~ → v0.23.0: provenance_purchase excluded from value summaries (RPC, stats, PDF, export). Stats batching fix for 5000+ books.
 - ~~Performance optimizations~~ → Book detail parallelization, value summary RPC, collection count batching
@@ -1404,7 +1406,7 @@ shelvd/
 │           ├── cerl-hpb.ts       # CERL HPB (EU, SRU MARCXML, rare books)
 │           └── hathitrust.ts     # HathiTrust (US, REST JSON + MARC-XML)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
-├── supabase/migrations/          # 001-067 (see Migrations table above)
+├── supabase/migrations/          # 001-068 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CLAUDE_STARTUP_PROMPT.md, book-reference.md
 ```
 
