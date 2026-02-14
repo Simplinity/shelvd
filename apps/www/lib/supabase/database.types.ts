@@ -493,6 +493,7 @@ export type Database = {
           bisac_code_2: string | null
           bisac_code_3: string | null
           catalog_entry: string | null
+          catalog_entry_isbd: string | null
           collection_id: string | null
           colophon_text: string | null
           condition_id: string | null
@@ -580,6 +581,7 @@ export type Database = {
           bisac_code_2?: string | null
           bisac_code_3?: string | null
           catalog_entry?: string | null
+          catalog_entry_isbd?: string | null
           collection_id?: string | null
           colophon_text?: string | null
           condition_id?: string | null
@@ -667,6 +669,7 @@ export type Database = {
           bisac_code_2?: string | null
           bisac_code_3?: string | null
           catalog_entry?: string | null
+          catalog_entry_isbd?: string | null
           collection_id?: string | null
           colophon_text?: string | null
           condition_id?: string | null
