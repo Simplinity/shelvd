@@ -84,6 +84,7 @@ type FormData = {
   format_id: string
   has_dust_jacket: boolean
   is_signed: boolean
+  signature_details: string
   protective_enclosure: string
   condition_id: string
   dust_jacket_condition_id: string
@@ -152,6 +153,7 @@ const initialFormData: FormData = {
   format_id: '',
   has_dust_jacket: false,
   is_signed: false,
+  signature_details: '',
   protective_enclosure: 'none',
   condition_id: '',
   dust_jacket_condition_id: '',
@@ -672,6 +674,7 @@ export default function BookAddForm({ referenceData }: Props) {
           format_id: formData.format_id || null,
           has_dust_jacket: formData.has_dust_jacket,
           is_signed: formData.is_signed,
+          signature_details: formData.signature_details || null,
           protective_enclosure: formData.protective_enclosure,
           condition_id: formData.condition_id || null,
           dust_jacket_condition_id: formData.dust_jacket_condition_id || null,
@@ -1314,6 +1317,12 @@ export default function BookAddForm({ referenceData }: Props) {
               </label>
             </div>
           </div>
+            {formData.is_signed && (
+              <div className="col-span-2 mt-2">
+                <label className={labelClass}>Signature Details<FieldHelp text="Describe signing details: location (half-title, title page, ffep), date, inscription text, etc." /></label>
+                <textarea value={formData.signature_details || ''} onChange={e => handleChange('signature_details', e.target.value)} rows={2} className={textareaClass} placeholder="e.g. Signed by author on half-title, dated 1923" />
+              </div>
+            )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-dashed border-border">
             <div>
               <label className={labelClass}>Paper Type<FieldHelp text={FIELD_HELP.paper_type} /></label>
