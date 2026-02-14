@@ -91,13 +91,14 @@ type BookListItem = {
   user_catalog_id: string | null
   cover_image_url: string | null
   cover_thumb_url: string | null
+  created_at: string
   contributors: { name: string; role: string }[]
 }
 
 const ITEMS_PER_PAGE = 250
 
 // Sortable fields
-type SortField = 'title' | 'author' | 'publisher' | 'place' | 'year' | 'status'
+type SortField = 'title' | 'author' | 'publisher' | 'place' | 'year' | 'status' | 'catalog_id' | 'date_added'
 type SortDirection = 'asc' | 'desc'
 
 // Helper: Check if filter value is empty/not-empty syntax
@@ -410,6 +411,14 @@ export default function BooksPage() {
           aVal = a.status || ''
           bVal = b.status || ''
           break
+        case 'catalog_id':
+          aVal = a.user_catalog_id || ''
+          bVal = b.user_catalog_id || ''
+          break
+        case 'date_added':
+          aVal = a.created_at || ''
+          bVal = b.created_at || ''
+          break
       }
       
       const comparison = aVal.localeCompare(bVal)
@@ -621,7 +630,7 @@ export default function BooksPage() {
 
       const bookSelect = `
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url, created_at,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -705,7 +714,7 @@ export default function BooksPage() {
         isbn_10: book.isbn_10,
         series: book.series,
         user_catalog_id: book.user_catalog_id,
-        cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url,
+        cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url, created_at: book.created_at,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
@@ -733,7 +742,7 @@ export default function BooksPage() {
       const BATCH_SIZE = 1000
       const bookSelect = `
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url, created_at,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -833,7 +842,7 @@ export default function BooksPage() {
         isbn_10: book.isbn_10,
         series: book.series,
         user_catalog_id: book.user_catalog_id,
-        cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url,
+        cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url, created_at: book.created_at,
         contributors: (book.book_contributors || []).map((bc: any) => ({
           name: bc.contributor?.canonical_name || 'Unknown',
           role: bc.role?.name || 'Contributor'
@@ -869,7 +878,7 @@ export default function BooksPage() {
       .from('books')
       .select(`
         id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
+        status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url, created_at,
         storage_location, shelf, isbn_13, isbn_10,
         book_contributors (
           contributor:contributors ( canonical_name ),
@@ -1041,7 +1050,7 @@ export default function BooksPage() {
           .from('books')
           .select(`
             id, title, subtitle, original_title, publication_year, publication_place, publisher_name,
-            status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url,
+            status, cover_type, condition_id, language_id, user_catalog_id, series, cover_image_url, cover_thumb_url, created_at,
             storage_location, shelf, isbn_13, isbn_10,
             book_contributors (
               contributor:contributors ( canonical_name ),
@@ -1076,7 +1085,7 @@ export default function BooksPage() {
       isbn_10: book.isbn_10,
       series: book.series,
       user_catalog_id: book.user_catalog_id,
-      cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url,
+      cover_image_url: book.cover_image_url, cover_thumb_url: book.cover_thumb_url, created_at: book.created_at,
       contributors: (book.book_contributors || []).map((bc: any) => ({
         name: bc.contributor?.canonical_name || 'Unknown',
         role: bc.role?.name || 'Contributor'
@@ -2078,7 +2087,33 @@ export default function BooksPage() {
 
       {/* Grid View */}
       {!loading && books.length > 0 && view === 'grid' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div>
+          {/* Grid sort bar */}
+          <div className="flex items-center gap-2 mb-4 text-sm">
+            <span className="text-muted-foreground text-xs uppercase tracking-wide">Sort by</span>
+            <select
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value as SortField)}
+              className="bg-background border border-border px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="title">Title</option>
+              <option value="author">Author</option>
+              <option value="publisher">Publisher</option>
+              <option value="year">Year</option>
+              <option value="place">Place</option>
+              <option value="status">Status</option>
+              <option value="catalog_id">Catalog ID</option>
+              <option value="date_added">Date added</option>
+            </select>
+            <button
+              onClick={() => setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')}
+              className="border border-border px-2 py-1 hover:bg-muted transition-colors"
+              title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {sortedBooks.map((book) => (
             <div
               key={book.id}
@@ -2122,6 +2157,7 @@ export default function BooksPage() {
               </Link>
             </div>
           ))}
+          </div>
         </div>
       )}
 
