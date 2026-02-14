@@ -504,6 +504,12 @@ export default function BookAddForm({ referenceData }: Props) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [isDirty])
 
+  // Unsaved changes indicator in browser tab
+  useEffect(() => {
+    const base = 'Add Book — Shelvd'
+    document.title = isDirty ? `● ${base}` : base
+  }, [isDirty])
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setIsDirty(true)

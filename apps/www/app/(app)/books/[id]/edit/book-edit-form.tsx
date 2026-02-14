@@ -435,6 +435,12 @@ export default function BookEditForm({ book, referenceData }: Props) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [isDirty])
 
+  // Unsaved changes indicator in browser tab
+  useEffect(() => {
+    const base = `Edit — ${book.title} — Shelvd`
+    document.title = isDirty ? `● ${base}` : base
+  }, [isDirty, book.title])
+
   const handleChange = (field: keyof Book, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setIsDirty(true)
