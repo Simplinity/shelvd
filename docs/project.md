@@ -194,11 +194,11 @@ status, action_needed, internal_notes, catalog_entry, catalog_entry_isbd
 | cerl_hpb | CERL HPB (Heritage of the Printed Book) | 🇪🇺 | sru |
 | hathitrust | HathiTrust Digital Library | 🇺🇸 | api |
 | europeana | Europeana | 🇪🇺 | api |
+| bnp | BNP / PORBASE | 🇵🇹 | api (MODS XML) |
 
 #### Todo — New Providers
 | code | name | country | type | notes |
 |------|------|---------|------|-------|
-| bnp | BNP / PORBASE | 🇵🇹 | sru | UNIMARC — same parser as BnF/SUDOC |
 | bn_pl | Biblioteka Narodowa | 🇵🇱 | api | REST/JSON via data.bn.org.pl |
 | bnl | BnL / bibnet.lu | 🇱🇺 | z3950 | Z39.50 + OAI-PMH, 90 Luxemburgse bibliotheken |
 | cobiss | COBISS.net | 🇸🇮🇷🇸🇧🇦🇲🇰🇲🇪🇦🇱🇽🇰🇧🇬 | api | 9 landen in één provider (Balkan + Slovenië + Bulgarije) |
@@ -645,7 +645,7 @@ shelvd/
 │       ├── catalog-translations.ts # 590 lines: labels, roles, covers, conditions in 13 languages
 │       ├── field-help-texts.ts   # 68 field tooltips (antiquarian trade perspective)
 │       ├── blog.ts               # Blog metadata + article registry
-│       └── isbn-providers/       # Book lookup providers (26)
+│       └── isbn-providers/       # Book lookup providers (27)
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
 │           ├── open-library.ts
@@ -663,7 +663,8 @@ shelvd/
 │           ├── danbib.ts         # DanBib (Denmark, OpenSearch DKABM/DC)
 │           ├── cerl-hpb.ts       # CERL HPB (EU, SRU MARCXML, rare books)
 │           ├── hathitrust.ts     # HathiTrust (US, REST JSON + MARC-XML)
-│           └── europeana.ts      # Europeana (EU, REST JSON, 200M+ records)
+│           ├── europeana.ts      # Europeana (EU, REST JSON, 200M+ records)
+│           └── bnp.ts            # BNP/PORBASE (Portugal, MODS XML via URN service)
 ├── content/blog/                  # 22 blog articles (.md, by Bruno van Branden)
 ├── supabase/migrations/          # 001-074 (see Migrations table above)
 └── docs/                          # project.md, CLAUDE_SESSION_LOG.md, CATALOG_ENTRY_SPEC.md, book-reference.md

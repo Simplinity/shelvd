@@ -1,4 +1,4 @@
-# A Grand Tour of 26 Libraries in 19 Countries
+# A Grand Tour of 27 Libraries in 20 Countries
 
 *Every lookup provider in Shelvd: what it holds, what it's good at, and where it falls short. Consider this your field guide to the world's library catalogs.*
 
@@ -8,7 +8,7 @@
 
 No single library has every book. Not the Library of Congress, not the British Library, not that suspiciously well-stocked secondhand shop in Hay-on-Wye. But between them, the world's libraries hold more bibliographic data than any collector could generate in a lifetime.
 
-Shelvd connects to **26 providers** across **19 countries** on **4 continents**. One search, twenty-six libraries. Here's what each one brings to the table.
+Shelvd connects to **27 providers** across **20 countries** on **4 continents**. One search, twenty-seven libraries. Here's what each one brings to the table.
 
 ---
 
@@ -160,6 +160,11 @@ Shelvd connects to **26 providers** across **19 countries** on **4 continents**.
 **Best for:** Pan-European fallback when national libraries come up empty. Also covers manuscripts, maps, prints, and other cultural objects beyond books.
 **Quirks:** REST API with JSON responses. Searches across the Europeana Data Model (EDM), which means fields are language-tagged and can vary wildly between contributing institutions. ISBNs live in `dcIdentifier` rather than a dedicated field, so results need filtering. Filtered to `TYPE:TEXT` to keep it book-focused. Think of it as WorldCat's European cousin — breadth over depth.
 
+### BNP / PORBASE (🇵🇹)
+**What:** Union catalog of Portuguese libraries. PORBASE aggregates records from the Biblioteca Nacional de Portugal and dozens of academic and public libraries across the country.
+**Best for:** Portuguese-language editions, books published in Portugal, and Lusophone literature in general.
+**Quirks:** Not SRU — uses a URN HTTP service that returns MODS XML for a given ISBN. Dead simple: one ISBN in, one record out. No multi-field search (title, author) — ISBN only. But the MODS response is clean and well-structured: title, authors with roles, publisher, place, year, extent, language, edition, even UDC classification codes.
+
 ---
 
 ## Choosing the Right Provider
@@ -170,6 +175,7 @@ Shelvd connects to **26 providers** across **19 countries** on **4 continents**.
 - **Digital availability**: HathiTrust
 - **Pan-European fallback**: Europeana
 - **Regional publishing**: Use the national library of the country of publication
+- **Portuguese**: BNP / PORBASE
 - **Scandinavian**: Libris (SE), BIBSYS (NO), Finna (FI), DanBib (DK)
 
 You can enable and prioritize providers in [Settings → Book Lookup](/settings?tab=book-lookup). There's no wrong order, but starting with your country's national library and Open Library covers most cases.
