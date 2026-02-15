@@ -309,9 +309,10 @@
 
 /* Page loading animation */
 @keyframes book-pulse {
-  0%, 100% { opacity: 0.2; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.1); }
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 .animate-book-pulse {
   animation: book-pulse 1.2s ease-in-out infinite;
+  color: hsl(var(--primary)) !important;
 }
