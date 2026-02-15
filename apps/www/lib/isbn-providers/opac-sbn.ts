@@ -1,81 +1,100 @@
 // OPAC SBN (Italy) Provider
 // Union catalog of 6,300+ Italian libraries — 17M+ bibliographic records
-// Undocumented JSON API discovered via mobile app reverse-engineering
-// http://opac.sbn.it/opacmobilegw/
+// JSON API via http://opac.sbn.it/opacmobilegw/
 
 import type { IsbnProvider, ProviderResult, BookData, SearchParams, SearchResults, SearchResultItem } from './types'
 
 const API_BASE = 'http://opac.sbn.it/opacmobilegw'
 const CHANNEL = 'VMSBNTT'
 
-// OPAC SBN response types (Italian field names)
-interface SbnRecord {
-  bid: string                // SBN identifier (e.g. "IT\ICCU\UFI\0001234")
-  titolo?: string            // Title
-  autorePrincipale?: string  // Main author
-  altriAutori?: string[]     // Other authors
-  editore?: string           // Publisher
-  luogoPubblicazione?: string  // Publication place
-  dataPubblicazione?: string   // Publication date
-  isbn?: string              // ISBN
-  lingua?: string            // Language
-  paese?: string             // Country
-  natura?: string            // Nature/type (M=monograph, S=serial)
-  soggetti?: string[]        // Subjects
-  classificazione?: string   // Classification (DDC)
-  descrizione?: string       // Physical description
-  collana?: string           // Series
-  numerazione?: string       // Series numbering
-  nota?: string[]            // Notes
+// Actual OPAC SBN brief record structure
+interface SbnBriefRecord {
+  progressivoId: number
+  codiceIdentificativo: string   // SBN ID e.g. "IT\ICCU\UBO\4350179"
+  isbn?: string
+  autorePrincipale?: string      // Main author
+  copertina?: string             // Cover URL (LibraryThing)
+  titolo?: string                // Title (may include SoR after " / ")
+  pubblicazione?: string         // Combined "Place : Publisher, Year"
+  livello?: string               // "Monografia", "Spoglio", etc.
+  tipo?: string                  // "Testo a stampa", etc.
+  numeri?: string[]
+  note?: string[]
+  nomi?: string[]
+  luogoNormalizzato?: string[]
+  localizzazioni?: string[]
+  citazioni?: string[]
 }
 
 interface SbnSearchResponse {
-  esito: number              // 0 = success
-  totale?: number            // Total results
-  risultati?: SbnRecord[]    // Results
-  messaggio?: string         // Error message
+  numFound: number
+  start: number
+  rows: number
+  briefRecords?: SbnBriefRecord[]
 }
 
 /**
- * Parse an SBN record into our BookData format
+ * Parse "Place : Publisher, Year" string
  */
-function parseSbnRecord(record: SbnRecord): BookData {
-  const bookData: BookData = {}
+function parsePubblicazione(pub: string | undefined): { place?: string; publisher?: string; year?: string } {
+  if (!pub) return {}
+  const result: { place?: string; publisher?: string; year?: string } = {}
 
-  // Title — may contain subtitle after " : " or " / "
-  if (record.titolo) {
-    const titleParts = record.titolo.split(' : ')
-    bookData.title = titleParts[0].trim()
-    if (titleParts.length > 1) {
-      bookData.subtitle = titleParts.slice(1).join(' : ').trim()
-    }
-    // Remove statement of responsibility after " / "
-    if (bookData.title.includes(' / ')) {
-      bookData.title = bookData.title.split(' / ')[0].trim()
-    }
-    if (bookData.subtitle && bookData.subtitle.includes(' / ')) {
-      bookData.subtitle = bookData.subtitle.split(' / ')[0].trim()
-    }
+  // Extract year
+  const yearMatch = pub.match(/(\d{4})/)
+  if (yearMatch) result.year = yearMatch[1]
+
+  // Split "Place : Publisher, Year"
+  const colonIdx = pub.indexOf(':')
+  if (colonIdx > 0) {
+    result.place = pub.substring(0, colonIdx).trim().replace(/[\[\]]/g, '')
+    // Publisher is between : and ,/year
+    let rest = pub.substring(colonIdx + 1).trim()
+    // Remove year and trailing punctuation
+    rest = rest.replace(/,?\s*(?:stampa\s+)?\[?\d{4}\]?.*$/, '').trim()
+    rest = rest.replace(/[.,;]+$/, '').trim()
+    if (rest) result.publisher = rest
   }
 
-  // Authors
-  const authors: string[] = []
+  return result
+}
+
+/**
+ * Parse title — remove statement of responsibility after " / "
+ */
+function parseTitle(titolo: string | undefined): { title: string; subtitle?: string } {
+  if (!titolo) return { title: '' }
+  // Remove SoR
+  let clean = titolo.split(' / ')[0].trim()
+  // Split title : subtitle
+  const colonIdx = clean.indexOf(' : ')
+  if (colonIdx > 0) {
+    return {
+      title: clean.substring(0, colonIdx).trim(),
+      subtitle: clean.substring(colonIdx + 3).trim(),
+    }
+  }
+  return { title: clean }
+}
+
+/**
+ * Parse a brief record into BookData
+ */
+function parseSbnRecord(record: SbnBriefRecord): BookData {
+  const { title, subtitle } = parseTitle(record.titolo)
+  const pub = parsePubblicazione(record.pubblicazione)
+
+  const bookData: BookData = {
+    title,
+    subtitle,
+    publisher: pub.publisher,
+    publication_place: pub.place,
+    publication_year: pub.year,
+  }
+
+  // Author
   if (record.autorePrincipale) {
-    authors.push(record.autorePrincipale)
-  }
-  if (record.altriAutori) {
-    authors.push(...record.altriAutori)
-  }
-  if (authors.length > 0) bookData.authors = authors
-
-  // Publisher & publication place
-  if (record.editore) bookData.publisher = record.editore
-  if (record.luogoPubblicazione) bookData.publication_place = record.luogoPubblicazione
-
-  // Publication year
-  if (record.dataPubblicazione) {
-    const yearMatch = record.dataPubblicazione.match(/(\d{4})/)
-    if (yearMatch) bookData.publication_year = yearMatch[1]
+    bookData.authors = [record.autorePrincipale]
   }
 
   // ISBN
@@ -85,36 +104,19 @@ function parseSbnRecord(record: SbnRecord): BookData {
     else if (clean.length === 10) bookData.isbn_10 = clean
   }
 
-  // Language
-  if (record.lingua) bookData.language = record.lingua
-
-  // Subjects
-  if (record.soggetti && record.soggetti.length > 0) {
-    bookData.subjects = record.soggetti
-  }
-
-  // Classification (DDC)
-  if (record.classificazione) bookData.ddc = record.classificazione
-
-  // Physical description (pages, dimensions)
-  if (record.descrizione) {
-    bookData.pagination_description = record.descrizione
-    const pageMatch = record.descrizione.match(/(\d+)\s*p/)
-    if (pageMatch) bookData.pages = parseInt(pageMatch[1])
-  }
-
-  // Series
-  if (record.collana) {
-    bookData.series = record.collana
-    if (record.numerazione) bookData.series_number = record.numerazione
-  }
-
-  // Notes
-  if (record.nota && record.nota.length > 0) {
-    bookData.notes = record.nota.join('; ')
+  // Cover
+  if (record.copertina) {
+    bookData.cover_url = record.copertina
   }
 
   return bookData
+}
+
+/**
+ * Build source URL for an SBN record
+ */
+function sourceUrl(bid: string): string {
+  return `https://opac.sbn.it/risultati-ricerca-avanzata/-/opac-adv?search_query=${encodeURIComponent(bid)}`
 }
 
 export const opacSbn: IsbnProvider = {
@@ -139,11 +141,11 @@ export const opacSbn: IsbnProvider = {
 
       const data: SbnSearchResponse = await response.json()
 
-      if (data.esito !== 0 || !data.risultati || data.risultati.length === 0) {
-        return { success: false, error: data.messaggio || 'ISBN not found', provider: 'opac_sbn' }
+      if (!data.briefRecords || data.briefRecords.length === 0) {
+        return { success: false, error: 'ISBN not found', provider: 'opac_sbn' }
       }
 
-      const bookData = parseSbnRecord(data.risultati[0])
+      const bookData = parseSbnRecord(data.briefRecords[0])
 
       if (!bookData.title) {
         return { success: false, error: 'No title in record', provider: 'opac_sbn' }
@@ -157,7 +159,7 @@ export const opacSbn: IsbnProvider = {
         success: true,
         data: bookData,
         provider: 'opac_sbn',
-        source_url: `http://opac.sbn.it/opacsbn/opac/iccu/scheda.jsp?bid=${data.risultati[0].bid}`,
+        source_url: sourceUrl(data.briefRecords[0].codiceIdentificativo),
       }
     } catch (err) {
       return {
@@ -169,32 +171,70 @@ export const opacSbn: IsbnProvider = {
   },
 
   async searchByFields(params: SearchParams): Promise<SearchResults> {
-    // Build SBN search query
-    const queryParts: string[] = []
-
-    if (params.isbn) {
-      const url = `${API_BASE}/search.json?searchField=isbn&channel=${CHANNEL}&fieldstruct=1&resultForPage=${params.limit || 20}&isbn=${params.isbn.replace(/[-\s]/g, '')}`
-      return fetchSbnSearch(url, params)
-    }
-
-    // For non-ISBN search, use the "any" search field
-    if (params.title) queryParts.push(params.title)
-    if (params.author) queryParts.push(params.author)
-
-    if (queryParts.length === 0) {
-      return { items: [], total: 0, provider: 'opac_sbn', error: 'No search parameters' }
-    }
-
-    const any = queryParts.join(' ')
+    let url: string
     const limit = params.limit || 20
     const start = params.offset || 0
-    const url = `${API_BASE}/search.json?any=${encodeURIComponent(any)}&channel=${CHANNEL}&resultForPage=${limit}&start=${start}`
 
-    return fetchSbnSearch(url, params)
+    if (params.isbn) {
+      const cleanIsbn = params.isbn.replace(/[-\s]/g, '')
+      url = `${API_BASE}/search.json?searchField=isbn&channel=${CHANNEL}&fieldstruct=1&resultForPage=${limit}&start=${start}&isbn=${cleanIsbn}`
+    } else {
+      const parts: string[] = []
+      if (params.title) parts.push(params.title)
+      if (params.author) parts.push(params.author)
+
+      if (parts.length === 0) {
+        return { items: [], total: 0, provider: 'opac_sbn', error: 'No search parameters' }
+      }
+
+      const any = parts.join(' ')
+      url = `${API_BASE}/search.json?any=${encodeURIComponent(any)}&channel=${CHANNEL}&resultForPage=${limit}&start=${start}`
+    }
+
+    try {
+      const response = await fetch(url, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(10000),
+      })
+
+      if (!response.ok) {
+        return { items: [], total: 0, provider: 'opac_sbn', error: `HTTP ${response.status}` }
+      }
+
+      const data: SbnSearchResponse = await response.json()
+      const records = data.briefRecords || []
+
+      const items: SearchResultItem[] = records.map(rec => {
+        const parsed = parseSbnRecord(rec)
+        return {
+          title: parsed.title || 'Untitled',
+          subtitle: parsed.subtitle,
+          authors: parsed.authors,
+          publisher: parsed.publisher,
+          publication_year: parsed.publication_year,
+          isbn_13: parsed.isbn_13,
+          isbn_10: parsed.isbn_10,
+          cover_url: parsed.cover_url,
+          edition_key: rec.codiceIdentificativo,
+        }
+      })
+
+      const total = data.numFound || records.length
+      const hasMore = (start + records.length) < total
+
+      return { items, total, provider: 'opac_sbn', hasMore }
+    } catch (err) {
+      return {
+        items: [],
+        total: 0,
+        provider: 'opac_sbn',
+        error: err instanceof Error ? err.message : 'Network error',
+      }
+    }
   },
 
   async getDetails(editionKey: string): Promise<ProviderResult> {
-    // editionKey is the SBN bid
+    // editionKey is the codiceIdentificativo (SBN bid)
     const url = `${API_BASE}/search.json?searchField=bid&channel=${CHANNEL}&fieldstruct=1&resultForPage=1&bid=${encodeURIComponent(editionKey)}`
 
     try {
@@ -209,16 +249,16 @@ export const opacSbn: IsbnProvider = {
 
       const data: SbnSearchResponse = await response.json()
 
-      if (!data.risultati || data.risultati.length === 0) {
+      if (!data.briefRecords || data.briefRecords.length === 0) {
         return { success: false, error: 'Record not found', provider: 'opac_sbn' }
       }
 
-      const bookData = parseSbnRecord(data.risultati[0])
+      const bookData = parseSbnRecord(data.briefRecords[0])
       return {
         success: true,
         data: bookData,
         provider: 'opac_sbn',
-        source_url: `http://opac.sbn.it/opacsbn/opac/iccu/scheda.jsp?bid=${editionKey}`,
+        source_url: sourceUrl(editionKey),
       }
     } catch (err) {
       return {
@@ -228,52 +268,4 @@ export const opacSbn: IsbnProvider = {
       }
     }
   },
-}
-
-/**
- * Helper to fetch and parse SBN search results
- */
-async function fetchSbnSearch(url: string, params: SearchParams): Promise<SearchResults> {
-  try {
-    const response = await fetch(url, {
-      headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(10000),
-    })
-
-    if (!response.ok) {
-      return { items: [], total: 0, provider: 'opac_sbn', error: `HTTP ${response.status}` }
-    }
-
-    const data: SbnSearchResponse = await response.json()
-    const records = data.risultati || []
-
-    const items: SearchResultItem[] = records.map(rec => {
-      const parsed = parseSbnRecord(rec)
-      return {
-        title: parsed.title || 'Untitled',
-        subtitle: parsed.subtitle,
-        authors: parsed.authors,
-        publisher: parsed.publisher,
-        publication_year: parsed.publication_year,
-        isbn_13: parsed.isbn_13,
-        isbn_10: parsed.isbn_10,
-        format: parsed.format,
-        edition_key: rec.bid,
-      }
-    })
-
-    const total = data.totale || records.length
-    const offset = params.offset || 0
-    const limit = params.limit || 20
-    const hasMore = (offset + records.length) < total
-
-    return { items, total, provider: 'opac_sbn', hasMore }
-  } catch (err) {
-    return {
-      items: [],
-      total: 0,
-      provider: 'opac_sbn',
-      error: err instanceof Error ? err.message : 'Network error',
-    }
-  }
 }
