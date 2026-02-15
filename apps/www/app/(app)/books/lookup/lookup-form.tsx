@@ -318,6 +318,13 @@ export function LookupForm({ activeProviders }: Props) {
           </Link>
         </div>
         
+        {/* ISBN-only provider hint */}
+        {['bnp', 'hathitrust'].includes(selectedProvider) && (
+          <div className="px-4 py-2 border-b border-border bg-amber-50 dark:bg-amber-950/30 text-xs text-amber-700 dark:text-amber-400">
+            This provider only supports ISBN lookup — title and author search are not available.
+          </div>
+        )}
+        
         {/* Search fields */}
         <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
