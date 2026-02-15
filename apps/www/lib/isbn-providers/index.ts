@@ -15,6 +15,7 @@ import { kbNl } from './kb-netherlands'
 import { danbib } from './danbib'
 import { cerlHpb } from './cerl-hpb'
 import { hathiTrust } from './hathitrust'
+import { europeana } from './europeana'
 
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
@@ -41,6 +42,7 @@ const providers: Record<string, IsbnProvider> = {
   'danbib': danbib,
   'cerl_hpb': cerlHpb,
   'hathitrust': hathiTrust,
+  'europeana': europeana,
 }
 
 /**
