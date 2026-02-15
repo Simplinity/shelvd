@@ -5,7 +5,7 @@
 
 import type { IsbnProvider, ProviderResult, BookData, SearchParams, SearchResults, SearchResultItem } from './types'
 
-const API_KEY = process.env.EUROPEANA_API_KEY || ''
+function getApiKey() { return process.env.EUROPEANA_API_KEY || '' }
 const SEARCH_URL = 'https://api.europeana.eu/record/v2/search.json'
 const RECORD_URL = 'https://api.europeana.eu/record/v2'
 
@@ -223,7 +223,7 @@ export const europeana: IsbnProvider = {
   type: 'api',
 
   async search(isbn: string): Promise<ProviderResult> {
-    if (!API_KEY) {
+    if (!getApiKey()) {
       return { success: false, error: 'EUROPEANA_API_KEY not configured', provider: 'europeana' }
     }
 
@@ -232,7 +232,7 @@ export const europeana: IsbnProvider = {
     try {
       // Search by ISBN in dcIdentifier, filtered to TEXT type (books)
       const query = encodeURIComponent(`"${cleanIsbn}"`)
-      const url = `${SEARCH_URL}?wskey=${API_KEY}&query=${query}&qf=TYPE:TEXT&rows=5&profile=standard`
+      const url = `${SEARCH_URL}?wskey=${getApiKey()}&query=${query}&qf=TYPE:TEXT&rows=5&profile=standard`
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' },
@@ -290,7 +290,7 @@ export const europeana: IsbnProvider = {
   },
 
   async searchByFields(params: SearchParams): Promise<SearchResults> {
-    if (!API_KEY) {
+    if (!getApiKey()) {
       return { items: [], total: 0, provider: 'europeana', error: 'EUROPEANA_API_KEY not configured' }
     }
 
@@ -327,7 +327,7 @@ export const europeana: IsbnProvider = {
       }
 
       const qf = qfParts.map(f => `&qf=${encodeURIComponent(f)}`).join('')
-      const url = `${SEARCH_URL}?wskey=${API_KEY}&query=${query}${qf}&rows=${rows}&start=${start}&profile=standard`
+      const url = `${SEARCH_URL}?wskey=${getApiKey()}&query=${query}${qf}&rows=${rows}&start=${start}&profile=standard`
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' },
@@ -359,13 +359,13 @@ export const europeana: IsbnProvider = {
   },
 
   async getDetails(recordId: string): Promise<ProviderResult> {
-    if (!API_KEY) {
+    if (!getApiKey()) {
       return { success: false, error: 'EUROPEANA_API_KEY not configured', provider: 'europeana' }
     }
 
     try {
       // Record API: /record/v2/{id}.json
-      const url = `${RECORD_URL}${recordId}.json?wskey=${API_KEY}`
+      const url = `${RECORD_URL}${recordId}.json?wskey=${getApiKey()}`
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' },

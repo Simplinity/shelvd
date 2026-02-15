@@ -186,9 +186,32 @@ export const bnp: IsbnProvider = {
     }
   },
 
-  // No multi-field search — URN service is ISBN-only
-  // searchByFields not implemented
-  // getDetails not implemented (ISBN lookup returns full data)
+  // Minimal searchByFields: only works when ISBN is provided
+  async searchByFields(params: import('./types').SearchParams): Promise<import('./types').SearchResults> {
+    const isbn = params.isbn?.replace(/[-\s]/g, '')
+    if (!isbn) {
+      return { items: [], total: 0, provider: 'bnp', error: 'BNP/PORBASE only supports ISBN lookup' }
+    }
+
+    const result = await this.search(isbn)
+    if (!result.success || !result.data) {
+      return { items: [], total: 0, provider: 'bnp', error: result.error }
+    }
+
+    return {
+      items: [{
+        title: result.data.title || '',
+        authors: result.data.authors,
+        publisher: result.data.publisher,
+        publication_year: result.data.publication_year,
+        isbn_13: result.data.isbn_13,
+        isbn_10: result.data.isbn_10,
+        edition_key: isbn,
+      }],
+      total: 1,
+      provider: 'bnp',
+    }
+  },
 }
 
 export default bnp
