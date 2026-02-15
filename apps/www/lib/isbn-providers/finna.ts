@@ -8,17 +8,22 @@ import type { IsbnProvider, ProviderResult, BookData, SearchParams, SearchResult
 const API_BASE = 'https://api.finna.fi/api/v1'
 
 // Fields we request from the API (minimises response size)
-const SEARCH_FIELDS = [
+const SEARCH_FIELD_LIST = [
   'title', 'subTitle', 'nonPresenterAuthors', 'publishers',
   'publicationDates', 'languages', 'subjects', 'ISBNs',
   'formats', 'images', 'series', 'physicalDescriptions',
   'summary', 'id', 'dedupIds',
-].join(',')
+]
 
-const DETAIL_FIELDS = [
-  ...SEARCH_FIELDS.split(','),
+const DETAIL_FIELD_LIST = [
+  ...SEARCH_FIELD_LIST,
   'edition', 'classifications', 'identifierString',
-].join(',')
+]
+
+/** Build field[] query params — Finna requires separate field[]=X for each field */
+function fieldParams(fields: string[]): string {
+  return fields.map(f => `field[]=${f}`).join('&')
+}
 
 // Finna API response types
 interface FinnaAuthor {
@@ -154,7 +159,7 @@ export const finna: IsbnProvider = {
 
   async search(isbn: string): Promise<ProviderResult> {
     const cleanIsbn = isbn.replace(/[-\s]/g, '')
-    const url = `${API_BASE}/search?lookfor=${cleanIsbn}&type=ISN&field[]=${SEARCH_FIELDS}&limit=1`
+    const url = `${API_BASE}/search?lookfor=${cleanIsbn}&type=ISN&${fieldParams(SEARCH_FIELD_LIST)}&limit=1`
 
     try {
       const response = await fetch(url, {
@@ -213,7 +218,7 @@ export const finna: IsbnProvider = {
     const page = params.offset ? Math.floor(params.offset / limit) + 1 : 1
     const searchType = params.isbn ? 'ISN' : 'AllFields'
 
-    const url = `${API_BASE}/search?lookfor=${encodeURIComponent(lookfor)}&type=${searchType}&field[]=${SEARCH_FIELDS}&limit=${limit}&page=${page}`
+    const url = `${API_BASE}/search?lookfor=${encodeURIComponent(lookfor)}&type=${searchType}&${fieldParams(SEARCH_FIELD_LIST)}&limit=${limit}&page=${page}`
 
     try {
       const response = await fetch(url, {
@@ -257,7 +262,7 @@ export const finna: IsbnProvider = {
   },
 
   async getDetails(editionKey: string): Promise<ProviderResult> {
-    const url = `${API_BASE}/record?id=${encodeURIComponent(editionKey)}&field[]=${DETAIL_FIELDS}`
+    const url = `${API_BASE}/record?id=${encodeURIComponent(editionKey)}&${fieldParams(DETAIL_FIELD_LIST)}`
 
     try {
       const response = await fetch(url, {
