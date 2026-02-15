@@ -257,7 +257,10 @@ export const europeana: IsbnProvider = {
           break
         }
       }
-      if (!bestItem) bestItem = data.items[0]
+      if (!bestItem) bestItem = data.items[0] as EuropeanaItem
+      if (!bestItem) {
+        return { success: false, error: 'No valid item in response', provider: 'europeana' }
+      }
 
       const bookData = parseItemToBookData(bestItem)
 
