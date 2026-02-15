@@ -1,4 +1,4 @@
-# A Grand Tour of 22 Libraries in 19 Countries
+# A Grand Tour of 26 Libraries in 19 Countries
 
 *Every lookup provider in Shelvd: what it holds, what it's good at, and where it falls short. Consider this your field guide to the world's library catalogs.*
 
@@ -8,7 +8,7 @@
 
 No single library has every book. Not the Library of Congress, not the British Library, not that suspiciously well-stocked secondhand shop in Hay-on-Wye. But between them, the world's libraries hold more bibliographic data than any collector could generate in a lifetime.
 
-Shelvd connects to **22 providers** across **19 countries** on **4 continents**. One search, twenty-two libraries. Here's what each one brings to the table.
+Shelvd connects to **26 providers** across **19 countries** on **4 continents**. One search, twenty-six libraries. Here's what each one brings to the table.
 
 ---
 
@@ -155,6 +155,11 @@ Shelvd connects to **22 providers** across **19 countries** on **4 continents**.
 **Best for:** Checking if a digital version exists, finding which libraries hold a copy.
 **Quirks:** ISBN/OCLC/LCCN lookup only — no title or author search. This is an identifier-based API, not a search engine. But it tells you things no one else does: which university holds the book, whether a full-view digital copy exists, and the rights status.
 
+### Europeana (🇪🇺)
+**What:** 200M+ records from 4,000+ cultural institutions across 49 European countries. The mother of all European aggregators.
+**Best for:** Pan-European fallback when national libraries come up empty. Also covers manuscripts, maps, prints, and other cultural objects beyond books.
+**Quirks:** REST API with JSON responses. Searches across the Europeana Data Model (EDM), which means fields are language-tagged and can vary wildly between contributing institutions. ISBNs live in `dcIdentifier` rather than a dedicated field, so results need filtering. Filtered to `TYPE:TEXT` to keep it book-focused. Think of it as WorldCat's European cousin — breadth over depth.
+
 ---
 
 ## Choosing the Right Provider
@@ -163,6 +168,7 @@ Shelvd connects to **22 providers** across **19 countries** on **4 continents**.
 - **Academic titles**: WorldCat, Library Hub, SUDOC, BIBSYS
 - **European rare books (pre-1830)**: CERL HPB, then national libraries
 - **Digital availability**: HathiTrust
+- **Pan-European fallback**: Europeana
 - **Regional publishing**: Use the national library of the country of publication
 - **Scandinavian**: Libris (SE), BIBSYS (NO), Finna (FI), DanBib (DK)
 

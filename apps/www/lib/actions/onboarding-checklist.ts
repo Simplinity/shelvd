@@ -74,7 +74,7 @@ export async function getChecklistSteps(): Promise<ChecklistStep[] | null> {
     {
       key: 'used_enrich',
       label: 'Try Library Lookup',
-      description: '22 libraries, 4 continents. Your book is probably in at least one.',
+      description: '26 libraries, 4 continents. Your book is probably in at least one.',
       href: '/books/lookup',
       done: usedEnrich,
     },

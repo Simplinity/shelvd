@@ -1889,7 +1889,7 @@ export default function BooksPage() {
             </div>
             <h3 className="text-xl font-bold mb-2">Every great library started with a single book</h3>
             <p className="text-muted-foreground mb-2 max-w-md mx-auto">
-              Yours is waiting. Type a title, paste an ISBN, or look it up in 22 libraries across 4 continents.
+              Yours is waiting. Type a title, paste an ISBN, or look it up in 26 libraries across 4 continents.
             </p>
             <p className="text-muted-foreground/60 mb-8 text-sm italic max-w-md mx-auto">
               We promise the add form is less scary than it looks.

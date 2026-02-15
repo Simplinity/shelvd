@@ -1,6 +1,6 @@
 # Choosing Your Libraries
 
-*Enable, disable, and prioritize the 22 library providers that power Book Lookup. Because not everyone needs the National Diet Library of Japan. (But you might.)*
+*Enable, disable, and prioritize the 26 library providers that power Book Lookup. Because not everyone needs the National Diet Library of Japan. (But you might.)*
 
 ---
 
@@ -8,7 +8,7 @@
 
 **Settings → Book Lookup** (or `/settings?tab=book-lookup`).
 
-You'll see a list of all 22 available providers, each with a toggle and a drag handle for ordering. Providers are grouped by country and type.
+You'll see a list of all 26 available providers, each with a toggle and a drag handle for ordering. Providers are grouped by country and type.
 
 ---
 
@@ -73,4 +73,4 @@ Toggle a provider off, and it disappears from the Lookup dropdown on your next s
 
 ---
 
-*See also: [The 22 Providers](/wiki/the-22-providers) · [Library Lookup](/wiki/library-lookup) · [Settings Guide](/wiki/settings-guide)*
+*See also: [The 26 Providers](/wiki/the-22-providers) · [Library Lookup](/wiki/library-lookup) · [Settings Guide](/wiki/settings-guide)*

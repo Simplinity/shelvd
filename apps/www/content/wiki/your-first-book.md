@@ -50,7 +50,7 @@ And here's the thing: an incomplete record is infinitely better than no record. 
 Now that your first book is in, you have options:
 
 1. **Add another book manually** — repeat the process, get faster each time
-2. **Try Library Lookup** — let one of 22 library catalogs do the typing for you
+2. **Try Library Lookup** — let one of 26 library catalogs do the typing for you
 3. **Import from Excel** — if you already have a spreadsheet (we know you do)
 4. **Enrich your record** — open the edit page, click Enrich, and pull in metadata from the world's libraries
 
