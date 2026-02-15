@@ -14,7 +14,7 @@ If the record looks right, click **Add to Library** and the metadata flows into 
 
 ## Choosing a Provider
 
-The dropdown contains your active providers — up to 27 libraries across 20 countries. Not all providers are equal:
+The dropdown contains your active providers — up to 26 libraries across 19 countries. Not all providers are equal:
 
 - **Open Library** and **Google Books** are fast and have good cover images, but thin on bibliographic detail
 - **Library of Congress**, **BnF**, and **DNB** have deep, precise MARC records — ideal for scholarly cataloging

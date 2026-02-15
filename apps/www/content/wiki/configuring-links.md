@@ -21,7 +21,7 @@ WorldCat, VIAF, Wikidata, Wikipedia, ISNI, Open Library, KVK. The authority file
 ISTC, GW, USTC, ESTC, STCN, STCV, VD16, VD17, EDIT16. The specialized databases for early printed books. If you collect incunabula or books printed before 1700, these are essential. If you don't, they're noise.
 
 ### National & Regional Catalogs (22 types)
-Every national library catalog, from KBR to the Library of Congress, plus union catalogs like Unicat, Library Hub, and K10plus. Enable the ones relevant to your collection's geography.
+Every national library catalog, from KBR to the Library of Congress, plus union catalogs like Unicat, and K10plus. Enable the ones relevant to your collection's geography.
 
 ### Digital Libraries (8 types)
 Gallica, Europeana, Google Books, HathiTrust, Internet Archive, MDZ, CERL HPB, Biodiversity Heritage Library. Links to digitized versions and digital catalogs.

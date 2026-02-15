@@ -182,7 +182,6 @@ status, action_needed, internal_notes, catalog_entry, catalog_entry_isbd
 | slsp | Swisscovery (SLSP) | 🇨🇭 | sru |
 | bibsys | BIBSYS/Oria | 🇳🇴 | sru |
 | onb | Österreichische Nationalbibliothek | 🇦🇹 | sru |
-| library_hub | Library Hub Discover | 🇬🇧 | sru-mods |
 | libris | LIBRIS | 🇸🇪 | xsearch |
 | standaard | Standaard Boekhandel | 🇧🇪 | html |
 | finna | Finna | 🇫🇮 | api |
@@ -252,7 +251,7 @@ status, action_needed, internal_notes, catalog_entry, catalog_entry_isbd
 | 044 | migrate_valuation_fields | Migrate old price fields to valuation_history |
 | 045 | drop_old_valuation_fields | Drop lowest_price, highest_price, estimated_value, valuation_date |
 | 046 | add_bne_slsp_providers | Add Unicat (BE), BNE (ES), SLSP (CH) providers; remove old KBR |
-| 047 | add_bibsys_onb_libraryhub_providers | Add BIBSYS (NO), ÖNB (AT), Library Hub (GB); add sru-mods type |
+| 047 | add_bibsys_onb_libraryhub_providers | Add BIBSYS (NO), ÖNB (AT); add sru-mods type |
 | 048 | add_finna_sbn_ndl_trove_kb_providers | Add Finna (FI), OPAC SBN (IT), NDL (JP), Trove (AU), KB NL; disable old kb |
 | 049 | disable_trove_pending_apikey | Disable Trove until API key approved |
 | 050 | add_danbib_provider | Add DanBib (DK) provider |
@@ -645,14 +644,13 @@ shelvd/
 │       ├── catalog-translations.ts # 590 lines: labels, roles, covers, conditions in 13 languages
 │       ├── field-help-texts.ts   # 68 field tooltips (antiquarian trade perspective)
 │       ├── blog.ts               # Blog metadata + article registry
-│       └── isbn-providers/       # Book lookup providers (27)
+│       └── isbn-providers/       # Book lookup providers (26)
 │           ├── index.ts          # Provider registry
 │           ├── types.ts          # Shared types
 │           ├── open-library.ts
 │           ├── google-books.ts
 │           ├── sru-provider.ts   # SRU factory (MARC21 + UNIMARC)
 │           ├── sru-libraries.ts  # LoC, BnF, DNB, K10plus, SUDOC, Unicat, BNE, SLSP, BIBSYS, ÖNB
-│           ├── library-hub.ts    # Library Hub Discover (MODS parser)
 │           ├── libris.ts         # LIBRIS Xsearch
 │           ├── standaard-boekhandel.ts
 │           ├── finna.ts          # Finna (Finland, REST JSON)

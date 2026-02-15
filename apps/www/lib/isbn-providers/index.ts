@@ -4,7 +4,6 @@ import type { IsbnProvider, ProviderResult, ActiveProvider } from './types'
 import { openLibrary } from './open-library'
 import { googleBooks } from './google-books'
 import { loc, bnf, dnb, k10plus, sudoc, unicat, bne, slsp, bibsys, onb } from './sru-libraries'
-import { libraryHub } from './library-hub'
 import { libris } from './libris'
 import { standaardBoekhandel } from './standaard-boekhandel'
 import { finna } from './finna'
@@ -32,7 +31,6 @@ const providers: Record<string, IsbnProvider> = {
   'slsp': slsp,
   'bibsys': bibsys,
   'onb': onb,
-  'library_hub': libraryHub,
   'libris': libris,
   'standaard': standaardBoekhandel,
   'finna': finna,

@@ -12,7 +12,7 @@ Shelvd ships with **64 system-defined link types** across eight categories:
 
 **Short Title Catalogs (9)**: ISTC, GW, USTC, ESTC, STCN, STCV, VD16, VD17, EDIT16
 
-**National & Regional Catalogs (22)**: KBR, KB NL, BnF, SUDOC, CCFr, British Library, Jisc Library Hub, DNB, BSB, SBN/ICCU, BNE, Library of Congress, K10plus, Unicat, Swisscovery, BIBSYS, ÖNB, Libris, Finna, NDL, Trove, DanBib
+**National & Regional Catalogs (21)**: KBR, KB NL, BnF, SUDOC, CCFr, British Library, DNB, BSB, SBN/ICCU, BNE, Library of Congress, K10plus, Unicat, Swisscovery, BIBSYS, ÖNB, Libris, Finna, NDL, Trove, DanBib
 
 **Digital Libraries (8)**: Gallica, Europeana, Google Books, HathiTrust, Internet Archive, MDZ, CERL HPB, Biodiversity Heritage Library
 

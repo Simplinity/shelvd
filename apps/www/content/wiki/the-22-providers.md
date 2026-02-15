@@ -1,4 +1,4 @@
-# A Grand Tour of 27 Libraries in 20 Countries
+# A Grand Tour of 26 Libraries in 19 Countries
 
 *Every lookup provider in Shelvd: what it holds, what it's good at, and where it falls short. Consider this your field guide to the world's library catalogs.*
 
@@ -8,7 +8,7 @@
 
 No single library has every book. Not the Library of Congress, not the British Library, not that suspiciously well-stocked secondhand shop in Hay-on-Wye. But between them, the world's libraries hold more bibliographic data than any collector could generate in a lifetime.
 
-Shelvd connects to **27 providers** across **20 countries** on **4 continents**. One search, twenty-seven libraries. Here's what each one brings to the table.
+Shelvd connects to **26 providers** across **19 countries** on **4 continents**. One search, twenty-six libraries. Here's what each one brings to the table.
 
 ---
 
@@ -43,12 +43,6 @@ Shelvd connects to **27 providers** across **20 countries** on **4 continents**.
 **Best for:** UK publications (legal deposit), historical British publishing, ESTC overlap.
 **Quirks:** SRU/MARCXML. Recently migrated to a new discovery system. Excellent for anything published in Britain.
 
-### Library Hub Discover (🇬🇧)
-**What:** Union catalog of 100+ UK and Irish research libraries (run by Jisc).
-**Best for:** Academic titles, multi-copy holdings across UK universities.
-**Quirks:** Uses MODS format instead of MARC21 — Shelvd has a custom parser for it. Good for books the British Library doesn't hold.
-
-### BnF — Bibliothèque nationale de France (🇫🇷)
 **What:** France's national library. 40M+ items. That building on the Seine that looks like four open books.
 **Best for:** French-language publications, UNIMARC data, BnF identifiers.
 **Quirks:** Uses UNIMARC (fields 200, 210, etc.) instead of MARC21. CQL queries need specific relation operators. Shelvd handles the translation.
@@ -170,7 +164,7 @@ Shelvd connects to **27 providers** across **20 countries** on **4 continents**.
 ## Choosing the Right Provider
 
 - **Modern books with ISBN**: Open Library, Google Books, your national library
-- **Academic titles**: WorldCat, Library Hub, SUDOC, BIBSYS
+- **Academic titles**: WorldCat, SUDOC, BIBSYS
 - **European rare books (pre-1830)**: CERL HPB, then national libraries
 - **Digital availability**: HathiTrust
 - **Pan-European fallback**: Europeana

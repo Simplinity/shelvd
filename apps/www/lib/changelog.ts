@@ -158,7 +158,7 @@ export const CHANGELOG: ChangelogRelease[] = [
       { type: 'added', text: 'CERL HPB (EU) — Heritage of the Printed Book. 6M+ records of European rare books (1455–1830) via SRU/MARCXML. Rich metadata: author life dates, printers, provenance, former owners, physical dimensions, and binding notes' },
       { type: 'added', text: 'HathiTrust (US) — 13M+ digitised volumes from 200+ research libraries. ISBN/OCLC/LCCN lookup with full MARC-XML parsing. Unique: holding library info and links to digitised versions' },
       { type: 'added', text: 'DanBib / bibliotek.dk (Denmark) — 14M+ records from the Danish union catalog via OpenSearch API. Custom DKABM/Dublin Core parser with CQL search, book-type filtering, and full edition detail' },
-      { type: 'improved', text: 'Book Lookup now spans 27 providers across 20 countries and 4 continents' },
+      { type: 'improved', text: 'Book Lookup now spans 26 providers across 19 countries and 4 continents' },
     ],
   },
   {
@@ -183,7 +183,6 @@ export const CHANGELOG: ChangelogRelease[] = [
     changes: [
       { type: 'added', text: 'BIBSYS/Oria (Norway) — Norwegian academic and research libraries via Alma SRU' },
       { type: 'added', text: 'ÖNB (Austria) — Österreichische Nationalbibliothek, the Austrian national library catalog' },
-      { type: 'added', text: 'Library Hub Discover (UK) — aggregates 100+ British academic and research libraries. Custom MODS XML parser built for this provider' },
       { type: 'improved', text: 'Book Lookup expanded to 15 providers across 13 countries' },
     ],
   },
