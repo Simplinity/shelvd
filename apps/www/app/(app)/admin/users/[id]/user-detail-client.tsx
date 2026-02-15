@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Save, Loader2, CheckCircle, Clock, Ban, Shield, ShieldOff, Gift, CreditCard, Send, Mail, RotateCcw } from 'lucide-react'
+import { Save, BookOpen, CheckCircle, Clock, Ban, Shield, ShieldOff, Gift, CreditCard, Send, Mail, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logActivity } from '@/lib/actions/activity-log'
 
@@ -135,7 +135,7 @@ export function UserDetailClient({
               onClick={saveNotes}
               disabled={savingNotes || notes === currentNotes}
             >
-              {savingNotes ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> :
+              {savingNotes ? <BookOpen className="w-3 h-3 animate-book-pulse mr-1" /> :
                notesSaved ? <CheckCircle className="w-3 h-3 text-green-600 mr-1" /> :
                <Save className="w-3 h-3 mr-1" />}
               {notesSaved ? 'Saved' : 'Save'}
@@ -307,7 +307,7 @@ export function UserDetailClient({
                       onClick={sendEmail}
                       disabled={sendingEmail || !emailSubject.trim() || !emailBody.trim()}
                     >
-                      {sendingEmail ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> :
+                      {sendingEmail ? <BookOpen className="w-3 h-3 animate-book-pulse mr-1" /> :
                        emailSent ? <CheckCircle className="w-3 h-3 mr-1" /> :
                        <Send className="w-3 h-3 mr-1" />}
                       {emailSent ? 'Sent!' : 'Send'}

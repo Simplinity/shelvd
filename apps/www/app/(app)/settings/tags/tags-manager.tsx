@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Loader2, Check, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, BookOpen, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LimitGate } from '@/components/feature-gate'
 import { createClient } from '@/lib/supabase/client'
@@ -160,7 +160,7 @@ export function TagsManager() {
             autoFocus
           />
           <Button size="sm" onClick={handleCreate} disabled={creating || !newName.trim()}>
-            {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            {creating ? <BookOpen className="w-4 h-4 animate-book-pulse" /> : <Check className="w-4 h-4" />}
           </Button>
           <Button size="sm" variant="ghost" onClick={() => { setShowCreate(false); setNewName('') }}>
             <X className="w-4 h-4" />
@@ -171,7 +171,7 @@ export function TagsManager() {
       {/* Loading */}
       {loading && (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          <BookOpen className="w-6 h-6 animate-book-pulse text-muted-foreground" />
         </div>
       )}
 
@@ -208,7 +208,7 @@ export function TagsManager() {
                     autoFocus
                   />
                   <Button size="sm" onClick={() => handleSave(tag.id)} disabled={saving || !editName.trim()}>
-                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    {saving ? <BookOpen className="w-4 h-4 animate-book-pulse" /> : <Check className="w-4 h-4" />}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
                     <X className="w-4 h-4" />
@@ -236,7 +236,7 @@ export function TagsManager() {
                     disabled={deletingId === tag.id}
                     className="text-destructive hover:text-destructive"
                   >
-                    {deletingId === tag.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                    {deletingId === tag.id ? <BookOpen className="w-3.5 h-3.5 animate-book-pulse" /> : <Trash2 className="w-3.5 h-3.5" />}
                   </Button>
                 </>
               )}

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, Loader2, CheckCircle } from 'lucide-react'
+import { AlertCircle, BookOpen, CheckCircle } from 'lucide-react'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -16,7 +16,7 @@ function SubmitButton() {
     <Button type="submit" className="w-full h-11 text-sm font-semibold uppercase tracking-wide" disabled={pending}>
       {pending ? (
         <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <BookOpen className="mr-2 h-4 w-4 animate-book-pulse" />
           Loading...
         </>
       ) : (

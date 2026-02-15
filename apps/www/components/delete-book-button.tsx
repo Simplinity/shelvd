@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Trash2, X, Loader2 } from 'lucide-react'
+import { Trash2, X, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { logActivity } from '@/lib/actions/activity-log'
@@ -158,7 +158,7 @@ export default function DeleteBookButton({ bookId, bookTitle }: DeleteBookButton
               >
                 {deleting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />
                     Deleting...
                   </>
                 ) : (

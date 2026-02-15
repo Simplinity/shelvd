@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
-import { BookOpen, Loader2, Check } from 'lucide-react'
+import { BookOpen, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type Props = {
@@ -58,7 +58,7 @@ export default function MoveToLibraryButton({ bookId, libraryCollectionId, wishl
 
   return (
     <Button variant="outline" onClick={handleMove} disabled={loading} className="gap-2">
-      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
+      {loading ? <BookOpen className="w-4 h-4 animate-book-pulse" /> : <BookOpen className="w-4 h-4" />}
       Move to Library
     </Button>
   )

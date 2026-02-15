@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown, Trash2, ImageIcon } from 'lucide-react'
+import { ArrowLeft, Save, BookOpen, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown, Trash2, ImageIcon } from 'lucide-react'
 import ProvenanceEditor, { type ProvenanceEntry } from '@/components/provenance-editor'
 import ConditionHistoryEditor, { type ConditionHistoryEntry } from '@/components/condition-history-editor'
 import ValuationHistoryEditor, { type ValuationHistoryEntry } from '@/components/valuation-history-editor'
@@ -1110,7 +1110,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <Link href={`/books/${book.id}`} onClick={handleCancel}>Cancel</Link>
           </Button>
           <Button type="submit" disabled={saving}>
-            {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : <><Save className="w-4 h-4 mr-2" />Save</>}
+            {saving ? <><BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />Saving...</> : <><Save className="w-4 h-4 mr-2" />Save</>}
           </Button>
         </div>
       </div>
@@ -1478,7 +1478,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
                         disabled={deletingImageId === img.id}
                         className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
                       >
-                        {deletingImageId === img.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                        {deletingImageId === img.id ? <BookOpen className="w-3 h-3 animate-book-pulse" /> : <Trash2 className="w-3 h-3" />}
                       </button>
                     )}
                   </div>
@@ -1957,7 +1957,7 @@ export default function BookEditForm({ book, referenceData }: Props) {
             <Link href={`/books/${book.id}`} onClick={handleCancel}>Cancel</Link>
           </Button>
           <Button type="submit" disabled={saving}>
-            {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : <><Save className="w-4 h-4 mr-2" />Save Changes</>}
+            {saving ? <><BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />Saving...</> : <><Save className="w-4 h-4 mr-2" />Save Changes</>}
           </Button>
         </div>
       </div>

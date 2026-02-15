@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, Library, FolderOpen, Loader2, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, Library, FolderOpen, BookOpen, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { logActivity } from '@/lib/actions/activity-log'
@@ -238,7 +238,7 @@ export function CollectionsManager() {
                 Cancel
               </Button>
               <Button size="sm" onClick={handleCreate} disabled={!newName.trim() || saving}>
-                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                {saving ? <BookOpen className="w-4 h-4 animate-book-pulse mr-2" /> : null}
                 Create
               </Button>
             </div>
@@ -249,7 +249,7 @@ export function CollectionsManager() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          <BookOpen className="w-8 h-8 animate-book-pulse text-muted-foreground" />
         </div>
       )}
 
@@ -285,7 +285,7 @@ export function CollectionsManager() {
                       Cancel
                     </Button>
                     <Button size="sm" onClick={() => handleUpdate(col.id)} disabled={!editName.trim() || saving}>
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-1" />}
+                      {saving ? <BookOpen className="w-4 h-4 animate-book-pulse mr-2" /> : <Check className="w-4 h-4 mr-1" />}
                       Save
                     </Button>
                   </div>
@@ -304,7 +304,7 @@ export function CollectionsManager() {
                       Cancel
                     </Button>
                     <Button variant="destructive" size="sm" onClick={() => handleDelete(col.id)} disabled={saving}>
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-1" />}
+                      {saving ? <BookOpen className="w-4 h-4 animate-book-pulse mr-2" /> : <Trash2 className="w-4 h-4 mr-1" />}
                       Delete
                     </Button>
                   </div>

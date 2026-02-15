@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Trash2, ExternalLink, ChevronDown, ChevronRight, Search, Loader2 } from 'lucide-react'
+import { ArrowLeft, Trash2, ExternalLink, ChevronDown, ChevronRight, Search, BookOpen } from 'lucide-react'
 import { formatInteger } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -202,7 +202,7 @@ export default function DuplicatesPage() {
           </div>
 
           <Button onClick={handleScan} disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Search className="w-4 h-4 mr-2" />}
+            {loading ? <BookOpen className="w-4 h-4 mr-2 animate-book-pulse" /> : <Search className="w-4 h-4 mr-2" />}
             {loading ? 'Scanning...' : groups.length > 0 ? 'Re-scan' : 'Scan Collection'}
           </Button>
 

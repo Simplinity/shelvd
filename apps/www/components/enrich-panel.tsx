@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, Loader2, Check, X, Search } from 'lucide-react'
+import { Sparkles, BookOpen, Check, X, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { lookupIsbn, lookupByFields, lookupDetails, getActiveProviders } from '@/lib/actions/isbn-lookup'
 import type { BookData, ActiveProvider, SearchResultItem } from '@/lib/isbn-providers/types'
@@ -79,7 +79,7 @@ export function EnrichButton({ isbn, loading, onEnrichIsbn, onOpenSearch }: {
   if (isbn) {
     return (
       <Button type="button" variant="outline" onClick={onEnrichIsbn} disabled={loading}>
-        {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+        {loading ? <BookOpen className="w-4 h-4 mr-2 animate-book-pulse" /> : <Sparkles className="w-4 h-4 mr-2" />}
         Enrich
       </Button>
     )
@@ -140,7 +140,7 @@ export function EnrichDropdown({
 
       {loading && (
         <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-          <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />Searching providers...
+          <BookOpen className="w-5 h-5 animate-book-pulse mx-auto mb-2" />Searching providers...
         </div>
       )}
 
@@ -168,7 +168,7 @@ export function EnrichDropdown({
               </select>
             </div>
             <Button type="button" size="sm" onClick={onFieldSearch} disabled={searching}>
-              {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              {searching ? <BookOpen className="w-4 h-4 animate-book-pulse" /> : <Search className="w-4 h-4" />}
             </Button>
           </div>
         </div>
@@ -196,7 +196,7 @@ export function EnrichDropdown({
 
       {loadingDetail && (
         <div className="px-4 py-4 text-center text-sm text-muted-foreground">
-          <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1" />Loading details...
+          <BookOpen className="w-5 h-5 animate-book-pulse mx-auto mb-1" />Loading details...
         </div>
       )}
 

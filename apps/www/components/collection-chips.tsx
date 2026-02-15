@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2 } from 'lucide-react'
+import { BookOpen } from 'lucide-react'
 
 type Collection = {
   id: string
@@ -73,7 +73,7 @@ export default function CollectionChips({ bookId, collections: initial }: Props)
             title={col.isMember ? `Remove from ${col.name}` : `Add to ${col.name}`}
           >
             {toggling === col.id ? (
-              <Loader2 className="w-3 h-3 animate-spin inline" />
+              <BookOpen className="w-3 h-3 animate-book-pulse inline" />
             ) : (
               col.name
             )}

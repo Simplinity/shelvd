@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Search, Loader2, Check, X, ExternalLink, Plus, Settings, ChevronLeft, BookOpen, ChevronDown, FolderOpen } from 'lucide-react'
+import { Search, Check, X, ExternalLink, Plus, Settings, ChevronLeft, BookOpen, ChevronDown, FolderOpen } from 'lucide-react'
 import { lookupByFields, lookupDetails, lookupIsbn } from '@/lib/actions/isbn-lookup'
 import { createClient } from '@/lib/supabase/client'
 import { isProviderImplemented, supportsFieldSearch } from '@/lib/isbn-providers'
@@ -401,7 +401,7 @@ export function LookupForm({ activeProviders }: Props) {
             className="h-9 px-5 bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
           >
             {searching ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Searching...</>
+              <><BookOpen className="w-4 h-4 animate-book-pulse" /> Searching...</>
             ) : (
               <><Search className="w-4 h-4" /> Search</>
             )}
@@ -480,7 +480,7 @@ export function LookupForm({ activeProviders }: Props) {
                     </div>
                     
                     {loadingDetail ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-muted-foreground flex-shrink-0 mt-1" />
+                      <BookOpen className="w-4 h-4 animate-book-pulse text-muted-foreground flex-shrink-0 mt-1" />
                     ) : (
                       <ChevronLeft className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1 rotate-180" />
                     )}
@@ -496,7 +496,7 @@ export function LookupForm({ activeProviders }: Props) {
                   className="w-full mt-3 h-10 border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loadingMore ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Loading more...</>
+                    <><BookOpen className="w-4 h-4 animate-book-pulse" /> Loading more...</>
                   ) : (
                     <>Load more ({totalResults - results.length} remaining)</>  
                   )}

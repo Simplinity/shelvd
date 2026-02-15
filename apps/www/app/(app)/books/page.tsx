@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { formatInteger, formatCurrency as fmtCurr } from '@/lib/format'
-import { BookOpen, Plus, LayoutGrid, List, Loader2, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, FolderPlus, FolderMinus } from 'lucide-react'
+import { BookOpen, Plus, LayoutGrid, List, Trash2, X, CheckSquare, Search, SlidersHorizontal, Clock, History, ChevronUp, ChevronDown, ArrowUpDown, Upload, Download, Copy, FolderPlus, FolderMinus } from 'lucide-react'
 import { LimitGate } from '@/components/feature-gate'
 import { ScrollToTop } from '@/components/scroll-to-top'
 import { OnboardingChecklistLoader } from '@/components/onboarding/onboarding-checklist-loader'
@@ -1529,7 +1529,7 @@ export default function BooksPage() {
               disabled={exporting}
             >
               {exporting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <BookOpen className="w-4 h-4 animate-book-pulse" />
               ) : (
                 <Download className="w-4 h-4" />
               )}
@@ -1784,7 +1784,7 @@ export default function BooksPage() {
                 disabled={selectedCount === 0 || bulkActionLoading}
                 className="gap-2"
               >
-                {bulkActionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FolderPlus className="w-4 h-4" />}
+                {bulkActionLoading ? <BookOpen className="w-4 h-4 animate-book-pulse" /> : <FolderPlus className="w-4 h-4" />}
                 <span className="hidden sm:inline">Add to Collection</span>
                 <ChevronDown className="w-3 h-3" />
               </Button>
@@ -1858,7 +1858,7 @@ export default function BooksPage() {
       {/* Loading state */}
       {loading && (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          <BookOpen className="w-8 h-8 animate-book-pulse text-muted-foreground" />
         </div>
       )}
 
@@ -2191,7 +2191,7 @@ export default function BooksPage() {
           >
             {loadingMore ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />
                 Loading...
               </>
             ) : (
@@ -2297,7 +2297,7 @@ export default function BooksPage() {
               >
                 {deleting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />
                     Deleting...
                   </>
                 ) : (

@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { toggleTierFeature, addTierFeature, removeTierFeature, updateTierLimit } from '@/lib/actions/tiers'
 import { TIER_NAMES, FEATURE_LABELS } from '@/lib/tier-config'
-import { Check, X, Loader2 } from 'lucide-react'
+import { Check, X, BookOpen } from 'lucide-react'
 
 const TIERS = ['collector', 'collector_pro', 'dealer'] as const
 
@@ -180,7 +180,7 @@ export function TiersClient({
                     return (
                       <td key={tier} className="p-3 text-center">
                         {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin mx-auto text-muted-foreground" />
+                          <BookOpen className="w-4 h-4 animate-book-pulse mx-auto text-muted-foreground" />
                         ) : (
                           <button
                             type="button"
@@ -237,7 +237,7 @@ export function TiersClient({
                     return (
                       <td key={tier} className="p-3 text-center">
                         {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin mx-auto text-muted-foreground" />
+                          <BookOpen className="w-4 h-4 animate-book-pulse mx-auto text-muted-foreground" />
                         ) : (
                           <button
                             type="button"

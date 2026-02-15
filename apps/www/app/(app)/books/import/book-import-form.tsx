@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Download, Upload, FileSpreadsheet, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'
+import { ArrowLeft, Download, Upload, FileSpreadsheet, AlertCircle, CheckCircle, BookOpen, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import * as XLSX from 'xlsx'
@@ -657,7 +657,7 @@ export default function BookImportForm({ referenceData, userId }: Props) {
       {/* Parsing state */}
       {status === 'parsing' && (
         <section className="mb-8 p-12 border border-border text-center">
-          <Loader2 className="w-12 h-12 mx-auto mb-4 animate-spin text-muted-foreground" />
+          <BookOpen className="w-12 h-12 mx-auto mb-4 animate-book-pulse text-muted-foreground" />
           <p className="text-lg">Parsing {fileName}...</p>
         </section>
       )}
@@ -761,7 +761,7 @@ export default function BookImportForm({ referenceData, userId }: Props) {
       {/* Importing state */}
       {status === 'importing' && (
         <section className="mb-8 p-12 border border-border text-center">
-          <Loader2 className="w-12 h-12 mx-auto mb-4 animate-spin text-muted-foreground" />
+          <BookOpen className="w-12 h-12 mx-auto mb-4 animate-book-pulse text-muted-foreground" />
           <p className="text-lg mb-2">
             Importing book {importProgress.current} of {importProgress.total}...
           </p>

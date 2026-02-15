@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, X, Loader2, Camera, AlertCircle } from 'lucide-react'
+import { Upload, X, BookOpen, Camera, AlertCircle } from 'lucide-react'
 import { formatBytes } from '@/lib/image-quota'
 import { createClient } from '@/lib/supabase/client'
 
@@ -233,7 +233,7 @@ export default function ImageUploadZone({ bookId, onUploadComplete, disabled, qu
           {files.map((entry, i) => (
             <div key={i} className="flex items-center gap-2 text-sm border border-border p-2">
               {/* Status icon */}
-              {entry.progress === 'uploading' && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground flex-shrink-0" />}
+              {entry.progress === 'uploading' && <BookOpen className="w-4 h-4 animate-book-pulse text-muted-foreground flex-shrink-0" />}
               {entry.progress === 'done' && <div className="w-4 h-4 rounded-full bg-green-500 flex-shrink-0" />}
               {entry.progress === 'error' && <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />}
               {entry.progress === 'pending' && <div className="w-4 h-4 rounded-full border-2 border-border flex-shrink-0" />}

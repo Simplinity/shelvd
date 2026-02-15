@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { ArrowLeft, Save, BookOpen, Plus, X, ExternalLink as ExternalLinkIcon, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { EnrichButton, EnrichDropdown, useEnrich } from '@/components/enrich-panel'
 import { Button } from '@/components/ui/button'
 import BisacCombobox from '@/components/bisac-combobox'
@@ -1008,7 +1008,7 @@ export default function BookAddForm({ referenceData }: Props) {
           </Button>
           <Button type="submit" disabled={saving}>
             {saving ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+              <><BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />Saving...</>
             ) : (
               <><Save className="w-4 h-4 mr-2" />Save</>
             )}
@@ -1781,7 +1781,7 @@ export default function BookAddForm({ referenceData }: Props) {
           </Button>
           <Button type="submit" disabled={saving}>
             {saving ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+              <><BookOpen className="w-4 h-4 mr-2 animate-book-pulse" />Saving...</>
             ) : (
               <><Save className="w-4 h-4 mr-2" />Save Book</>
             )}
