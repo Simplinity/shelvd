@@ -1,7 +1,13 @@
 // KB Netherlands (Koninklijke Bibliotheek) Provider
-// National Library of the Netherlands — 4M+ works
+// National Library of the Netherlands — 4M+ works via GGC union catalog
 // SRU with Dublin Core XML (dcx schema) — NOT MARCXML
 // http://jsru.kb.nl/sru/sru — CC0 metadata license
+//
+// IMPORTANT: The GGC collection uses plain-text CQL queries, NOT dc.xxx= prefixed indexes.
+// ISBN search: just the ISBN number as query
+// Title search: quoted text e.g. "name of the rose"
+// Author search: creator all "name"
+// See: https://www.librarything.de/topic/136014 (KB insider tips)
 
 import type { IsbnProvider, ProviderResult, BookData, SearchParams, SearchResults, SearchResultItem } from './types'
 
@@ -99,10 +105,16 @@ function parseDcxRecord(recordXml: string): BookData {
   const bookData: BookData = {}
 
   // Title — dc:title
-  const title = getElementText(data, 'dc:title')
-  if (title) {
-    // May contain subtitle after " : "
-    const parts = title.split(' : ')
+  // KB GGC records may have multiple dc:title elements; pick the most informative one (longest)
+  const allTitles = getAllElementTexts(data, 'dc:title')
+  const rawTitle = allTitles.length > 0
+    ? allTitles.reduce((a, b) => a.length >= b.length ? a : b)
+    : undefined
+  if (rawTitle) {
+    // Strip statement of responsibility after " / " (e.g. "The name of the rose / Umberto Eco")
+    const withoutResponsibility = rawTitle.split(' / ')[0].trim()
+    // Split title : subtitle
+    const parts = withoutResponsibility.split(' : ')
     bookData.title = parts[0].trim()
     if (parts.length > 1) {
       bookData.subtitle = parts.slice(1).join(' : ').trim()
@@ -189,9 +201,10 @@ function parseDcxRecord(recordXml: string): BookData {
 
 /**
  * Build an SRU query URL for KB Netherlands
+ * Uses x-fields=ISBN to get dedicated ISBN field in response
  */
 function buildSruUrl(query: string, startRecord: number = 1, maxRecords: number = 10): string {
-  return `${SRU_BASE}?version=${SRU_VERSION}&operation=searchRetrieve&query=${encodeURIComponent(query)}&recordSchema=${RECORD_SCHEMA}&x-collection=${COLLECTION}&startRecord=${startRecord}&maximumRecords=${maxRecords}`
+  return `${SRU_BASE}?version=${SRU_VERSION}&operation=searchRetrieve&x-collection=${COLLECTION}&query=${encodeURIComponent(query)}&recordSchema=${RECORD_SCHEMA}&startRecord=${startRecord}&maximumRecords=${maxRecords}&x-fields=ISBN`
 }
 
 export const kbNl: IsbnProvider = {
@@ -202,8 +215,9 @@ export const kbNl: IsbnProvider = {
 
   async search(isbn: string): Promise<ProviderResult> {
     const cleanIsbn = isbn.replace(/[-\s]/g, '')
-    const query = `dc.identifier=${cleanIsbn}`
-    const url = buildSruUrl(query, 1, 1)
+    // GGC: plain ISBN as query — no dc.identifier= prefix (JSRU is case-sensitive)
+    const query = cleanIsbn
+    const url = buildSruUrl(query, 1, 5) // fetch a few in case first isn't the best match
 
     try {
       const response = await fetch(url, {
@@ -236,7 +250,7 @@ export const kbNl: IsbnProvider = {
         success: true,
         data: bookData,
         provider: 'kb_nl',
-        source_url: `https://opc4.kb.nl/DB=1/SET=1/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=${cleanIsbn}`,
+        source_url: `https://opc-kb.oclc.org/DB=1/SET=1/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=${cleanIsbn}`,
       }
     } catch (err) {
       return {
@@ -248,20 +262,73 @@ export const kbNl: IsbnProvider = {
   },
 
   async searchByFields(params: SearchParams): Promise<SearchResults> {
-    // Build CQL query for KB Netherlands
-    const parts: string[] = []
-    if (params.isbn) parts.push(`dc.identifier=${params.isbn.replace(/[-\s]/g, '')}`)
-    if (params.title) parts.push(`dc.title=${params.title}`)
-    if (params.author) parts.push(`dc.creator=${params.author}`)
-    if (params.publisher) parts.push(`dc.publisher=${params.publisher}`)
-    if (params.yearFrom) parts.push(`dc.date>=${params.yearFrom}`)
-    if (params.yearTo) parts.push(`dc.date<=${params.yearTo}`)
+    // Build CQL query for KB Netherlands GGC collection
+    // GGC uses plain-text queries — NOT dc.xxx= prefixed indexes
+    // For ISBN: just the number as query
+    // For title/author: quoted terms combined with AND
+    // For specific fields: creator all "name", identifier all "isbn"
 
-    if (parts.length === 0) {
+    if (params.isbn) {
+      // ISBN search: just the ISBN as plain query (most reliable)
+      const cleanIsbn = params.isbn.replace(/[-\s]/g, '')
+      const query = cleanIsbn
+      const limit = Math.min(params.limit || 20, 50)
+      const offset = params.offset || 0
+      const startRecord = offset + 1
+      const url = buildSruUrl(query, startRecord, limit)
+
+      try {
+        const response = await fetch(url, {
+          headers: { 'Accept': 'application/xml, text/xml' },
+          signal: AbortSignal.timeout(10000),
+        })
+
+        if (!response.ok) {
+          return { items: [], total: 0, provider: 'kb_nl', error: `HTTP ${response.status}` }
+        }
+
+        const xml = await response.text()
+        const records = extractSruRecords(xml)
+        const total = getTotalRecords(xml)
+
+        const items: SearchResultItem[] = records.map((rec, i) => {
+          const parsed = parseDcxRecord(rec)
+          return {
+            title: parsed.title || 'Untitled',
+            subtitle: parsed.subtitle,
+            authors: parsed.authors,
+            publisher: parsed.publisher,
+            publication_year: parsed.publication_year,
+            isbn_13: parsed.isbn_13,
+            isbn_10: parsed.isbn_10,
+            format: parsed.format,
+            edition_key: `kb-${startRecord + i}`,
+          }
+        })
+
+        const hasMore = (offset + records.length) < total
+        return { items, total, provider: 'kb_nl', hasMore }
+      } catch (err) {
+        return {
+          items: [],
+          total: 0,
+          provider: 'kb_nl',
+          error: err instanceof Error ? err.message : 'Network error',
+        }
+      }
+    }
+
+    // Non-ISBN search: build a combined query from title/author/publisher
+    const queryTerms: string[] = []
+    if (params.title) queryTerms.push(`"${params.title}"`)
+    if (params.author) queryTerms.push(`creator all "${params.author}"`)
+    if (params.publisher) queryTerms.push(`"${params.publisher}"`)
+
+    if (queryTerms.length === 0) {
       return { items: [], total: 0, provider: 'kb_nl', error: 'No search parameters' }
     }
 
-    const query = parts.join(' and ')
+    const query = queryTerms.join(' and ')
     const limit = Math.min(params.limit || 20, 50)
     const offset = params.offset || 0
     const startRecord = offset + 1 // SRU is 1-based
