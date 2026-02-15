@@ -16,6 +16,7 @@ import { cerlHpb } from './cerl-hpb'
 import { hathiTrust } from './hathitrust'
 import { europeana } from './europeana'
 import { bnp } from './bnp'
+import { cobiss } from './cobiss'
 
 // Registry of all implemented providers
 const providers: Record<string, IsbnProvider> = {
@@ -43,6 +44,7 @@ const providers: Record<string, IsbnProvider> = {
   'hathitrust': hathiTrust,
   'europeana': europeana,
   'bnp': bnp,
+  'cobiss': cobiss,
 }
 
 /**

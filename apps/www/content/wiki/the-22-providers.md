@@ -1,4 +1,4 @@
-# A Grand Tour of 26 Libraries in 19 Countries
+# A Grand Tour of 27 Libraries in 27 Countries
 
 *Every lookup provider in Shelvd: what it holds, what it's good at, and where it falls short. Consider this your field guide to the world's library catalogs.*
 
@@ -8,7 +8,7 @@
 
 No single library has every book. Not the Library of Congress, not the British Library, not that suspiciously well-stocked secondhand shop in Hay-on-Wye. But between them, the world's libraries hold more bibliographic data than any collector could generate in a lifetime.
 
-Shelvd connects to **26 providers** across **19 countries** on **4 continents**. One search, twenty-six libraries. Here's what each one brings to the table.
+Shelvd connects to **27 providers** across **27 countries** on **4 continents**. One search, twenty-seven libraries. Here's what each one brings to the table.
 
 ---
 
@@ -115,6 +115,11 @@ Shelvd connects to **26 providers** across **19 countries** on **4 continents**.
 **What:** Austria's national library. One of the oldest in the world.
 **Best for:** Austrian publications, Habsburg-era printing.
 **Quirks:** Alma-based SRU. Good for Central European bibliography.
+
+### COBISS (🇸🇮🇷🇸🇧🇬🇲🇰🇧🇦🇲🇪🇦🇱🇽🇰)
+**What:** Co-operative Online Bibliographic System and Services — 10M+ records across 780+ libraries in 8 countries: Slovenia, Serbia, Bulgaria, North Macedonia, Bosnia-Herzegovina, Montenegro, Albania, and Kosovo.
+**Best for:** Southeastern European publications. If it was published in the Western Balkans, it's probably here.
+**Quirks:** No public API — uses the legacy COBISS+ interface which returns server-rendered HTML. Expert search with prefixes (`BN=` for ISBN, `TI=` for title, `AU=` for author). Searches Slovenia first (largest database) then cascades through other national systems. Developed by IZUM in Maribor since the 1980s — one of the longest-running cooperative library networks in Europe.
 
 ---
 
