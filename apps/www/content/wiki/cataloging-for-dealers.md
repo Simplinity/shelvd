@@ -60,24 +60,24 @@ Follow a consistent order: binding → text block → dust jacket → extras. St
 
 ---
 
-## Photography
+## Photography and Image Labeling
 
-A photo doesn't replace a description, but it supports one. Photograph:
+A photo doesn't replace a description, but it supports one.
 
-- Front cover
-- Spine
-- Any significant defects
-- Title page (for antiquarian books)
-- Dust jacket (if present)
+Shelvd's image upload system lets you label every photograph with one of 51 book part types — from "Front cover" to "Frontispiece" to "Damage detail." Labels are grouped by matter (Physical, Front, Body, Back, Illustration, Other), so buyers and insurers know exactly what they're looking at.
+
+At minimum, photograph: front cover, spine, title page, any significant defects, and the dust jacket if present. For higher-value books, add the colophon, provenance evidence, and binding details.
 
 Good lighting, neutral background, no filters. This isn't Instagram; it's evidence.
+
+For the full guide to image uploads, labeling, and what to photograph for different audiences, see [Photographing Your Books](/wiki/image-labeling).
 
 ---
 
 ## Using Shelvd for Dealer Cataloging
 
 ### Catalog Entry Generator
-Shelvd auto-generates ISBD-format catalog entries from your data. These are professional-grade descriptions that follow international standards. Use them as the basis for your listings.
+Shelvd generates catalog entries in two modes — **Trade** and **ISBD** — across thirteen languages. Trade mode follows the conventions of the relevant national trade association (ABA, SLAM, VDA, NVvA, and nine others). ISBD mode follows the formal international standard. Use them as the basis for your listings.
 
 ### PDF Catalog Sheets
 Generate a one-page PDF per book: all metadata, condition, provenance, and identifiers in a clean format. Useful for fair catalogs, email to clients, and insurance documentation.
@@ -94,10 +94,12 @@ Export your stock as Excel, CSV, or JSON for uploading to marketplace platforms,
 
 **ILAB standards** — The International League of Antiquarian Booksellers has guidelines for description. If you're a member (or aspire to be), follow them.
 
-**AB Bookman's condition grades** — The widely-used scale (Fine through Poor) that the trade relies on. See [Condition Grading](/wiki/condition-grading).
+**ABAA condition grades** — The standard scale (As New through Poor) that the English-speaking trade relies on. Shelvd uses this scale, and translates it into all thirteen supported languages. See [Condition Grading](/wiki/condition-grading).
 
-**ISBD** — International Standard Bibliographic Description. The professional standard for catalog entries. Shelvd generates these automatically. See [ISBD](/wiki/the-isbd-entry).
+**National trade associations** — ABA (UK), ABAA (US), SLAM (France), VDA (Germany), NVvA (Netherlands), AILA (Spain), ALAFARQ (Portugal), ALAI (Italy), SVAF (Sweden), ABF (Denmark), NABF (Norway), CLAM/BBA (Belgium). Each has its own conventions for format terms, binding vocabulary, and condition descriptions. See [Trade Catalogs](/wiki/trade-catalog-conventions) for the full breakdown.
+
+**ISBD** — International Standard Bibliographic Description. The formal standard for catalog entries. Shelvd generates these automatically in thirteen languages. See [ISBD](/wiki/the-isbd-entry).
 
 ---
 
-*See also: [Condition Grading](/wiki/condition-grading) · [PDF Catalog Sheets](/wiki/pdf-catalog-sheets) · [The ISBD Entry](/wiki/the-isbd-entry)*
+*See also: [Condition Grading](/wiki/condition-grading) · [Trade Catalog Conventions](/wiki/trade-catalog-conventions) · [PDF Catalog Sheets](/wiki/pdf-catalog-sheets) · [The ISBD Entry](/wiki/the-isbd-entry)*

@@ -36,6 +36,8 @@
 
 **Boards** — The stiff covers of a hardback book. Originally actual wooden boards; later replaced by pasteboard, millboard, or modern board.
 
+**Book part** — In Shelvd, the specific component of a book that an uploaded photograph depicts: title page, frontispiece, spine, damage detail, etc. The 51 book part labels are grouped by matter (Physical, Front, Body, Back, Illustration, Other). See [Photographing Your Books](/wiki/image-labeling).
+
 **Bookplate** — A label pasted inside the front cover to identify the owner. Ranges from elaborate armorial engravings to "THIS BOOK BELONGS TO EMMA, AGE 7." Both have provenance value.
 
 **Broadside** — A single sheet printed on one side only. Not a book, strictly speaking, but collected alongside them. Think proclamations, ballads, and early advertising.
@@ -152,6 +154,8 @@
 
 ## I
 
+**ILAB** — International League of Antiquarian Booksellers. The global federation of national antiquarian book trade associations (ABAA, ABA, SLAM, VDA, NVvA, ALAI, AILA, and others). Sets ethical standards for description, attribution, and trade. If your dealer is an ILAB member, they've agreed to play fair.
+
 **Illuminated** — Decorated with hand-painted ornament, typically gold leaf and colors. Refers to manuscripts and early printed books. Not to be confused with "illustrated."
 
 **Impression** — All copies printed at one time from the same setting of type. A first edition may have multiple impressions. See [Editions and Impressions](/wiki/editions-and-impressions).
@@ -167,6 +171,8 @@
 **Interleaved** — A copy with blank leaves bound between the printed pages, intended for notes. The 17th-century version of annotating.
 
 **ISBN** — International Standard Book Number. 10 digits before 2007, 13 digits after. Identifies a specific edition from a specific publisher. See [Identifiers](/wiki/identifiers).
+
+**ISBD** — International Standard Bibliographic Description. The IFLA standard that prescribes the structure and punctuation of a formal catalog entry. Eight areas, specific punctuation, universal grammar. The notation `. — ` separating areas is ISBD's signature. See [The ISBD Entry](/wiki/the-isbd-entry).
 
 **Issue** — A group of copies within an edition that differ in some respect from other copies, usually intentionally. See [Editions and Impressions](/wiki/editions-and-impressions).
 
@@ -207,6 +213,8 @@
 **Manuscript (MS)** — A text written by hand, as opposed to printed. Plural: manuscripts (MSS).
 
 **Marbled** — Paper or edges decorated with a swirled pattern of colors, created by floating pigments on a bath of size. Each sheet is unique. Common on endpapers and edges from the 17th century onward.
+
+**Matter** — The structural division of a book's content into three zones: front matter (everything before the main text: title page, dedication, contents), body (the text itself), and back matter (everything after: index, bibliography, colophon). In Shelvd, image labels and book parts are organized by matter.
 
 **MARC** — Machine-Readable Cataloging. The data format used by libraries worldwide to store bibliographic records. Invented in the 1960s, still going strong, still confusing.
 
@@ -284,6 +292,12 @@
 
 **Signatures** — (1) The letters or numbers at the bottom of the first leaf of each gathering, used by the binder to assemble the book in the correct order. (2) The collation formula (e.g., "A–Z⁸").
 
+**S.l.** — *Sine loco* (Latin: without place). Used in catalog entries when the place of publication is unknown: `[S.l.] : [s.n.], [ca. 1780]`. The bibliographic equivalent of a shrug.
+
+**S.n.** — *Sine nomine* (Latin: without name). Used when the publisher is unknown. Often paired with S.l. in entries for early printed books where neither place nor publisher can be identified.
+
+**SLAM** — Syndicat national de la Librairie Ancienne et Moderne. The French antiquarian booksellers' association. One of the oldest and most prestigious in Europe. Their conventions for catalog descriptions are followed by all French-language dealers. See [Trade Catalog Conventions](/wiki/trade-catalog-conventions).
+
 **Slipcase** — A box open on one side, designed to hold a book with its spine visible. Protective and decorative.
 
 **Sophisticated** — In bibliography, this is not a compliment. It means the book has been altered to appear more complete or valuable than it is — added leaves, fabricated elements, concealed repairs.
@@ -293,6 +307,8 @@
 **Sprinkled** — Edges or covers that have been decorated with small drops of dye or color. Less elaborate than marbling, more decorative than plain.
 
 **State** — A variant within an issue, usually caused by corrections made during the print run. First state = before corrections; second state = after.
+
+**Statement of Responsibility (SoR)** — In ISBD, the part of Area 1 that names all persons responsible for the intellectual content: author, editor, translator, illustrator. Preceded by ` / ` (space-slash-space). In trade descriptions, this information leads the entry instead.
 
 **Sunned** — Faded by exposure to light. Spine sunning is the most common form — the spine fades while the covers retain their original color.
 
@@ -307,6 +323,8 @@
 **Title page** — The page that gives the full title, author, publisher, and date. The single most important page for bibliographic description. See [The Title Page](/wiki/the-title-page).
 
 **Toning** — Overall yellowing or darkening of paper caused by age and oxidation. Not the same as foxing (which is spotty) or browning (which is more severe).
+
+**Trade catalog** — A catalog entry formatted for the antiquarian book trade, as opposed to a library (ISBD) entry. Author comes first (surname in capitals), sections separated by periods, binding and condition prominent. Conventions vary by country: ABA/ABAA (English), SLAM (French), VDA (German), NVvA (Dutch), and nine others. Shelvd generates trade entries in thirteen languages. See [Trade Catalog Conventions](/wiki/trade-catalog-conventions).
 
 **Top edge gilt (t.e.g.)** — Only the top edge of the text block is gilded. The most common form of edge gilding.
 

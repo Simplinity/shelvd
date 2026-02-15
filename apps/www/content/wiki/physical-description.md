@@ -51,3 +51,9 @@ If the work spans multiple physical volumes, record the count: "3" means three p
 ## Collation and Signatures
 
 For advanced bibliographic description, the **Signatures** field records how gatherings are signed: `A–Z⁸, Aa–Cc⁸`. This is the fingerprint of how the book was physically constructed — essential for identifying editions of hand-press books and fascinating to approximately seven people per country.
+
+## Images
+
+Photographs of your book live in their own **Images** section on the edit page, separate from the physical description fields. Each uploaded image is labeled with a specific book part (title page, frontispiece, binding detail, etc.) from a list of 51 types. This isn't just gallery management — labeled images make your catalog entries more useful for buyers, insurers, and researchers.
+
+For the full guide to what to photograph and how to label it, see [Photographing Your Books](/wiki/image-labeling).

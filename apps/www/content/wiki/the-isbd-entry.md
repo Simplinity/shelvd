@@ -261,30 +261,37 @@ While a fully cataloged entry from an experienced collector might run to several
 
 ---
 
-## The Four Languages
+## The Thirteen Languages
 
-Shelvd generates catalog entries in **English**, **French**, **German**, and **Dutch**. The language affects:
+Shelvd generates catalog entries in **thirteen languages**: English, French, German, Dutch, Spanish, Portuguese, Italian, Swedish, Danish, Norwegian, Belgian French, Belgian Dutch, and Latin. Each language affects:
 
-- **Connecting phrases**: "by" / "par" / "von" / "door"
-- **Role descriptions**: "translated by" / "traduit par" / "übersetzt von" / "vertaald door"
-- **Abbreviations**: "p." / "p." / "S." / "p." (pages), "ill." / "ill." / "Ill." / "ill." (illustrations), "vol." / "vol." / "Bd." / "dl." (volumes)
-- **Labels**: "Condition" / "État" / "Zustand" / "Conditie", "Provenance" / "Provenance" / "Provenienz" / "Herkomst"
-- **Cover types**: "Full morocco" / "Plein maroquin" / "Ganzmaroquin" / "Volledig marokijn"
+- **Connecting phrases**: "by" / "par" / "von" / "door" / "por" / "di" / "av" / "af" / "auct."
+- **Role descriptions**: "translated by" / "traduit par" / "übersetzt von" / "vertaald door" / "tradotto da" — and so on for all 17 contributor roles
+- **Abbreviations**: "p." / "S." / "s." / "pp." / "ff." (pages vary by language), "vol." / "Bd." / "dl." / "bd." (volumes)
+- **Labels**: "Condition" / "État" / "Zustand" / "Conditie" / "Estado" / "Condizioni" / "Skick" / "Tilstand"
+- **Cover types**: All 49 cover types translated — "Full morocco" / "Plein maroquin" / "Ganzmaroquin" / "Volledig marokijn" / "Pleno marroquín" / "Pieno marocchino" / "Helfranskt band"
+- **Condition grades**: "Fine" / "Parfait état" / "Sehr gut" / "Uitstekend" / "Perfecto" / "Ottimo" / "Fint"
 
 The structural punctuation (`. — `, ` : `, ` / `, ` ; `) remains identical across all languages. ISBD is an international standard — the grammar is universal; only the vocabulary changes.
+
+The Latin option exists for incunabula and early printed books, where place names appear in their Latin forms (Venetiis, Parisiis, Moguntiae) and provenance is abbreviated to "Prov." — as the great bibliographies have always done it.
 
 ---
 
 ## Generating a Catalog Entry in Shelvd
 
 1. Open any book and click **Edit**
-2. Scroll to the **Catalog Entry** section at the bottom
-3. Click **Generate Catalog Entry**
-4. Choose your language (English, French, German, or Dutch)
-5. The entry is generated from every field you have filled in
+2. Scroll to the **Catalog Entry** section
+3. Click **Trade** (left button) for a dealer-style entry, or **ISBD** (right button) for a formal bibliographic entry
+4. A language modal appears showing thirteen options, each with a flag, language name, and the relevant trade association (e.g. "🇫🇷 Français — SLAM" or "🇩🇪 Deutsch — VDA")
+5. Click your language. The entry is generated using every field you’ve filled in, formatted according to the conventions of that mode and country
 6. Review, edit if needed, and save
 
-The more fields you have filled in, the richer the entry. An empty book produces an empty entry. A fully cataloged book produces a professional-grade bibliographic description that would be at home in any auction catalog or institutional record.
+The two modes write to separate database fields — `catalog_entry` (Trade) and `catalog_entry_isbd` (ISBD) — so you can have both a dealer description and a formal bibliographic record for the same book. Both are included in PDF catalog sheets.
+
+The more fields you have filled in, the richer the entry. An empty book produces an empty entry. A fully cataloged book produces a professional-grade description that would be at home in any auction catalog or institutional record.
+
+For the full breakdown of per-country Trade conventions (format terms, binding vocabulary, condition grades), see [Trade Catalogs: How 13 Countries Describe the Same Book](/wiki/trade-catalog-conventions).
 
 ---
 
@@ -318,7 +325,7 @@ Shelvd generates (in English):
 
 And in French:
 
-> Baudelaire, Charles. Les Fleurs du mal / par Charles Baudelaire. — First edition. — Paris : Poulet-Malassis et de Broise, 1857. — [4], 248, [4] p. ; 187 mm 8vo. Couverture imprimée. — One of 1,100 copies on papier vélin. Bibliographie: Carteret I, 115; Clouzot, 37. Provenance: Bookplate of Poulet-Malassis (publisher's copy). État: Very Good. Light foxing to preliminaries, wrappers lightly soiled, spine slightly darkened.
+> Baudelaire, Charles. Les Fleurs du mal / par Charles Baudelaire. — Édition originale. — Paris : Poulet-Malassis et de Broise, 1857. — [4], 248, [4] p. ; 187 mm 8vo. Couverture imprimée. — Un des 1 100 exemplaires sur papier vélin. Bibliographie : Carteret I, 115 ; Clouzot, 37. Provenance : Ex-libris de Poulet-Malassis (exemplaire de l'éditeur). État : Très bon. Légères rousseurs aux préliminaires, couvertures légèrement salies, dos légèrement assombri.
 
 ---
 

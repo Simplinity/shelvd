@@ -1,6 +1,6 @@
-# 45 Ways to Dress a Book
+# 49 Ways to Dress a Book
 
-The binding is the first thing you see and the last thing most catalogs mention. In Shelvd, it gets the attention it deserves — 45 cover types, from full calf to stapled wrappers, each describing a specific combination of material and construction.
+The binding is the first thing you see and the last thing most catalogs mention. In Shelvd, it gets the attention it deserves — 49 cover types, from full calf to stapled wrappers, each describing a specific combination of material and construction. All 49 are translated into thirteen languages for the catalog entry generator, so a French dealer sees "Plein maroquin" where a German sees "Ganzmaroquin" and a Swede sees "Helfranskt band."
 
 ## Cover Types vs. Binding Styles
 

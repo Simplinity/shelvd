@@ -49,7 +49,7 @@ The catalog sheet pulls from all available fields:
 
 ### Notes
 - Summary, bibliography references, internal notes
-- ISBD catalog entry
+- Trade catalog entry and ISBD catalog entry (both included when available)
 
 Fields that are empty are omitted — the sheet only shows what you've recorded.
 

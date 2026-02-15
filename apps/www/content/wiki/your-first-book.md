@@ -23,6 +23,10 @@ Here's what actually matters for your first entry:
 **The everything else:**
 Leave it. Come back to it. Use Enrich Mode later to fill in what you missed. The goal right now is to get the book *into* the system, not to produce a museum-grade catalog entry on your first try.
 
+Two things that help while you're filling in forms: every field has a small **ⓘ** icon next to its label. Hover over it (or tap on mobile) to see an antiquarian-trade-perspective explanation of what the field means and why it matters. These aren't generic tooltips — they're written by someone who catalogs rare books, not someone who writes software documentation.
+
+And once your book is saved, you can upload photographs in the **Images** section of the edit page. Each image gets a label from 51 book part types (title page, frontispiece, binding detail, damage — the full list). Labels help buyers, insurers, and future-you understand what each photograph shows. See [Photographing Your Books](/wiki/image-labeling) for the complete guide.
+
 ## The "Last, First" Convention
 
 Shelvd uses the cataloging standard of "Last, First" for contributor names. This means:

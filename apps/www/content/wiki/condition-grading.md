@@ -4,9 +4,11 @@ Condition grading is the most subjective part of book collecting disguised as an
 
 ## The Grading Scale
 
-Shelvd uses the standard scale recognized by the ABAA, ILAB, and most professional booksellers:
+Shelvd uses the ABAA standard scale — the same grades recognized by ILAB and its national affiliates worldwide. These grades are translated into all thirteen supported languages when generating catalog entries: "Fine" becomes "Parfait état" in French, "Sehr gut" in German, "Uitstekend" in Dutch, and so on for all thirteen. For the complete translation table, see [Trade Catalog Conventions](/wiki/trade-catalog-conventions).
 
-**Fine (F)**: As new. No defects, no signs of use, no evidence that a human has ever touched this book — which, given that you're holding it, is already a philosophical problem. A truly Fine book looks like it came off the press this morning.
+**As New**: Still in its original shrink wrap or showing absolutely no signs of use. Rare for anything older than last Tuesday.
+
+**Fine (F)**: As new but without the wrapping. No defects, no signs of use, no evidence that a human has ever touched this book — which, given that you're holding it, is already a philosophical problem. A truly Fine book looks like it came off the press this morning.
 
 **Near Fine (NF)**: Almost Fine but with a minor defect — a tiny bump to one corner, the faintest hint of toning to the spine. The kind of flaw you'd only notice if you were looking for it, which you were, because you're a collector.
 
@@ -43,3 +45,7 @@ Sellers grade up. Buyers grade down. This is the eternal tension of the trade.
 As a collector cataloging your own library, you have no one to impress and no one to deceive. Grade honestly. That "Very Good" book with the broken hinge? It's "Good" at best. That "Fine" book you bought online that arrived with a remainder mark? Near Fine, generously.
 
 Honest grading makes your catalog useful. Flattering grading makes it fiction.
+
+---
+
+*See also: [Trade Catalog Conventions](/wiki/trade-catalog-conventions) · [Condition Terms](/wiki/condition-terms) · [Cataloging for Dealers](/wiki/cataloging-for-dealers)*
